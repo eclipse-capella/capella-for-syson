@@ -12,6 +12,20 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view;
 
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_HUMAN;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
 import org.eclipse.capella.application.configuration.details.view.referencewidget.AllocatedExchangeItemsReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.AllocatedFunctionPortsReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.AllocatedFunctionReferenceWidgetProvider;
@@ -22,11 +36,8 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.ICapellaReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionalExchangesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionsWidgetProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -63,29 +74,14 @@ import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescri
 import org.eclipse.sirius.components.widget.reference.ReferenceWidgetComponent;
 import org.eclipse.syson.application.services.DetailsViewService;
 import org.eclipse.syson.form.services.api.IDetailsViewHelpTextProvider;
-import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
-import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelQueryElementService;
 import org.eclipse.syson.util.AQLConstants;
 import org.eclipse.syson.util.AQLUtils;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
-
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_ACTOR;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_HUMAN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
 
 /**
  * Provides custom Details view for Capella elements.
@@ -132,7 +128,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         view.getDescriptions().add(viewFormDescription);
 
         // Convert the View-based FormDescription and register the result into the system
-        AQLInterpreter interpreter = new AQLInterpreter(List.of(LAQueryService.class, TransverseQueryService.class, TransverseMutationService.class, LAMutationService.class),
+        AQLInterpreter interpreter = new AQLInterpreter(List.of(TransverseQueryService.class, TransverseMutationService.class),
                 List.of(new DetailsViewService(this.composedAdapterFactoryDescriptors, this.feedbackMessageService, this.readOnlyObjectPredicate, new MetamodelQueryElementService(), this.detailsViewHelpTextProviders)),
                 List.of(SysmlPackage.eINSTANCE));
         ViewConverterResult viewConverterResult = this.converter.convert(viewFormDescription, List.of(), interpreter);
@@ -207,7 +203,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         refAllocatedPortsWidget.setLabelExpression("Allocated Function Ports");
 
         ChangeContext setInvolvedFunctionalExchangesOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setInvolvedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(LAMutationService::setArcadiaReferenceFeature)
+        setInvolvedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(TransverseMutationService::setArcadiaReferenceFeature)
                 .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT_PORT), AQLUtils.aqlString(AllocatedFunctionPortsReferenceWidgetProvider.FEATURE_NAME),
                         ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getItemUsage().getName())));
         refAllocatedPortsWidget.getBody().add(setInvolvedFunctionalExchangesOperation);
@@ -219,8 +215,8 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         TextfieldDescription textfieldName = FormFactory.eINSTANCE.createTextfieldDescription();
         textfieldName.setName("ArcadiaElementNameWidget");
         textfieldName.setLabelExpression("Name");
-        textfieldName.setValueExpression(ServiceMethod.of0(LAQueryService::getArcadiaElementName).aqlSelf());
-        textfieldName.setValueExpression(ServiceMethod.of0(LAQueryService::getArcadiaElementName).aqlSelf());
+        textfieldName.setValueExpression(ServiceMethod.of0(TransverseQueryService::getArcadiaElementName).aqlSelf());
+        textfieldName.setValueExpression(ServiceMethod.of0(TransverseQueryService::getArcadiaElementName).aqlSelf());
 
         ChangeContext setNewValueOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewValueOperation.setExpression(
@@ -239,11 +235,11 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         var statusSelectDescription = FormFactory.eINSTANCE.createSelectDescription();
         statusSelectDescription.setName("ArcadiaElementStatusWidget");
         statusSelectDescription.setLabelExpression("Status");
-        statusSelectDescription.setValueExpression(ServiceMethod.of0(LAQueryService::getStatusStringValue).aqlSelf());
+        statusSelectDescription.setValueExpression(ServiceMethod.of0(TransverseQueryService::getStatusStringValue).aqlSelf());
         statusSelectDescription.setCandidateLabelExpression(AQLConstants.AQL + SelectComponent.CANDIDATE_VARIABLE);
-        statusSelectDescription.setCandidatesExpression(ServiceMethod.of0(LAQueryService::getStatusKindEnumLiterals).aql(IEditingContext.EDITING_CONTEXT));
+        statusSelectDescription.setCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getStatusKindEnumLiterals).aql(IEditingContext.EDITING_CONTEXT));
         var setNewStatusOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setNewStatusOperation.setExpression(ServiceMethod.of2(LAMutationService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE, IEditingContext.EDITING_CONTEXT));
+        setNewStatusOperation.setExpression(ServiceMethod.of2(TransverseMutationService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE, IEditingContext.EDITING_CONTEXT));
         statusSelectDescription.getBody().add(setNewStatusOperation);
         return List.of(textfieldName, richTextDescription, statusSelectDescription);
     }
@@ -259,7 +255,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementIf createFunctionalChainWidget() {
         FormElementIf componentWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         componentWidgetIf.setName("FunctionalChainWidgetIf");
-        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(LAQueryService::isFunctionalChain).aqlSelf());
+        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isFunctionalChain).aqlSelf());
         componentWidgetIf.getChildren().addAll(this.createFunctionalChainWidgets());
         return componentWidgetIf;
     }
@@ -267,7 +263,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementIf createFunctionalExchangeWidget() {
         FormElementIf componentWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         componentWidgetIf.setName("FunctionalExchangeWidgetIf");
-        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(LAQueryService::isFunctionalExchange).aqlSelf());
+        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isFunctionalExchange).aqlSelf());
         componentWidgetIf.getChildren().addAll(this.createFunctionalExchangeWidgets());
         return componentWidgetIf;
     }
@@ -293,7 +289,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         refInvolvedFunctionalExchangesWidget.setLabelExpression("Involved functional exchanges");
 
         ChangeContext setInvolvedFunctionalExchangesOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setInvolvedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(LAMutationService::setArcadiaReferenceFeature)
+        setInvolvedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(TransverseMutationService::setArcadiaReferenceFeature)
                 .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN), AQLUtils.aqlString(InvolvedFunctionalExchangesReferenceWidgetProvider.FEATURE_NAME),
                         ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getFlowUsage().getName())));
         refInvolvedFunctionalExchangesWidget.getBody().add(setInvolvedFunctionalExchangesOperation);
@@ -323,7 +319,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         payloadWidget.setLabelExpression("Exchanged Items");
 
         ChangeContext setPayloadOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setPayloadOperation.setExpression(ServiceMethod.of1(LAMutationService::setFunctionalExchangePayload).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
+        setPayloadOperation.setExpression(ServiceMethod.of1(TransverseMutationService::setFunctionalExchangePayload).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
         payloadWidget.getBody().add(setPayloadOperation);
 
         // Source Widget
@@ -369,7 +365,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         ChangeContext setSourceOperation = ViewFactory.eINSTANCE.createChangeContext();
         //        setSourceOperation
         //                .setExpression(
-        //                        ServiceMethod.of2(LAMutationService::setComponentExchangeEnd).aqlSelf("true",ReferenceWidgetComponent.NEW_VALUE));
+        //                        ServiceMethod.of2(TransverseMutationService::setComponentExchangeEnd).aqlSelf("true",ReferenceWidgetComponent.NEW_VALUE));
         setSourceOperation.setExpression(AQLConstants.AQL_SELF);
         // no operation as this widget is currently read-only
         sourceWidget.getBody().add(setSourceOperation);
@@ -386,7 +382,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         // no operation as this widget is currently read-only
         //        setTargetOperation
         //                .setExpression(
-        //                        ServiceMethod.of1(LAMutationService::setFunctionalExchangePayload).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
+        //                        ServiceMethod.of1(TransverseMutationService::setFunctionalExchangePayload).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
         targetWidget.getBody().add(setTargetOperation);
 
         // Allocated exchange items Widget
@@ -396,7 +392,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         allocatedExchangeWidget.setReferenceNameExpression(AllocatedExchangeItemsReferenceWidgetProvider.FEATURE_NAME);
         allocatedExchangeWidget.setLabelExpression("Allocated Exchange Items");
         ChangeContext setAllocatedExchangeItemsOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setAllocatedExchangeItemsOperation.setExpression(ServiceMethod.of4(LAMutationService::setArcadiaReferenceFeature)
+        setAllocatedExchangeItemsOperation.setExpression(ServiceMethod.of4(TransverseMutationService::setArcadiaReferenceFeature)
                 .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE), AQLUtils.aqlString(AllocatedExchangeItemsReferenceWidgetProvider.FEATURE_NAME),
                         ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getItemUsage().getName())));
         allocatedExchangeWidget.getBody().add(setAllocatedExchangeItemsOperation);
@@ -408,7 +404,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         allocatedFunctionalExchangesWidget.setReferenceNameExpression(AllocatedFunctionalExchangesReferenceWidgetProvider.FEATURE_NAME);
         allocatedFunctionalExchangesWidget.setLabelExpression("Allocated Functional Exchange");
         ChangeContext setAllocatedFunctionalExchangesOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setAllocatedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(LAMutationService::setArcadiaReferenceFeature)
+        setAllocatedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(TransverseMutationService::setArcadiaReferenceFeature)
                 .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE), AQLUtils.aqlString(AllocatedFunctionalExchangesReferenceWidgetProvider.FEATURE_NAME),
                         ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getFlowUsage().getName())));
         allocatedFunctionalExchangesWidget.getBody().add(setAllocatedFunctionalExchangesOperation);
@@ -422,10 +418,13 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         checkboxIsActor.setLabelExpression("Is Actor");
         checkboxIsActor.setValueExpression(ServiceMethod.of0(TransverseQueryService::isComponentActor).aqlSelf());
         ChangeContext setIsActorChangeContext = ViewFactory.eINSTANCE.createChangeContext();
-        setIsActorChangeContext.setExpression(ServiceMethod.of3(LAMutationService::setBooleanAttribute).aqlSelf(ReferenceWidgetComponent.NEW_VALUE, // newValue
-                AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT), // qualified type
-                AQLUtils.aqlString(ARCADIA_IS_ACTOR) // attribute name
-        ));
+        setIsActorChangeContext.setExpression(ServiceMethod.of3(TransverseMutationService::setBooleanAttribute)
+                .aqlSelf(
+                        AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT), // qualified type
+                        AQLUtils.aqlString(ARCADIA_IS_ACTOR), // attribute name
+                        ReferenceWidgetComponent.NEW_VALUE // newValue
+
+                ));
         checkboxIsActor.getBody().add(setIsActorChangeContext);
 
         CheckboxDescription checkboxIsHuman = FormFactory.eINSTANCE.createCheckboxDescription();
@@ -434,8 +433,12 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         checkboxIsHuman.setValueExpression(ServiceMethod.of0(TransverseQueryService::getHumanCheckboxValue).aqlSelf());
         ChangeContext setIsHumanChangeContext = ViewFactory.eINSTANCE.createChangeContext();
 
-        setIsHumanChangeContext.setExpression(ServiceMethod.of3(LAMutationService::setBooleanAttribute)
-                .aqlSelf(ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT), AQLUtils.aqlString(ARCADIA_IS_HUMAN)));
+        setIsHumanChangeContext.setExpression(ServiceMethod.of3(TransverseMutationService::setBooleanAttribute)
+                .aqlSelf(
+                        AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT),
+                        AQLUtils.aqlString(ARCADIA_IS_HUMAN),
+                        ReferenceWidgetComponent.NEW_VALUE
+                ));
 
         checkboxIsHuman.getBody().add(setIsHumanChangeContext);
 
@@ -451,7 +454,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
 
         ChangeContext setNewAllocatedFunctionOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewAllocatedFunctionOperation.setExpression(
-                ServiceMethod.<LAMutationService, PartUsage, ActionUsage> of1(LAMutationService::setPerformedActionUsage).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
+                ServiceMethod.of1(TransverseMutationService::setPerformAction).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
 
         refWidget.getBody().add(setNewAllocatedFunctionOperation);
 
@@ -461,7 +464,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementDescription createExchangeItemWidget() {
         FormElementIf exchangeItemWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         exchangeItemWidgetIf.setName("ExchangeItemWidgetIf");
-        exchangeItemWidgetIf.setPredicateExpression(ServiceMethod.of0(LAQueryService::isExchangeItem).aqlSelf());
+        exchangeItemWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isExchangeItem).aqlSelf());
 
         exchangeItemWidgetIf.getChildren().addAll(this.createExchangeItemWidgets());
         return exchangeItemWidgetIf;

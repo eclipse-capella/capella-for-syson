@@ -15,14 +15,14 @@ package org.eclipse.capella.diagram.lab.view.nodes.functionalchain;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ConditionalNodeStyle;
 import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Style for Functional Chain nodes.
@@ -51,7 +51,8 @@ public class FunctionalChainNodeStyleProvider {
 
     private ConditionalNodeStyle createFCConditionalNodeStyle(int index) {
         return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.of2(LARepresentationQueryService::getFunctionalChainIndexInDiagram).aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
+                .condition(ServiceMethod.of2(TransverseRepresentationQueryService::getFunctionalChainIndexInDiagram).aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = "
+                        + index)
                 .style(this.createFunctionalChainNodeStyle(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR + "_" + index))
                 .build();
     }

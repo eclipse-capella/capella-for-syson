@@ -12,6 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -22,9 +26,6 @@ import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.services.api.ISysMLMoveElementService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
-
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Services related to the drop tools.
@@ -61,11 +62,13 @@ public class OARepresentationDropServices {
     public Element dropIntoDiagram(Element droppedElement, Node droppedNode, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
         if (this.transverseQueryService.isComponent(droppedElement)) {
-            Package componentsPackage = this.oaQueryService.toComponentsPackage(droppedElement);
-            this.moveService.moveSemanticElement(droppedElement, componentsPackage);
-            this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode,
-                    convertedNodes);
-            diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
+            Optional<Package> optionalStructurePackage = this.transverseQueryService.getStructurePackage(droppedElement);
+            if (optionalStructurePackage.isPresent()) {
+                this.moveService.moveSemanticElement(droppedElement, optionalStructurePackage.get());
+                this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode,
+                        convertedNodes);
+                diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
+            }
         }
         return droppedElement;
     }

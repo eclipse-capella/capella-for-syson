@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.common.view;
 
@@ -69,7 +70,7 @@ public interface IViewDescriptionProvider {
         // All programmatic Views need to be stored in a Resource and registered in IInMemoryViewRegistry
         String resourcePath = UUID.nameUUIDFromBytes(this.getViewDiagramId().getBytes()).toString();
         JsonResource resource = new JSONResourceFactory().createResourceFromPath(resourcePath);
-        resource.eAdapters().add(new ResourceMetadataAdapter(this.getViewDiagramId()));
+        resource.eAdapters().add(new ResourceMetadataAdapter(this.getViewDiagramId(), true));
         resource.getContents().add(view);
 
         return List.of(view);

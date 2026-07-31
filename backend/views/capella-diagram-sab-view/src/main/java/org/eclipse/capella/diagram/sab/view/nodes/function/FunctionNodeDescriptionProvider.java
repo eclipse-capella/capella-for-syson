@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -25,6 +24,7 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -49,7 +49,7 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .domainType(domainType)
                 .insideLabel(new FunctionLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .name(NODE_DESCRIPTION_NAME)
-                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getSubFunctions).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getSubFunctions).aqlSelf())
                 .style(styleProvider.createFunctionNodeStyle())
                 .conditionalStyles(styleProvider.createFunctionConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)

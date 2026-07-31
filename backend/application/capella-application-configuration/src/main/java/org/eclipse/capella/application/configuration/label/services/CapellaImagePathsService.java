@@ -9,22 +9,9 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.label.services;
-
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.transverse.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.sirius.components.core.api.ILabelService;
-import org.eclipse.syson.sysml.Element;
-import org.eclipse.syson.sysml.Feature;
-import org.eclipse.syson.sysml.FeatureDirectionKind;
-import org.eclipse.syson.sysml.Package;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
@@ -35,6 +22,20 @@ import static org.eclipse.capella.model.services.transverse.TransverseQueryServi
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_REQUIREMENT;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import org.eclipse.capella.model.services.transverse.ArcadiaEngineeringPerspective;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.sirius.components.core.api.ILabelService;
+import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.Feature;
+import org.eclipse.syson.sysml.FeatureDirectionKind;
+import org.eclipse.syson.sysml.Package;
+import org.springframework.stereotype.Service;
 
 /**
  * A service dedicated to compute the label image path.
@@ -79,6 +80,8 @@ public class CapellaImagePathsService {
         String imageName = null;
         if (object instanceof org.eclipse.syson.sysml.Package pkg) {
             imageName = this.computePackageImage(pkg);
+        } else if (this.transverseQueryService.isDescribes(object)) {
+            imageName = String.format(ICONS_FULL_PATH, "Describes");
         } else if (object instanceof Element element) {
             String arcadiaType = this.transverseQueryService.getArcadiaType(element).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(null);
             if (arcadiaType != null) {
@@ -122,7 +125,7 @@ public class CapellaImagePathsService {
     private String computeExchangeItemIcon(Element element, String arcadiaType) {
         boolean hasParentFunction = Optional.ofNullable(element)
                 .map(Element::getOwner)
-                .filter(this.laQueryService::isFunction)
+                .filter(this.transverseQueryService::isFunction)
                 .isPresent();
         if (hasParentFunction && element instanceof Feature feature) {
             FeatureDirectionKind direction = feature.getDirection();
@@ -144,6 +147,10 @@ public class CapellaImagePathsService {
     private String computePackageImage(Package pkg) {
         String value = null;
         String declaredName = pkg.getDeclaredName();
+        // Guard against null declaredName to avoid NullPointerException in switch
+        if (declaredName == null) {
+            return null;
+        }
         String packageImageName = switch (declaredName) {
             case FUNCTIONS -> "LogicalFunctionPkg";
             case STRUCTURE -> "LogicalComponentPkg";
@@ -154,7 +161,7 @@ public class CapellaImagePathsService {
             default -> null;
         };
 
-        if (packageImageName == null && ArcadiaEngineeringPerspective.containsValue(declaredName)) {
+        if (packageImageName == null && ArcadiaEngineeringPerspective.fromLabel(declaredName).isPresent()) {
             packageImageName = declaredName.replaceAll("\\s", "");
         }
         if (packageImageName != null) {

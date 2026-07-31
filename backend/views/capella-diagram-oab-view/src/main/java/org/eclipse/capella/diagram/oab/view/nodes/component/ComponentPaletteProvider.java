@@ -12,11 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oab.view.nodes.component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.oab.view.edges.componentexchange.CommunicationMeanComponentExchangeToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -30,10 +33,7 @@ import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConv
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Palette for Component nodes.
@@ -61,7 +61,7 @@ public class ComponentPaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(TransverseMutationService::deleteComponent).aqlSelf())
+                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
                         .build());
 
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()

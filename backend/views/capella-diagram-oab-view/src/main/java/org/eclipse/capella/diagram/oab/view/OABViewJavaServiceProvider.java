@@ -25,14 +25,16 @@ import org.eclipse.capella.model.services.transverse.TransverseRepresentationMut
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.eclipse.syson.diagram.common.view.services.ViewEdgeService;
-import org.eclipse.syson.diagram.common.view.services.ViewToolService;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryElementService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
-import org.eclipse.syson.services.DeleteService;
+import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
+import org.eclipse.syson.diagram.services.aql.DiagramQueryAQLService;
+import org.eclipse.syson.model.services.aql.ModelMutationAQLService;
+import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
 import org.eclipse.syson.services.LabelService;
+import org.eclipse.syson.tree.services.aql.TreeQueryAQLService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -50,8 +52,7 @@ public class OABViewJavaServiceProvider implements IJavaServiceProvider {
                 .filter(desc -> OABViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(desc.getName()))
                 .findFirst();
         if (optDescription.isPresent()) {
-            return List.of(DeleteService.class,
-                    LabelService.class,
+            return List.of(LabelService.class,
                     OAQueryService.class,
                     OARepresentationDropServices.class,
                     TransverseRepresentationReconnectToolServices.class,
@@ -60,13 +61,17 @@ public class OABViewJavaServiceProvider implements IJavaServiceProvider {
                     OARepresentationMutationService.class,
                     TransverseMutationService.class,
                     TransverseQueryService.class,
+                    TransverseMutationService.class,
                     TransverseRepresentationMutationService.class,
+                    DiagramMutationAQLService.class,
+                    DiagramQueryAQLService.class,
+                    ModelMutationAQLService.class,
+                    ModelQueryAQLService.class,
+                    TreeQueryAQLService.class,
                     DiagramMutationLabelService.class,
                     DiagramQueryElementService.class,
                     DiagramQueryLabelService.class,
-                    DiagramMutationExposeService.class,
-                    ViewToolService.class,
-                    ViewEdgeService.class);
+                    DiagramMutationExposeService.class);
         }
         return List.of();
     }

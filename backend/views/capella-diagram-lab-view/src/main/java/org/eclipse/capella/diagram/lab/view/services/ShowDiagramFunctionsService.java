@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -38,14 +38,14 @@ public class ShowDiagramFunctionsService {
 
     private final IObjectSearchService objectSearchService;
 
-    private final LAQueryService laQueryService;
+    private final TransverseQueryService transverseQueryService;
 
     @Value("${org.eclipse.capella.show.diagram.functions:true}")
     private boolean showFunctions;
 
     public ShowDiagramFunctionsService(IObjectSearchService objectSearchService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.laQueryService = new LAQueryService();
+        this.transverseQueryService = new TransverseQueryService();
     }
 
     public boolean isShowFunctions() {
@@ -69,7 +69,7 @@ public class ShowDiagramFunctionsService {
         return this.objectSearchService.getObject(editingContext, targetObjectId)
                 .filter(EObject.class::isInstance)
                 .map(EObject.class::cast)
-                .filter(this.laQueryService::isFunction)
+                .filter(this.transverseQueryService::isFunction)
                 .isPresent();
 
     }

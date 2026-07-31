@@ -12,24 +12,21 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view.providers;
 
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
+import java.util.Map;
+import java.util.Objects;
+
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.collaborative.tables.api.IRowContextMenuEntryExecutor;
 import org.eclipse.sirius.components.core.api.IEditingContext;
-import org.eclipse.sirius.components.core.api.IFeedbackMessageService;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
-import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
 import org.eclipse.sirius.components.representations.IStatus;
 import org.eclipse.sirius.components.representations.Success;
 import org.eclipse.sirius.components.tables.Line;
 import org.eclipse.sirius.components.tables.Table;
 import org.eclipse.sirius.components.tables.descriptions.TableDescription;
-import org.eclipse.syson.diagram.common.view.services.ShowDiagramsInheritedMembersService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Executor for adding a new row in the Function Table using the context menu.
@@ -42,16 +39,11 @@ public class AddSubFunctionContextMenuEntryExecutor implements IRowContextMenuEn
 
     private final IObjectSearchService objectSearchService;
 
-    private final LARepresentationMutationService laRepresentationMutationService;
+    private final TransverseMutationService transverseMutationService;
 
-    public AddSubFunctionContextMenuEntryExecutor(IObjectSearchService objectSearchService,
-            IFeedbackMessageService feedbackMessageService,
-            IReadOnlyObjectPredicate readOnlyService,
-            ShowDiagramsInheritedMembersService showDiagramsInheritedMembersService) {
-
+    public AddSubFunctionContextMenuEntryExecutor(IObjectSearchService objectSearchService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.laRepresentationMutationService = new LARepresentationMutationService(feedbackMessageService, readOnlyService, objectSearchService,
-                showDiagramsInheritedMembersService);
+        this.transverseMutationService = new TransverseMutationService();
     }
 
     @Override
@@ -65,7 +57,7 @@ public class AddSubFunctionContextMenuEntryExecutor implements IRowContextMenuEn
         this.objectSearchService.getObject(editingContext, row.getTargetObjectId())
                 .filter(ActionUsage.class::isInstance)
                 .map(ActionUsage.class::cast)
-                .ifPresent(this.laRepresentationMutationService::createNewFunctionInFunction);
+                .ifPresent(this.transverseMutationService::createFunction);
 
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
     }

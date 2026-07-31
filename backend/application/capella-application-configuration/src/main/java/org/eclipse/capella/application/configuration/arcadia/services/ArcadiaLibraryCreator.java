@@ -15,6 +15,7 @@ package org.eclipse.capella.application.configuration.arcadia.services;
 
 import java.util.Objects;
 
+import org.eclipse.sirius.components.core.api.ICausalityChainVisitor;
 import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
 import org.eclipse.sirius.web.domain.boundedcontexts.library.services.api.ILibraryCreationService;
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.events.SemanticDataCreatedEvent;
@@ -34,22 +35,26 @@ public class ArcadiaLibraryCreator {
 
     private final ILibraryCreationService libraryCreationService;
 
-    public ArcadiaLibraryCreator(ILibraryCreationService libraryCreationService) {
+    private final ICausalityChainVisitor causalityChainVisitor;
+
+    public ArcadiaLibraryCreator(ILibraryCreationService libraryCreationService, ICausalityChainVisitor causalityChainVisitor) {
         this.libraryCreationService = Objects.requireNonNull(libraryCreationService);
+        this.causalityChainVisitor = Objects.requireNonNull(causalityChainVisitor);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener
     public void onSemanticDataCreatedEvent(SemanticDataCreatedEvent semanticDataCreatedEvent) {
-        if (semanticDataCreatedEvent.causedBy() instanceof PublishArcadiaLibraryCommand publishArcadiaLibraryCommand) {
-            Library library = Library.newLibrary()
-                    .namespace(publishArcadiaLibraryCommand.namespace())
-                    .name(publishArcadiaLibraryCommand.name())
-                    .version(publishArcadiaLibraryCommand.version())
-                    .semanticData(AggregateReference.to(semanticDataCreatedEvent.semanticData().getId()))
-                    .description(publishArcadiaLibraryCommand.description())
-                    .build(semanticDataCreatedEvent);
-            this.libraryCreationService.createLibrary(library);
-        }
+        this.causalityChainVisitor.findFirstCauseOfType(semanticDataCreatedEvent, PublishArcadiaLibraryCommand.class)
+                .ifPresent(publishArcadiaLibraryCommand -> {
+                    Library library = Library.newLibrary()
+                            .namespace(publishArcadiaLibraryCommand.namespace())
+                            .name(publishArcadiaLibraryCommand.name())
+                            .version(publishArcadiaLibraryCommand.version())
+                            .semanticData(AggregateReference.to(semanticDataCreatedEvent.semanticData().getId()))
+                            .description(publishArcadiaLibraryCommand.description())
+                            .build(semanticDataCreatedEvent);
+                    this.libraryCreationService.createLibrary(library);
+                });
     }
 }

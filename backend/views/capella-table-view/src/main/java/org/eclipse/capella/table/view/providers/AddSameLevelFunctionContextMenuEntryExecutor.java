@@ -12,24 +12,26 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view.providers;
 
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.collaborative.tables.api.IRowContextMenuEntryExecutor;
 import org.eclipse.sirius.components.core.api.IEditingContext;
-import org.eclipse.sirius.components.core.api.IFeedbackMessageService;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
-import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
+import org.eclipse.sirius.components.representations.Failure;
 import org.eclipse.sirius.components.representations.IStatus;
 import org.eclipse.sirius.components.representations.Success;
 import org.eclipse.sirius.components.tables.Line;
 import org.eclipse.sirius.components.tables.Table;
 import org.eclipse.sirius.components.tables.descriptions.TableDescription;
-import org.eclipse.syson.diagram.common.view.services.ShowDiagramsInheritedMembersService;
+import org.eclipse.sirius.web.domain.services.api.IMessageService;
 import org.eclipse.syson.sysml.ActionUsage;
+import org.eclipse.syson.sysml.Package;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Executor for adding a new row in the Function Table using the context menu.
@@ -42,16 +44,17 @@ public class AddSameLevelFunctionContextMenuEntryExecutor implements IRowContext
 
     private final IObjectSearchService objectSearchService;
 
-    private final LARepresentationMutationService laRepresentationMutationService;
+    private final IMessageService messageService;
 
-    public AddSameLevelFunctionContextMenuEntryExecutor(IObjectSearchService objectSearchService,
-            IFeedbackMessageService feedbackMessageService,
-            IReadOnlyObjectPredicate readOnlyService,
-            ShowDiagramsInheritedMembersService showDiagramsInheritedMembersService) {
+    private final TransverseQueryService transverseQueryService;
 
+    private final TransverseMutationService transverseMutationService;
+
+    public AddSameLevelFunctionContextMenuEntryExecutor(IObjectSearchService objectSearchService, IMessageService messageService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.laRepresentationMutationService = new LARepresentationMutationService(feedbackMessageService, readOnlyService, objectSearchService,
-                showDiagramsInheritedMembersService);
+        this.messageService = Objects.requireNonNull(messageService);
+        this.transverseQueryService = new TransverseQueryService();
+        this.transverseMutationService = new TransverseMutationService();
     }
 
     @Override
@@ -62,12 +65,26 @@ public class AddSameLevelFunctionContextMenuEntryExecutor implements IRowContext
     @Override
     public IStatus execute(IEditingContext editingContext, TableDescription tableDescription, Table table, Line row, String rowMenuContextEntryId) {
 
-        this.objectSearchService.getObject(editingContext, row.getTargetObjectId())
-                .filter(ActionUsage.class::isInstance)
-                .map(ActionUsage.class::cast)
-                .ifPresent(selectedFunction -> this.laRepresentationMutationService
-                        .createNewSameLevelFunction(selectedFunction, editingContext));
+        IStatus result = new Failure(this.messageService.unexpectedError());
 
-        return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
+        Optional<ActionUsage> optionalSelectedFunction = this.objectSearchService.getObject(editingContext, row.getTargetObjectId())
+                .filter(ActionUsage.class::isInstance)
+                .map(ActionUsage.class::cast);
+
+        if (optionalSelectedFunction.isPresent()) {
+            // Find the parent of the selected function
+            ActionUsage selectedFunction = optionalSelectedFunction.get();
+            if (this.transverseQueryService.isFunction(selectedFunction.getOwner())) {
+                this.transverseMutationService.createFunction(selectedFunction.getOwner());
+                result = new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
+            } else {
+                Optional<Package> optionalFunctionsPackage = this.transverseQueryService.getFunctionsPackage(selectedFunction);
+                if (optionalFunctionsPackage.isPresent()) {
+                    this.transverseMutationService.createFunction(optionalFunctionsPackage.get());
+                    result = new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
+                }
+            }
+        }
+        return result;
     }
 }

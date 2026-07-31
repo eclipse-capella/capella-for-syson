@@ -31,6 +31,7 @@ import org.eclipse.sirius.components.trees.TreeItem;
 import org.eclipse.sirius.components.trees.description.TreeDescription;
 import org.eclipse.sirius.web.application.UUIDParser;
 import org.eclipse.sirius.web.application.library.services.LibraryMetadataAdapter;
+import org.eclipse.sirius.web.application.messages.ISiriusWebApplicationMessageService;
 import org.eclipse.sirius.web.application.views.explorer.services.ExplorerDescriptionProvider;
 import org.eclipse.sirius.web.application.views.explorer.services.ExplorerTreeItemContextMenuEntryProvider;
 import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
@@ -59,13 +60,15 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
 
     private final CapellaTreeViewDescriptionProvider capellaTreeViewDescriptionProvider;
 
+    private final ISiriusWebApplicationMessageService messageService;
 
     public CapellaExplorerTreeItemContextMenuEntryProvider(IObjectSearchService objectSearchService, ILibrarySearchService librarySearchService, ISemanticDataSearchService semanticDataSearchService,
-            CapellaTreeViewDescriptionProvider capellaTreeViewDescriptionProvider) {
+            CapellaTreeViewDescriptionProvider capellaTreeViewDescriptionProvider, ISiriusWebApplicationMessageService messageService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.librarySearchService = Objects.requireNonNull(librarySearchService);
         this.semanticDataSearchService = Objects.requireNonNull(semanticDataSearchService);
         this.capellaTreeViewDescriptionProvider = Objects.requireNonNull(capellaTreeViewDescriptionProvider);
+        this.messageService = Objects.requireNonNull(messageService);
     }
 
     @Override
@@ -82,7 +85,7 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
             result.addAll(this.getObjectContextMenuEntries(emfEditingContext, treeItem));
             result.addAll(this.getRepresentationContextMenuEntries(emfEditingContext, treeItem));
             result.addAll(this.getLibraryRelatedEntries(emfEditingContext, treeItem));
-            result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, "", List.of(), false, List.of()));
+            result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, this.messageService.treeToolExpandAll(), List.of(), false, List.of()));
         }
         return result;
     }
@@ -95,8 +98,8 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
             var resource = optionalResource.get();
 
             List<ITreeItemContextMenuEntry> entries = new ArrayList<>();
-            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, "", List.of(), false, List.of()));
-            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, "", List.of(), false, List.of()));
+            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()));
+            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, this.messageService.treeToolDownload(), List.of(), false, List.of()));
             return entries;
         }
         return List.of();
@@ -108,8 +111,8 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
                 .map(EObject.class::cast);
         if (optionalEObject.isPresent()) {
             return List.of(
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, "", List.of(), false, List.of()),
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, "", List.of(), false, List.of()),
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()),
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, this.messageService.treeToolNewRepresentation(), List.of(), false, List.of()),
                     new SingleClickTreeItemContextMenuEntry(NEW_OBJECTS_FROM_TEXT_MENU_ENTRY_CONTRIBUTION_ID, "", List.of(), false, List.of()));
         }
         return List.of();
@@ -121,7 +124,8 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
                 .map(RepresentationMetadata.class::cast);
         if (optionalRepresentationMetadata.isPresent()) {
             return List.of(
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DUPLICATE_REPRESENTATION, "", List.of(), false, List.of()));
+                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DUPLICATE_REPRESENTATION, this.messageService.treeToolDuplicateRepresentation(), List.of(), false,
+                            List.of()));
         }
         return List.of();
     }
@@ -150,8 +154,9 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
             var libraryMetadataAdapter = optionalLibraryMetadataAdapter.get();
             if (this.isDirectDependency(editingContext, libraryMetadataAdapter)) {
                 // We do not support the update or removal of a transitive dependency for the moment.
-                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.UPDATE_LIBRARY, "", List.of(), true, List.of()));
-                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.REMOVE_LIBRARY, "Remove library", List.of("/icons/remove_library.svg"), true, List.of()));
+                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.UPDATE_LIBRARY, this.messageService.treeToolUpdateLibrary(), List.of(), true, List.of()));
+                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.REMOVE_LIBRARY, this.messageService.treeToolRemoveLibrary(),
+                        List.of("/icons/remove_library.svg"), true, List.of()));
             }
         }
         return result;

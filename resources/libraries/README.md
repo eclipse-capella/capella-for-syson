@@ -132,9 +132,28 @@ Allocation links reuse existing SysML v2 relationships wherever possible. New al
 
 ## Requirements
 
-### `ArcadiaRequirement`
+### Native SysML v2 RequirementUsage (Recommended)
 
-Modeled as a SysML v2 `requirement` and extends `ArcadiaElement`:
+We recommend using **native SysML v2 `RequirementUsage`** directly instead of `ArcadiaRequirement`.
 
-- No separate ID field : short names are assumed to serve as identifiers
+**Rationale:**
+- `ArcadiaRequirement` adds no attributes or constraints beyond what native `RequirementUsage` provides
+- Native `RequirementUsage` already includes all necessary capabilities:
+  - `reqId` : Requirement identifier (e.g., "R1.1")
+  - `text` : The "shall" statement
+  - `documentation.body` : Additional notes/comments
+- Better interoperability with standard SysML v2 tooling
+- Simplifies the model by removing unnecessary typing indirection
+
+### `ArcadiaRequirement` (Deprecated)
+
+Retained for backwards compatibility only. Extends `ArcadiaElement` but adds no additional attributes:
+
+```sysml
+requirement def ArcadiaRequirement :> ArcadiaElement {
+    private doc /* A generic Requirement... */
+}
+```
+
+- No separate ID field : use native `reqId` instead
 - Supports all standard SysML v2 requirement relationships

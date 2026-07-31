@@ -25,16 +25,16 @@ import org.eclipse.sirius.components.diagrams.ViewDeletionRequest;
 import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
 import org.eclipse.sirius.components.diagrams.components.NodeIdProvider;
 import org.eclipse.sirius.components.diagrams.description.NodeDescription;
-import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
+import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.services.api.ISysMLMoveElementService;
-import org.eclipse.syson.util.NodeFinder;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.util.NodeFinder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -75,7 +75,7 @@ public class SARepresentationDropServices {
             this.dropFunctionalExchange(flowUsage, editingContext, diagramContext, selectedNode, convertedNodes);
         } else if (droppedElement instanceof RequirementUsage) {
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, selectedNode, convertedNodes);
-        } else if (droppedElement instanceof ActionUsage actionUsage && this.saQueryService.isFunctionalChain(actionUsage)) {
+        } else if (droppedElement instanceof ActionUsage actionUsage && this.transverseQueryService.isFunctionalChain(actionUsage)) {
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, selectedNode, convertedNodes);
         } else if (droppedElement instanceof ActionUsage actionUsage) {
             this.dropFunction(actionUsage, editingContext, diagramContext, convertedNodes);
@@ -97,7 +97,7 @@ public class SARepresentationDropServices {
         } else if (this.moveService != null && droppedElement instanceof ActionUsage droppedFunction && targetElement instanceof ActionUsage targetFunction
                 && this.canReparentFunction(droppedFunction, targetFunction)) {
             this.moveService.moveSemanticElement(droppedFunction, targetFunction);
-            this.saQueryService.getAllocatingComponent(targetFunction)
+            this.transverseQueryService.getAllocatingComponent(targetFunction)
                     .ifPresent(component -> this.saMutationService.moveFunctionToComponent(droppedFunction, component));
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
             diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
@@ -124,7 +124,7 @@ public class SARepresentationDropServices {
     }
 
     private boolean canAllocateFunction(ActionUsage droppedFunction, PartUsage targetComponent) {
-        return !this.saQueryService.isFunctionalChain(droppedFunction)
+        return !this.transverseQueryService.isFunctionalChain(droppedFunction)
                 && this.isFunctionAllocationTarget(targetComponent);
     }
 
@@ -135,7 +135,7 @@ public class SARepresentationDropServices {
     }
 
     private boolean canReparentFunction(ActionUsage droppedFunction, ActionUsage targetFunction) {
-        return !this.saQueryService.isFunctionalChain(droppedFunction) && !this.saQueryService.isFunctionalChain(targetFunction)
+        return !this.transverseQueryService.isFunctionalChain(droppedFunction) && !this.transverseQueryService.isFunctionalChain(targetFunction)
                 && !this.isSameOrDescendant(targetFunction, droppedFunction);
     }
 
@@ -180,19 +180,19 @@ public class SARepresentationDropServices {
 
     private void dropFunction(ActionUsage actionUsage, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        this.getSingleAllocatingComponent(actionUsage)
+        this.transverseQueryService.getAllocatingComponent(actionUsage)
                 .flatMap(component -> this.revealAllocatedComponent(component, diagramContext.getDiagram(), editingContext, diagramContext, convertedNodes))
                 .ifPresent(componentNode -> this.diagramMutationElementService.createView(actionUsage, editingContext, diagramContext, componentNode, convertedNodes));
     }
 
     private void dropFunctionalExchange(FlowUsage flowUsage, IEditingContext editingContext, DiagramContext diagramContext, Object selectedNode,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        var sourcePort = this.saQueryService.getFunctionalExchangeSource(flowUsage);
-        var targetPort = this.saQueryService.getFunctionalExchangeTarget(flowUsage);
+        var sourcePort = this.transverseQueryService.getFunctionalExchangeSource(flowUsage);
+        var targetPort = this.transverseQueryService.getFunctionalExchangeTarget(flowUsage);
         var sourceFunction = this.saQueryService.getOwningFunction(sourcePort);
         var targetFunction = this.saQueryService.getOwningFunction(targetPort);
-        var sourceComponent = sourceFunction.flatMap(this::getSingleAllocatingComponent);
-        var targetComponent = targetFunction.flatMap(this::getSingleAllocatingComponent);
+        var sourceComponent = sourceFunction.flatMap(this.transverseQueryService::getAllocatingComponent);
+        var targetComponent = targetFunction.flatMap(this.transverseQueryService::getAllocatingComponent);
         if (this.hasAllocatedEndpoints(sourceFunction, targetFunction, sourceComponent, targetComponent)
                 && this.canRevealBorderNode(sourcePort, sourceFunction, editingContext, diagramContext, convertedNodes)
                 && this.canRevealBorderNode(targetPort, targetFunction, editingContext, diagramContext, convertedNodes)) {
@@ -235,15 +235,6 @@ public class SARepresentationDropServices {
             componentView = this.revealNode(component, selectedNode, editingContext, diagramContext, convertedNodes);
         }
         return componentView;
-    }
-
-    private Optional<PartUsage> getSingleAllocatingComponent(ActionUsage actionUsage) {
-        var allocatingComponents = this.saQueryService.getAllocatingComponents(actionUsage);
-        var result = Optional.<PartUsage>empty();
-        if (allocatingComponents.size() == 1) {
-            result = Optional.of(allocatingComponents.get(0));
-        }
-        return result;
     }
 
     private boolean canRevealBorderNode(Feature feature, Object parent, IEditingContext editingContext, DiagramContext diagramContext,

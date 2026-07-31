@@ -12,8 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.function;
 
-import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -22,6 +21,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide tools to create functions in SAB.
@@ -46,7 +46,7 @@ public class FunctionToolProvider {
 
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(SARepresentationMutationService::createNewFunction).aqlSelf())
+                    .expression(ServiceMethod.of0(TransverseMutationService::createFunction).aqlSelf())
                     .children(this.diagramBuilderHelper.newCreateView()
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .elementDescription(nodeDescription)

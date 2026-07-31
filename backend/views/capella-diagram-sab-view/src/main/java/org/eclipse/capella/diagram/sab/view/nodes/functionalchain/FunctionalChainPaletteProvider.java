@@ -15,6 +15,7 @@ package org.eclipse.capella.diagram.sab.view.nodes.functionalchain;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -23,7 +24,6 @@ import org.eclipse.sirius.components.view.diagram.NodePalette;
 import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
-import org.eclipse.syson.services.DeleteService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.util.ServiceMethod;
 
@@ -51,7 +51,7 @@ public class FunctionalChainPaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(DeleteService::deleteFromModel).aqlSelf())
+                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
                         .build());
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
                 .name("Edit")

@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.sab.view.nodes.function;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -50,33 +50,36 @@ public class FunctionNodeStyleProvider {
                 .build();
     }
 
-    public ConditionalNodeStyle[] createFunctionConditionalNodeStyles() {
-        return new ConditionalNodeStyle[] { this.createSeveralFunctionalChainsConditionalNodeStyle(), this.createFunctionalChainConditionalNodeStyle(0),
-                this.createFunctionalChainConditionalNodeStyle(1), this.createFunctionalChainConditionalNodeStyle(2) };
-    }
-
-    private ConditionalNodeStyle createSeveralFunctionalChainsConditionalNodeStyle() {
+    public ConditionalNodeStyle createSeveralFCImpliedInConditionalNodeStyle() {
         return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.<SARepresentationQueryService, ActionUsage, IEditingContext, DiagramContext>of2(SARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(
+                        ServiceMethod.<TransverseRepresentationQueryService, ActionUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = 99")
                 .style(this.createFunctionalChainFunctionNodeStyle(SABViewConstants.FUNCTION_BORDER_COLOR))
                 .build();
     }
 
-    private ConditionalNodeStyle createFunctionalChainConditionalNodeStyle(int index) {
+    public ConditionalNodeStyle createFCImpliedInConditionalNodeStyle(int index) {
         return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.<SARepresentationQueryService, ActionUsage, IEditingContext, DiagramContext>of2(SARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(
+                        ServiceMethod.<TransverseRepresentationQueryService, ActionUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
                 .style(this.createFunctionalChainFunctionNodeStyle(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR + "_" + index))
                 .build();
     }
 
-    private NodeStyleDescription createFunctionalChainFunctionNodeStyle(String color) {
+    public NodeStyleDescription createFunctionalChainFunctionNodeStyle(String color) {
         return this.diagramBuilderHelper.newRectangularNodeStyleDescription()
                 .background(this.colorProvider.getColor(SABViewConstants.FUNCTION_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(color))
-                .borderRadius(0)
+                .borderRadius(8)
                 .borderSize(4)
                 .build();
+    }
+
+    public ConditionalNodeStyle[] createFunctionConditionalNodeStyles() {
+        return new ConditionalNodeStyle[] { this.createSeveralFCImpliedInConditionalNodeStyle(), this.createFCImpliedInConditionalNodeStyle(0),
+                this.createFCImpliedInConditionalNodeStyle(1),
+                this.createFCImpliedInConditionalNodeStyle(2) };
     }
 }

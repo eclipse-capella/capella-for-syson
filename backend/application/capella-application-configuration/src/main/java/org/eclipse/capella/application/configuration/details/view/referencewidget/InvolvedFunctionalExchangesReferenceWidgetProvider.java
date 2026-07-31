@@ -12,8 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -28,13 +35,6 @@ import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
 
 /**
  * Provide the involved functional exchanges reference widget content.
@@ -51,13 +51,12 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
 
     private static final String ERROR_MSG = "Something went wrong while deleting the involved functional chain";
 
-    private final LAQueryService lAQueryService;
-
+    private final TransverseQueryService transverseQueryService;
 
     private final TransverseMutationService transverseMutationService;
 
     public InvolvedFunctionalExchangesReferenceWidgetProvider() {
-        this.lAQueryService = new LAQueryService();
+        this.transverseQueryService = new TransverseQueryService();
         this.transverseMutationService = new TransverseMutationService();
     }
 
@@ -75,7 +74,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.lAQueryService.getFunctionalExchanges(eObject);
+            return this.transverseQueryService.getFunctionalExchanges(eObject);
         }
         return List.of();
     }
@@ -84,7 +83,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof ActionUsage actionUsage) {
-            return this.lAQueryService.getInvolvedFunctionalExchanges(actionUsage);
+            return this.transverseQueryService.getInvolvedFunctionalExchanges(actionUsage);
         }
         return List.of();
     }

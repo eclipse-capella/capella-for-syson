@@ -39,13 +39,19 @@ The project uses both Java/Maven and Node.js/npm.
 Install the frontend dependencies:
 
 ```bash
-npm install
+npm ci
 ```
 
 Build the frontend workspaces:
 
 ```bash
 npm run build
+```
+
+Copy frontend in backend folder:
+
+```bash
+cp -r frontend/capella-for-syson/dist/* backend/application/capella-extension/src/main/resources/static/capella-for-syson/
 ```
 
 Build the Maven modules:
@@ -58,18 +64,25 @@ Some dependencies may require additional repository configuration depending on h
 
 ## Run Locally
 
-The application runs in development mode from the Maven backend and npm frontend. The start script also starts the database:
+Before running locally the application, the database needs to be started:
 
 ```bash
-./scripts/start-capella-for-syson.sh
+./scripts/start-capella-for-syson-database.sh
 ```
 
-The frontend is exposed on port `5173` and the backend on port `8080`.
-
-To launch Capella for SysON as a SysON plugin with Docker Compose, build the extension image after the Maven build, then start the stack:
+Then start the application as follows:
 
 ```bash
-SYSON_VERSION=$(mvn --quiet --file backend/application/capella-extension/pom.xml help:evaluate -Dexpression=syson.version -DforceStdout) # 2026.7.0
+java -jar backend/application/capella-application/target/capella-application-2026.7.0.jar
+```
+
+The application is exposed on `localhost:8080`.
+
+Alternatively, you can launch Capella for SysON as a SysON plugin with Docker Compose.
+To do so, build the extension image after the Maven build, then start the stack:
+
+```bash
+SYSON_VERSION=$(mvn --quiet --file backend/application/capella-extension/pom.xml help:evaluate -Dexpression=syson.version -DforceStdout) # 2026.7.2
 EXTENSION_VERSION=$(mvn --quiet --file backend/application/capella-extension/pom.xml help:evaluate -Dexpression=project.version -DforceStdout) # 2026.7.0
 docker build --build-arg SYSON_IMAGE=eclipsesyson/syson:v$SYSON_VERSION --build-arg EXTENSION_JAR=backend/application/capella-extension/target/capella-extension-$EXTENSION_VERSION.jar --file backend/application/capella-extension/Dockerfile --tag capella-for-syson:latest .
 docker compose up
@@ -81,17 +94,21 @@ Useful commands:
 
 ```bash
 ./scripts/start-capella-for-syson-database.sh
-./scripts/start-capella-for-syson.sh
-./scripts/stop-capella-for-syson.sh
-./scripts/restart-capella-for-syson.sh
 npm run format-lint
 npm run format
 npm run build
+npm run start
 ```
 
 The root Maven project aggregates the backend modules under `backend/`.
 
-When working from an IDE, activate the `ide` profile to let the editor retrieve the extension jars and correctly launch the application with the extension.
+When working from an IDE, activate the maven `ide` profile to let the editor retrieve the extension jars and correctly launch the application with the extension.
+
+From your IDE, application is to be launched from the `/capella-application/src/main/java/org/eclipse/capella/CapellaForSysonApplication.java` file to start the backend.
+
+Frontend is started using `npm run start`.
+
+In development mode, the application is exposed on `localhost:5173`.
 
 ## Installation
 

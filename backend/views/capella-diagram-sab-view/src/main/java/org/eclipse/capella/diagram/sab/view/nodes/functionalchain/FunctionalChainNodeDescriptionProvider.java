@@ -13,7 +13,7 @@
 package org.eclipse.capella.diagram.sab.view.nodes.functionalchain;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -50,7 +50,7 @@ public class FunctionalChainNodeDescriptionProvider extends AbstractNodeDescript
                 .name(NODE_DESCRIPTION_NAME)
                 .defaultHeightExpression(DEFAULT_SIZE)
                 .defaultWidthExpression(DEFAULT_SIZE)
-                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getFunctionalChains).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalChains).aqlSelf())
                 .style(styleProvider.createNodeStyle())
                 .conditionalStyles(styleProvider.createConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)

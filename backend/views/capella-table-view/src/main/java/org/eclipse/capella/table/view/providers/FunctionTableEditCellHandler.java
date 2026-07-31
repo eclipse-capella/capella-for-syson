@@ -12,7 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view.providers;
 
-import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.table.view.FunctionTableRepresentationDescriptionProvider;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -31,10 +34,6 @@ import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * Provides edit table cell executor for the arcadia function concepts.
  *
@@ -45,13 +44,10 @@ public class FunctionTableEditCellHandler implements IEditCellHandler {
 
     private final IObjectSearchService objectSearchService;
 
-    private final LAMutationService laMutationService;
-
     private final TransverseMutationService transverseMutationService;
 
     public FunctionTableEditCellHandler(IObjectSearchService objectSearchService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.laMutationService = new LAMutationService();
         this.transverseMutationService = new TransverseMutationService();
     }
 
@@ -94,7 +90,7 @@ public class FunctionTableEditCellHandler implements IEditCellHandler {
     }
 
     private IStatus setFunctionStatusKind(ActionUsage function, Object newValue, IEditingContext editingContext) {
-        this.laMutationService.setStatusKind(function, newValue, editingContext);
+        this.transverseMutationService.setStatusKind(function, newValue, editingContext);
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
     }
 }

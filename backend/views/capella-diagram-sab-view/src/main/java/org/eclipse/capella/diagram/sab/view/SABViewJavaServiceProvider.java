@@ -14,21 +14,22 @@ package org.eclipse.capella.diagram.sab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.model.services.system.analysis.SAMutationService;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationReconnectToolServices;
-import org.eclipse.capella.model.services.system.analysis.SAMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
-import org.eclipse.syson.services.DeleteService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -53,11 +54,12 @@ public class SABViewJavaServiceProvider implements IJavaServiceProvider {
                     SAMutationService.class,
                     TransverseMutationService.class,
                     TransverseQueryService.class,
+                    TransverseRepresentationQueryService.class,
+                    TransverseRepresentationMutationService.class,
                     TransverseRepresentationReconnectToolServices.class,
                     DiagramMutationExposeService.class,
                     DiagramMutationLabelService.class,
-                    DiagramQueryLabelService.class,
-                    DeleteService.class);
+                    DiagramQueryLabelService.class);
         }
         return List.of();
     }

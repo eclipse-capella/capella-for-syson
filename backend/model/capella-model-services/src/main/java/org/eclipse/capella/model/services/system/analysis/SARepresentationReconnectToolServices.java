@@ -12,11 +12,6 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
-import org.eclipse.sirius.components.web.services.FeedbackMessageService;
-import org.eclipse.syson.diagram.common.view.services.ViewEdgeService;
-import org.eclipse.syson.sysml.AllocationUsage;
-import org.eclipse.syson.sysml.Element;
-
 /**
  * SAB-specific reconnection services.
  *
@@ -24,23 +19,4 @@ import org.eclipse.syson.sysml.Element;
  */
 public class SARepresentationReconnectToolServices {
 
-    private final ViewEdgeService viewEdgeService;
-
-    private final SARepresentationMutationService saRepresentationMutationService;
-
-    public SARepresentationReconnectToolServices(FeedbackMessageService feedbackMessageService) {
-        this.viewEdgeService = new ViewEdgeService(feedbackMessageService);
-        this.saRepresentationMutationService = new SARepresentationMutationService();
-    }
-
-    public Element reconnectDescribes(AllocationUsage edgeSemanticElement, Element newReconnectionTarget, boolean isSource) {
-        if (this.saRepresentationMutationService.canReconnectDescribes(edgeSemanticElement, newReconnectionTarget, isSource)) {
-            if (isSource) {
-                this.viewEdgeService.reconnectSourceAllocateEdge(edgeSemanticElement, newReconnectionTarget);
-            } else {
-                this.viewEdgeService.reconnectTargetAllocateEdge(edgeSemanticElement, newReconnectionTarget);
-            }
-        }
-        return newReconnectionTarget;
-    }
 }

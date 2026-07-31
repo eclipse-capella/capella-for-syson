@@ -16,11 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.sab.view.SABViewDiagramDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementNodeDescriptionProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -41,11 +39,8 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
 
     public static final String EDGE_DESCRIPTION_NAME = "DescribesEdgeDescription";
 
-    private final TransverseQueryService transverseQueryService;
-
     public DescribesEdgeDescriptionProvider(IColorProvider colorProvider) {
         super(colorProvider);
-        this.transverseQueryService = new TransverseQueryService();
     }
 
     @Override
@@ -55,11 +50,11 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(EDGE_DESCRIPTION_NAME)
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getAllocationUsage).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(SAQueryService::getDescribesSource).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getDescribes).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getDescribesSource).aqlSelf())
                 .style(new DescribesEdgeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(ServiceMethod.of0(SAQueryService::getDescribesTarget).aqlSelf())
+                .targetExpression(ServiceMethod.of0(TransverseQueryService::getDescribesTarget).aqlSelf())
                 .palette(new DescribesPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }
@@ -71,8 +66,7 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
             EdgeDescription edgeDescription = optEdgeDescription.get();
             diagramDescription.getEdgeDescriptions().add(edgeDescription);
 
-            List<DiagramElementDescription> diagramElementDescriptions = new ArrayList<>(
-                    this.transverseQueryService.getDiagramNodeDescriptions(SABViewDiagramDescriptionProvider.DESCRIPTION_NAME, cache));
+            List<DiagramElementDescription> diagramElementDescriptions = new ArrayList<>(cache.getNodeDescriptions());
             cache.getEdgeDescription(ComponentExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(diagramElementDescriptions::add);
             cache.getEdgeDescription(FunctionalExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(diagramElementDescriptions::add);
 

@@ -12,7 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view.providers;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.representations.VariableManager;
@@ -21,10 +24,6 @@ import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 
-import java.util.function.BiFunction;
-import java.util.List;
-import java.util.Optional;
-
 /**
  *  * Provides a list of icon URLs to decorate table cells.
  *
@@ -32,12 +31,9 @@ import java.util.Optional;
  */
 public class CellIconURLsProvider implements BiFunction<VariableManager, Object, List<String>> {
 
-    private final LAQueryService laQueryService;
-
     private final TransverseQueryService transverseQueryService;
 
     public CellIconURLsProvider() {
-        this.laQueryService = new LAQueryService();
         this.transverseQueryService = new TransverseQueryService();
     }
 
@@ -62,7 +58,7 @@ public class CellIconURLsProvider implements BiFunction<VariableManager, Object,
 
     private List<String> resolveComponentIcon(EObject self) {
         List<String> iconPath = List.of();
-        Optional<PartUsage> component = this.laQueryService.getAllocatingComponent((ActionUsage) self);
+        Optional<PartUsage> component = this.transverseQueryService.getAllocatingComponent((ActionUsage) self);
         if (component.isPresent()) {
             iconPath = this.getAllocatingComponentIcon(component.get());
         }
@@ -71,7 +67,7 @@ public class CellIconURLsProvider implements BiFunction<VariableManager, Object,
 
     private List<String> resolvePortIcon(EObject self) {
         List<String> iconPath = List.of();
-        List<Feature> ports = this.laQueryService.getFunctionPorts(self);
+        List<Feature> ports = this.transverseQueryService.getFunctionPorts(self);
 
         if (ports.size() == 1) {
             iconPath = this.getFunctionPortIcon(ports.get(0));

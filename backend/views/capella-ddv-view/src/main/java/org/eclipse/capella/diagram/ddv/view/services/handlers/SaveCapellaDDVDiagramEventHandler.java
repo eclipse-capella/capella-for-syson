@@ -12,6 +12,11 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ddv.view.services.handlers;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+
 import org.eclipse.capella.diagram.ddv.view.services.dto.SaveCapellaDDVDiagramInput;
 import org.eclipse.capella.diagram.ddv.view.services.dto.SaveCapellaDDVDiagramSuccessPayload;
 import org.eclipse.capella.diagram.ddv.view.view.FunctionalContextViewDiagramDescriptionProvider;
@@ -29,13 +34,12 @@ import org.eclipse.sirius.components.core.api.ErrorPayload;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IPayload;
 import org.eclipse.sirius.components.diagrams.Diagram;
+import org.eclipse.sirius.components.diagrams.DiagramStyle;
+import org.eclipse.sirius.components.diagrams.layoutdata.DiagramLayoutData;
 import org.springframework.stereotype.Service;
+
 import reactor.core.publisher.Sinks.Many;
 import reactor.core.publisher.Sinks.One;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 /**
  * Handle save capella diagram event.
@@ -93,12 +97,22 @@ public class SaveCapellaDDVDiagramEventHandler implements IDiagramEventHandler {
     }
 
     private Diagram createNewDiagram(String newId, Diagram currentDiagram) {
+        var style = currentDiagram.getStyle();
+        if (style == null) {
+            style = DiagramStyle.newDiagramStyle().build();
+        }
+        var layoutData = currentDiagram.getLayoutData();
+        if (layoutData == null) {
+            layoutData = new DiagramLayoutData(Map.of(), Map.of(), Map.of(), true);
+        }
+
         return Diagram.newDiagram(newId)
                 .targetObjectId(currentDiagram.getTargetObjectId())
                 .nodes(currentDiagram.getNodes())
-                .layoutData(currentDiagram.getLayoutData())
+                .layoutData(layoutData)
                 .edges(currentDiagram.getEdges())
                 .descriptionId(currentDiagram.getDescriptionId())
+                .style(style)
                 .build();
     }
 }

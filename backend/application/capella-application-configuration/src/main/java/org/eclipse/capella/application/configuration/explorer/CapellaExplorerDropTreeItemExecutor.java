@@ -9,10 +9,16 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -26,13 +32,8 @@ import org.eclipse.sirius.web.application.views.explorer.services.api.IExplorerD
 import org.eclipse.sirius.web.domain.services.api.IMessageService;
 import org.eclipse.syson.services.api.ISysMLMoveElementService;
 import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.RequirementUsage;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Executes drop operations in the Capella explorer tree, including validation
@@ -49,8 +50,6 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
 
     private final ISysMLMoveElementService moveService;
 
-    private final LAQueryService laQueryService;
-
     private final TransverseQueryService transverseQueryService;
 
     public CapellaExplorerDropTreeItemExecutor(IObjectSearchService objectSearchService,
@@ -59,7 +58,6 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.messageService = Objects.requireNonNull(messageService);
         this.moveService = Objects.requireNonNull(moveService);
-        this.laQueryService = new LAQueryService();
         this.transverseQueryService = new TransverseQueryService();
     }
 
@@ -93,10 +91,7 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
     private IStatus moveObjects(List<Element> objectsToMove, Element targetElement) {
         return objectsToMove.stream()
                 .map(droppedElement -> {
-                    if (this.isFunctionsTreeItemDrop(droppedElement, targetElement)
-                            || this.isComponentTreeItemDrop(droppedElement, targetElement)
-                            || this.isComponentPortTreeItemDrop(droppedElement, targetElement)
-                            || this.isFunctionPortTreeItemDrop(droppedElement, targetElement)) {
+                    if (this.isValidTreeItemDrop(droppedElement, targetElement)) {
                         this.moveService.moveSemanticElement(droppedElement, targetElement);
                         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
                     }
@@ -116,11 +111,31 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
                 .orElse(new Failure(this.messageService.invalidDroppedObject()));
     }
 
+    /**
+     * Check if the drop is valid for any of the supported element types.
+     */
+    private boolean isValidTreeItemDrop(Element droppedElement, Element targetElement) {
+        return this.isFunctionsTreeItemDrop(droppedElement, targetElement)
+                || this.isComponentTreeItemDrop(droppedElement, targetElement)
+                || this.isPortTreeItemDrop(droppedElement, targetElement)
+                || this.isPackageOrRequirementTreeItemDrop(droppedElement, targetElement);
+    }
+
+    private boolean isPortTreeItemDrop(Element droppedElement, Element targetElement) {
+        return this.isComponentPortTreeItemDrop(droppedElement, targetElement)
+                || this.isFunctionPortTreeItemDrop(droppedElement, targetElement);
+    }
+
+    private boolean isPackageOrRequirementTreeItemDrop(Element droppedElement, Element targetElement) {
+        return this.isPackageTreeItemDrop(droppedElement, targetElement)
+                || this.isRequirementTreeItemDrop(droppedElement, targetElement);
+    }
+
     private IStatus functionTreeItemDrop(Element droppedElement,
                                          Element targetElement) {
 
-        if (this.laQueryService.isFunction(droppedElement)
-                && (this.laQueryService.isFunction(targetElement)
+        if (this.transverseQueryService.isFunction(droppedElement)
+                && (this.transverseQueryService.isFunction(targetElement)
                 || this.transverseQueryService.isFunctionsPackage(targetElement))) {
             this.moveService.moveSemanticElement(droppedElement, targetElement);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
@@ -131,8 +146,8 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
 
     private boolean isFunctionsTreeItemDrop(Element droppedElement,
                                             Element targetElement) {
-        return this.laQueryService.isFunction(droppedElement)
-                && (this.laQueryService.isFunction(targetElement)
+        return this.transverseQueryService.isFunction(droppedElement)
+                && (this.transverseQueryService.isFunction(targetElement)
                 || this.transverseQueryService.isFunctionsPackage(targetElement));
     }
 
@@ -161,8 +176,32 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
 
     private boolean isFunctionPortTreeItemDrop(Element droppedElement,
                                                 Element targetElement) {
-        return this.laQueryService.isExchangeItem(droppedElement)
+        return this.transverseQueryService.isExchangeItem(droppedElement)
                 && !this.transverseQueryService.isFunctionsPackage(targetElement)
-                && this.laQueryService.isFunction(targetElement);
+                && this.transverseQueryService.isFunction(targetElement);
+    }
+
+    /**
+     * Checks if a Package can be dropped into a target element.
+     * Packages can be dropped into:
+     * - Requirements package (to organize requirements with sub-packages)
+     * - Another user Package (for nesting)
+     */
+    private boolean isPackageTreeItemDrop(Element droppedElement, Element targetElement) {
+        return this.transverseQueryService.isUserPackage(droppedElement)
+                && (this.transverseQueryService.isRequirementsPackage(targetElement)
+                    || this.transverseQueryService.isUserPackage(targetElement));
+    }
+
+    /**
+     * Checks if a RequirementUsage can be dropped into a target element.
+     * Requirements can be dropped into:
+     * - Requirements package (top-level or nested)
+     * - User Package (for organization)
+     */
+    private boolean isRequirementTreeItemDrop(Element droppedElement, Element targetElement) {
+        return droppedElement instanceof RequirementUsage
+                && (this.transverseQueryService.isRequirementsPackage(targetElement)
+                    || this.transverseQueryService.isUserPackage(targetElement));
     }
 }

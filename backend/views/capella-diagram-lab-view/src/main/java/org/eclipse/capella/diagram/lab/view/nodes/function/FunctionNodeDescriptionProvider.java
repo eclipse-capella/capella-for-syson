@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.function;
 
@@ -18,8 +19,7 @@ import java.util.Optional;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.services.LABDiagramService;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -27,6 +27,7 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -51,7 +52,7 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .domainType(domainType)
                 .insideLabel(new FunctionLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .name(this.getNodeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(LAQueryService::getSubFunctions).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getSubFunctions).aqlSelf())
                 .style(functionNodeStyleProvider.createFunctionNodeStyle())
                 .conditionalStyles(functionNodeStyleProvider.createFunctionConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)
@@ -67,7 +68,8 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
-
+            // NOTE: FunctionNode is contained in ComponentNode.childrenDescriptions, so we do NOT add it to 
+            // diagramDescription.nodeDescriptions (it would conflict with the containment from Component).
             nodeDescription
                     .setPalette(new FunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
             Optional<NodeDescription> optionalPortNodeDescription = cache.getNodeDescription(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME);

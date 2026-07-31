@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.sab.view.edges.functionalexchange;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -63,7 +63,7 @@ public class FunctionalExchangeEdgeStyleProvider {
 
     private ConditionalEdgeStyle createSeveralFunctionalChainsConditionalEdgeStyle() {
         return this.diagramBuilderHelper.newConditionalEdgeStyle()
-                .condition(ServiceMethod.<SARepresentationQueryService, FlowUsage, IEditingContext, DiagramContext>of2(SARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(ServiceMethod.<TransverseRepresentationQueryService, FlowUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = 99")
                 .edgeWidth(3)
                 .fontSize(8)
@@ -77,7 +77,7 @@ public class FunctionalExchangeEdgeStyleProvider {
 
     private ConditionalEdgeStyle createFunctionalChainConditionalEdgeStyle(int index) {
         return this.diagramBuilderHelper.newConditionalEdgeStyle()
-                .condition(ServiceMethod.<SARepresentationQueryService, FlowUsage, IEditingContext, DiagramContext>of2(SARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(ServiceMethod.<TransverseRepresentationQueryService, FlowUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
                 .edgeWidth(3)
                 .fontSize(8)

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.common.view;
 

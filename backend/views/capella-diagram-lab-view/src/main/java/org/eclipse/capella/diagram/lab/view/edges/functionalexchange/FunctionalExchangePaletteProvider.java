@@ -14,8 +14,9 @@ package org.eclipse.capella.diagram.lab.view.edges.functionalexchange;
 
 import java.util.Objects;
 
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationReconnectToolServices;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
+import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
@@ -25,9 +26,9 @@ import org.eclipse.sirius.components.view.diagram.TargetEdgeEndReconnectionTool;
 import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
-import org.eclipse.syson.services.DeleteService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Palette for Functional Exchange edge.
@@ -52,7 +53,7 @@ public class FunctionalExchangePaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(DeleteService::deleteFromModel).aqlSelf())
+                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
                         .build());
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
                 .name("Edit")
@@ -74,14 +75,30 @@ public class FunctionalExchangePaletteProvider {
         SourceEdgeEndReconnectionTool sourceEdgeEndReconnectionTool = this.diagramBuilderHelper.newSourceEdgeEndReconnectionTool()
                 .name("FunctionalExchangeSourceReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of1(LARepresentationReconnectToolServices::reconnectFunctionalExchange).aql(AQLConstants.SEMANTIC_RECONNECTION_TARGET, AQLConstants.SEMANTIC_RECONNECTION_SOURCE))
+                        .expression(ServiceMethod.of6(TransverseRepresentationReconnectToolServices::reconnectFunctionalExchangeSource)
+                                .aql(
+                                        AQLConstants.EDGE_SEMANTIC_ELEMENT,
+                                        AQLConstants.SEMANTIC_RECONNECTION_TARGET,
+                                        AQLConstants.SEMANTIC_RECONNECTION_SOURCE,
+                                        AQLConstants.RECONNECTION_TARGET_VIEW,
+                                        AQLConstants.OTHER_END,
+                                        IEditingContext.EDITING_CONTEXT,
+                                        AQLConstants.DIAGRAM))
                         .build())
                 .build();
 
         TargetEdgeEndReconnectionTool targetEdgeEndReconnectionTool = this.diagramBuilderHelper.newTargetEdgeEndReconnectionTool()
                 .name("FunctionalExchangeTargetReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of1(LARepresentationReconnectToolServices::reconnectFunctionalExchange).aql(AQLConstants.SEMANTIC_RECONNECTION_TARGET, AQLConstants.SEMANTIC_RECONNECTION_SOURCE))
+                        .expression(ServiceMethod.of6(TransverseRepresentationReconnectToolServices::reconnectFunctionalExchangeTarget)
+                                .aql(
+                                        AQLConstants.EDGE_SEMANTIC_ELEMENT,
+                                        AQLConstants.SEMANTIC_RECONNECTION_TARGET,
+                                        AQLConstants.SEMANTIC_RECONNECTION_SOURCE,
+                                        AQLConstants.OTHER_END,
+                                        AQLConstants.RECONNECTION_TARGET_VIEW,
+                                        IEditingContext.EDITING_CONTEXT,
+                                        AQLConstants.DIAGRAM))
                         .build())
                 .build();
 

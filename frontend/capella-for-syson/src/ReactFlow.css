@@ -11,6 +11,11 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
+/* The selection rectangle */
+.react-flow__nodesselection-rect {
+  pointer-events: none;
+}
+
 /* The circle used to reconnect an edge */
 .react-flow__edgeupdater {
   cursor: pointer;
@@ -55,4 +60,9 @@
 .source_handle_left ~ .react-flow__edgeupdater-source {
   transform: translate(12px, 0px);
   r: 4px;
+}
+
+/* Make the interaction area of edges dynamic based on the zoom level  */
+.react-flow__edge-interaction {
+  stroke-width: var(--edge-selection-width);
 }

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
@@ -20,6 +21,7 @@ import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
+import org.eclipse.syson.util.ViewConstants;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class LABViewDescriptionProvider implements IViewDescriptionProvider {
+
+    private static final String BLACK_COLOR = "#000000";
 
     @Override
     public String getViewDiagramId() {
@@ -50,9 +54,9 @@ public class LABViewDescriptionProvider implements IViewDescriptionProvider {
     private ColorPalette createColorPalette() {
         var colorPalette = ViewFactory.eINSTANCE.createColorPalette();
 
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_BACKGROUND_COLOR, "#7A8CC8"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_BORDER_COLOR, "#1C2A3F"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_LABEL_COLOR, "#FFFFFF"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_BACKGROUND_COLOR, "#ADC8EC"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_BORDER_COLOR, "#494997"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_LABEL_COLOR, BLACK_COLOR));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTION_BACKGROUND_COLOR, "#CBE5AC"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTION_BORDER_COLOR, "#046866"));
@@ -61,10 +65,10 @@ public class LABViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_1, "#079459"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_2, "#01C1FF"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BORDER_COLOR, "#18340E"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_LABEL_COLOR, "#000000"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BACKGROUND_COLOR, "#BDEBFA"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BORDER_COLOR, "#2D5FB2"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_LABEL_COLOR, "#162558"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_LABEL_COLOR, BLACK_COLOR));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BACKGROUND_COLOR, "#D0F1FE"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BORDER_COLOR, "#494997"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_LABEL_COLOR, BLACK_COLOR));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_PORT_BACKGROUND_COLOR, "#FFFFFF"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_PORT_BORDER_COLOR, "#1C2A3F"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_EXCHANGE_BACKGROUND_COLOR, "#046866"));
@@ -72,6 +76,20 @@ public class LABViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.REQUIREMENT_BACKGROUND_COLOR, "#D8C3D6"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.REQUIREMENT_BORDER_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.REQUIREMENT_LABEL_COLOR, "#72496E"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMMENT_BACKGROUND_COLOR, "#FFFFC0"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMMENT_BORDER_COLOR, "#999966"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMMENT_LABEL_COLOR, "#333333"));
+
+        // Package colors - matching SySON's General View style
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.PACKAGE_BACKGROUND_COLOR, "#FFFFFF"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.PACKAGE_BORDER_COLOR, "#B1BCBE"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.PACKAGE_LABEL_COLOR, BLACK_COLOR));
+
+        // Standard colors used by ViewConstants
+        colorPalette.getColors().add(this.createFixedColor(ViewConstants.DEFAULT_BORDER_COLOR, BLACK_COLOR));
+        colorPalette.getColors().add(this.createFixedColor(ViewConstants.DEFAULT_LABEL_COLOR, BLACK_COLOR));
+        colorPalette.getColors().add(this.createFixedColor(ViewConstants.DEFAULT_BACKGROUND_COLOR, "#FFFFFF"));
+        colorPalette.getColors().add(this.createFixedColor(ViewConstants.DEFAULT_COMPARTMENT_BACKGROUND_COLOR, "transparent"));
 
         return colorPalette;
     }

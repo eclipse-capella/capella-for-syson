@@ -13,8 +13,7 @@
 package org.eclipse.capella.diagram.lab.view.nodes.functionalchain;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -22,6 +21,7 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -52,7 +52,7 @@ public class FunctionalChainNodeDescriptionProvider extends AbstractNodeDescript
                 .name(this.getNodeDescriptionName())
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(LAQueryService::getFunctionalChains).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalChains).aqlSelf())
                 .style(functionalChainNodeStyleProvider.createComponentNodeStyle())
                 .conditionalStyles(functionalChainNodeStyleProvider.createConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)

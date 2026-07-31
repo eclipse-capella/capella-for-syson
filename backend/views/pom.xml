@@ -16,11 +16,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.eclipse.capella</groupId>
-	<artifactId>capella-views-parent</artifactId>
+    <artifactId>capella-views-root</artifactId>
 	<version>2026.7.0</version>
 
-	<name>capella-views-parent</name>
-	<description>Capella Views Parent</description>
+    <name>capella-views-root</name>
+    <description>Capella Views Root</description>
 	<packaging>pom</packaging>
 
 	<modules>

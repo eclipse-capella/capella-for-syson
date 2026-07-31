@@ -58,13 +58,9 @@ public class RootFunctionNodeDescriptionProvider extends AbstractNodeDescription
 
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
-        cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
-            diagramDescription.getNodeDescriptions().add(nodeDescription);
-            nodeDescription.setPalette(
-                    new RootFunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider)
-                            .createNodePalette(nodeDescription, cache)
-            );
-        });
+        cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription ->
+                diagramDescription.getNodeDescriptions().add(nodeDescription)
+        );
     }
 
 }

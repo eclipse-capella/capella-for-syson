@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.ChildCreationDescription;
 import org.eclipse.sirius.components.core.api.IEditServiceDelegate;
@@ -52,15 +52,14 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     private final CapellaImagePathsService capellaImagePathsService;
 
-    private final TransverseRepresentationMutationService transverseRepresentationMutationService;
+    private final TransverseMutationService transverseMutationService;
 
     private final IObjectSearchService objectSearchService;
 
-    public CapellaEditService(SysMLv2EditService sysMLv2EditService, CapellaImagePathsService capellaImagePathsService,
-            TransverseRepresentationMutationService transverseRepresentationMutationService, IObjectSearchService objectSearchService) {
+    public CapellaEditService(SysMLv2EditService sysMLv2EditService, CapellaImagePathsService capellaImagePathsService, IObjectSearchService objectSearchService) {
         this.sysMLv2EditService = Objects.requireNonNull(sysMLv2EditService);
         this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
-        this.transverseRepresentationMutationService = Objects.requireNonNull(transverseRepresentationMutationService);
+        this.transverseMutationService = new TransverseMutationService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.transverseQueryService = new TransverseQueryService();
     }
@@ -118,7 +117,7 @@ public class CapellaEditService implements IEditServiceDelegate {
         if (childCreationDescriptionId.startsWith(ID_PREFIX) && object instanceof Element container) {
             String arcadiaType = childCreationDescriptionId.substring(ID_PREFIX.length());
             if (ARCADIA_EXCHANGE_ITEM.equals(arcadiaType)) {
-                value = Optional.ofNullable(this.transverseRepresentationMutationService.createNewExchangeItem(container));
+                value = Optional.ofNullable(this.transverseMutationService.createNewExchangeItem(container));
             }
         } else {
             value = this.sysMLv2EditService.createChild(editingContext, object, childCreationDescriptionId);

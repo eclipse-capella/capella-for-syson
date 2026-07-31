@@ -12,7 +12,18 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.capella.table.view.providers.CellIconURLsProvider;
 import org.eclipse.capella.table.view.providers.CellOptionIdProvider;
@@ -53,18 +64,6 @@ import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.impl.ActionUsageImpl;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 /**
  * Description of the Logical Architecture Function Table using table description.
  *
@@ -102,15 +101,12 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
 
     private final ILabelService labelService;
 
-    private final LAQueryService laQueryService;
-
     private final TransverseQueryService transverseQueryService;
 
     public FunctionTableRepresentationDescriptionProvider(IIdentityService identityService,
             ILabelService labelService) {
         this.identityService = Objects.requireNonNull(identityService);
         this.labelService = Objects.requireNonNull(labelService);
-        this.laQueryService = new LAQueryService();
         this.transverseQueryService = new TransverseQueryService();
     }
 
@@ -170,7 +166,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
         List<String> activeRowFilterIds = variableManager.get(TableRenderer.ACTIVE_ROW_FILTER_IDS, List.class).orElse(List.of());
         boolean expandAll = variableManager.get(TableRenderer.EXPAND_ALL, Boolean.class).orElse(false);
 
-        List<ActionUsage> actionUsages = this.laQueryService.getFunctions(self);
+        List<ActionUsage> actionUsages = this.transverseQueryService.getFunctions(self);
 
         Predicate<EObject> predicate = eObject -> {
             if (this.isFunction(eObject, actionUsages)) {
@@ -198,7 +194,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
     private boolean isAllAncestorsExpanded(EObject predicate,
             List<String> expandedIds, boolean expandAll) {
 
-        Optional<ActionUsage> functionParent = this.laQueryService.getParentFunction(predicate);
+        Optional<ActionUsage> functionParent = this.transverseQueryService.getParentFunction(predicate);
 
         if (functionParent.isEmpty()) {
             return true;
@@ -225,7 +221,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
             return true;
         }
 
-        var status = this.laQueryService.getStatus(function);
+        var status = this.transverseQueryService.getStatus(function);
         return activeRowFilterIds.stream().anyMatch(rowFilterId ->
                 (status != null && rowFilterId.contains(status.getDeclaredName())) ||
                         (status == null && rowFilterId.equals("none-filter"))
@@ -249,7 +245,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
         String filterValue = filter.value().replace("\"", "").trim();
 
         if (filter.id().equals(COLUMN_URIS.get(SysmlPackage.eINSTANCE.getOwningMembership()))) {
-            var optionalStatus = Optional.ofNullable(this.laQueryService.getStatus(function));
+            var optionalStatus = Optional.ofNullable(this.transverseQueryService.getStatus(function));
             var statusKind = optionalStatus.map(Element::getDeclaredName)
                     .orElse("");
 
@@ -260,13 +256,13 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
             result = description != null && !description.isBlank() && this.contains(description, filterValue);
 
         } else if (filter.id().equals(COLUMN_URIS.get(SysmlPackage.eINSTANCE.getPartUsage()))) {
-            Optional<PartUsage> allocatingComponent = this.laQueryService.getAllocatingComponent(function);
+            Optional<PartUsage> allocatingComponent = this.transverseQueryService.getAllocatingComponent(function);
 
             result = allocatingComponent.isPresent()
                     && this.contains(allocatingComponent.get().getDeclaredName(), filterValue);
 
         } else if (filter.id().equals(COLUMN_URIS.get(SysmlPackage.eINSTANCE.getReferenceUsage()))) {
-            List<Feature> functionPorts = this.laQueryService.getFunctionPorts(function);
+            List<Feature> functionPorts = this.transverseQueryService.getFunctionPorts(function);
 
             result = functionPorts != null
                     && !functionPorts.isEmpty()
@@ -300,16 +296,16 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
 
     private boolean hasChildren(VariableManager variableManager) {
         return variableManager.get(VariableManager.SELF, EObject.class)
-                .map(function -> !this.laQueryService.getSubFunctions(function).isEmpty())
+                .map(function -> !this.transverseQueryService.getSubFunctions(function).isEmpty())
                 .orElse(false);
     }
 
     public int getFunctionLevel(EObject function) {
         int level = -1;
-        var parent = this.laQueryService.getParentFunction(function);
+        var parent = this.transverseQueryService.getParentFunction(function);
         while (parent.isPresent()) {
             level++;
-            parent = this.laQueryService.getParentFunction(parent.get());
+            parent = this.transverseQueryService.getParentFunction(parent.get());
         }
         return level;
     }

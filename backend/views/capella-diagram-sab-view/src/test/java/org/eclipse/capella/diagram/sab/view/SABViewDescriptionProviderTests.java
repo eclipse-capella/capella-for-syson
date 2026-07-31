@@ -91,7 +91,7 @@ public class SABViewDescriptionProviderTests {
 
         var functionalChainDescription = this.getNodeDescription(diagramDescription, FunctionalChainNodeDescriptionProvider.NODE_DESCRIPTION_NAME);
 
-        assertEquals(ServiceMethod.of0(SAQueryService::getFunctionalChains).aqlSelf(), functionalChainDescription.getSemanticCandidatesExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getFunctionalChains).aqlSelf(), functionalChainDescription.getSemanticCandidatesExpression());
         assertEquals(SynchronizationPolicy.UNSYNCHRONIZED, functionalChainDescription.getSynchronizationPolicy());
         assertEquals("30", functionalChainDescription.getDefaultWidthExpression());
         assertEquals("30", functionalChainDescription.getDefaultHeightExpression());
@@ -199,7 +199,7 @@ public class SABViewDescriptionProviderTests {
                 .orElseThrow();
 
         assertEquals(SynchronizationPolicy.SYNCHRONIZED, componentExchangeDescription.getSynchronizationPolicy());
-        assertEquals(ServiceMethod.of0(SAQueryService::getComponentExchanges).aqlSelf(), componentExchangeDescription.getSemanticCandidatesExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getComponentExchanges).aqlSelf(), componentExchangeDescription.getSemanticCandidatesExpression());
         assertEquals(List.of(ComponentPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME), componentExchangeDescription.getSourceDescriptions().stream().map(DiagramElementDescription::getName).toList());
         assertEquals(List.of(ComponentPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME), componentExchangeDescription.getTargetDescriptions().stream().map(DiagramElementDescription::getName).toList());
         assertNotNull(componentExchangeDescription.getPalette().getDeleteTool());
@@ -223,7 +223,7 @@ public class SABViewDescriptionProviderTests {
                 .orElseThrow();
 
         assertEquals(SynchronizationPolicy.SYNCHRONIZED, functionPortDescription.getSynchronizationPolicy());
-        assertEquals(ServiceMethod.of0(SAQueryService::getFunctionPorts).aqlSelf(), functionPortDescription.getSemanticCandidatesExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getFunctionPorts).aqlSelf(), functionPortDescription.getSemanticCandidatesExpression());
         assertNotNull(functionPortDescription.getPalette().getDeleteTool());
         assertDeleteFromDiagramQuickAccessTool(functionPortDescription);
         assertTrue(functionDescription.getPalette().getNodeTools().stream()
@@ -246,9 +246,9 @@ public class SABViewDescriptionProviderTests {
                 .orElseThrow();
 
         assertEquals(SynchronizationPolicy.SYNCHRONIZED, functionalExchangeDescription.getSynchronizationPolicy());
-        assertEquals(ServiceMethod.of0(SAQueryService::getFunctionalExchanges).aqlSelf(), functionalExchangeDescription.getSemanticCandidatesExpression());
-        assertEquals(ServiceMethod.of0(SAQueryService::getFunctionalExchangeSource).aqlSelf(), functionalExchangeDescription.getSourceExpression());
-        assertEquals(ServiceMethod.of0(SAQueryService::getFunctionalExchangeTarget).aqlSelf(), functionalExchangeDescription.getTargetExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getFunctionalExchanges).aqlSelf(), functionalExchangeDescription.getSemanticCandidatesExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeSource).aqlSelf(), functionalExchangeDescription.getSourceExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeTarget).aqlSelf(), functionalExchangeDescription.getTargetExpression());
         assertEquals(4, functionalExchangeDescription.getConditionalStyles().size());
         assertEquals(List.of(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME), functionalExchangeDescription.getSourceDescriptions().stream().map(DiagramElementDescription::getName).toList());
         assertEquals(List.of(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME), functionalExchangeDescription.getTargetDescriptions().stream().map(DiagramElementDescription::getName).toList());
@@ -265,7 +265,7 @@ public class SABViewDescriptionProviderTests {
         var diagramDescription = (DiagramDescription) new SABViewDiagramDescriptionProvider().create(colorProvider);
 
         var requirementDescription = this.getNodeDescription(diagramDescription, RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME);
-        assertEquals(ServiceMethod.of0(SAQueryService::getRequirements).aqlSelf(), requirementDescription.getSemanticCandidatesExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getRequirements).aqlSelf(), requirementDescription.getSemanticCandidatesExpression());
         assertEquals(SynchronizationPolicy.UNSYNCHRONIZED, requirementDescription.getSynchronizationPolicy());
         assertNotNull(requirementDescription.getPalette().getDeleteTool());
         assertDeleteFromDiagramQuickAccessTool(requirementDescription);
@@ -276,9 +276,9 @@ public class SABViewDescriptionProviderTests {
                 .filter(edgeDescription -> DescribesEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME.equals(edgeDescription.getName()))
                 .findFirst()
                 .orElseThrow();
-        assertEquals(ServiceMethod.of0(TransverseQueryService::getAllocationUsage).aqlSelf(), describesDescription.getSemanticCandidatesExpression());
-        assertEquals(ServiceMethod.of0(SAQueryService::getDescribesSource).aqlSelf(), describesDescription.getSourceExpression());
-        assertEquals(ServiceMethod.of0(SAQueryService::getDescribesTarget).aqlSelf(), describesDescription.getTargetExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getDescribes).aqlSelf(), describesDescription.getSemanticCandidatesExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getDescribesSource).aqlSelf(), describesDescription.getSourceExpression());
+        assertEquals(ServiceMethod.of0(TransverseQueryService::getDescribesTarget).aqlSelf(), describesDescription.getTargetExpression());
         assertEquals(List.of(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME), describesDescription.getSourceDescriptions().stream()
                 .map(DiagramElementDescription::getName)
                 .toList());

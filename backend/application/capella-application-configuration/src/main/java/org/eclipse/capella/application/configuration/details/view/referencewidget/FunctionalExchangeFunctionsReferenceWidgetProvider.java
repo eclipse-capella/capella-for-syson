@@ -15,7 +15,7 @@ package org.eclipse.capella.application.configuration.details.view.referencewidg
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
@@ -45,11 +45,10 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
 
     private static final String ERROR_MSG = "Something went wrong while removing the function";
 
-    private final LAQueryService lAQueryService;
-
+    private final TransverseQueryService transverseQueryService;
 
     public FunctionalExchangeFunctionsReferenceWidgetProvider() {
-        this.lAQueryService = new LAQueryService();
+        this.transverseQueryService = new TransverseQueryService();
     }
 
     @Override
@@ -66,7 +65,7 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.lAQueryService.getFunctions(eObject);
+            return this.transverseQueryService.getFunctions(eObject);
         }
         return List.of();
     }
@@ -90,7 +89,7 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
 
     @Override
     public IStatus handleItemRemoved(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        // TODO Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
+        // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
         // reference a function parameter typed by an ExchangeItem.
         return new Failure(ERROR_MSG);
     }
@@ -102,7 +101,7 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
 
     @Override
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        // TODO Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
+        // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
         // reference a function parameter typed by an ExchangeItem.
         return new Failure(ERROR_MSG);
     }

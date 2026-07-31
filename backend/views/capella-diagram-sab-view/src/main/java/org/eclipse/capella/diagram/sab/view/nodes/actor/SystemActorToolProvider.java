@@ -12,8 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.actor;
 
-import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.system.analysis.SAMutationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ChangeContextBuilder;
@@ -21,6 +20,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide tools to create system actors in SAB.
@@ -39,7 +39,7 @@ public class SystemActorToolProvider {
     }
 
     public NodeTool createNewSystemActorNodeTool(IViewDiagramElementFinder cache) {
-        return this.createActorNodeTool(cache, "New Actor", "/icons/full/obj16/Actor.svg", ServiceMethod.of0(SARepresentationMutationService::createSystemActor).aqlSelf());
+        return this.createActorNodeTool(cache, "New Actor", "/icons/full/obj16/Actor.svg", ServiceMethod.of0(SAMutationService::createActorSA).aqlSelf());
     }
 
     private NodeTool createActorNodeTool(IViewDiagramElementFinder cache, String name, String icon, String expression) {

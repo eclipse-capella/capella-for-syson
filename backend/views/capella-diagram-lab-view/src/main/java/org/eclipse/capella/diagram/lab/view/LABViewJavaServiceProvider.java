@@ -24,17 +24,21 @@ import org.eclipse.capella.model.services.logical.architecture.LARepresentationR
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.eclipse.syson.diagram.common.view.services.ViewEdgeService;
-import org.eclipse.syson.diagram.common.view.services.ViewToolService;
+import org.eclipse.syson.diagram.common.view.services.ViewLabelService;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryElementService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
-import org.eclipse.syson.services.DeleteService;
+import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
+import org.eclipse.syson.diagram.services.aql.DiagramQueryAQLService;
+import org.eclipse.syson.model.services.aql.ModelMutationAQLService;
+import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
 import org.eclipse.syson.services.LabelService;
+import org.eclipse.syson.tree.services.aql.TreeQueryAQLService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -52,8 +56,7 @@ public class LABViewJavaServiceProvider implements IJavaServiceProvider {
                 .filter(desc -> LABViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(desc.getName()))
                 .findFirst();
         if (optDescription.isPresent()) {
-            return List.of(DeleteService.class,
-                    LabelService.class,
+            return List.of(LabelService.class,
                     LAQueryService.class,
                     LARepresentationDropServices.class,
                     LARepresentationReconnectToolServices.class,
@@ -63,14 +66,19 @@ public class LABViewJavaServiceProvider implements IJavaServiceProvider {
                     TransverseMutationService.class,
                     TransverseQueryService.class,
                     TransverseRepresentationReconnectToolServices.class,
+                    TransverseRepresentationQueryService.class,
                     TransverseRepresentationMutationService.class,
                     TransverseRepresentationReconnectToolServices.class,
+                    DiagramMutationAQLService.class,
+                    DiagramQueryAQLService.class,
+                    ModelMutationAQLService.class,
+                    ModelQueryAQLService.class,
+                    TreeQueryAQLService.class,
                     DiagramMutationLabelService.class,
                     DiagramQueryElementService.class,
                     DiagramQueryLabelService.class,
                     DiagramMutationExposeService.class,
-                    ViewToolService.class,
-                    ViewEdgeService.class,
+                    ViewLabelService.class,
                     LABDiagramService.class);
         }
         return List.of();

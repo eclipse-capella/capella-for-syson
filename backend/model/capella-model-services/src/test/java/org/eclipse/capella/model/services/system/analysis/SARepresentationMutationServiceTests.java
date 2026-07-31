@@ -12,9 +12,22 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionDefinition;
-import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.AttributeUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
@@ -28,13 +41,8 @@ import org.eclipse.syson.sysml.PerformActionUsage;
 import org.eclipse.syson.sysml.PortDefinition;
 import org.eclipse.syson.sysml.RequirementDefinition;
 import org.eclipse.syson.sysml.SysmlFactory;
+import org.eclipse.syson.util.SysONEContentAdapter;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for the System Analysis representation mutation service.
@@ -43,6 +51,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class SARepresentationMutationServiceTests {
 
+    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+
+    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+
     private final SARepresentationMutationService mutationService = new SARepresentationMutationService();
 
     private final SAMutationService semanticMutationService = new SAMutationService();
@@ -50,9 +62,9 @@ public class SARepresentationMutationServiceTests {
     @Test
     public void createSystemActorShouldNameFirstActorAOne() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
-        var actor = this.mutationService.createSystemActor(structurePackage);
+        var actor = this.transverseMutationService.createActor(structurePackage);
 
-        assertEquals("A 1", actor.getDeclaredName());
+        assertEquals("A 2", actor.getDeclaredName());
     }
 
     @Test
@@ -60,18 +72,18 @@ public class SARepresentationMutationServiceTests {
         var packageOutsideSystemAnalysis = SysmlFactory.eINSTANCE.createPackage();
         var componentOutsideSystemAnalysis = SysmlFactory.eINSTANCE.createPartUsage();
 
-        assertNull(this.mutationService.createSystemActor(packageOutsideSystemAnalysis));
-        assertNull(this.mutationService.createRequirement(packageOutsideSystemAnalysis));
-        assertNull(this.mutationService.createNewFunction(componentOutsideSystemAnalysis));
+        assertNull(this.transverseMutationService.createActor(packageOutsideSystemAnalysis));
+        assertNull(this.transverseMutationService.createRequirement(packageOutsideSystemAnalysis));
+        assertNull(this.transverseMutationService.createFunction(componentOutsideSystemAnalysis));
     }
 
     @Test
     public void createSystemActorShouldCreateNestedActorUnderSelectedActor() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
-        var actor = this.mutationService.createSystemActor(structurePackage);
-        var nestedActor = this.mutationService.createSystemActor(actor);
+        var actor = this.transverseMutationService.createActor(structurePackage);
+        var nestedActor = this.transverseMutationService.createActor(actor);
 
-        assertEquals("A 1", nestedActor.getDeclaredName());
+        assertEquals("A 3", nestedActor.getDeclaredName());
         assertTrue(actor.getOwnedElement().contains(nestedActor));
     }
 
@@ -85,9 +97,9 @@ public class SARepresentationMutationServiceTests {
                 .findFirst()
                 .ifPresent(system -> SAQueryServiceTests.addOwnedMember(structurePackage, this.createComponent("component", (PartDefinition) system.getType().get(0))));
 
-        var actor = this.mutationService.createSystemActor(structurePackage);
+        var actor = this.transverseMutationService.createActor(structurePackage);
 
-        assertEquals("A 1", actor.getDeclaredName());
+        assertEquals("A 3", actor.getDeclaredName());
     }
 
     @Test
@@ -100,9 +112,9 @@ public class SARepresentationMutationServiceTests {
                 .findFirst()
                 .orElseThrow();
 
-        var actor = this.mutationService.createSystemActor(system);
+        var actor = this.semanticMutationService.createActorSA(system);
 
-        assertEquals("A 1", actor.getDeclaredName());
+        assertEquals("A 2", actor.getDeclaredName());
         assertTrue(structurePackage.getOwnedElement().contains(actor));
         assertFalse(system.getOwnedElement().contains(actor));
     }
@@ -112,14 +124,14 @@ public class SARepresentationMutationServiceTests {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
 
-        var component = this.mutationService.createSystemComponent(system);
-        var nestedComponent = this.mutationService.createSystemComponent(component);
+        var component = this.transverseMutationService.createComponent(system);
+        var nestedComponent = this.transverseMutationService.createComponent(component);
 
         assertNotNull(component);
-        assertEquals("C 1", component.getDeclaredName());
+        assertEquals("C 2", component.getDeclaredName());
         assertTrue(system.getOwnedElement().contains(component));
         assertTrue(new SAQueryService().getSystemComponents(system).contains(component));
-        assertEquals("C 1", nestedComponent.getDeclaredName());
+        assertEquals("C 3", nestedComponent.getDeclaredName());
         assertTrue(component.getOwnedElement().contains(nestedComponent));
         assertTrue(new SAQueryService().getSystemComponents(component).contains(nestedComponent));
     }
@@ -127,10 +139,10 @@ public class SARepresentationMutationServiceTests {
     @Test
     public void createSystemComponentShouldRejectStructurePackageAndActors() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
-        var actor = this.mutationService.createSystemActor(structurePackage);
+        var actor = this.transverseMutationService.createActor(structurePackage);
 
-        assertNull(this.mutationService.createSystemComponent(structurePackage));
-        assertNull(this.mutationService.createSystemComponent(actor));
+        assertNull(this.semanticMutationService.createComponentSA(structurePackage));
+        assertNull(this.semanticMutationService.createComponentSA(actor));
     }
 
     @Test
@@ -159,14 +171,14 @@ public class SARepresentationMutationServiceTests {
     public void createComponentExchangeShouldAcceptAComponentActor() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var actor = this.mutationService.createSystemActor(structurePackage);
-        var componentExchange = this.mutationService.createComponentExchange(system, actor);
+        var actor = this.transverseMutationService.createActor(structurePackage);
+        var componentExchange = this.transverseMutationService.createComponentExchange(system, actor);
 
         assertNotNull(componentExchange);
         assertEquals(structurePackage, componentExchange.getOwner());
         assertEquals("Arcadia::ComponentExchange", componentExchange.getType().get(0).getQualifiedName());
-        assertEquals(system, new SAQueryService().getComponentExchangeSource(componentExchange));
-        assertEquals(actor, new SAQueryService().getComponentExchangeTarget(componentExchange));
+        assertEquals(system, this.transverseQueryService.getComponentExchangeSource(componentExchange).getOwner());
+        assertEquals(actor, this.transverseQueryService.getComponentExchangeTarget(componentExchange).getOwner());
     }
 
     @Test
@@ -176,7 +188,7 @@ public class SARepresentationMutationServiceTests {
         var sourceSystem = this.getSystem(sourceStructurePackage);
         var targetSystem = this.getSystem(targetStructurePackage);
 
-        assertNull(this.mutationService.createComponentExchange(sourceSystem, targetSystem));
+        assertNull(this.transverseMutationService.createComponentExchange(sourceSystem, targetSystem));
         assertTrue(sourceSystem.getOwnedElement().isEmpty());
         assertTrue(targetSystem.getOwnedElement().isEmpty());
     }
@@ -197,9 +209,9 @@ public class SARepresentationMutationServiceTests {
                 .findFirst()
                 .orElseThrow();
 
-        var function = (ActionUsage) this.mutationService.createNewFunction(system);
+        var function = this.transverseMutationService.createFunction(system);
 
-        assertEquals("Function 0", function.getDeclaredName());
+        assertEquals("Function 1", function.getDeclaredName());
         assertTrue(functionsPackage.getOwnedElement().contains(function));
         assertTrue(system.getNestedUsage().stream()
                 .filter(PerformActionUsage.class::isInstance)
@@ -216,11 +228,11 @@ public class SARepresentationMutationServiceTests {
                 .filter(partUsage -> "system".equals(partUsage.getDeclaredName()))
                 .findFirst()
                 .orElseThrow();
-        var function = (ActionUsage) this.mutationService.createNewFunction(system);
+        var function = this.transverseMutationService.createFunction(system);
 
-        var subFunction = (ActionUsage) this.mutationService.createNewFunction(function);
+        var subFunction = this.transverseMutationService.createFunction(function);
 
-        assertEquals("Function 0", subFunction.getDeclaredName());
+        assertEquals("Function 2", subFunction.getDeclaredName());
         assertTrue(function.getOwnedElement().contains(subFunction));
         assertTrue(system.getNestedUsage().stream()
                 .filter(PerformActionUsage.class::isInstance)
@@ -237,7 +249,7 @@ public class SARepresentationMutationServiceTests {
                 .filter(partUsage -> "system".equals(partUsage.getDeclaredName()))
                 .findFirst()
                 .orElseThrow();
-        var function = (ActionUsage) this.mutationService.createNewFunction(system);
+        var function = this.transverseMutationService.createFunction(system);
 
         var inputPort = this.mutationService.createInputFunctionPort(function);
         var outputPort = this.mutationService.createOutputFunctionPort(function);
@@ -246,54 +258,52 @@ public class SARepresentationMutationServiceTests {
         assertEquals(FeatureDirectionKind.OUT, outputPort.getDirection());
         assertTrue(function.getOwnedElement().contains(inputPort));
         assertTrue(function.getOwnedElement().contains(outputPort));
-        assertEquals("FIP 0", inputPort.getDeclaredName());
-        assertEquals("FOP 0", outputPort.getDeclaredName());
+        assertEquals("FIP 1", inputPort.getDeclaredName());
+        assertEquals("FOP 2", outputPort.getDeclaredName());
     }
 
     @Test
     public void createFunctionalExchangeShouldConnectOutPortToInPort() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
+        var sourceFunction = this.transverseMutationService.createFunction(system);
+        var targetFunction = this.transverseMutationService.createFunction(system);
         var sourcePort = this.mutationService.createOutputFunctionPort(sourceFunction);
         var targetPort = this.mutationService.createInputFunctionPort(targetFunction);
 
-        FlowUsage functionalExchange = this.mutationService.createFunctionalExchange(sourcePort, targetPort);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort);
 
         assertNotNull(functionalExchange);
-        assertEquals("FE 0", functionalExchange.getDeclaredName());
-        assertEquals(sourcePort, new SAQueryService().getFunctionalExchangeSource(functionalExchange));
-        assertEquals(targetPort, new SAQueryService().getFunctionalExchangeTarget(functionalExchange));
-        assertEquals(functionalExchange, new SAQueryService().getFunctionalExchanges(structurePackage.getOwner()).get(0));
-        assertEquals(sourcePort, new SAQueryService().getFunctionalExchangeSource(functionalExchange));
-        assertEquals(targetPort, new SAQueryService().getFunctionalExchangeTarget(functionalExchange));
+        assertEquals("FunctionalExchange 1", functionalExchange.getDeclaredName());
+        assertEquals(sourcePort, new TransverseQueryService().getFunctionalExchangeSource(functionalExchange));
+        assertEquals(targetPort, new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange));
+        assertEquals(functionalExchange, new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).get(0));
     }
 
     @Test
     public void createFunctionalExchangeShouldRejectInvalidDirections() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
+        var sourceFunction = this.transverseMutationService.createFunction(system);
+        var targetFunction = this.transverseMutationService.createFunction(system);
         var sourcePort = this.mutationService.createInputFunctionPort(sourceFunction);
         var targetPort = this.mutationService.createOutputFunctionPort(targetFunction);
 
-        assertNull(this.mutationService.createFunctionalExchange(sourcePort, targetPort));
+        assertNull(this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort));
     }
 
     @Test
     public void createFunctionalExchangeShouldCreateMissingFunctionPortsWhenStartedFromFunctions() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
+        var sourceFunction = this.transverseMutationService.createFunction(system);
+        var targetFunction = this.transverseMutationService.createFunction(system);
 
-        FlowUsage functionalExchange = this.mutationService.createFunctionalExchange(sourceFunction, targetFunction);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
 
         assertNotNull(functionalExchange);
-        var sourcePort = new SAQueryService().getFunctionalExchangeSource(functionalExchange);
-        var targetPort = new SAQueryService().getFunctionalExchangeTarget(functionalExchange);
+        var sourcePort = new TransverseQueryService().getFunctionalExchangeSource(functionalExchange);
+        var targetPort = new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange);
         assertEquals(FeatureDirectionKind.OUT, sourcePort.getDirection());
         assertEquals(FeatureDirectionKind.IN, targetPort.getDirection());
         assertTrue(sourceFunction.getOwnedElement().contains(sourcePort));
@@ -301,7 +311,15 @@ public class SARepresentationMutationServiceTests {
     }
 
     private Package createSystemAnalysisStructurePackage() {
+        ResourceSet resourceSet = new ResourceSetImpl();
+        resourceSet.eAdapters().add(new ECrossReferenceAdapter());
+        Resource resource = new ResourceImpl(URI.createURI("model.sysml"));
+        resourceSet.getResources().add(resource);
+
         var root = SysmlFactory.eINSTANCE.createPackage();
+        root.eAdapters().add(new SysONEContentAdapter());
+        resource.getContents().add(root);
+
         var arcadia = this.createPackage("Arcadia");
         var componentType = this.createArcadiaComponentType();
         SAQueryServiceTests.addOwnedMember(arcadia, componentType);
@@ -331,50 +349,25 @@ public class SARepresentationMutationServiceTests {
     }
 
     @Test
-    public void createFunctionalChainShouldStoreSelectedFunctionalExchangesInFunctionsPackage() {
+    public void deleteSystemComponentShouldDeleteSubComponentsButNotAllocatedFunctionsFunctionalExchangesAndFunctionalChains() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var functionalExchange = this.mutationService.createFunctionalExchange(sourceFunction, targetFunction);
+        var deletedComponent = this.transverseMutationService.createComponent(system);
+        var retainedComponent = this.transverseMutationService.createComponent(system);
+        var deletedFunction = this.transverseMutationService.createFunction(deletedComponent);
+        var retainedFunction = this.transverseMutationService.createFunction(retainedComponent);
 
-        var functionalChain = this.mutationService.createNewFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
-
-        assertNotNull(functionalChain);
-        assertEquals("FunctionalChain 0", functionalChain.getDeclaredName());
-        assertEquals("Arcadia::FunctionalChain", functionalChain.getType().get(0).getQualifiedName());
-        assertTrue(new SAQueryService().getFunctionalChains(structurePackage.getOwner()).contains(functionalChain));
-        assertEquals(java.util.List.of(functionalExchange), new SAQueryService().getInvolvedFunctionalExchanges(functionalChain));
-        assertTrue(new SAQueryService().getInvolvedFunctions(functionalChain).contains(sourceFunction));
-        assertTrue(new SAQueryService().getInvolvedFunctions(functionalChain).contains(targetFunction));
-    }
-
-    @Test
-    public void createFunctionalChainShouldRejectEmptySelection() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-
-        assertNull(this.mutationService.createNewFunctionalChain(structurePackage, java.util.List.of()));
-    }
-
-    @Test
-    public void deleteSystemComponentShouldDeleteAllocatedFunctionsFunctionalExchangesAndFunctionalChains() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var deletedComponent = this.mutationService.createSystemComponent(system);
-        var retainedComponent = this.mutationService.createSystemComponent(system);
-        var deletedFunction = (ActionUsage) this.mutationService.createNewFunction(deletedComponent);
-        var retainedFunction = (ActionUsage) this.mutationService.createNewFunction(retainedComponent);
-        var functionalExchange = this.mutationService.createFunctionalExchange(deletedFunction, retainedFunction);
-        var functionalChain = this.mutationService.createNewFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
+        var functionalExchange = this.transverseMutationService.createFunctionalExchange(deletedFunction, retainedFunction);
+        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
         var systemAnalysisPackage = structurePackage.getOwner();
 
-        this.semanticMutationService.deleteSystemComponent(deletedComponent);
+        this.transverseMutationService.delete(deletedComponent);
 
         assertFalse(system.getOwnedElement().contains(deletedComponent));
         assertTrue(system.getOwnedElement().contains(retainedComponent));
-        assertTrue(new SAQueryService().getFunctionalExchanges(systemAnalysisPackage).isEmpty());
-        assertFalse(new SAQueryService().getFunctionalChains(systemAnalysisPackage).contains(functionalChain));
-        assertFalse(this.getFunctionsPackage(structurePackage).getOwnedElement().contains(deletedFunction));
+        assertFalse(this.transverseQueryService.getFunctionalExchanges(systemAnalysisPackage).isEmpty());
+        assertTrue(this.transverseQueryService.getFunctionalChains(systemAnalysisPackage).contains(functionalChain));
+        assertTrue(this.getFunctionsPackage(structurePackage).getOwnedElement().contains(deletedFunction));
         assertTrue(this.getFunctionsPackage(structurePackage).getOwnedElement().contains(retainedFunction));
     }
 
@@ -382,122 +375,95 @@ public class SARepresentationMutationServiceTests {
     public void deleteFunctionalExchangeShouldRepairFunctionalChains() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var middleFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var deletedFunctionalExchange = this.mutationService.createFunctionalExchange(sourceFunction, middleFunction);
-        var retainedFunctionalExchange = this.mutationService.createFunctionalExchange(middleFunction, targetFunction);
-        var functionalChain = (ActionUsage) this.mutationService.createNewFunctionalChain(structurePackage, java.util.List.of(deletedFunctionalExchange, retainedFunctionalExchange));
+        var sourceFunction = this.transverseMutationService.createFunction(system);
+        var middleFunction = this.transverseMutationService.createFunction(system);
+        var targetFunction = this.transverseMutationService.createFunction(system);
 
-        this.semanticMutationService.deleteFunctionalExchange(deletedFunctionalExchange);
+        var deletedFunctionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, middleFunction);
+        var retainedFunctionalExchange = this.transverseMutationService.createFunctionalExchange(middleFunction, targetFunction);
+        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(deletedFunctionalExchange, retainedFunctionalExchange));
 
-        assertFalse(new SAQueryService().getFunctionalExchanges(structurePackage.getOwner()).contains(deletedFunctionalExchange));
-        assertEquals(java.util.List.of(retainedFunctionalExchange), new SAQueryService().getInvolvedFunctionalExchanges(functionalChain));
+        assertEquals(java.util.List.of(deletedFunctionalExchange, retainedFunctionalExchange), this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain));
+
+        this.transverseMutationService.delete(deletedFunctionalExchange);
+
+        assertFalse(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).contains(deletedFunctionalExchange));
+        assertEquals(java.util.List.of(retainedFunctionalExchange), this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain));
     }
 
     @Test
     public void deleteFunctionPortShouldDeleteFunctionalExchangesAndFunctionalChains() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var functionalExchange = this.mutationService.createFunctionalExchange(sourceFunction, targetFunction);
-        var functionalChain = this.mutationService.createNewFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
-        var sourcePort = new SAQueryService().getFunctionalExchangeSource(functionalExchange);
+        var sourceFunction = this.transverseMutationService.createFunction(system);
+        var targetFunction = this.transverseMutationService.createFunction(system);
 
-        this.semanticMutationService.deleteFunctionPort(sourcePort);
+        var functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
+        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
+        var sourcePort = this.transverseQueryService.getFunctionalExchangeSource(functionalExchange);
+
+        this.transverseMutationService.delete(sourcePort);
 
         assertFalse(sourceFunction.getOwnedElement().contains(sourcePort));
-        assertTrue(new SAQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
-        assertFalse(new SAQueryService().getFunctionalChains(structurePackage.getOwner()).contains(functionalChain));
+        assertTrue(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
     }
 
     @Test
     public void deleteFunctionShouldRemoveExternalAllocationsAndDependentElements() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceComponent = this.mutationService.createSystemComponent(system);
-        var targetComponent = this.mutationService.createSystemComponent(system);
-        var deletedFunction = (ActionUsage) this.mutationService.createNewFunction(sourceComponent);
-        var retainedFunction = (ActionUsage) this.mutationService.createNewFunction(targetComponent);
-        var functionalExchange = this.mutationService.createFunctionalExchange(deletedFunction, retainedFunction);
-        var functionalChain = this.mutationService.createNewFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
+        var sourceComponent = this.transverseMutationService.createComponent(system);
+        var targetComponent = this.transverseMutationService.createComponent(system);
+        var deletedFunction = this.transverseMutationService.createFunction(sourceComponent);
+        var retainedFunction = this.transverseMutationService.createFunction(targetComponent);
 
-        this.semanticMutationService.deleteFunction(deletedFunction);
+        var functionalExchange = this.transverseMutationService.createFunctionalExchange(deletedFunction, retainedFunction);
+        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
 
-        var queryService = new SAQueryService();
+        this.transverseMutationService.delete(deletedFunction);
+
+        var queryService = new TransverseQueryService();
         assertFalse(this.getFunctionsPackage(structurePackage).getOwnedElement().contains(deletedFunction));
         assertTrue(queryService.getAllocatedFunctions(sourceComponent).isEmpty());
         assertEquals(java.util.List.of(retainedFunction), queryService.getAllocatedFunctions(targetComponent));
-        assertTrue(queryService.getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
-        assertFalse(queryService.getFunctionalChains(structurePackage.getOwner()).contains(functionalChain));
+        assertTrue(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
     }
 
     @Test
     public void moveFunctionToComponentShouldReplaceItsAllocation() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceComponent = this.mutationService.createSystemComponent(system);
-        var targetComponent = this.mutationService.createSystemComponent(system);
-        var function = (ActionUsage) this.mutationService.createNewFunction(sourceComponent);
+        var sourceComponent = this.transverseMutationService.createComponent(system);
+        var targetComponent = this.transverseMutationService.createComponent(system);
+        var function = this.transverseMutationService.createFunction(sourceComponent);
 
         this.semanticMutationService.moveFunctionToComponent(function, targetComponent);
 
-        var queryService = new SAQueryService();
+        var queryService = new TransverseQueryService();
         assertTrue(queryService.getAllocatedFunctions(sourceComponent).isEmpty());
         assertEquals(java.util.List.of(function), queryService.getAllocatedFunctions(targetComponent));
-    }
-
-    @Test
-    public void deleteComponentPortShouldDeleteItsComponentExchange() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var sourceComponent = this.mutationService.createSystemComponent(system);
-        var targetComponent = this.mutationService.createSystemComponent(system);
-        var componentExchange = this.mutationService.createComponentExchange(sourceComponent, targetComponent);
-        var sourcePort = new SAQueryService().getComponentExchangeSourcePort(componentExchange);
-
-        this.semanticMutationService.deleteComponentPort(sourcePort);
-
-        assertFalse(sourceComponent.getOwnedElement().contains(sourcePort));
-        assertTrue(new SAQueryService().getComponentExchanges(structurePackage.getOwner()).isEmpty());
-    }
-
-    @Test
-    public void deleteComponentExchangeShouldRetainItsComponents() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var sourceComponent = this.mutationService.createSystemComponent(system);
-        var targetComponent = this.mutationService.createSystemComponent(system);
-        var componentExchange = this.mutationService.createComponentExchange(sourceComponent, targetComponent);
-
-        this.semanticMutationService.deleteComponentExchange(componentExchange);
-
-        assertTrue(system.getOwnedElement().contains(sourceComponent));
-        assertTrue(system.getOwnedElement().contains(targetComponent));
-        assertTrue(new SAQueryService().getComponentExchanges(structurePackage.getOwner()).isEmpty());
     }
 
     @Test
     public void deleteRequirementShouldDeleteDescribesReferencingIt() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var requirement = this.mutationService.createRequirement(structurePackage);
-        var describes = this.mutationService.createDescribes(requirement, system);
+        var requirement = this.transverseMutationService.createRequirement(structurePackage);
+        var describes = this.transverseMutationService.createDescribes(requirement, system);
 
-        this.semanticMutationService.deleteRequirement(requirement);
+        this.transverseMutationService.delete(requirement);
 
         assertFalse(this.getRequirementsPackage(structurePackage).getOwnedElement().contains(requirement));
-        assertFalse(new SAQueryService().getDescribes(structurePackage.getOwner()).contains(describes));
+        assertFalse(this.transverseQueryService.getDescribes(structurePackage.getOwner()).contains(describes));
     }
 
     @Test
     public void deleteSystemActorShouldDeleteTheActorOnly() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var actor = this.mutationService.createSystemActor(structurePackage);
+        var actor = this.transverseMutationService.createActor(structurePackage);
 
-        this.semanticMutationService.deleteSystemActor(actor);
+        this.transverseMutationService.delete(actor);
 
         assertFalse(structurePackage.getOwnedElement().contains(actor));
         assertTrue(structurePackage.getOwnedElement().contains(system));
@@ -518,14 +484,14 @@ public class SARepresentationMutationServiceTests {
     private ActionDefinition createArcadiaFunctionalChainType() {
         var functionalChainType = SysmlFactory.eINSTANCE.createActionDefinition();
         functionalChainType.setDeclaredName("FunctionalChain");
-        SAQueryServiceTests.addOwnedMember(functionalChainType, this.createReference("involvedFunctionalExchanges"));
+        SAQueryServiceTests.addOwnedMember(functionalChainType, this.createFunctionalExchangeReference("involvedFunctionalExchanges"));
         return functionalChainType;
     }
 
-    private org.eclipse.syson.sysml.ReferenceUsage createReference(String declaredName) {
-        var referenceUsage = SysmlFactory.eINSTANCE.createReferenceUsage();
-        referenceUsage.setDeclaredName(declaredName);
-        return referenceUsage;
+    private FlowUsage createFunctionalExchangeReference(String declaredName) {
+        var flowUsage = SysmlFactory.eINSTANCE.createFlowUsage();
+        flowUsage.setDeclaredName(declaredName);
+        return flowUsage;
     }
 
     private AttributeUsage createAttribute(String declaredName) {

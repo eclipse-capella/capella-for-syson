@@ -14,17 +14,20 @@ package org.eclipse.capella.diagram.sab.view.edges.describes;
 
 import java.util.Objects;
 
-import org.eclipse.syson.util.ServiceMethod;
-import org.eclipse.capella.model.services.system.analysis.SARepresentationReconnectToolServices;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.eclipse.sirius.components.view.diagram.EdgeReconnectionTool;
 import org.eclipse.sirius.components.view.diagram.SourceEdgeEndReconnectionTool;
 import org.eclipse.sirius.components.view.diagram.TargetEdgeEndReconnectionTool;
-import org.eclipse.syson.services.DeleteService;
+import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
+import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
+import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * SAB describes edge palette provider.
@@ -49,11 +52,18 @@ public class DescribesPaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(DeleteService::deleteFromModel).aqlSelf())
+                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
+                        .build());
+        var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
+                .name("Edit")
+                .initialDirectEditLabelExpression(ServiceMethod.<DiagramQueryLabelService, Element>of0(DiagramQueryLabelService::getDefaultInitialDirectEditLabel).aqlSelf())
+                .body(this.viewBuilderHelper.newChangeContext()
+                        .expression(ServiceMethod.<DiagramMutationLabelService, Element, String>of1(DiagramMutationLabelService::editEdgeCenterLabel).aqlSelf("newLabel"))
                         .build());
 
         return this.diagramBuilderHelper.newEdgePalette()
                 .deleteTool(deleteTool.build())
+                .centerLabelEditTool(labelEditTool.build())
                 .edgeReconnectionTools(this.createEdgeReconnectionTool())
                 .toolSections(this.defaultToolsFactory.createDefaultHideRevealEdgeToolSection())
                 .build();
@@ -63,7 +73,7 @@ public class DescribesPaletteProvider {
         SourceEdgeEndReconnectionTool sourceEdgeEndReconnectionTool = this.diagramBuilderHelper.newSourceEdgeEndReconnectionTool()
                 .name("describesSourceReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of2(SARepresentationReconnectToolServices::reconnectDescribes)
+                        .expression(ServiceMethod.of2(TransverseRepresentationReconnectToolServices::reconnectDescribes)
                                 .aql(AQLConstants.EDGE_SEMANTIC_ELEMENT, AQLConstants.SEMANTIC_RECONNECTION_TARGET, "true"))
                         .build())
                 .build();
@@ -71,7 +81,7 @@ public class DescribesPaletteProvider {
         TargetEdgeEndReconnectionTool targetEdgeEndReconnectionTool = this.diagramBuilderHelper.newTargetEdgeEndReconnectionTool()
                 .name("describesTargetReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of2(SARepresentationReconnectToolServices::reconnectDescribes)
+                        .expression(ServiceMethod.of2(TransverseRepresentationReconnectToolServices::reconnectDescribes)
                                 .aql(AQLConstants.EDGE_SEMANTIC_ELEMENT, AQLConstants.SEMANTIC_RECONNECTION_TARGET, "false"))
                         .build())
                 .build();

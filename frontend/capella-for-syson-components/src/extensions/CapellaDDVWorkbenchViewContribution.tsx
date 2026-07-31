@@ -11,6 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
+import { gql, useMutation, useQuery } from '@apollo/client';
 import {
   SelectionContextProvider,
   useReporting,
@@ -18,27 +19,28 @@ import {
   WorkbenchViewComponentProps,
   WorkbenchViewHandle,
 } from '@eclipse-sirius/sirius-components-core';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { DiagramRepresentation } from '@eclipse-sirius/sirius-components-diagrams';
-import { SxProps, Theme } from '@mui/material/styles';
+import BubbleChartIcon from '@mui/icons-material/BubbleChart';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { SxProps, Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import {
   CapellaDDVWorkbenchViewContributionState,
+  GQLGetRepresentationDescriptionsQueryData,
   GQLGetRepresentationDescriptionsQueryVariables,
   GQLSaveCapellaDDVDiagramMutationData,
   GQLSaveCapellaDDVDiagramMutationVariables,
-  GQLGetRepresentationDescriptionsQueryData,
   GQLSaveCapellaDDVDiagramPayload,
   GQLSaveCapellaDDVDiagramSuccessPayload,
 } from './CapellaDDVWorkbenchViewContribution.types';
-import { gql, useMutation, useQuery } from '@apollo/client';
 
 const ddvDescriptionsLabels: string[] = ['Functional Context Diagram'];
 
@@ -46,9 +48,10 @@ const container: SxProps<Theme> = (theme) => ({
   display: 'grid',
   gridTemplateColumns: '1fr',
   gridTemplateRows: 'min-content minmax(0, 1fr)',
+  flex: 1,
+  minHeight: 0,
   gap: theme.spacing(1),
   padding: theme.spacing(1),
-  maxHeight: '100%',
 });
 
 const topControlsStyle: SxProps<Theme> = (theme) => ({
@@ -237,8 +240,28 @@ export const CapellaDDVWorkbenchViewContribution = forwardRef<WorkbenchViewHandl
       );
     }
     return (
-      <Box sx={container} data-testid="capella-ddv-workbench-view">
-        {content}
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }} data-testid="view-ddv">
+        <Box
+          sx={(theme) => ({
+            display: 'flex',
+            flexDirection: 'row',
+            borderBottomWidth: '1px',
+            borderBottomStyle: 'solid',
+            borderBottomColor: theme.palette.divider,
+          })}>
+          <BubbleChartIcon sx={(theme) => ({ margin: theme.spacing(1) })} />
+          <Typography
+            sx={(theme) => ({
+              marginTop: theme.spacing(1),
+              marginRight: theme.spacing(1),
+              marginBottom: theme.spacing(1),
+            })}>
+            Related Elements Visual View
+          </Typography>
+        </Box>
+        <Box sx={container} data-testid="capella-ddv-workbench-view">
+          {content}
+        </Box>
       </Box>
     );
   }

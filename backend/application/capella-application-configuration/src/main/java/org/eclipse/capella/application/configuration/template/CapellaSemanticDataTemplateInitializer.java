@@ -17,15 +17,16 @@ import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.sirius.components.core.api.ICausalityChainVisitor;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IEditingContextPersistenceService;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.events.ICause;
 import org.eclipse.sirius.web.application.project.api.ICreateProjectInput;
 import org.eclipse.sirius.web.application.project.services.api.ISemanticDataInitializer;
-import org.eclipse.sirius.web.domain.boundedcontexts.project.events.IProjectEvent;
-import org.eclipse.sirius.web.domain.boundedcontexts.projectsemanticdata.events.IProjectSemanticDataEvent;
-import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.events.ISemanticDataEvent;
+import org.eclipse.sirius.web.domain.boundedcontexts.project.events.ProjectCreatedEvent;
+import org.eclipse.sirius.web.domain.boundedcontexts.projectsemanticdata.events.ProjectSemanticDataCreatedEvent;
+import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.events.SemanticDataCreatedEvent;
 import org.eclipse.syson.application.sysmlv2.SysMLv2TemplatesInitialization;
 import org.eclipse.syson.application.sysmlv2.api.IDefaultSysMLv2ResourceProvider;
 import org.slf4j.Logger;
@@ -45,11 +46,15 @@ public class CapellaSemanticDataTemplateInitializer implements ISemanticDataInit
 
     private final IDefaultSysMLv2ResourceProvider defaultSysMLv2ResourceProvider;
 
+    private final ICausalityChainVisitor causalityChainVisitor;
+
     private final Logger logger = LoggerFactory.getLogger(CapellaSemanticDataTemplateInitializer.class);
 
-    public CapellaSemanticDataTemplateInitializer(IEditingContextPersistenceService editingContextPersistenceService, IDefaultSysMLv2ResourceProvider defaultSysMLv2ResourceProvider) {
+    public CapellaSemanticDataTemplateInitializer(IEditingContextPersistenceService editingContextPersistenceService, IDefaultSysMLv2ResourceProvider defaultSysMLv2ResourceProvider,
+            ICausalityChainVisitor causalityChainVisitor) {
         this.editingContextPersistenceService = Objects.requireNonNull(editingContextPersistenceService);
         this.defaultSysMLv2ResourceProvider = Objects.requireNonNull(defaultSysMLv2ResourceProvider);
+        this.causalityChainVisitor = Objects.requireNonNull(causalityChainVisitor);
     }
 
     @Override
@@ -76,17 +81,15 @@ public class CapellaSemanticDataTemplateInitializer implements ISemanticDataInit
 
     private void initializeCapellaProject(ICause cause, IEMFEditingContext emfEditingContext) {
         var resourceSet = emfEditingContext.getDomain().getResourceSet();
-        var ressourceLabel = "capella.sysml";
-        if (cause instanceof IProjectSemanticDataEvent projectSemanticDataCreatedEvent) {
-            if (projectSemanticDataCreatedEvent.causedBy() instanceof ISemanticDataEvent semanticDataCreatedEvent) {
-                if (semanticDataCreatedEvent.causedBy() instanceof IProjectEvent projectCreatedEvent) {
-                    if (projectCreatedEvent.causedBy() instanceof ICreateProjectInput createProjectInput) {
-                        ressourceLabel = createProjectInput.name() + ".sysml";
-                    }
-                }
-            }
+        var resourceLabel = "capella.sysml";
+        if (cause instanceof ProjectSemanticDataCreatedEvent projectSemanticDataCreatedEvent) {
+            resourceLabel = this.causalityChainVisitor.findFirstCauseOfType(projectSemanticDataCreatedEvent, SemanticDataCreatedEvent.class)
+                    .flatMap(semanticDataCreatedEvent -> this.causalityChainVisitor.findFirstCauseOfType(semanticDataCreatedEvent, ProjectCreatedEvent.class))
+                    .flatMap(projectCreatedEvent -> this.causalityChainVisitor.findFirstCauseOfType(projectCreatedEvent, ICreateProjectInput.class))
+                    .map(createProjectInput -> createProjectInput.name() + ".sysml")
+                    .orElse(resourceLabel);
         }
-        var resource = this.defaultSysMLv2ResourceProvider.getEmptyResource(UUID.randomUUID(), ressourceLabel);
+        var resource = this.defaultSysMLv2ResourceProvider.getEmptyResource(UUID.randomUUID(), resourceLabel);
         resourceSet.getResources().add(resource);
         this.loadCapellaTemplateResource(resource);
         this.editingContextPersistenceService.persist(new SysMLv2TemplatesInitialization(UUID.randomUUID(), emfEditingContext, resource, cause), emfEditingContext);

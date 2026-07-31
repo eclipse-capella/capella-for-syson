@@ -12,17 +12,20 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ddv.view.view;
 
+import java.util.List;
+
+import org.eclipse.capella.model.services.functional.context.DDVQueryService;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.eclipse.syson.diagram.common.view.services.ViewEdgeService;
 import org.eclipse.syson.diagram.services.DiagramQueryElementService;
-import org.eclipse.syson.services.DeleteService;
+import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
+import org.eclipse.syson.diagram.services.aql.DiagramQueryAQLService;
+import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
 import org.eclipse.syson.services.LabelService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Functional Context Java service provider.
@@ -39,12 +42,15 @@ public class FunctionalContextViewJavaServiceProvider implements IJavaServicePro
                 .filter(desc -> FunctionalContextViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(desc.getName()))
                 .findFirst();
         if (optDescription.isPresent()) {
-            return List.of(DeleteService.class,
-                    LabelService.class,
+            return List.of(LabelService.class,
                     LAQueryService.class,
                     TransverseQueryService.class,
+                    TransverseMutationService.class,
+                    DDVQueryService.class,
                     DiagramQueryElementService.class,
-                    ViewEdgeService.class);
+                    DiagramMutationAQLService.class,
+                    DiagramQueryAQLService.class,
+                    ModelQueryAQLService.class);
         }
         return List.of();
     }

@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.component;
 
-import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -43,7 +43,7 @@ public class SystemComponentToolProvider {
                 .iconURLsExpression("/icons/full/obj16/LogicalComponent.svg");
         cache.getNodeDescription(SystemComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> nodeToolBuilder.body(
                 this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(SARepresentationMutationService::createSystemComponent).aqlSelf())
+                        .expression(ServiceMethod.of0(TransverseMutationService::createComponent).aqlSelf())
                         .children(this.diagramBuilderHelper.newCreateView()
                                 .containmentKind(NodeContainmentKind.CHILD_NODE)
                                 .elementDescription(nodeDescription)

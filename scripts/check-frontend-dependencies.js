@@ -17,7 +17,7 @@ const errors = [];
 
 const workspace = process.env.GITHUB_WORKSPACE || process.env.PWD;
 const findCommand = `find . -path "./frontend/*" -name "package.json"`;
-const result = childProcess.execSync(findCommand, {encoding: "utf8"});
+const result = childProcess.execSync(findCommand, { encoding: "utf8" });
 const filePaths = result.split(/\r?\n/);
 
 console.log("The following files will be reviewed:");
@@ -28,10 +28,10 @@ for (let index = 0; index < filePaths.length; index++) {
   const filePath = filePaths[index];
 
   if (
-      fs.existsSync(filePath) &&
-      filePath.endsWith("/package.json") &&
-      !filePath.includes("node_modules") &&
-      !filePath.endsWith("capella-for-syson/package.json")
+    fs.existsSync(filePath) &&
+    filePath.endsWith("/package.json") &&
+    !filePath.includes("node_modules") &&
+    !filePath.endsWith("capella-for-syson/package.json")
   ) {
     console.log(filePath);
     const file = fs.readFileSync(`${workspace}/${filePath}`, {
@@ -44,27 +44,27 @@ for (let index = 0; index < filePaths.length; index++) {
 }
 
 console.log(
-    "The following @eclipse-sirius/sirius-components dependencies have been found:"
+  "The following @eclipse-sirius/sirius-components dependencies have been found:",
 );
 const findSiriusComponentsPackageJsonsCommand = `find . -path "*/@eclipse-sirius/*" -name "package.json"`;
 const resultSiriusComponentsPackageJsons = childProcess.execSync(
-    findSiriusComponentsPackageJsonsCommand,
-    {encoding: "utf8"}
+  findSiriusComponentsPackageJsonsCommand,
+  { encoding: "utf8" },
 );
 const siriusComponentsPackageJsonsFilePaths =
-    resultSiriusComponentsPackageJsons.split(/\r?\n/);
+  resultSiriusComponentsPackageJsons.split(/\r?\n/);
 const siriusComponentsPackageJsons = {};
 for (
-    let index = 0;
-    index < siriusComponentsPackageJsonsFilePaths.length;
-    index++
+  let index = 0;
+  index < siriusComponentsPackageJsonsFilePaths.length;
+  index++
 ) {
   const filePath = siriusComponentsPackageJsonsFilePaths[index];
 
   if (
-      fs.existsSync(filePath) &&
-      filePath.endsWith("/package.json") &&
-      filePath.includes("node_modules/@eclipse-sirius/sirius-components-")
+    fs.existsSync(filePath) &&
+    filePath.endsWith("/package.json") &&
+    filePath.includes("node_modules/@eclipse-sirius/sirius-components-")
   ) {
     const file = fs.readFileSync(`${workspace}/${filePath}`, {
       encoding: "utf8",
@@ -74,15 +74,16 @@ for (
     console.log(`${filePath} (${fileVersion})`);
 
     if (siriusComponentsPackageJsons[json.name] !== undefined) {
-      errors.push(
-          `The dependency ${json.name} already exists in node_modules with the version ${siriusComponentsPackageJsons[json.name].version}`
-      );
       const existingVersion = siriusComponentsPackageJsons[json.name].version;
-      if (fileVersion.localeCompare(existingVersion) === -1) {
-        errors.push(`The most recent ${fileVersion} should be used.`);
+      if (fileVersion.localeCompare(existingVersion) > 0) {
+        errors.push(
+          `The dependency ${json.name} exists with inconsistent versions (${existingVersion}, ${fileVersion}). The most recent ${fileVersion} should be used.`,
+        );
         siriusComponentsPackageJsons[json.name] = json;
-      } else {
-        errors.push(`The most recent ${existingVersion} should be used.`);
+      } else if (fileVersion.localeCompare(existingVersion) < 0) {
+        errors.push(
+          `The dependency ${json.name} exists with inconsistent versions (${existingVersion}, ${fileVersion}). The most recent ${existingVersion} should be used.`,
+        );
       }
     } else {
       siriusComponentsPackageJsons[json.name] = json;
@@ -97,73 +98,73 @@ for (let name in packageJsons) {
   for (let currentPeerDependencyName in packageJson.peerDependencies) {
     if (!packageJson.devDependencies[currentPeerDependencyName]) {
       errors.push(
-          `The dev dependency ${currentPeerDependencyName} is missing in ${name}`
+        `The dev dependency ${currentPeerDependencyName} is missing in ${name}`,
       );
     }
 
     if (
-        packageJson.peerDependencies[currentPeerDependencyName] !==
-        packageJson.devDependencies[currentPeerDependencyName]
+      packageJson.peerDependencies[currentPeerDependencyName] !==
+      packageJson.devDependencies[currentPeerDependencyName]
     ) {
       errors.push(
-          `The dev dependency ${currentPeerDependencyName} does not have the same version has its peer dependency in ${name}`
+        `The dev dependency ${currentPeerDependencyName} does not have the same version has its peer dependency in ${name}`,
       );
     }
   }
 
   // The current package.json should have the peerDependencies of each of its sirius components dependencies
   const siriusDependencies = Object.entries(
-      packageJson.peerDependencies ?? {}
+    packageJson.peerDependencies ?? {},
   ).filter(
-      (dependencyEntry) =>
-          dependencyEntry[0].startsWith("@eclipse-sirius") &&
-          !dependencyEntry[0].endsWith("sirius-components-tsconfig") &&
-          !dependencyEntry[0].endsWith("sirius-web-application")
+    (dependencyEntry) =>
+      dependencyEntry[0].startsWith("@eclipse-sirius") &&
+      !dependencyEntry[0].endsWith("sirius-components-tsconfig") &&
+      !dependencyEntry[0].endsWith("sirius-web-application"),
   );
 
   const expectedPeerDependencies = {};
 
   for (const siriusDependency of siriusDependencies) {
     const requiredPeerDependencies =
-        siriusComponentsPackageJsons[siriusDependency[0]].peerDependencies;
+      siriusComponentsPackageJsons[siriusDependency[0]].peerDependencies;
     Object.entries(requiredPeerDependencies).forEach(
-        (requiredPeerDependency) => {
-          expectedPeerDependencies[requiredPeerDependency[0]] =
-              requiredPeerDependency[1];
-        }
+      (requiredPeerDependency) => {
+        expectedPeerDependencies[requiredPeerDependency[0]] =
+          requiredPeerDependency[1];
+      },
     );
   }
 
   for (let expectedPeerDependencyName in expectedPeerDependencies) {
     const existingPeerDependencyEntry =
-        packageJson.peerDependencies[expectedPeerDependencyName];
+      packageJson.peerDependencies[expectedPeerDependencyName];
     if (!existingPeerDependencyEntry) {
       errors.push(
-          `The peer dependency ${expectedPeerDependencyName} is missing in ${name}`
+        `The peer dependency ${expectedPeerDependencyName} is missing in ${name}`,
       );
     } else if (
-        existingPeerDependencyEntry !==
+      existingPeerDependencyEntry !==
         expectedPeerDependencies[expectedPeerDependencyName] &&
-        "*" !== expectedPeerDependencies[expectedPeerDependencyName]
+      "*" !== expectedPeerDependencies[expectedPeerDependencyName]
     ) {
       errors.push(
-          `The peer dependency ${expectedPeerDependencyName} should have the version ${expectedPeerDependencies[expectedPeerDependencyName]} instead of ${existingPeerDependencyEntry} in ${name}`
+        `The peer dependency ${expectedPeerDependencyName} should have the version ${expectedPeerDependencies[expectedPeerDependencyName]} instead of ${existingPeerDependencyEntry} in ${name}`,
       );
     }
 
     const existingDevDependencyEntry =
-        packageJson.devDependencies[expectedPeerDependencyName];
+      packageJson.devDependencies[expectedPeerDependencyName];
     if (!existingDevDependencyEntry) {
       errors.push(
-          `The dev dependency ${expectedPeerDependencyName} is missing in ${name}`
+        `The dev dependency ${expectedPeerDependencyName} is missing in ${name}`,
       );
     } else if (
-        existingDevDependencyEntry !==
+      existingDevDependencyEntry !==
         expectedPeerDependencies[expectedPeerDependencyName] &&
-        "*" !== expectedPeerDependencies[expectedPeerDependencyName]
+      "*" !== expectedPeerDependencies[expectedPeerDependencyName]
     ) {
       errors.push(
-          `The dev dependency ${expectedPeerDependencyName} should have the version ${expectedPeerDependencies[expectedPeerDependencyName]} instead of ${existingDevDependencyEntry} in ${name}`
+        `The dev dependency ${expectedPeerDependencyName} should have the version ${expectedPeerDependencies[expectedPeerDependencyName]} instead of ${existingDevDependencyEntry} in ${name}`,
       );
     }
   }

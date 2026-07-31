@@ -53,6 +53,9 @@ public class SystemOfInterestPaletteProvider {
     }
 
     public NodePalette createNodePalette(IViewDiagramElementFinder cache) {
+        var deleteTool = this.diagramBuilderHelper.newDeleteTool()
+                .name("Delete from Model")
+                .preconditionExpression("aql:false");
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
                 .name("Edit")
                 .initialDirectEditLabelExpression(ServiceMethod.<DiagramQueryLabelService, Element>of0(DiagramQueryLabelService::getDefaultInitialDirectEditLabel).aqlSelf())
@@ -61,6 +64,7 @@ public class SystemOfInterestPaletteProvider {
                         .build());
 
         return this.diagramBuilderHelper.newNodePalette()
+                .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .nodeTools(

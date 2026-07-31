@@ -15,59 +15,21 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.7</version>
-		<relativePath /> <!-- lookup parent from repository -->
+
+    <parent>
+        <groupId>org.eclipse.capella</groupId>
+        <artifactId>capella-parent</artifactId>
+        <version>2026.7.0</version>
+        <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>org.eclipse.capella</groupId>
-	<artifactId>capella-application</artifactId>
-	<version>2026.7.0</version>
+
+    <artifactId>capella-application</artifactId>
 	<name>capella-application</name>
 	<description>Capella for SysON Application</description>
 
 	<properties>
-		<java.version>21</java.version>
-		<sirius.web.version>2026.7.0</sirius.web.version>
-		<syson.version>2026.7.0</syson.version>
+		<capella.skipProvidedHostDependenciesCheck>true</capella.skipProvidedHostDependenciesCheck>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<!-- See https://github.com/eclipse-sirius/sirius-web/issues/5670 -->
-			<dependency>
-				<groupId>org.liquibase</groupId>
-				<artifactId>liquibase-core</artifactId>
-				<version>4.33.0</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
-	<repositories>
-		<repository>
-			<id>Central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-		</repository>
-		<repository>
-			<id>github-sirius-emfjson</id>
-			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-emf-json</url>
-		</repository>
-		<repository>
-			<id>github-sirius-web</id>
-			<name>Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-web</url>
-		</repository>
-		<repository>
-			<id>github-syson</id>
-			<name>Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/eclipse-syson/syson</url>
-		</repository>
-		<repository>
-			<id>Eclipse-Acceleo</id>
-			<url>https://download.eclipse.org/acceleo/updates/releases/4.2/R202510230846/</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -213,65 +175,18 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.4.0</version>
-				<configuration>
-					<configLocation>../../releng/capella-resources/checkstyle/CheckstyleConfiguration.xml
-					</configLocation>
-					<includeTestSourceDirectory>true</includeTestSourceDirectory>
-					<failsOnError>true</failsOnError>
-					<consoleOutput>true</consoleOutput>
-				</configuration>
-				<executions>
-					<execution>
-						<id>validate</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.13</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -388,6 +303,27 @@
 					<version>2026.7.0</version>
 				</dependency>
 			</dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <classpathDependencyExcludes>
+                                <!--
+                                Remove the capella-extension shaded jar when running tests with maven inside the
+                                IDE (otherwise shaded dependencies are duplicated, which results in multiple definitions
+                                of the same bean.
+                                -->
+                                <classpathDependencyExclude>
+                                    org.eclipse.capella:capella-extension
+                                </classpathDependencyExclude>
+                            </classpathDependencyExcludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
 		</profile>
 	</profiles>
 </project>

@@ -24,7 +24,7 @@ import org.eclipse.sirius.components.forms.description.PageDescription;
 import org.eclipse.sirius.components.representations.GetOrCreateRandomIdProvider;
 import org.eclipse.sirius.components.representations.IRepresentationDescription;
 import org.eclipse.sirius.components.representations.VariableManager;
-import org.eclipse.syson.sysml.Package;
+import org.eclipse.syson.sysml.OccurrenceDefinition;
 import org.springframework.stereotype.Service;
 
 /**
@@ -76,8 +76,7 @@ public class CapellaFormRepresentationDescriptionProvider implements IEditingCon
 
     private boolean canCreate(VariableManager variableManager) {
         return variableManager.get(VariableManager.SELF, Object.class)
-                .filter(object -> object instanceof Package packageObj &&
-                        packageObj.getDeclaredName().equals("System Engineering"))
+                .filter(object -> object instanceof OccurrenceDefinition)
                 .isPresent();
     }
 }

@@ -1,0 +1,649 @@
+= Capella-Web Functional Test Inventory
+:toc:
+:toclevels: 3
+
+This document lists candidate functional tests to add in `capella-web`.
+
+== Baseline (2026-04-13)
+
+- Existing backend tests are mostly architecture/coding-rule checks.
+- Real functional backend tests currently contain one integration test class:
+  `backend/application/capella-application/src/test/java/org/eclipse/capella/application/controllers/projects/ProjectControllerIntegrationTests.java`.
+- Existing Capella-specific GraphQL schemas to cover:
+  - `capella-create-representation.graphqls`
+  - `capella-diagrams.graphqls`
+  - `capella-ddv.graphqls`
+- No frontend unit tests (`*.test.ts(x)` / `*.spec.ts(x)`) are currently present.
+- No Cypress or Playwright suite is currently present in this repository.
+
+== Unit Tests (Fast, In-Memory)
+
+=== Business Services (`backend/model/capella-model-services`)
+
+[cols="1,2,5",options="header"]
+|===
+|ID |Target |Test to write
+
+|UT-MS-001
+|`LAMutationService`
+|[x] `setPerformedActionUsage(PartUsage, ActionUsage)` adds allocation once and keeps model consistency.
+
+|UT-MS-002
+|`LAMutationService`
+|[x] `setPerformedActionUsage(PartUsage, List<ActionUsage>)` replaces previous allocations and keeps only requested ones.
+
+|UT-MS-003
+|`LAMutationService`
+|[x] `deletePerformedActionUsage` removes only selected allocation.
+
+|UT-MS-004
+|`LAMutationService`
+|[x] `deleteFunction` removes function plus inverse references (performed actions, involved chains).
+
+|UT-MS-005
+|`LAMutationService`
+|[x] `setFunctionalExchangePayload` creates payload feature when missing and sets typed items.
+
+|UT-MS-006
+|`LAMutationService`
+|[x] `setStatusKind` sets status from valid enum literal and `unSetUsageStatusKind` clears it.
+
+|UT-MS-007
+|`LAMutationService`
+|[x] `setArcadiaReferenceFeature` updates single-valued and multi-valued arcadia references with correct type.
+
+|UT-MS-008
+|`LAQueryService`
+|[x] Type predicates (`isFunction`, `isFunctionPort`, `isFunctionalExchange`, `isExchangeItem`) for positive and negative cases.
+
+|UT-MS-009
+|`LAQueryService`
+|[x] `getSubFunctions` and `getParentFunction` on nested function trees.
+
+|UT-MS-010
+|`LAQueryService`
+|[x] `getAllocatingComponent` and `getAllocatedFunctions` reflect performed action links.
+
+|UT-MS-011
+|`LAQueryService`
+|[x] `getReferencingFunctionalExchange` / `getReferencedFunctionalExchange` compute incoming/outgoing flows.
+
+|UT-MS-012
+|`LAQueryService`
+|[x] `getFunctionalChainsImpliedIn` and `getFunctionalChainsInvolvingFunction` are stable and complete.
+
+|UT-MS-013
+|`LAQueryService`
+|[x] `toComponentsPackage` / `toFunctionsPackage` / `toRequirementsPackage` resolve expected package from element.
+
+|UT-MS-014
+|`LAQueryService`
+|[x] `getStatusKindEnum` and `getStatusKindEnumLiterals` expose expected enum values from editing context.
+
+|UT-MS-015
+|`LARepresentationMutationService`
+|[x] `createFunctionalExchange` creates edge between source/target function ports and rejects invalid ends.
+
+|UT-MS-016
+|`LARepresentationMutationService`
+|[x] `createComponent` creates actor/non-actor component with expected arcadia typing.
+
+|UT-MS-017
+|`LARepresentationMutationService`
+|[x] `createNewFunctionInComponent` and `createNewFunctionInFunction` create children in correct container.
+
+|UT-MS-018
+|`LARepresentationMutationService`
+|[x] `createNewSameLevelFunction` inserts sibling function under same parent.
+
+|UT-MS-019
+|`LARepresentationMutationService`
+|[x] `createFunctionPort` sets direction (`IN`, `OUT`, `INOUT`) correctly.
+
+|UT-MS-020
+|`LARepresentationMutationService`
+|[x] `createNewFunctionalChain` keeps selected function ordering and membership.
+
+|UT-MS-021
+|`LARepresentationQueryService`
+|[x] `getFunctionalExchangeSource/Target` return correct feature ends.
+
+|UT-MS-022
+|`LARepresentationQueryService`
+|[x] `getFunctionalChainInDiagram` returns only chains represented in current diagram context.
+
+|UT-MS-023
+|`LARepresentationQueryService`
+|[x] Index helpers (`getImpliedInFunctionalChainIndex`, `getFunctionalChainIndexInDiagram`) are deterministic.
+
+|UT-MS-024
+|`OAQueryService`
+|[x] `toComponentsPackage`, `toRequirementsPackage`, `getSubComponents` for OA structure.
+
+|UT-MS-025
+|`OAQueryService`
+|[x] `getComponentExchangeSource/Target` resolve OA communication means correctly.
+
+|UT-MS-026
+|`OARepresentationMutationService`
+|[x] `createEntityComponent`, `createRequirement`, `createCommunicationMeanComponentExchange` create expected model elements.
+
+|UT-MS-027
+|`TransverseMutationService`
+|`setElementDescription` handles create/update/remove rich text content.
+
+|UT-MS-028
+|`TransverseMutationService`
+|`setFeatureReferenceValues`, `addFeatureReferenceValue`, `deleteFeaturesFromReference`, `deleteReference` preserve model integrity.
+
+|UT-MS-029
+|`TransverseMutationService`
+|`setFeatureDirection` updates feature direction and rejects incompatible values.
+
+|UT-MS-030
+|`TransverseMutationService`
+|`deleteComponent` removes component and related references without leaking dangling elements.
+
+|UT-MS-031
+|`TransverseQueryService`
+|`getArcadiaType` / `getArcadiaPerspective` / `getArcadiaPerspectivePackage` return expected values by layer.
+
+|UT-MS-032
+|`TransverseQueryService`
+|`getFeatureReferenceExpression` / `getFeatureReferenceValue` resolve references for arcadia attributes.
+
+|UT-MS-033
+|`TransverseQueryService`
+|`getComponentExchanges`, `getComponentPorts`, `getRequirements` filter by arcadia type as expected.
+
+|UT-MS-034
+|`TransverseQueryService`
+|Direction helpers (`isInFeature`, `isOutFeature`, `isInOutFeature`) for all enum values.
+
+|UT-MS-035
+|`TransverseRepresentationMutationService`
+|`createNewExchangeItem`, `createComponentExchange`, `createComponentPort`, `createRequirementDescribes` create expected semantic links.
+
+|UT-MS-036
+|`LARepresentationDropServices`
+|[x] Auto-moving a sub-component view under a dropped parent recreates all existing child and border descendants recursively.
+|===
+
+=== Application Configuration Services (`backend/application/capella-application-configuration`)
+
+[cols="1,2,5",options="header"]
+|===
+|ID |Target |Test to write
+
+|UT-APP-001
+|`ArcadiaLibraryConfiguration`
+|`getArcadiaLibraryResourceSet` loads KerML + SysML + Arcadia libraries once and returns cached set.
+
+|UT-APP-002
+|`ArcadiaEditingContextProcessor`
+|`preProcess` copies Arcadia resources only for Capella-nature projects.
+
+|UT-APP-003
+|`ArcadiaEditingContextProcessor`
+|Copied resources keep `IDAdapter` IDs and cross-resource references.
+
+|UT-APP-004
+|`CapellaSemanticDataTemplateInitializer`
+|`canHandle` accepts Capella and Capella-library template ids only.
+
+|UT-APP-005
+|`CapellaSemanticDataTemplateInitializer`
+|Capella project init loads `arcadiaDefaultStructure.json` and persists semantic data.
+
+|UT-APP-006
+|`CapellaSemanticDataTemplateInitializer`
+|Capella-library init creates empty resource with expected label.
+
+|UT-APP-007
+|`CreateCapellaRepresentationDataFetcher`
+|Maps GraphQL input to `CreateCapellaRepresentationInput` and dispatches mutation with editingContextId.
+
+|UT-APP-008
+|`CreateCapellaDiagramEventHandler`
+|`canHandle` accepts only `CreateCapellaRepresentationInput`.
+
+|UT-APP-009
+|`CreateCapellaDiagramEventHandler`
+|LAB creation path picks Logical Architecture/Structure package and emits representation creation change.
+
+|UT-APP-010
+|`CreateCapellaDiagramEventHandler`
+|OAB creation path picks Operational Analysis/Structure package and emits representation creation change.
+
+|UT-APP-011
+|`CreateCapellaDiagramEventHandler`
+|Invalid representation id or missing package returns `ErrorPayload` + `ChangeKind.NOTHING`.
+
+|UT-APP-012
+|`CapellaExplorerFilterService`
+|`applyFilters` hides memberships, standard libraries, root namespace, and optional ports filter.
+
+|UT-APP-013
+|`CapellaExplorerService`
+|`getKind` enriches arcadia elements and packages with query parameters.
+
+|UT-APP-014
+|`CapellaExplorerService`
+|`isEditable` / `isDeletable` enforce library protection rules.
+
+|UT-APP-015
+|`CapellaExplorerDropTreeItemExecutor`
+|Allowed drops (function->function, component->structure, ports) move elements; invalid combinations fail.
+
+|UT-APP-016
+|`CapellaExplorerTreePathProvider`
+|Path computation honors active filters (`Hide Ports`) and returns filtered ancestors.
+
+|UT-APP-017
+|`CapellaExplorerTreeRepresentationMetadataProvider`
+|Recognizes Capella explorer representation id and builds metadata with explorer icon.
+
+|UT-APP-018
+|`CapellaExplorerTreeItemContextMenuEntryProvider`
+|Context menu entries vary correctly for document/object/representation/library nodes.
+
+|UT-APP-019
+|`CapellaImagePathsService`
+|Arcadia type + perspective mapping returns correct icon paths (including actor/human and port direction).
+
+|UT-APP-020
+|`CapellaDetailsPostProcessor`
+|Capella page is always first while preserving other pages.
+
+|UT-APP-021
+|`CapellaReferenceWidgetPropertiesConverter`
+|Capella reference widgets resolve owner, options, values, read-only, and type kind correctly.
+
+|UT-APP-022
+|`CapellaReferenceWidgetBehaviorConverter`
+|`itemRemove`, `clear`, `set/add` routes to matching provider and returns proper status on failure.
+
+|UT-APP-023
+|Reference widget providers
+|Each provider (`Allocated*`, `Involved*`, `ExchangedItemPayload`, `ComponentExchangePort`, `FunctionalExchangeFunctions`) returns expected options/value and mutation behavior.
+
+|UT-APP-024
+|`SemanticBrowserService`
+|Category computation for function references/references-by and functional exchange directions.
+
+|UT-APP-025
+|`SemanticBrowserService`
+|`collectExpandedNodeIndexes` returns full index list for nested trees.
+
+|UT-APP-026
+|`SemanticBrowserService`
+|`getAllRelatedRepresentationMetadata` returns only diagrams containing current element (recursive node search).
+|===
+
+=== View/Representation Modules (`backend/views/*`)
+
+[cols="1,2,5",options="header"]
+|===
+|ID |Target |Test to write
+
+|UT-VIEW-001
+|`CapellaViewDescriptionProvider`
+|`preProcess` injects all contributed views into editing context.
+
+|UT-VIEW-002
+|LAB/OAB/DDV view description providers
+|Each provider returns expected view id, representation name, palette, and precondition expression.
+
+|UT-VIEW-003
+|`ShowDiagramFunctionsService`
+|`setShowFunctions` toggles state and emits `HideDiagramElementEvent` for function nodes only.
+
+|UT-VIEW-004
+|`ShowDiagramFunctionsEventHandler`
+|Success path emits visibility change; wrong input emits `ErrorPayload`.
+
+|UT-VIEW-005
+|`MutationShowDiagramFunctionsDataFetcher` and `ShowDiagramFunctionsDataFetcher`
+|GraphQL binding and query readback of `showFunctions` state.
+
+|UT-VIEW-006
+|`CapellaDDVDiagramEventProcessorFactory`
+|Parses transient `capella-ddv://` representation ids and builds diagram event processor.
+
+|UT-VIEW-007
+|`CapellaDDVRepresentationMetadataProvider`
+|Builds metadata only for DDV prefix and valid `descriptionId` parameter.
+
+|UT-VIEW-008
+|`SaveCapellaDDVDiagramEventHandler`
+|Save creates new persisted representation id and emits `REPRESENTATION_CREATION`.
+
+|UT-VIEW-009
+|`MutationSaveCapellaDDVDiagramDataFetcher`
+|Maps GraphQL input and dispatches mutation.
+
+|UT-VIEW-010
+|`DDVWorkbenchConfigurationCustomizer`
+|Adds DDV right-side panel view when workbench has at least 2 panels.
+
+|UT-VIEW-011
+|`FunctionTableRepresentationDescriptionProvider`
+|`canCreate`, pagination, filtering (global/row/column), and function level computation.
+
+|UT-VIEW-012
+|`FunctionTableEditCellHandler`
+|Description/status cell edits route to correct mutation service and return semantic change.
+
+|UT-VIEW-013
+|Function table row executors
+|`Add function`, `Add subfunction`, and `Delete function` actions mutate expected row targets.
+
+|UT-VIEW-014
+|`FunctionTableRowContextMenuProvider`
+|Exposes exactly expected 3 row entries and ids.
+
+|UT-VIEW-015
+|`CapellaViewFormService`
+|Pie chart values and progress widgets compute deterministic counts for known model fixture.
+
+|UT-VIEW-016
+|`ComponentProgress`
+|Ratio and string output for zero/non-zero totals.
+|===
+
+=== Frontend Unit Tests (`frontend/capella-web-components`)
+
+[cols="1,2,5",options="header"]
+|===
+|ID |Target |Test to write
+
+|UT-FE-001
+|`useShowDiagramFunctions`
+|Reads query value and reports GraphQL errors via toasts.
+
+|UT-FE-002
+|`ShowHideDiagramFunctions`
+|Checkbox state initializes from query and triggers mutation with expected payload.
+
+|UT-FE-003
+|`ShowHideDiagramFunctions`
+|Error payload and network error update local error message state.
+
+|UT-FE-004
+|`CapellaDiagramPanelMenu`
+|Menu toggle/open-close behavior and URL-based auto-open (`showIcons=false`).
+
+|UT-FE-005
+|`CapellaNewRepresentationArea`
+|LAB/OAB buttons dispatch mutation and select created representation.
+
+|UT-FE-006
+|`CapellaDDVWorkbenchViewContribution`
+|Filters representation descriptions to DDV-compatible labels and defaults selection.
+
+|UT-FE-007
+|`CapellaDDVWorkbenchViewContribution`
+|Save button mutation updates selection with persisted representation id.
+
+|UT-FE-008
+|`CapellaExtensionRegistryMergeStrategy`
+|`mergeComponentExtensions`/`mergeDataExtensions` behavior for Capella-specific extension points.
+|===
+
+== Backend Integration Tests (Spring Boot + DB + GraphQL/REST)
+
+=== GraphQL API Contract Tests
+
+[cols="1,2,5",options="header"]
+|===
+|ID |Target |Test to write
+
+|IT-GQL-001
+|`createCapellaRepresentation` (LAB)
+|Mutation creates representation metadata, persisted diagram, and returns `CreateRepresentationSuccessPayload`.
+
+|IT-GQL-002
+|`createCapellaRepresentation` (OAB)
+|Mutation creates OAB representation in Operational Analysis structure package.
+
+|IT-GQL-003
+|`createCapellaRepresentation`
+|Unknown representation id returns `ErrorPayload` with no persisted representation.
+
+|IT-GQL-004
+|`createCapellaRepresentation`
+|Mutation fails cleanly when no matching target package exists.
+
+|IT-GQL-005
+|`showDiagramFunctionsValue`
+|Viewer query returns default configured value and updates after mutation.
+
+|IT-GQL-006
+|`showDiagramFunctions`
+|Mutation emits expected payload and diagram visibility change event.
+
+|IT-GQL-007
+|`saveCapellaDDVDiagram`
+|Mutation persists transient DDV diagram as regular representation and returns new representation id.
+
+|IT-GQL-008
+|`saveCapellaDDVDiagram`
+|Invalid input path returns `ErrorPayload`.
+
+|IT-GQL-009
+|Capella GraphQL schema registration
+|Schema contains all 3 Capella-specific operations and input/payload types with expected nullability.
+|===
+
+=== Backend Integration (Non-GraphQL functional flows)
+
+[cols="1,2,5",options="header"]
+|===
+|ID |Target |Test to write
+
+|IT-BE-001
+|Project templates
+|Project template list includes `SysMLv2`, `Capella`, and `Capella-Library` with expected metadata.
+
+|IT-BE-002
+|Capella project initialization
+|Creating Capella project loads default Arcadia structure resource.
+
+|IT-BE-003
+|Capella library initialization
+|Creating Capella-library project initializes empty semantic resource and persists it.
+
+|IT-BE-004
+|Arcadia library pre-processing
+|Opening Capella editing context injects Arcadia library resources and keeps IDs stable.
+
+|IT-BE-005
+|Capella explorer contribution
+|Capella explorer tree is contributed only for Capella-nature projects.
+
+|IT-BE-006
+|Capella explorer metadata provider
+|Explorer representation metadata resolves from representation id.
+
+|IT-BE-007
+|Explorer drag and drop
+|Drop handler updates semantic model for supported combinations and rejects invalid ones.
+
+|IT-BE-008
+|Explorer filters
+|Hide-ports filter removes function/component ports from returned tree.
+
+|IT-BE-009
+|Explorer tree path
+|Selection path payload excludes filtered nodes and returns correct depth.
+
+|IT-BE-010
+|Explorer context menu
+|Server returns context entries according to node type (resource/object/representation/library).
+
+|IT-BE-011
+|Capella details view registration
+|Details registry includes Capella page and it appears first after post-processing.
+
+|IT-BE-012
+|Reference widget lifecycle
+|Set/add/remove/clear on Capella custom reference widgets updates model as expected.
+
+|IT-BE-013
+|Semantic browser categories
+|Current/referencing/referenced categories are correct for representative function graph fixture.
+
+|IT-BE-014
+|Semantic browser diagram links
+|Related representation metadata includes only diagrams containing current element.
+
+|IT-BE-015
+|Function table representation
+|Table description is available and row/cell providers operate on LA functions.
+
+|IT-BE-016
+|Function table row actions
+|Row context actions create/delete functions and refresh table accordingly.
+
+|IT-BE-017
+|Function table cell editing
+|Editing description/status updates model and survives refresh.
+
+|IT-BE-018
+|Capella image paths
+|Explorer/label icon URLs match arcadia types and perspectives.
+|===
+
+== End-To-End Tests (Cypress or Playwright)
+
+[cols="1,2,5",options="header"]
+|===
+|ID |Area |Test to write
+
+|E2E-001
+|Onboarding
+|Opening a Capella project shows Capella onboard area with LAB/OAB creation actions.
+
+|E2E-002
+|Onboarding
+|Creating LAB representation from onboard area opens newly created diagram tab.
+
+|E2E-003
+|Onboarding
+|Creating OAB representation from onboard area opens newly created diagram tab.
+
+|E2E-004
+|Explorer
+|Capella explorer is visible for Capella projects and hidden for non-Capella projects.
+
+|E2E-005
+|Explorer
+|Hide Ports filter hides/show ports without affecting non-port elements.
+
+|E2E-006
+|Explorer
+|Drag and drop function under function updates hierarchy.
+
+|E2E-007
+|Explorer
+|Drag and drop component under structure package updates hierarchy.
+
+|E2E-008
+|Explorer
+|Invalid drag and drop shows failure feedback and keeps model unchanged.
+
+|E2E-009
+|Explorer
+|Context menu actions (`New object`, `New representation`, `New objects from text`) are available on expected nodes.
+
+|E2E-010
+|Details view
+|Editing element name in Capella details updates explorer label.
+
+|E2E-011
+|Details view
+|Editing description/status updates details and is persisted after reload.
+
+|E2E-012
+|Details view
+|Component-specific widgets (`Is Actor`, `Is Human`) update semantics and UI state.
+
+|E2E-013
+|Details view
+|Functional exchange widget edits exchanged items and source/target read-only display remains consistent.
+
+|E2E-014
+|Details view
+|Functional chain widget manages involved functional exchanges and derived involved functions.
+
+|E2E-015
+|LAB diagram
+|Palette creates component, function, ports, requirement, and functional chain nodes.
+
+|E2E-016
+|LAB diagram
+|Edge tools create functional exchange, component exchange, and describes edges between compatible nodes.
+
+|E2E-017
+|LAB diagram
+|Diagram panel menu toggles `Show Functions` and function nodes hide/show immediately.
+
+|E2E-018
+|LAB diagram
+|URL option (`showFunctions=false`) initializes functions hidden state.
+
+|E2E-019
+|OAB diagram
+|Palette creates entity component and requirement, and communication mean edges.
+
+|E2E-020
+|DDV
+|DDV workbench view appears in right panel and shows representation description selector.
+
+|E2E-021
+|DDV
+|Saving transient DDV diagram creates persisted representation and updates current selection.
+
+|E2E-022
+|Function table
+|Function table opens from representation list and displays LA function hierarchy.
+
+|E2E-023
+|Function table
+|Row menu actions add same-level function, add sub-function, and delete function.
+
+|E2E-024
+|Function table
+|Editing description/status cells persists changes after refresh.
+
+|E2E-025
+|Function table
+|Global filter, column filters, and row filters work together on status/component/ports.
+
+|E2E-026
+|Semantic browser
+|Selecting a function displays expected current/referencing/referenced categories and related diagrams.
+
+|E2E-027
+|Cross-view sync
+|Selection propagation between explorer, diagram, details, and semantic browser remains consistent.
+
+|E2E-028
+|Navigation/Footer
+|Capella navbar icon returns to home and footer links/version are rendered.
+|===
+
+== Suggested First Wave (Highest Value)
+
+1. `IT-GQL-001` to `IT-GQL-007` (all Capella GraphQL operations).
+2. `UT-MS-001` to `UT-MS-015` (core LA + transverse business logic).
+3. `IT-BE-007` to `IT-BE-013` (explorer/details/semantic browser server behavior).
+4. `E2E-001` to `E2E-021` (onboarding + explorer + properties + LAB/OAB/DDV).
+5. `E2E-022` to `E2E-025` (function table behavior).
+
+== Notes for Implementation
+
+- Prefer deterministic backend integration tests first for Capella-specific GraphQL and server-side behavior.
+- Keep business-service unit tests in the corresponding module (`src/test/java`) and use real SysML fixtures over heavy mocking.
+- For e2e tests, create/delete project test data in `beforeEach`/`afterEach` and rely on stable selectors (`data-testid`) where available.
+- If adding a new e2e framework folder, keep helper/page-object layers from day one to avoid scenario duplication.

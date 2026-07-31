@@ -9,8 +9,13 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer.services;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFilterService;
@@ -27,10 +32,6 @@ import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.Namespace;
 import org.eclipse.syson.sysml.util.ElementUtil;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Services to apply filters on Capella explorer.
@@ -135,7 +136,7 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
     private List<Object> hidePorts(List<Object> elements, List<String> activeFilterIds) {
         var alteredElements = new ArrayList<>(elements);
         if (activeFilterIds.contains(CapellaTreeFilterProvider.HIDE_PORTS_TREE_ITEM_FILTER_ID)) {
-            alteredElements.removeIf(object -> object instanceof EObject eObject && (this.transverseQueryService.isComponentPort(eObject) || this.laQueryService.isFunctionPort(eObject)));
+            alteredElements.removeIf(object -> object instanceof EObject eObject && (this.transverseQueryService.isComponentPort(eObject) || this.transverseQueryService.isFunctionPort(eObject)));
         }
         return alteredElements;
     }
@@ -146,7 +147,13 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
 
     private boolean capellaElementOrRepresentation(Object object) {
         if (object instanceof Element element) {
-            return element instanceof org.eclipse.syson.sysml.OccurrenceDefinition || element instanceof org.eclipse.syson.sysml.Package || this.transverseQueryService.isArcadiaElement(element);
+            boolean isSupportedSysMLElement = element instanceof org.eclipse.syson.sysml.OccurrenceDefinition
+                    || element instanceof org.eclipse.syson.sysml.Package
+                    || element instanceof org.eclipse.syson.sysml.RequirementUsage;
+            return isSupportedSysMLElement
+                    // Describes is represented as an AllocationUsage, which isn't an Arcadia element.
+                    || this.transverseQueryService.isDescribes(element)
+                    || this.transverseQueryService.isArcadiaElement(element);
         }
         return object instanceof RepresentationMetadata;
     }

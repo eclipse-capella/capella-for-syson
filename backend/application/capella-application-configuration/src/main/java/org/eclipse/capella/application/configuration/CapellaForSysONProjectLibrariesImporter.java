@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import org.eclipse.sirius.components.core.api.ICausalityChainVisitor;
 import org.eclipse.sirius.web.application.UUIDParser;
 import org.eclipse.sirius.web.application.project.api.ICreateProjectInput;
 import org.eclipse.sirius.web.domain.boundedcontexts.library.Library;
@@ -49,29 +50,34 @@ public class CapellaForSysONProjectLibrariesImporter {
 
     private final ILibrarySearchService librarySearchService;
 
-    public CapellaForSysONProjectLibrariesImporter(ISemanticDataUpdateService semanticDataUpdateService, ILibrarySearchService librarySearchService) {
+    private final ICausalityChainVisitor causalityChainVisitor;
+
+    public CapellaForSysONProjectLibrariesImporter(ISemanticDataUpdateService semanticDataUpdateService, ILibrarySearchService librarySearchService, ICausalityChainVisitor causalityChainVisitor) {
         this.semanticDataUpdateService = Objects.requireNonNull(semanticDataUpdateService);
         this.librarySearchService = Objects.requireNonNull(librarySearchService);
+        this.causalityChainVisitor = Objects.requireNonNull(causalityChainVisitor);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener
     public void onSemanticDataCreatedEvent(SemanticDataCreatedEvent event) {
-        if (event.causedBy() instanceof ProjectCreatedEvent projectCreatedEvent && projectCreatedEvent.causedBy() instanceof ICreateProjectInput createProjectInput) {
-            var projectSemanticData = event.semanticData();
+        this.causalityChainVisitor.findFirstCauseOfType(event, ProjectCreatedEvent.class)
+                .flatMap(projectCreatedEvent -> this.causalityChainVisitor.findFirstCauseOfType(projectCreatedEvent, ICreateProjectInput.class))
+                .ifPresent(createProjectInput -> {
+                    var projectSemanticData = event.semanticData();
 
-            List<Library> libraries = this.librarySearchService.findAllById(this.getLibraryIds(createProjectInput.libraryIds()));
+                    List<Library> libraries = this.librarySearchService.findAllById(this.getLibraryIds(createProjectInput.libraryIds()));
 
-            List<AggregateReference<SemanticData, UUID>> newLibraries = new ArrayList<>();
-            for (Library library : libraries) {
-                var isAlreadyUsed = projectSemanticData.getDependencies().stream()
-                        .anyMatch(dependency -> dependency.dependencySemanticDataId().getId().equals(library.getSemanticData().getId()));
-                if (!isAlreadyUsed) {
-                    newLibraries.add(library.getSemanticData());
-                }
-            }
-            this.semanticDataUpdateService.addDependencies(event, AggregateReference.to(projectSemanticData.getId()), newLibraries);
-        }
+                    List<AggregateReference<SemanticData, UUID>> newLibraries = new ArrayList<>();
+                    for (Library library : libraries) {
+                        var isAlreadyUsed = projectSemanticData.getDependencies().stream()
+                                .anyMatch(dependency -> dependency.dependencySemanticDataId().getId().equals(library.getSemanticData().getId()));
+                        if (!isAlreadyUsed) {
+                            newLibraries.add(library.getSemanticData());
+                        }
+                    }
+                    this.semanticDataUpdateService.addDependencies(event, AggregateReference.to(projectSemanticData.getId()), newLibraries);
+                });
     }
 
     private List<UUID> getLibraryIds(List<String> libraryIds) {

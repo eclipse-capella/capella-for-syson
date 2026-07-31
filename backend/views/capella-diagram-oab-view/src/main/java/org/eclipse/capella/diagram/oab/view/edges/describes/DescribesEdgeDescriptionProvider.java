@@ -12,23 +12,21 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oab.view.edges.describes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.oab.view.OABViewDiagramDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
+import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
 import org.eclipse.syson.sysml.SysmlPackage;
-import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Describes edge description.
@@ -39,11 +37,8 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
 
     public static final String EDGE_DESCRIPTION_NAME = "DescribesEdgeDescription";
 
-    private final TransverseQueryService transverseQueryService;
-
     public DescribesEdgeDescriptionProvider(IColorProvider colorProvider) {
         super(colorProvider);
-        this.transverseQueryService = new TransverseQueryService();
     }
 
     @Override
@@ -54,11 +49,11 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getAllocationUsage).aqlSelf())
-                .sourceExpression(AQLConstants.AQL_SELF + ".source->first()")
+                .semanticCandidatesExpression(ServiceMethod.of0(ModelQueryAQLService::getAllReachableAllocateEdges).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(ModelQueryAQLService::getSourceAllocateEdge).aqlSelf())
                 .style(describesEdgeStyleProvider.createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(AQLConstants.AQL_SELF + ".target->first()")
+                .targetExpression(ServiceMethod.of0(ModelQueryAQLService::getTargetAllocateEdge).aqlSelf())
                 .palette(new DescribesPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }
@@ -70,9 +65,7 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
             EdgeDescription edgeDescription = optEdgeDescription.get();
             diagramDescription.getEdgeDescriptions().add(edgeDescription);
 
-            List<DiagramElementDescription> diagramElementDescriptions = new ArrayList<>(
-                    this.transverseQueryService.getDiagramNodeDescriptions(OABViewDiagramDescriptionProvider.DESCRIPTION_NAME, cache)
-            );
+            List<DiagramElementDescription> diagramElementDescriptions = new ArrayList<>(cache.getNodeDescriptions());
             cache.getEdgeDescription(CommunicationMeanComponentExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME)
                     .ifPresent(diagramElementDescriptions::add);
 

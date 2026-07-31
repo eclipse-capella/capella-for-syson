@@ -12,17 +12,17 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view.providers;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiFunction;
+
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.BiFunction;
 
 /**
  * Provides cell options in function table select cells.
@@ -33,11 +33,11 @@ public class CellOptionsProvider implements BiFunction<VariableManager, Object, 
 
     private final IEditingContext editingContext;
 
-    private final LAQueryService laQueryService;
+    private final TransverseQueryService transverseQueryService;
 
     public CellOptionsProvider(IEditingContext editingContext) {
         this.editingContext = Objects.requireNonNull(editingContext);
-        this.laQueryService = new LAQueryService();
+        this.transverseQueryService = new TransverseQueryService();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class CellOptionsProvider implements BiFunction<VariableManager, Object, 
         EObject self = variableManager.get(VariableManager.SELF, EObject.class).orElse(null);
         if (self instanceof ActionUsage
                 && columnTargetObject == SysmlPackage.eINSTANCE.getOwningMembership()) {
-            List<String> statusLiterals = laQueryService.getStatusKindEnumLiterals(editingContext);
+            List<String> statusLiterals = this.transverseQueryService.getStatusKindEnumLiterals(this.editingContext);
 
             return new ArrayList<>(statusLiterals);
 

@@ -12,9 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.functionalchain;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -23,6 +22,7 @@ import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.diagram.SelectionDialogTreeDescription;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide tools to create Functional Chain node.
@@ -47,7 +47,7 @@ public class FunctionalChainToolProvider {
                 .dialogDescription(this.createFunctionalExchangesDialogDescription());
         cache.getNodeDescription(FunctionalChainNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of1(LARepresentationMutationService::createNewFunctionalChain).aqlSelf("selectedObjects"))
+                    .expression(ServiceMethod.of1(TransverseMutationService::createFunctionalChain).aqlSelf("selectedObjects"))
                     .children(this.diagramBuilderHelper.newCreateView()
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .elementDescription(nodeDescription)
@@ -62,6 +62,7 @@ public class FunctionalChainToolProvider {
     private DialogDescription createFunctionalExchangesDialogDescription() {
         return this.diagramBuilderHelper.newSelectionDialogDescription()
                 .multiple(true)
+                .defaultTitleExpression("Functional Exchanges")
                 .descriptionExpression("Select the Functional Exchanges implied in")
                 .selectionDialogTreeDescription(this.createDialogTreeDescription())
                 .build();
@@ -69,7 +70,7 @@ public class FunctionalChainToolProvider {
 
     private SelectionDialogTreeDescription createDialogTreeDescription() {
         return this.diagramBuilderHelper.newSelectionDialogTreeDescription()
-                .elementsExpression(ServiceMethod.of0(LAQueryService::getFunctionalExchanges).aqlSelf())
+                .elementsExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchanges).aqlSelf())
                 .isSelectableExpression(AQLConstants.AQL + "true")
                 .childrenExpression(null)
                 .build();
