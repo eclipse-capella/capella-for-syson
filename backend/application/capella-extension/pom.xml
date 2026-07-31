@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2026 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+
+ SPDX-License-Identifier: EPL-2.0
+
+ Contributors:
+     Obeo - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.0.7</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>org.eclipse.capella</groupId>
+	<artifactId>capella-extension</artifactId>
+	<version>2026.7.0</version>
+	<name>capella-for-syson-extension</name>
+	<description>Capella for SysON Extension</description>
+
+	<properties>
+		<java.version>21</java.version>
+		<sirius.web.version>2026.7.0</sirius.web.version>
+		<syson.version>2026.7.0</syson.version>
+	</properties>
+
+	<repositories>
+		<repository>
+			<id>Central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
+			<id>github-sirius-emfjson</id>
+			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-emf-json</url>
+		</repository>
+		<repository>
+			<id>github-sirius-web</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-web</url>
+		</repository>
+		<repository>
+			<id>github-syson</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/eclipse-syson/syson</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-frontend</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-application-configuration</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-lab-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-oab-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-sab-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-ddv-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-table-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-form-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-model-edit</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-application</artifactId>
+			<version>${syson.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<shadedArtifactAttached>false</shadedArtifactAttached>
+							<createDependencyReducedPom>true</createDependencyReducedPom>
+							<useDependencyReducedPomInJar>true</useDependencyReducedPomInJar>
+							<transformers>
+								<!-- Auto-configuration imports may be contributed by both SysON and Capella for SysON. -->
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</resource>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.cyclonedx</groupId>
+				<artifactId>cyclonedx-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<configLocation>../../releng/capella-resources/checkstyle/CheckstyleConfiguration.xml</configLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<failsOnError>true</failsOnError>
+					<consoleOutput>true</consoleOutput>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.13</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

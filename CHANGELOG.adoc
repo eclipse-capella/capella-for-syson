@@ -1,0 +1,6 @@
+= Changelog
+
+== 2026.9.0
+=== New Features
+
+- Initial open source publication of Capella for SysON under the Eclipse Public License v2.0.

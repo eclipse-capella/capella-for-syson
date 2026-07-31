@@ -1,0 +1,71 @@
+:author: Gwendal Daniel
+:date: 2026-09-20
+:status: proposed
+:consulted: Stéphane Bégaudeau, Mélanie Bats
+:informed: Thibault Béziers La Fosse, Arnaud Dieumegard
+:deciders: Stéphane Bégaudeau, Mélanie Bats
+
+= (s) Make Capella a SysON extension
+
+== Problem
+
+Currently, Capella for SysON is a standalone application that supersedes SysON.
+SysON users who want to move to Capella need to install a new application, even if it is based on SysON.
+We want to simplify this process, by allowing users to specify a _Capella for SysON extension_ to use when they start their SysON application. 
+
+== Key Result
+
+A SysON application can be started with an extension that enables Capella features.
+
+=== Acceptance Criteria
+
+Capella for SysON's integration and e2e tests should be executed on SysON with the Capella for SysON extension activated.
+
+== Solution
+
+SysON (or Sirius Web) will provide various mechanisms to add the support for Capella conditionally when users will need it.
+These mechanisms will let the Capella for SysON extension provide customization of both the backend and frontend behavior.
+
+The Capella for SysON extension will most likely consist of two sub-extensions:
+
+- An Arcadia for SysON extension that adds the SysMLv2 Arcadia libraries to SysON (and allows to define/manipulate SysMLv2 models typed by Arcadia concepts)
+- A Capella for SysON extension that adds Capella capabilities to manipulate Arcadia concepts 
+
+Deactivating the Capella for SysON extension will allow users to visualize Capella models as SysMLv2 models.
+Deactivating both Capella for SysON and Arcadia for SysON needs to be handled specifically, since allowing to open models referencing missing libraries may result in data losses.
+The activation of the Capella for SysON extension will be guarded by the presence of the Arcadia for SysON extension.
+
+Note that extensions can be activated/deactivated on startup, we do not need to change their status dynamically.
+The mechanisms used to create this extension must be usable by others and the Capella for SysON extension must not be considered as a special use case for SysON.
+
+=== Scenario
+
+==== SysON administrator activates the Capella for SysON extension
+
+* The administrator of an existing SysON application (with existing projects, data, representations) restart its server with the Capella for SysON extension
+* Existing projects are still available and can be worked with in exactly the same way as in SysON
+* Users can create Capella projects, see Capella-specific menus, and create Capella representations 
+
+==== SysON administrator deactivates the Capella for SysON extension
+
+* The administrator of an existing SysON application with the Capella extension (with existing SysON and Capella projects, data, representations) restarts its server without the Capella for SysON extension
+* Existing projects are still available (including Capella for SysON projects)
+* Capella projects can be browsed as SysMLv2 project (Capella concepts aren't visible anymore, and the hidden SysMLv2 used to represent these concepts are not hidden anymore)
+* Capella-specific menus and representations (e.g. the Capella explorer) are not available anymore
+* Re-activating the Capella for SysON extension should reset the application to the initial point of this scenario (no data is lost in the process)
+
+=== Breadboarding
+
+No breadboarding since there won't be any UI for this feature.
+
+=== Cutting backs
+
+Nothing identified at the moment.
+
+== Rabbit holes
+
+Nothing identified at the moment.
+
+== No-gos
+
+Nothing identified at the moment.

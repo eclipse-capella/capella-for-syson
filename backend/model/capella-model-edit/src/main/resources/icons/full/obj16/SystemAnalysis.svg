@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <path d="M.5 3.1v3.112h14.979V3.1Z" style="fill:#292253;fill-opacity:1;stroke-width:1.13789"/>
+    <path d="M.501 2.16h14.978V.495H.501Z" style="fill:#7667a3;fill-opacity:1;stroke-width:.832154"/>
+    <path d="M.501 8.815h14.978V7.152H.501Z" style="fill:#7667a3;fill-opacity:1;stroke-width:.831995"/>
+    <path d="M.501 12.145h14.978v-1.663H.501Zm0 3.33h14.978v-1.663H.501Z" style="fill:#7667a3;fill-opacity:1;stroke-width:.832154"/>
+    <path d="M92.77 179.605h1.236v1.39H92.77z" style="fill:#fff;fill-opacity:.968627;stroke:none;stroke-width:.289418;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:1" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    <g style="font-style:normal;font-weight:400;font-size:1.40103px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#000;fill-opacity:.968627;stroke:none;stroke-width:.0350255">
+        <path d="M93.467 180.536q0-.052-.026-.085t-.119-.07q-.112-.044-.197-.114-.084-.07-.084-.2 0-.126.089-.202.088-.076.227-.076.143 0 .227.086.086.086.086.22h-.201q0-.062-.028-.102-.026-.04-.088-.04-.057 0-.084.033-.027.034-.027.082t.04.081q.042.033.109.062.14.05.209.126.069.075.069.198 0 .131-.083.205-.083.072-.225.072-.086 0-.165-.035t-.13-.107-.05-.186h.202q0 .09.035.127.037.037.108.037.058 0 .082-.032t.024-.08" aria-label="S" style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-family:&quot;Roboto Condensed&quot;;-inkscape-font-specification:&quot;Roboto Condensed, Bold&quot;;fill:#000;fill-opacity:.968627;stroke-width:.0350255" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    </g>
+</svg>

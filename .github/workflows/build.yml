@@ -1,0 +1,195 @@
+#
+# Copyright (c) 2026 Obeo.
+# This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v2.0
+# which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#     Obeo - initial API and implementation
+#
+name: Continuous integration
+
+on:
+  push:
+    paths-ignore:
+      - "CHANGELOG.adoc"
+      - "README.md"
+      - "doc/**"
+    branches:
+      - "**"
+    tags:
+      - "*"
+  pull_request:
+    paths-ignore:
+      - "CHANGELOG.adoc"
+      - "README.md"
+      - "doc/**"
+  workflow_dispatch:
+
+env:
+  GITHUB_EVENT_NAME: ${{ github.event_name }}
+  GITHUB_EVENT_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  GITHUB_REF: ${{ github.ref }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node SDK
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16
+          registry-url: https://npm.pkg.github.com/
+
+      - name: Cache Node.js modules
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+            ${{ runner.OS }}-
+
+      - name: Setup Java SDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup global environment variables
+        run: |
+          echo "git_describe=$(git describe --always)" >> $GITHUB_ENV
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Configure package registries
+        run: |
+          cat > ~/.m2/settings.xml <<EOF
+          <settings>
+            <servers>
+              <server><id>github-sirius-emfjson</id><username>x-access-token</username><password>${{ github.token }}</password></server>
+              <server><id>github-sirius-web</id><username>x-access-token</username><password>${{ github.token }}</password></server>
+              <server><id>github-syson</id><username>x-access-token</username><password>${{ github.token }}</password></server>
+              <server><id>github-arcadia</id><username>x-access-token</username><password>${{ github.token }}</password></server>
+            </servers>
+          </settings>
+          EOF
+      - name: Build the frontend packages
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ github.token }}" >> .npmrc
+          echo "CI=true" >> $GITHUB_ENV
+          npm ci
+          npm run format-lint
+          npm run build
+          npm run coverage
+
+      - name: Publish frontend code coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/capella-for-syson/coverage/
+          retention-days: 5
+
+      - name: Copy frontend artifacts
+        run: |
+          EXTENSION_ROOT=backend/application/capella-extension
+          mkdir -p "$EXTENSION_ROOT/src/main/resources/static/capella-for-syson"
+          cp -R frontend/capella-for-syson/dist/. "$EXTENSION_ROOT/src/main/resources/static/capella-for-syson"
+
+      - name: Build the backend
+        run: mvn -U -B -e clean verify
+
+      - name: Check backend code coverage
+        run: jshell scripts/check-coverage.jsh
+
+      - name: Publish JaCoCo report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: backend/capella-test-coverage/target/site/jacoco-aggregate/
+          retention-days: 5
+
+      - name: Prepare the SysON plugin image build arguments
+        run: |
+          EXTENSION_POM=backend/application/capella-extension/pom.xml
+          SYSON_VERSION="$(mvn --quiet --file "$EXTENSION_POM" help:evaluate -Dexpression=syson.version -DforceStdout)"
+          EXTENSION_VERSION="$(mvn --quiet --file "$EXTENSION_POM" help:evaluate -Dexpression=project.version -DforceStdout)"
+          echo "SYSON_IMAGE=eclipsesyson/syson:v${SYSON_VERSION}" >> $GITHUB_ENV
+          echo "EXTENSION_JAR=backend/application/capella-extension/target/capella-extension-${EXTENSION_VERSION}.jar" >> $GITHUB_ENV
+
+      - name: Set up Docker Build
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804
+        with:
+          images: capella-for-syson
+          tags: |
+            type=sha,format=long,prefix=ci-
+
+      - name: Build the SysON plugin image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/application/capella-extension/Dockerfile
+          load: true
+          build-args: |
+            SYSON_IMAGE=${{ env.SYSON_IMAGE }}
+            EXTENSION_JAR=${{ env.EXTENSION_JAR }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Check the Playwright test code
+        working-directory: integration-tests-playwright
+        run: |
+          npm ci
+          npm run format-lint
+          npm run eslint
+
+      - name: Install Playwright browsers
+        working-directory: integration-tests-playwright
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        working-directory: integration-tests-playwright
+        env:
+          IMAGE_TAG: capella-for-syson:${{ steps.meta.outputs.version }}
+        run: |
+          docker compose --project-name capella-for-syson-ci --file ../docker-compose.yml up --detach
+          trap 'docker compose --project-name capella-for-syson-ci --file ../docker-compose.yml logs; docker compose --project-name capella-for-syson-ci --file ../docker-compose.yml down --volumes' EXIT
+          docker compose --project-name capella-for-syson-ci --file ../docker-compose.yml ps
+          npx wait-on -t 180000 http://localhost:8080/actuator/health
+          npx playwright test
+
+      - name: Publish Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            integration-tests-playwright/playwright-report/
+            integration-tests-playwright/test-results/
+          retention-days: 5

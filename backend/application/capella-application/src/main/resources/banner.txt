@@ -1,0 +1,3 @@
+${Ansi.GREEN}Capella for SysON${Ansi.BLACK}
+
+${Ansi.GREEN} :: Spring Boot :: ${Ansi.BLACK}       ${spring-boot.formatted-version}

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <path d="M.5 9.757v3.112h14.979V9.757Z" style="fill:#292253;fill-opacity:1;stroke-width:1.13789"/>
+    <g style="fill:#7667a3;fill-opacity:1">
+        <path d="M91.314 179.14h3.963v-.441h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220174" transform="translate(-344.624 -674.901) scale(3.77953)"/>
+        <path d="M91.314 180.9h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220132" transform="translate(-344.624 -674.901) scale(3.77953)"/>
+        <path d="M91.314 180.02h3.963v-.44h-3.963zm0 2.642h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220174" transform="translate(-344.624 -674.901) scale(3.77953)"/>
+    </g>
+    <path d="M92.77 179.605h1.236v1.39H92.77z" style="fill:#fff;fill-opacity:.968627;stroke:none;stroke-width:.289418;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:1" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    <g style="font-style:normal;font-weight:400;font-size:1.40103px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#000;fill-opacity:.968627;stroke:none;stroke-width:.0350255">
+        <path d="M93.385 180.448h-.138v.35h-.202v-.996h.34q.15 0 .237.094.087.093.087.236 0 .145-.087.23-.086.086-.237.086m-.138-.478v.31h.138q.063 0 .091-.04.03-.042.03-.107 0-.064-.03-.113-.028-.05-.09-.05z" aria-label="P" style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-family:&quot;Roboto Condensed&quot;;-inkscape-font-specification:&quot;Roboto Condensed, Bold&quot;;fill:#000;fill-opacity:.968627;stroke-width:.0350255" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    </g>
+</svg>

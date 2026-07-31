@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <path d="M2.367 5.021h11.295v7.195H2.367z" style="fill:#f4eed1;fill-opacity:1;stroke:#264d14;stroke-width:0;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:.968627"/>
+    <path d="M13.5 3.875H8L6.625 2.5H2.5c-.757 0-1.368.618-1.368 1.375l-.007 8.25A1.38 1.38 0 0 0 2.5 13.5h11a1.38 1.38 0 0 0 1.375-1.375V5.25A1.38 1.38 0 0 0 13.5 3.875m0 8.25h-11V5.25h11Z" style="stroke-width:.68754"/>
+</svg>

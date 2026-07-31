@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <path d="M.5 12.362v3.112h14.979v-3.112z" style="fill:#292253;fill-opacity:1;stroke-width:1.13789"/>
+    <g style="fill:#7667a3;fill-opacity:1">
+        <path d="M86.777 179.149h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220174" transform="translate(-327.477 -674.937) scale(3.77953)"/>
+        <path d="M86.777 180.814h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220132" transform="translate(-327.477 -674.937) scale(3.77953)"/>
+        <path d="M86.777 179.981h3.963v-.44h-3.963zm0 1.666h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220174" transform="translate(-327.477 -674.937) scale(3.77953)"/>
+    </g>
+    <path d="M92.77 179.605h1.236v1.39H92.77z" style="fill:#fff;fill-opacity:.968627;stroke:none;stroke-width:.289418;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:1" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    <g style="font-style:normal;font-weight:400;font-size:1.40103px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#000;fill-opacity:.968627;stroke:none;stroke-width:.0350255">
+        <path d="M93.045 180.798v-.996h.57v.168h-.368v.235h.313v.162h-.313v.264h.37v.167z" aria-label="E" style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-family:&quot;Roboto Condensed&quot;;-inkscape-font-specification:&quot;Roboto Condensed, Bold&quot;;fill:#000;fill-opacity:.968627;stroke-width:.0350255" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    </g>
+</svg>

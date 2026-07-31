@@ -1,0 +1,51 @@
+/*******************************************************************************
+ * Copyright (c) 2026 Obeo.
+ * This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v2.0
+ * which accompanies this distribution, and is available at
+ * https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *     Obeo - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.capella.diagram.ddv.view.view;
+
+import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.sirius.components.view.View;
+import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
+import org.eclipse.syson.diagram.common.view.services.ViewEdgeService;
+import org.eclipse.syson.diagram.services.DiagramQueryElementService;
+import org.eclipse.syson.services.DeleteService;
+import org.eclipse.syson.services.LabelService;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Functional Context Java service provider.
+ *
+ * @author fbarbin
+ */
+@Service
+public class FunctionalContextViewJavaServiceProvider implements IJavaServiceProvider {
+
+    @Override
+    public List<Class<?>> getServiceClasses(View view) {
+        var descriptions = view.getDescriptions();
+        var optDescription = descriptions.stream()
+                .filter(desc -> FunctionalContextViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(desc.getName()))
+                .findFirst();
+        if (optDescription.isPresent()) {
+            return List.of(DeleteService.class,
+                    LabelService.class,
+                    LAQueryService.class,
+                    TransverseQueryService.class,
+                    DiagramQueryElementService.class,
+                    ViewEdgeService.class);
+        }
+        return List.of();
+    }
+}

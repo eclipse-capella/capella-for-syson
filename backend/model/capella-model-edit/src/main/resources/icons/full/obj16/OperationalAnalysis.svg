@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <path d="M.5.495v3.112h14.979V.495Z" style="fill:#292253;fill-opacity:1;stroke-width:1.13789"/>
+    <g style="fill:#7667a3;fill-opacity:1">
+        <path d="M100.165 180.147h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220174" transform="translate(-378.076 -674.84) scale(3.77953)"/>
+        <path d="M100.165 180.98h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220132" transform="translate(-378.076 -674.84) scale(3.77953)"/>
+        <path d="M100.165 181.813h3.963v-.44h-3.963zm0 .833h3.963v-.44h-3.963z" style="fill:#7667a3;fill-opacity:1;stroke-width:.220174" transform="translate(-378.076 -674.84) scale(3.77953)"/>
+    </g>
+    <path d="M92.77 179.605h1.236v1.39H92.77z" style="fill:#fff;fill-opacity:.968627;stroke:none;stroke-width:.289418;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:1" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    <g style="font-style:normal;font-weight:400;font-size:1.40103px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#000;fill-opacity:.968627;stroke:none;stroke-width:.0350255">
+        <path d="M93.747 180.224v.165q0 .21-.099.317-.098.106-.26.106-.16 0-.26-.106-.099-.106-.099-.317v-.165q0-.216.1-.325.098-.11.258-.11.161 0 .26.11.1.11.1.325m-.202.165v-.167q0-.142-.04-.204-.04-.061-.118-.061t-.117.061-.04.204v.167q0 .136.04.196.041.06.119.06t.117-.06.04-.196" aria-label="O" style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-family:&quot;Roboto Condensed&quot;;-inkscape-font-specification:&quot;Roboto Condensed, Bold&quot;;fill:#000;fill-opacity:.968627;stroke-width:.0350255" transform="translate(-408.304 -800.47) scale(4.50826)"/>
+    </g>
+</svg>

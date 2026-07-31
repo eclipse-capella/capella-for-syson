@@ -1,0 +1,176 @@
+:author: Gwendal Daniel
+:date: 2026-07-20
+:status: proposed
+:consulted: Stéphane Bégaudeau, Mélanie Bats
+:informed: Thibault Béziers La Fosse, Arnaud Dieumegard
+:deciders: Stéphane Bégaudeau, Mélanie Bats
+:pitch: doc/iterations/2026.9/make-capella-for-syson-a-syson-extension.adoc
+
+
+= ADR-001 - Contribute Capella for SysON as an extension of SysON
+
+== Context and Problem Statement
+
+We want to provide a mechanism that lets developer create extensions for SysON (and maybe to some extent for Sirius Web).
+
+
+== Decision Drivers
+
+The mechanism should allow to define a _Capella for SysON_ extension, which would:
+
+* Customize the backend (e.g. to create Capella-specific representations, change or remove an existing behavior of Sirius Web/SysON).
+* Customize the frontend (e.g. to add a Capella-specific node type in diagrams, change or remove an existing behavior of Sirius Web/SysON).
+
+Starting SysON with this extension activated will let users create Capella diagrams, elements, etc.
+If the extension is then deactivated, the stored data should still be accessible as SysMLv2.
+
+It should be possible to have multiple extensions activated at the same time.
+
+
+== Considered Options
+
+=== A self-contained jar added to SysON
+
+The _Capella for SysON_ extension will consist of a jar added in SysON's classpath, which will:
+
+- Publish the _Arcadia_ library using Sirius Web's library mechanism, making it available as a dependency when creating projects
+- Customize the backend with custom services and Sirius Web/SysON service implementations
+- Override SysON's frontend with the Capella for SysON frontend
+
+Pro:
+
+- The approach is easy to implement and use
+- Using the Sirius Web library mechanism allows to keep the library around even when the Capella for SysON extension is de-activated.
+This ensures that Capella models can still be opened as SysMLv2 models when the Capella for SysON extension is not available.
+
+Cons:
+
+- We can't "uninstall" the Arcadia library when removing the Capella for SysON extension, otherwise we'll produce tons of broken links in existing models.
+In general, anytime an extension is used to customize semantic data (via Sirius Web libraries or any other mechanism), we'll need it forever after that, otherwise we risk to compromise the semantic data.
+
+[CAUTION]
+====
+Shouldn't we have the same thing for data? 
+Should we be able to keep opening Capella-specific representations as SysON representations? 
+Should they stay here but not visible to the end user?
+====
+
+- We have an issue with multiple extensions contributing a frontend.
+As long as each extension is encapsulating the previous one we are fine, the last extension contains everything and it works.
+It will also require all extensions to not perform anything on the frontend unless the backend has validated it. 
+For example, a button can only be displayed if the backend says it.
+
+- We need to see how we can override the frontend jar of SysON.
+Should it be removed from the self-contained jar of SysON by default?
+- Adding custom data structure in the database will bring multiple issues to keep the database schema of SysON aligned with the database schema of the extension (which can be used on top of every SysON version, every x version, etc).
+
+=== A self-contained jar with frontend module federation
+
+The extension will provide one or two jars, depending on whether the split between Arcadia and Capella is something we want.
+This solution will allow multiple extensions to contribute to the frontend via module federation.
+The host frontend will query the backend to get the list of available extensions, and dynamically load them to retrieve their contributions and integrate them in the application.
+
+
+Pro:
+
+- Real extension mechanism: the backend is extended with additional behavior, and the frontend too.
+- We can have multiple extensions that do not depend on each other at the same time
+
+Cons:
+
+- This is too complex to implement right now since it relies on untested technologies in Sirius Web contexts.
+- This requires changes in SysON (and most likely Sirius Web), which may impact other Sirius Web-based applications.
+- Same database issue (like above)
+
+=== Two applications
+
+This is the current state: at the moment we have a Capella for SysON application and a SysON application.
+Both can be started individually, and can work on the same database.
+
+Pro:
+
+- Switching between Capella/SysON is done by switching the jar to run.
+- There is no additional development to do, this is already how it works at the moment.
+
+Cons:
+
+- Some data will become unreadable if we "downgrade" to SysON.
+Since there is no way to keep the Arcadia library around (we are consuming all the Capella for SysON jar or the SysON jar, not a mix of them) this implies that Capella projects opened with SysON will contain many broken references.
+- We can only have one extension at a time
+- Same database issue (like above)
+
+=== Micro-service
+
+A micro-service architecture may be an easier way to provide dedicated pages and tables for specific extensions.
+This would make sense to add features outside of the workbench, where we don't need deep integration with Sirius Web's frontend.
+Given that having a dedicated page is not the core of what the Capella for SysON extension is supposed to do, we won't consider it for now.
+But since adding features within the Sirius Web workbench can't scale forever (single threaded editing context event processor), we may switch to this solution at some point.
+
+=== SysON depending on Capella for SysON
+
+We can change the dependency to make SysON depend on Capella for SysON.
+
+Pro:
+
+- We could activate the Capella extension by switching a simple flag
+- We could do pretty much anything we want without issues, just like we do in SysON w.r.t. Sirius Web.
+
+Cons:
+
+- We can't do it with proprietary extensions, since SysON will have a dependency to said extension.
+- We would have a strong coupling between the lifecycle of Capella for SysON and SysON.
+If a major upgrade of Sirius Web is performed (i.e. switch to Spring Boot 5), we can't move forward with SysON until Capella for SysON has moved first.
+This would make any blocking issue for Capella for SysON become a blocking issue for SysON.
+
+
+== Decision Outcome
+
+Given the fact that we envision multiple extensions for SysON in the future (Capella for SysON being one of them), we will opt for the first solution.
+This will offer a solid ground to build Capella for SysON _and_ will not close the door to supporting extensions that do not rely on each other.
+
+
+== Consequences
+
+=== Advantages
+
+The selected solution is relatively easy to implement, and shouldn't be a blocking point to release a first version of Capella for SysON.
+The selected solution doesn't require major changes in Sirius Web or SysON (it may not require any depending on how frontend artifacts are served by the backend).
+
+
+=== Drawbacks
+
+At the moment, the support for extensions providing frontend customizations is limited to extensions that encapsulate the previous extension (since the frontend is replaced with the frontend of the extension).
+For example, Capella for SysON's frontend encapsulates SysON's frontend, so it works as expected.
+We can define another extension on top of Capella for SysON that would encapsulate Capella for SysON's frontend and it would work as expected.
+We cannot define another extension on top of SysON: it would encapsulate SysON's frontend and collide with the frontend provided by Capella for SysON.
+
+Note that this limitation only concerns _frontend_ contributions, backend contributions do not need to encapsulate anything.
+
+The host application and the extensions will most likely use the same database to store their information.
+This will create migration/update issues as soon as extension create custom tables that reference host tables.
+This is not an issue at the moment with Capella for SysON, but this is something to keep in mind, we can probably provide some guidelines on how to use the database to limit the issue (we can check how it is done for WordPress or Django plugins)
+
+We will need to define how we want the application to behave when "downgrading" from SysON with Capella for SysON to SysON.
+As mentioned above, splitting the extension in two to still give access to the Arcadia library when Capella is not activated is a first step, but we also need to define what we do with broken representations, projects we know we can't open safely (e.g. a project with a Capella nature without the Arcadia library available).
+Depending on the outcome of these discussions, we may need to implement the decided behavior in SysON and/or Sirius Web.
+
+
+== More Information
+
+=== Implementation
+
+1. Find and implement a solution to override how SysON serves its frontend artifacts.
+2. Create an `@AutoConfiguration` in Capella for SysON that takes care of loading the Capella services on application startup.
+3. Update Capella for SysON's build to make it an single jar that doesn't embed SysON or its dependencies (like it was done for EasyMod).
+4. Make SysON serve the Capella for SysON frontend instead of its own.
+5. Use Sirius Web's libraries to store the Arcadia library
+6. Ensure the presence of Capella customization are only visible when the backend says so (e.g. using capabilities).
+
+We will also find a way to ease the development of Capella for SysON, especially to start a SysON server with the Capella for SysON extensions easily.
+This may be done via a standalone maven module used for development only, or a `CapellaForSysONApplication` not packaged in the final product.
+
+
+=== References
+
+- https://module-federation.io/guide/runtime
+- https://developer.wordpress.org/plugins/creating-tables-with-plugins/

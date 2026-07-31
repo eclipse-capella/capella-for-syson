@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <path d="M.5 9.484h14.515V6.468H.5Z" style="fill:#292253;fill-opacity:1;stroke-width:1.10268"/>
+    <g style="fill:#7667a3;fill-opacity:1">
+        <path d="M104.7 178.674v.427h3.84v-.427zm0 1.28h3.84v-.426h-3.84zm0 1.707h3.84v-.426h-3.84zm0 .854h3.84v-.427h-3.84z" style="fill:#7667a3;fill-opacity:1;stroke-width:.213362" transform="translate(-395.217 -674.586) scale(3.77953)"/>
+    </g>
+    <path d="M92.77 179.605h1.236v1.39H92.77z" style="fill:#fff;fill-opacity:.968627;stroke:none;stroke-width:.289418;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:1" transform="translate(-362.538 -712.578) scale(4.02142)"/>
+    <g style="font-style:normal;font-weight:400;font-size:1.40103px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#000;fill-opacity:.968627;stroke:none;stroke-width:.0350255">
+        <path d="M93.6 180.631v.167h-.555v-.996h.202v.83z" aria-label="L" style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-family:&quot;Roboto Condensed&quot;;-inkscape-font-specification:&quot;Roboto Condensed, Bold&quot;;fill:#000;fill-opacity:.968627;stroke-width:.0350255" transform="translate(-362.538 -712.578) scale(4.02142)"/>
+    </g>
+</svg>

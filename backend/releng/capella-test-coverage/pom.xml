@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2026 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+
+ SPDX-License-Identifier: EPL-2.0
+
+ Contributors:
+     Obeo - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.eclipse.capella</groupId>
+	<artifactId>capella-test-coverage</artifactId>
+	<version>2026.7.0</version>
+	<name>capella-test-coverage</name>
+	<description>Capella for SysON test coverage</description>
+	<packaging>pom</packaging>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-application</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-application-configuration</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-model-services</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-common-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-lab-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-oab-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-sab-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-table-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-form-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-ddv-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.13</version>
+				<executions>
+					<execution>
+						<id>test-report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report-aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>
