@@ -12,8 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.edges.componentexchange;
 
+import java.util.Objects;
+
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
@@ -23,11 +25,9 @@ import org.eclipse.sirius.components.view.diagram.TargetEdgeEndReconnectionTool;
 import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
-import org.eclipse.syson.services.DeleteService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.util.AQLConstants;
-
-import java.util.Objects;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Palette for Component Exchange edge.
@@ -50,7 +50,7 @@ public class ComponentExchangePaletteProvider {
 
     public EdgePalette createEdgePalette() {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool().name("Delete from Model")
-                .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of0(DeleteService::deleteFromModel).aqlSelf()).build());
+                .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf()).build());
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
                 .name("Edit")
                 .initialDirectEditLabelExpression(ServiceMethod.<DiagramQueryLabelService, Element>of0(DiagramQueryLabelService::getDefaultInitialDirectEditLabel).aqlSelf())
@@ -64,13 +64,27 @@ public class ComponentExchangePaletteProvider {
 
     private EdgeReconnectionTool[] createEdgeReconnectionTool() {
 
-        SourceEdgeEndReconnectionTool sourceEdgeEndReconnectionTool = this.diagramBuilderHelper.newSourceEdgeEndReconnectionTool().name("componentExchangeSourceReconnectionTool")
-                .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of1(TransverseRepresentationReconnectToolServices::reconnectComponentExchange)
-                        .aql(AQLConstants.SEMANTIC_RECONNECTION_TARGET, AQLConstants.SEMANTIC_RECONNECTION_SOURCE)).build()).build();
+        SourceEdgeEndReconnectionTool sourceEdgeEndReconnectionTool = this.diagramBuilderHelper.newSourceEdgeEndReconnectionTool()
+                .name("componentExchangeSourceReconnectionTool")
+                .body(this.viewBuilderHelper.newChangeContext()
+                        .expression(ServiceMethod.of2(TransverseRepresentationReconnectToolServices::reconnectComponentExchange)
+                                .aql(
+                                        AQLConstants.EDGE_SEMANTIC_ELEMENT,
+                                        AQLConstants.SEMANTIC_RECONNECTION_TARGET,
+                                        AQLConstants.SEMANTIC_RECONNECTION_SOURCE))
+                        .build())
+                .build();
 
-        TargetEdgeEndReconnectionTool targetEdgeEndReconnectionTool = this.diagramBuilderHelper.newTargetEdgeEndReconnectionTool().name("componentExchangeTargetReconnectionTool")
-                .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of1(TransverseRepresentationReconnectToolServices::reconnectComponentExchange)
-                        .aql(AQLConstants.SEMANTIC_RECONNECTION_TARGET, AQLConstants.SEMANTIC_RECONNECTION_SOURCE)).build()).build();
+        TargetEdgeEndReconnectionTool targetEdgeEndReconnectionTool = this.diagramBuilderHelper.newTargetEdgeEndReconnectionTool()
+                .name("componentExchangeTargetReconnectionTool")
+                .body(this.viewBuilderHelper.newChangeContext()
+                        .expression(ServiceMethod.of2(TransverseRepresentationReconnectToolServices::reconnectComponentExchange)
+                                .aql(
+                                        AQLConstants.EDGE_SEMANTIC_ELEMENT,
+                                        AQLConstants.SEMANTIC_RECONNECTION_TARGET,
+                                        AQLConstants.SEMANTIC_RECONNECTION_SOURCE))
+                        .build())
+                .build();
 
         return new EdgeReconnectionTool[] { sourceEdgeEndReconnectionTool, targetEdgeEndReconnectionTool };
     }

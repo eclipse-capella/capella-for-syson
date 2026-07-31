@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2026 Obeo.
  * This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v2.0
@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
- */
+ *******************************************************************************/
+
 import { NavigationBarIconProps } from '@eclipse-sirius/sirius-web-application';
 import Link from '@mui/material/Link';
 import { emphasize } from '@mui/material/styles';

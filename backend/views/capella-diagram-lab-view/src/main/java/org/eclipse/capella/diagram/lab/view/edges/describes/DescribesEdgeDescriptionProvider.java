@@ -9,27 +9,27 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.edges.describes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.lab.view.LABViewDiagramDescriptionProvider;
-import org.eclipse.capella.diagram.lab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.lab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentNodeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
-import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
+import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.syson.sysml.SysmlPackage;
-import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Describes edge description.
@@ -40,11 +40,8 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
 
     public static final String EDGE_DESCRIPTION_NAME = "DescribesEdgeDescription";
 
-    private final TransverseQueryService transverseQueryService;
-
     public DescribesEdgeDescriptionProvider(IColorProvider colorProvider) {
         super(colorProvider);
-        this.transverseQueryService = new TransverseQueryService();
     }
 
     @Override
@@ -55,11 +52,11 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getAllocationUsage).aqlSelf())
-                .sourceExpression(AQLConstants.AQL_SELF + ".source->first()")
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getDescribes).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getDescribesSource).aqlSelf())
                 .style(describesEdgeStyleProvider.createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(AQLConstants.AQL_SELF + ".target->first()")
+                .targetExpression(ServiceMethod.of0(TransverseQueryService::getDescribesTarget).aqlSelf())
                 .palette(new DescribesPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }
@@ -71,20 +68,27 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
             EdgeDescription edgeDescription = optEdgeDescription.get();
             diagramDescription.getEdgeDescriptions().add(edgeDescription);
 
-            List<DiagramElementDescription> diagramElementDescriptions = new ArrayList<>(
-                    this.transverseQueryService.getDiagramNodeDescriptions(LABViewDiagramDescriptionProvider.DESCRIPTION_NAME, cache)
-            );
-            cache.getEdgeDescription(ComponentExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME)
-                    .ifPresent(diagramElementDescriptions::add);
-            cache.getEdgeDescription(FunctionalExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME)
-                    .ifPresent(diagramElementDescriptions::add);
+            // Get specific node descriptions for allocation sources and targets
+            List<NodeDescription> nodeDescriptions = this.getSourceAndTargetNodes(cache);
 
-            diagramElementDescriptions.forEach(diagramElementDescription -> {
-                edgeDescription.getSourceDescriptions().add(diagramElementDescription);
-                edgeDescription.getTargetDescriptions().add(diagramElementDescription)
-                ;
+            // Add only NodeDescriptions (not EdgeDescriptions!) as sources and targets
+            nodeDescriptions.forEach(nodeDescription -> {
+                edgeDescription.getSourceDescriptions().add(nodeDescription);
+                edgeDescription.getTargetDescriptions().add(nodeDescription);
             });
         }
+    }
+
+    /**
+     * Get the list of NodeDescriptions that can be sources or targets of an allocation edge.
+     * This is explicit to avoid adding duplicate or invalid descriptions.
+     */
+    private List<NodeDescription> getSourceAndTargetNodes(IViewDiagramElementFinder cache) {
+        var nodes = new ArrayList<NodeDescription>();
+        cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodes::add);
+        cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodes::add);
+        cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodes::add);
+        return nodes;
     }
 
     private String getEdgeDescriptionName() {

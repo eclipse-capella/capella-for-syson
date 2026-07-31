@@ -18,10 +18,8 @@ import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.lab.view.edges.functionalexchange.FunctionalExchangeToolProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationDropServices;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -38,6 +36,7 @@ import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Palette for Function nodes.
@@ -65,7 +64,7 @@ public class FunctionPaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(LAMutationService::deleteFunction).aqlSelf())
+                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
                         .build());
 
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
@@ -114,7 +113,7 @@ public class FunctionPaletteProvider {
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(LARepresentationMutationService::createNewFunctionInFunction).aqlSelf())
+                    .expression(ServiceMethod.of0(TransverseMutationService::createFunction).aqlSelf())
                     .children(this.diagramBuilderHelper.newCreateView()
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .elementDescription(nodeDescription)

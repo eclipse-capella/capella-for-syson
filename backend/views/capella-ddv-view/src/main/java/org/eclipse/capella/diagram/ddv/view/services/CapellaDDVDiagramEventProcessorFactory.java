@@ -12,6 +12,11 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ddv.view.services;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.eclipse.sirius.components.collaborative.api.IRepresentationEventProcessor;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationEventProcessorFactory;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationPersistenceStrategy;
@@ -30,12 +35,9 @@ import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IRepresentationDescriptionSearchService;
 import org.eclipse.sirius.components.core.api.IURLParser;
 import org.eclipse.sirius.components.diagrams.Diagram;
+import org.eclipse.sirius.components.diagrams.DiagramStyle;
+import org.eclipse.sirius.components.diagrams.layoutdata.DiagramLayoutData;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * A specific implementation to create the DiagramEventProcessor for transient DDV diagrams.
@@ -123,6 +125,8 @@ public class CapellaDDVDiagramEventProcessorFactory implements IRepresentationEv
                 .targetObjectId(targetObjectId)
                 .edges(List.of())
                 .nodes(List.of())
+                .style(DiagramStyle.newDiagramStyle().build())
+                .layoutData(new DiagramLayoutData(Map.of(), Map.of(), Map.of(), true))
                 .build();
     }
 }

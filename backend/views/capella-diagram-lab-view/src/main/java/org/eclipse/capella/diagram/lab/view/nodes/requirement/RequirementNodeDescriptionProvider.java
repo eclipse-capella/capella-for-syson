@@ -9,12 +9,17 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.requirement;
 
+import java.util.List;
+
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.LABDescriptionNameGenerator;
+import org.eclipse.capella.diagram.lab.view.LABViewDiagramDescriptionProvider;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -22,6 +27,8 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.IDescriptionNameGenerator;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -32,6 +39,8 @@ import org.eclipse.syson.util.SysMLMetamodelHelper;
 public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionProvider {
 
     public static final String NODE_DESCRIPTION_NAME = "RequirementNodeDescription";
+
+    private final IDescriptionNameGenerator nameGenerator = new LABDescriptionNameGenerator();
 
     public RequirementNodeDescriptionProvider(IColorProvider colorProvider) {
         super(colorProvider);
@@ -63,6 +72,27 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
             diagramDescription.getNodeDescriptions().add(nodeDescription);
             nodeDescription
                     .setPalette(new RequirementPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+
+            // Add all compartments as direct children (following SySON pattern)
+            this.addCompartments(nodeDescription, cache);
         });
+    }
+
+    /**
+     * Adds all compartments for RequirementUsage to the node description.
+     * Following SySON's pattern for dynamic compartment configuration.
+     */
+    private void addCompartments(NodeDescription nodeDescription, IViewDiagramElementFinder cache) {
+        List<EReference> compartmentRefs = LABViewDiagramDescriptionProvider.REQUIREMENT_COMPARTMENTS
+                .get(SysmlPackage.eINSTANCE.getRequirementUsage());
+
+        if (compartmentRefs != null) {
+            for (EReference eReference : compartmentRefs) {
+                String compartmentName = this.nameGenerator.getCompartmentName(
+                        SysmlPackage.eINSTANCE.getRequirementUsage(), eReference);
+                cache.getNodeDescription(compartmentName)
+                        .ifPresent(compartmentNode -> nodeDescription.getChildrenDescriptions().add(compartmentNode));
+            }
+        }
     }
 }

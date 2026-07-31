@@ -1,6 +1,38 @@
 = Changelog
 
 == 2026.9.0
+
+=== Pitches
+
+
+
+
+=== Architectural decision records
+
+
+
+
+=== Deprecation warning
+
+
+
+
+=== Breaking changes
+
+
+
+
+=== Dependency update
+
+- [releng] Update Sirius Web and SysON to `2026.7.2`
+
+=== Bug fixes
+
+
 === New Features
 
 - Initial open source publication of Capella for SysON under the Eclipse Public License v2.0.
+
+=== Improvements
+
+- [cleanup] Clean existing code and add semantic test infrastructure

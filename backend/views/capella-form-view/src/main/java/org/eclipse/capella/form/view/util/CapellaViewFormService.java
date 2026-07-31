@@ -12,7 +12,12 @@
  *******************************************************************************/
 package org.eclipse.capella.form.view.util;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.eclipse.capella.model.services.transverse.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
@@ -26,16 +31,10 @@ import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Membership;
-import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Used to provide the page description for the information displayed in the form.
@@ -75,76 +74,94 @@ public class CapellaViewFormService {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final LAQueryService laQueryService;
-
     public CapellaViewFormService() {
         this.transverseQueryService = new TransverseQueryService();
-        this.laQueryService = new LAQueryService();
     }
 
     public List<String> getConceptsRepartitionPieChartKeys(VariableManager variableManager) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
-        return this.getConceptEntries(rootPackage).stream()
-                .filter(e -> e.getValue().intValue() > 0)
-                .map(Map.Entry::getKey)
-                .toList();
+
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root ->
+                        this.getConceptEntries(root).stream()
+                                .filter(entry -> entry.getValue().intValue() > 0)
+                                .map(Map.Entry::getKey)
+                                .toList())
+                .orElse(List.of());
     }
 
     public List<Number> getConceptsRepartitionPieChartValues(VariableManager variableManager) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
-        return this.getConceptEntries(rootPackage).stream()
-                .filter(e -> e.getValue().intValue() > 0)
-                .map(Map.Entry::getValue)
-                .toList();
+
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root ->
+                        this.getConceptEntries(root).stream()
+                                .filter(entry -> entry.getValue().intValue() > 0)
+                                .map(Map.Entry::getValue)
+                                .toList())
+                .orElse(List.of());
     }
 
-    private List<Map.Entry<String, Number>> getConceptEntries(Package rootPackage) {
+    private List<Map.Entry<String, Number>> getConceptEntries(EObject root) {
         return List.of(
-                Map.entry(PIE_CHART_FUNCTIONS, this.getFunctions(rootPackage).size()),
-                Map.entry(PIE_CHART_COMPONENTS, this.getComponents(rootPackage).size()),
-                Map.entry(PIE_CHART_ACTORS, this.getActors(rootPackage).size()),
-                Map.entry(PIE_CHART_REQUIREMENTS, this.getRequirements(rootPackage).size()),
-                Map.entry(PIE_CHART_INTERFACES, this.getInterfaces(rootPackage).size()),
-                Map.entry(PIE_CHART_EXCHANGES, this.getExchanges(rootPackage).size()),
-                Map.entry(PIE_CHART_PORTS, this.getPorts(rootPackage).size())
+                Map.entry(PIE_CHART_FUNCTIONS, this.getFunctions(root).size()),
+                Map.entry(PIE_CHART_COMPONENTS, this.getComponents(root).size()),
+                Map.entry(PIE_CHART_ACTORS, this.getActors(root).size()),
+                Map.entry(PIE_CHART_REQUIREMENTS, this.getRequirements(root).size()),
+                Map.entry(PIE_CHART_INTERFACES, this.getInterfaces(root).size()),
+                Map.entry(PIE_CHART_EXCHANGES, this.getExchanges(root).size()),
+                Map.entry(PIE_CHART_PORTS, this.getPorts(root).size())
         );
     }
 
     public List<Number> getConceptsRepartitionPerLayerPieChartValues(VariableManager variableManager) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
-        List<EObject> arcadiaObjects = this.getAllArcadiaObjects(rootPackage);
 
-        Number operationalObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.OperationalAnalysis.getLabel());
-        Number systemObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.SystemAnalysis.getLabel());
-        Number logicalObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.LogicalArchitecture.getLabel());
-        Number physicalObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.PhysicalArchitecture.getLabel());
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root -> {
+                    List<EObject> arcadiaObjects = this.getAllArcadiaObjects(root);
 
-        return List.of(operationalObjects, systemObjects, logicalObjects, physicalObjects);
+                    Number operationalObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.OperationalAnalysis.getLabel());
+                    Number systemObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.SystemAnalysis.getLabel());
+                    Number logicalObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.LogicalArchitecture.getLabel());
+                    Number physicalObjects = this.countConceptsPerLayer(arcadiaObjects, ArcadiaEngineeringPerspective.PhysicalArchitecture.getLabel());
+
+                    return List.of(operationalObjects, systemObjects, logicalObjects, physicalObjects);
+                })
+                .orElse(List.of());
+
     }
 
     public List<Number> getConceptsRepartitionPerStatusLayerPieChartValues(VariableManager variableManager, String status) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
-        List<EObject> arcadiaObjects = this.getAllArcadiaObjects(rootPackage);
 
-        List<EObject> filtered = this.filterByStatus(arcadiaObjects, status);
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root -> {
+                    List<EObject> arcadiaObjects = this.getAllArcadiaObjects(root);
+                    List<EObject> filtered = this.filterByStatus(arcadiaObjects, status);
+                    Number operationalObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.OperationalAnalysis.getLabel());
+                    Number systemObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.SystemAnalysis.getLabel());
+                    Number logicalObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.LogicalArchitecture.getLabel());
+                    Number physicalObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.PhysicalArchitecture.getLabel());
 
-        Number operationalObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.OperationalAnalysis.getLabel());
-        Number systemObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.SystemAnalysis.getLabel());
-        Number logicalObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.LogicalArchitecture.getLabel());
-        Number physicalObjects = this.countConceptsPerLayer(filtered, ArcadiaEngineeringPerspective.PhysicalArchitecture.getLabel());
-
-        return List.of(operationalObjects, systemObjects, logicalObjects, physicalObjects);
+                    return List.of(operationalObjects, systemObjects, logicalObjects, physicalObjects);
+                })
+                .orElse(List.of());
     }
 
-    private List<EObject> getAllArcadiaObjects(Package rootPackage) {
+    private List<EObject> getAllArcadiaObjects(EObject root) {
         List<EObject> arcadiaObjects = new ArrayList<>();
 
-        arcadiaObjects.addAll(this.getFunctions(rootPackage));
-        arcadiaObjects.addAll(this.getComponents(rootPackage));
-        arcadiaObjects.addAll(this.getRequirements(rootPackage));
-        arcadiaObjects.addAll(this.getInterfaces(rootPackage));
-        arcadiaObjects.addAll(this.getExchanges(rootPackage));
-        arcadiaObjects.addAll(this.getPorts(rootPackage));
+        arcadiaObjects.addAll(this.getFunctions(root));
+        arcadiaObjects.addAll(this.getComponents(root));
+        arcadiaObjects.addAll(this.getRequirements(root));
+        arcadiaObjects.addAll(this.getInterfaces(root));
+        arcadiaObjects.addAll(this.getExchanges(root));
+        arcadiaObjects.addAll(this.getPorts(root));
 
         return arcadiaObjects;
     }
@@ -162,61 +179,61 @@ public class CapellaViewFormService {
     private List<EObject> filterByStatus(List<EObject> objects, String status) {
         return objects.stream()
                 .filter(obj -> {
-                    Element s = this.laQueryService.getStatus((Feature) obj);
+                    Element s = this.transverseQueryService.getStatus((Feature) obj);
                     return s != null && status.equals(s.getDeclaredName());
                 })
                 .toList();
     }
 
-    private List<EObject> getFunctions(Package rootPackage) {
-        return this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getActionUsage())
+    private List<EObject> getFunctions(EObject root) {
+        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getActionUsage())
                 .stream()
-                .filter(this.laQueryService::isFunction)
+                .filter(this.transverseQueryService::isFunction)
                 .toList();
     }
 
-    private List<EObject> getComponents(Package rootPackage) {
-        return this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getPartUsage())
+    private List<EObject> getComponents(EObject root) {
+        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
                 .stream()
                 .filter(this.transverseQueryService::isComponent)
                 .toList();
     }
 
-    private List<EObject> getActors(Package rootPackage) {
-        return this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getPartUsage())
+    private List<EObject> getActors(EObject root) {
+        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
                 .stream()
                 .filter(this.transverseQueryService::isComponentActor)
                 .toList();
     }
 
-    private List<EObject> getRequirements(Package rootPackage) {
-        return this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getRequirementUsage())
+    private List<EObject> getRequirements(EObject root) {
+        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getRequirementUsage())
                 .stream()
                 .filter(this.transverseQueryService::isRequirement)
                 .toList();
     }
 
-    private List<EObject> getInterfaces(Package rootPackage) {
-        return this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getInterfaceUsage())
+    private List<EObject> getInterfaces(EObject root) {
+        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getInterfaceUsage())
                 .stream()
                 .filter(this.transverseQueryService::isComponentExchange)
                 .toList();
     }
 
-    private List<EObject> getExchanges(Package rootPackage) {
-        return this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getFlowUsage())
+    private List<EObject> getExchanges(EObject root) {
+        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getFlowUsage())
                 .stream()
-                .filter(this.laQueryService::isFunctionalExchange)
+                .filter(this.transverseQueryService::isFunctionalExchange)
                 .toList();
     }
 
-    private List<EObject> getPorts(Package rootPackage) {
+    private List<EObject> getPorts(EObject root) {
         List<EObject> ports = new ArrayList<>();
-        ports.addAll(this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getItemUsage())
+        ports.addAll(this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getItemUsage())
                 .stream()
-                .filter(this.laQueryService::isFunctionPort)
+                .filter(this.transverseQueryService::isFunctionPort)
                 .toList());
-        ports.addAll(this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getPortUsage())
+        ports.addAll(this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPortUsage())
                 .stream()
                 .filter(this.transverseQueryService::isComponentPort)
                 .toList());
@@ -224,51 +241,61 @@ public class CapellaViewFormService {
     }
 
     public ComponentProgress getNonAllocatedFunctionWidgetValue(VariableManager variableManager) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
 
-        List<ActionUsage> totalFunctions = this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getActionUsage())
-                .stream()
-                .filter(eObject -> eObject instanceof ActionUsage)
-                .map(ActionUsage.class::cast)
-                .toList();
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root -> {
+                    List<ActionUsage> totalFunctions = this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getActionUsage())
+                            .stream()
+                            .filter(eObject -> eObject instanceof ActionUsage)
+                            .map(ActionUsage.class::cast)
+                            .toList();
 
-        List<ActionUsage> nonAllocatedFunction = totalFunctions.stream()
-                .filter(function -> this.laQueryService.getAllocatingComponent(function).isEmpty())
-                .toList();
+                    List<ActionUsage> nonAllocatedFunction = totalFunctions.stream()
+                            .filter(function -> this.transverseQueryService.getAllocatingComponent(function).isEmpty())
+                            .toList();
 
-        return new ComponentProgress(nonAllocatedFunction.size(), totalFunctions.size());
+                    return new ComponentProgress(nonAllocatedFunction.size(), totalFunctions.size());
+                })
+                .orElse(new ComponentProgress(0, 0));
     }
 
     public ComponentProgress getPortsWithNoExchangeWidgetValue(VariableManager variableManager) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
 
-        List<ItemUsage> totalFunctionPorts = this.transverseQueryService
-                .getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getItemUsage())
-                .stream()
-                .filter(this.laQueryService::isFunctionPort)
-                .map(ItemUsage.class::cast)
-                .toList();
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root -> {
+                    List<ItemUsage> totalFunctionPorts = this.transverseQueryService
+                            .getAllReachableInResource(root, SysmlPackage.eINSTANCE.getItemUsage())
+                            .stream()
+                            .filter(this.transverseQueryService::isFunctionPort)
+                            .map(ItemUsage.class::cast)
+                            .toList();
 
-        List<PortUsage> totalComponentPorts = this.transverseQueryService
-                .getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getPortUsage())
-                .stream()
-                .filter(this.transverseQueryService::isComponentPort)
-                .map(PortUsage.class::cast)
-                .toList();
+                    List<PortUsage> totalComponentPorts = this.transverseQueryService
+                            .getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPortUsage())
+                            .stream()
+                            .filter(this.transverseQueryService::isComponentPort)
+                            .map(PortUsage.class::cast)
+                            .toList();
 
-        List<ItemUsage> nonAssignedFunctionPorts = this.getNonAssignedFunctionalExchangePorts(rootPackage, totalFunctionPorts);
-        List<PortUsage> nonAssignedComponentPorts = this.getNonAssignedComponentExchangePorts(rootPackage, totalComponentPorts);
+                    List<ItemUsage> nonAssignedFunctionPorts = this.getNonAssignedFunctionalExchangePorts(root, totalFunctionPorts);
+                    List<PortUsage> nonAssignedComponentPorts = this.getNonAssignedComponentExchangePorts(root, totalComponentPorts);
 
-        return new ComponentProgress(
-                nonAssignedFunctionPorts.size() + nonAssignedComponentPorts.size(),
-                totalFunctionPorts.size() + totalComponentPorts.size()
-        );
+                    return new ComponentProgress(
+                            nonAssignedFunctionPorts.size() + nonAssignedComponentPorts.size(),
+                            totalFunctionPorts.size() + totalComponentPorts.size()
+                    );
+                })
+                .orElse(new ComponentProgress(0, 0));
     }
 
-    private List<ItemUsage> getNonAssignedFunctionalExchangePorts(Package rootPackage, List<ItemUsage> totalFunctionPorts) {
+    private List<ItemUsage> getNonAssignedFunctionalExchangePorts(EObject root, List<ItemUsage> totalFunctionPorts) {
 
-        List<ItemUsage> assignedPorts = this.laQueryService.getFunctionalExchanges(rootPackage).stream()
-                .flatMap(fe -> this.laQueryService.getExchangePorts(fe).stream())
+        List<ItemUsage> assignedPorts = this.transverseQueryService.getFunctionalExchanges(root).stream()
+                .flatMap(fe -> this.transverseQueryService.getExchangePorts(fe).stream())
                 .filter(ItemUsage.class::isInstance)
                 .map(ItemUsage.class::cast)
                 .toList();
@@ -278,10 +305,10 @@ public class CapellaViewFormService {
                 .toList();
     }
 
-    private List<PortUsage> getNonAssignedComponentExchangePorts(Package rootPackage, List<PortUsage> totalComponentPorts) {
+    private List<PortUsage> getNonAssignedComponentExchangePorts(EObject root, List<PortUsage> totalComponentPorts) {
 
-        List<PortUsage> assignedPorts = this.transverseQueryService.getComponentExchanges(rootPackage).stream()
-                .flatMap(fe -> this.laQueryService.getExchangePorts(fe).stream())
+        List<PortUsage> assignedPorts = this.transverseQueryService.getComponentExchanges(root).stream()
+                .flatMap(fe -> this.transverseQueryService.getExchangePorts(fe).stream())
                 .filter(PortUsage.class::isInstance)
                 .map(PortUsage.class::cast)
                 .toList();
@@ -292,14 +319,19 @@ public class CapellaViewFormService {
     }
 
     public ComponentProgress getNonAllocatedFunctionalExchangesWidgetValue(VariableManager variableManager) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
 
-        List<FlowUsage> totalFunctionalExchanges = this.laQueryService.getFunctionalExchanges(rootPackage);
-        List<FlowUsage> nonAllocatedFunctionalExchanges = totalFunctionalExchanges.stream()
-                .filter(functionalExchange -> this.getAllocatingComponentExchanges(functionalExchange).isEmpty())
-                .toList();
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root -> {
+                    List<FlowUsage> totalFunctionalExchanges = this.transverseQueryService.getFunctionalExchanges(root);
+                    List<FlowUsage> nonAllocatedFunctionalExchanges = totalFunctionalExchanges.stream()
+                            .filter(functionalExchange -> this.getAllocatingComponentExchanges(functionalExchange).isEmpty())
+                            .toList();
 
-        return new ComponentProgress(nonAllocatedFunctionalExchanges.size(), totalFunctionalExchanges.size());
+                    return new ComponentProgress(nonAllocatedFunctionalExchanges.size(), totalFunctionalExchanges.size());
+                })
+                .orElse(new ComponentProgress(0, 0));
     }
 
     private List<InterfaceUsage> getAllocatingComponentExchanges(FlowUsage functionalExchange) {
@@ -330,23 +362,27 @@ public class CapellaViewFormService {
     }
 
     public ComponentProgress getValidatedComponents(VariableManager variableManager) {
-        Package rootPackage = (Package) variableManager.getVariables().get(VariableManager.SELF);
 
-        List<PartUsage> totalComponents = this.transverseQueryService.getAllReachableInResource(rootPackage, SysmlPackage.eINSTANCE.getPartUsage())
-                .stream()
-                .filter(this.transverseQueryService::isComponent)
-                .map(PartUsage.class::cast)
-                .toList();
+        return Optional.ofNullable(variableManager.getVariables().get(VariableManager.SELF))
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast)
+                .map(root -> {
+                    List<PartUsage> totalComponents = this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
+                            .stream()
+                            .filter(this.transverseQueryService::isComponent)
+                            .map(PartUsage.class::cast)
+                            .toList();
 
-        List<PartUsage> doneComponents = totalComponents.stream()
-                .filter(component -> {
-                    Element componentStatus = this.laQueryService.getStatus(component);
-                    return Objects.nonNull(componentStatus) && componentStatus.getDeclaredName().equals("done");
+                    List<PartUsage> doneComponents = totalComponents.stream()
+                            .filter(component -> {
+                                Element componentStatus = this.transverseQueryService.getStatus(component);
+                                return Objects.nonNull(componentStatus) && componentStatus.getDeclaredName().equals("done");
+                            })
+                            .toList();
+
+                    return new ComponentProgress(doneComponents.size(), totalComponents.size());
                 })
-                .toList();
-
-
-        return new ComponentProgress(doneComponents.size(), totalComponents.size());
+                .orElse(new ComponentProgress(0, 0));
     }
 
     public String getNonAllocatedFunctionsColor(VariableManager variableManager) {

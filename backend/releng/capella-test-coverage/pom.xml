@@ -16,11 +16,16 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.eclipse.capella</groupId>
-	<artifactId>capella-test-coverage</artifactId>
-	<version>2026.7.0</version>
+    <parent>
+        <groupId>org.eclipse.capella</groupId>
+        <artifactId>capella-parent</artifactId>
+        <version>2026.7.0</version>
+        <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
+    </parent>
+
+    <artifactId>capella-test-coverage</artifactId>
 	<name>capella-test-coverage</name>
-	<description>Capella for SysON test coverage</description>
+    <description>Capella test coverage</description>
 	<packaging>pom</packaging>
 
 	<dependencies>

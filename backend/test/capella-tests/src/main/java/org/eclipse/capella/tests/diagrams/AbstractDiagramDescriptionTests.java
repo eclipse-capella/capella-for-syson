@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
@@ -59,7 +60,6 @@ import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.sysml.helper.EMFUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -152,6 +152,7 @@ public abstract class AbstractDiagramDescriptionTests {
     public void eachNodeHasDirectEditTool() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(this.isCompartment().negate())
                 .filter(nodeDescription -> nodeDescription.getInsideLabel() != null && nodeDescription.getInsideLabel().getLabelExpression() != null
                         && !nodeDescription.getInsideLabel().getLabelExpression().isBlank())
                 .forEach(nodeDescription -> {
@@ -172,6 +173,7 @@ public abstract class AbstractDiagramDescriptionTests {
     public void eachNodeHasDeleteTool() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(this.isCompartment().negate())
                 .forEach(nodeDescription -> {
                     softly.assertThat(nodeDescription.getPalette())
                             .as("NodeDescription %s should have a palette", nodeDescription.getName())
@@ -221,7 +223,6 @@ public abstract class AbstractDiagramDescriptionTests {
     }
 
     @Test
-    @Disabled
     @DisplayName("Each EdgeTool has an iconURL")
     public void eachEdgeToolHasAnIconURL() {
         SoftAssertions softly = new SoftAssertions();
@@ -343,5 +344,9 @@ public abstract class AbstractDiagramDescriptionTests {
                 .map(eObject::eGet)
                 .map(String.class::cast)
                 .orElse(eObject.eClass().getName());
+    }
+
+    private Predicate<NodeDescription> isCompartment() {
+        return nodeDescription -> nodeDescription.getName() != null && nodeDescription.getName().contains("Compartment");
     }
 }

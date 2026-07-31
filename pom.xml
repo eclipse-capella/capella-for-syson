@@ -34,6 +34,7 @@
 	</pluginRepositories>
 
 	<modules>
+        <module>backend/releng/capella-parent</module>
 		<module>backend/application</module>
 		<module>backend/releng/capella-test-coverage</module>
 		<module>backend/model</module>

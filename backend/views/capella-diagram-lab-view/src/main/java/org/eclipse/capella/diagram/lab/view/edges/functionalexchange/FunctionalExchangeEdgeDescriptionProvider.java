@@ -14,15 +14,14 @@ package org.eclipse.capella.diagram.lab.view.edges.functionalexchange;
 
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionPortNodeDescriptionProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -46,12 +45,12 @@ public class FunctionalExchangeEdgeDescriptionProvider extends AbstractEdgeDescr
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(LAQueryService::getFunctionalExchanges).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(LARepresentationQueryService::getFunctionalExchangeSource).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchanges).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeSource).aqlSelf())
                 .style(functionalExchangeEdgeStyleProvider.createEdgeStyle())
                 .conditionalStyles(functionalExchangeEdgeStyleProvider.createConditionalEdgeStyles())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(ServiceMethod.of0(LARepresentationQueryService::getFunctionalExchangeTarget).aqlSelf())
+                .targetExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeTarget).aqlSelf())
                 .palette(new FunctionalExchangePaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }

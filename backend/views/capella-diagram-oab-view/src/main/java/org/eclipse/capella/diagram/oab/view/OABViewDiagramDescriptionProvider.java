@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oab.view;
 
+import java.util.List;
+
 import org.eclipse.capella.diagram.oab.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
@@ -27,8 +29,6 @@ import org.eclipse.sirius.components.view.diagram.DiagramLayoutOption;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
-
-import java.util.List;
 
 /**
  * Description of the Operational Analysis Blank using the ViewBuilder API from Sirius Web.
@@ -52,10 +52,10 @@ public class OABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .layoutOption(DiagramLayoutOption.NONE)
                 .domainType(domainType)
                 .name(DESCRIPTION_NAME)
-                .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .titleExpression(DESCRIPTION_NAME)
                 .preconditionExpression(ServiceMethod.of0(TransverseQueryService::isStructurePackage).aqlSelf())
                 .toolbar(toolbar)
+                .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
 
         var cache = new ViewDiagramElementFinder();

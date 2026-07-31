@@ -12,6 +12,19 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.DiagramStyle;
@@ -22,7 +35,6 @@ import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionDefinition;
-import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.FlowDefinition;
 import org.eclipse.syson.sysml.FlowUsage;
@@ -32,18 +44,8 @@ import org.eclipse.syson.sysml.PartDefinition;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
+import org.eclipse.syson.util.SysONEContentAdapter;
 import org.junit.jupiter.api.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Tests for SAB drop services.
@@ -53,17 +55,20 @@ import static org.mockito.Mockito.when;
  */
 public class SARepresentationDropServicesTests {
 
+    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+
     private final SARepresentationMutationService mutationService = new SARepresentationMutationService();
 
     @Test
     public void dropFunctionalExchangeShouldRevealDependenciesInSpecificationOrder() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        FlowUsage functionalExchange = this.mutationService.createFunctionalExchange(sourceFunction, targetFunction);
-        var sourcePort = new SAQueryService().getFunctionalExchangeSource(functionalExchange);
-        var targetPort = new SAQueryService().getFunctionalExchangeTarget(functionalExchange);
+        var sourceFunction = this.transverseMutationService.createFunction(system);
+        var targetFunction = this.transverseMutationService.createFunction(system);
+
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
+        var sourcePort = new TransverseQueryService().getFunctionalExchangeSource(functionalExchange);
+        var targetPort = new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
@@ -79,10 +84,11 @@ public class SARepresentationDropServicesTests {
     public void dropFunctionalExchangeShouldNotCreatePartialViewsWhenAnEndpointFunctionIsNotAllocated() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
+        var sourceFunction = this.transverseMutationService.createFunction(system);
         var targetFunction = SysmlFactory.eINSTANCE.createActionUsage();
         this.addOwnedMember(this.getFunctionsPackage(structurePackage), targetFunction);
-        FlowUsage functionalExchange = this.mutationService.createFunctionalExchange(sourceFunction, targetFunction);
+
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
@@ -97,9 +103,10 @@ public class SARepresentationDropServicesTests {
     public void dropFunctionalExchangeShouldReuseAlreadyRequestedDependencies() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        var targetFunction = (ActionUsage) this.mutationService.createNewFunction(system);
-        FlowUsage functionalExchange = this.mutationService.createFunctionalExchange(sourceFunction, targetFunction);
+        var sourceFunction = this.transverseMutationService.createFunction(system);
+        var targetFunction = this.transverseMutationService.createFunction(system);
+
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
         new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService)
@@ -116,7 +123,7 @@ public class SARepresentationDropServicesTests {
     @Test
     public void dropRequirementShouldCreateOnlyRequirementView() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
-        RequirementUsage requirement = this.mutationService.createRequirement(structurePackage);
+        RequirementUsage requirement = this.transverseMutationService.createRequirement(structurePackage);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
@@ -131,7 +138,7 @@ public class SARepresentationDropServicesTests {
     public void dropSystemComponentShouldRevealItInTheDropTargetWhenItsSemanticParentViewIsNotFound() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var component = this.mutationService.createSystemComponent(system);
+        var component = this.transverseMutationService.createComponent(system);
         component.setDeclaredName("C 1");
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
@@ -162,6 +169,7 @@ public class SARepresentationDropServicesTests {
 
     private Package createSystemAnalysisStructurePackage() {
         var root = SysmlFactory.eINSTANCE.createPackage();
+        root.eAdapters().add(new SysONEContentAdapter());
         var arcadia = this.createPackage("Arcadia");
         var componentType = this.createArcadiaComponentType();
         this.addOwnedMember(arcadia, componentType);

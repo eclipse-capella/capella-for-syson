@@ -106,5 +106,17 @@ test-results/
 .antlr
 
 # Generated maven artifacts
-
 dependency-reduced-pom.xml
+
+# AI
+.gemini
+GEMINI.md
+.geminiignore
+.claude
+CLAUDE.md
+.agents
+.codex
+AGENTS.md
+
+# Frontend copy
+backend/application/capella-application/src/main/resources/static/

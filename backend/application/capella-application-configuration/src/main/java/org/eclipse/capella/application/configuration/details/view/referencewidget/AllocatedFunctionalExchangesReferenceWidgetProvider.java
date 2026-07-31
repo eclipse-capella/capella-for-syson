@@ -12,7 +12,12 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
@@ -30,12 +35,6 @@ import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
-
 /**
  * Provide the allocated functional exchanges reference widget content.
  *
@@ -51,15 +50,11 @@ public class AllocatedFunctionalExchangesReferenceWidgetProvider implements ICap
 
     private static final String ERROR_MSG = "Something went wrong while deleting the allocated functional exchange";
 
-    private final LAQueryService lAQueryService;
-
-
     private final TransverseMutationService transverseMutationService;
 
     private final TransverseQueryService transverseQueryService;
 
     public AllocatedFunctionalExchangesReferenceWidgetProvider() {
-        this.lAQueryService = new LAQueryService();
         this.transverseMutationService = new TransverseMutationService();
         this.transverseQueryService = new TransverseQueryService();
     }
@@ -78,7 +73,7 @@ public class AllocatedFunctionalExchangesReferenceWidgetProvider implements ICap
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.lAQueryService.getFunctionalExchanges(eObject);
+            return this.transverseQueryService.getFunctionalExchanges(eObject);
         }
         return List.of();
     }

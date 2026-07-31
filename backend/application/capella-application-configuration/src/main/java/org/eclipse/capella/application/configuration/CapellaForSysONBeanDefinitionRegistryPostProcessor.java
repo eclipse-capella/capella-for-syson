@@ -18,6 +18,7 @@ import java.util.Objects;
 import org.eclipse.sirius.web.application.library.services.ProjectLibrariesImporter;
 import org.eclipse.sirius.web.infrastructure.configuration.mvc.FrontendRouterConfiguration;
 import org.eclipse.sirius.web.infrastructure.configuration.mvc.SpringWebMvcConfigurer;
+import org.eclipse.syson.application.expressions.services.ExpressionsPaletteToolsProvider;
 import org.eclipse.syson.application.sysmlv2.SysMLv2ProjectTemplatesProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,8 @@ public class CapellaForSysONBeanDefinitionRegistryPostProcessor implements BeanD
             SysMLv2ProjectTemplatesProvider.class, // Replaced by CapellaForSysONSysMLv2ProjectTemplatesProvider
             SpringWebMvcConfigurer.class, // Replaced with CapellaForSysONWebMvcConfiguration
             FrontendRouterConfiguration.class, // Replaced with CapellaForSysONFrontendRouterConfiguration
-            ProjectLibrariesImporter.class // Replaced with CapellaForSysONProjectLibrariesImporter
+            ProjectLibrariesImporter.class, // Replaced with CapellaForSysONProjectLibrariesImporter
+            ExpressionsPaletteToolsProvider.class // Removed: we don't want to add expressions via the palette
     );
 
     private static final List<String> EXCLUDED_BEAN_NAMES = List.of(

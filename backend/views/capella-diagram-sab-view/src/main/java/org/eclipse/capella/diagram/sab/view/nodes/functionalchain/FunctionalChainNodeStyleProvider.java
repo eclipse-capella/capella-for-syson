@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.sab.view.nodes.functionalchain;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -51,7 +51,7 @@ public class FunctionalChainNodeStyleProvider {
 
     private ConditionalNodeStyle createFunctionalChainConditionalNodeStyle(int index) {
         return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.of2(SARepresentationQueryService::getFunctionalChainIndexInDiagram)
+                .condition(ServiceMethod.of2(TransverseRepresentationQueryService::getFunctionalChainIndexInDiagram)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
                 .style(this.createFunctionalChainNodeStyle(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR + "_" + index))
                 .build();

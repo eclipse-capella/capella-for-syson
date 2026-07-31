@@ -12,8 +12,6 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.services.datafetchers;
 
-import tools.jackson.databind.ObjectMapper;
-
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -25,6 +23,7 @@ import org.eclipse.sirius.components.graphql.api.IEditingContextDispatcher;
 import org.eclipse.sirius.components.graphql.api.IExceptionWrapper;
 
 import graphql.schema.DataFetchingEnvironment;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  *
@@ -34,6 +33,7 @@ import graphql.schema.DataFetchingEnvironment;
  */
 @QueryDataFetcher(type = "Mutation", field = "showDiagramFunctions")
 public class MutationShowDiagramFunctionsDataFetcher implements IDataFetcherWithFieldCoordinates<CompletableFuture<IPayload>> {
+
     private static final String INPUT_ARGUMENT = "input";
 
     private final ObjectMapper objectMapper;

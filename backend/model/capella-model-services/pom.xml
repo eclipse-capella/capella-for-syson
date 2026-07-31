@@ -15,39 +15,17 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.0.7</version>
-		<relativePath /> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>org.eclipse.capella</groupId>
-	<artifactId>capella-model-services</artifactId>
-	<version>2026.7.0</version>
+
+    <parent>
+        <groupId>org.eclipse.capella</groupId>
+        <artifactId>capella-parent</artifactId>
+        <version>2026.7.0</version>
+        <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
+    </parent>
+
+    <artifactId>capella-model-services</artifactId>
 	<name>capella-model-services</name>
 	<description>Capella Model Services</description>
-
-	<properties>
-		<java.version>21</java.version>
-		<sirius.web.version>2026.7.0</sirius.web.version>
-		<syson.version>2026.7.0</syson.version>
-	</properties>
-
-	<repositories>
-		<repository>
-			<id>Central</id>
-			<url>https://repo.maven.apache.org/maven2</url>
-		</repository>
-		<repository>
-			<id>github-sirius-web</id>
-			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-web</url>
-		</repository>
-		<repository>
-			<id>github-syson</id>
-			<name>Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/eclipse-syson/syson</url>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -75,52 +53,17 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
-				<version>3.4.0</version>
 				<configuration>
-					<configLocation>../../releng/capella-resources/checkstyle/CheckstyleConfiguration.xml</configLocation>
-					<failsOnError>true</failsOnError>
-					<consoleOutput>true</consoleOutput>
+                    <includeTestSourceDirectory>false</includeTestSourceDirectory>
 				</configuration>
-				<executions>
-					<execution>
-						<id>validate</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.13</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>report</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

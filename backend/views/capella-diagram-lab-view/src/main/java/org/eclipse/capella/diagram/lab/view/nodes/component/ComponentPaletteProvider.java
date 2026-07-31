@@ -12,14 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.lab.view.edges.componentexchange.ComponentExchangeToolProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationDropServices;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -36,10 +37,7 @@ import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.util.AQLConstants;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Palette for Component nodes.
@@ -67,7 +65,7 @@ public class ComponentPaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(TransverseMutationService::deleteComponent).aqlSelf())
+                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
                         .build());
 
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
@@ -121,7 +119,7 @@ public class ComponentPaletteProvider {
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(LARepresentationMutationService::createNewFunctionInComponent).aqlSelf())
+                    .expression(ServiceMethod.of0(TransverseMutationService::createFunction).aqlSelf())
                     .children(this.diagramBuilderHelper.newCreateView()
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .elementDescription(nodeDescription)
@@ -141,7 +139,9 @@ public class ComponentPaletteProvider {
 
 
         nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                .expression(ServiceMethod.of0(TransverseRepresentationMutationService::createComponentPort).aqlSelf())
+                .expression(ServiceMethod.of1(TransverseMutationService::createComponentPort)
+                        // The port as no direction when created
+                        .aqlSelf((String) null))
                 .build());
 
         return nodeToolBuilder.build();

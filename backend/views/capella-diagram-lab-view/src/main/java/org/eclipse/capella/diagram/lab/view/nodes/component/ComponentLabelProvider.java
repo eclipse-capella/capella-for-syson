@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
@@ -47,7 +48,7 @@ public class ComponentLabelProvider {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .labelExpression("aql:self.name")
                 .overflowStrategy(LabelOverflowStrategy.ELLIPSIS)
-                .position(InsideLabelPosition.BOTTOM_CENTER)
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .conditionalStyles(this.createHumanConditionalInsideLabelStyle(), this.createActorConditionalInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)

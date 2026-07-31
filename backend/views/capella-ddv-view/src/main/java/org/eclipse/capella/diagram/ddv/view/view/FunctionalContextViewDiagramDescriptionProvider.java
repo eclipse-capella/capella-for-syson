@@ -12,10 +12,12 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ddv.view.view;
 
+import java.util.List;
+
 import org.eclipse.capella.diagram.ddv.view.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.RootFunctionNodeDescriptionProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -26,8 +28,6 @@ import org.eclipse.sirius.components.view.diagram.DiagramLayoutOption;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
-
-import java.util.List;
 
 /**
  * Description of the Functional Context Diagram using the ViewBuilder API from Sirius Web.
@@ -50,14 +50,15 @@ public class FunctionalContextViewDiagramDescriptionProvider implements IReprese
 
         var diagramDescription = this.diagramBuilderHelper.newDiagramDescription()
                 .arrangeLayoutDirection(ArrangeLayoutDirection.RIGHT)
-                .layoutOption(DiagramLayoutOption.AUTO_LAYOUT)
+                .layoutOption(DiagramLayoutOption.AUTO_UNTIL_MANUAL)
                 .domainType(domainType)
                 .name(DESCRIPTION_NAME)
-                .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(LAQueryService::isFunction).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(TransverseQueryService::isFunction).aqlSelf())
                 .nodeDescriptions()
                 .toolbar(toolBar)
+                .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
+                .minimapVisible(false)
                 .build();
 
         var cache = new FunctionalContextViewDiagramElementFinder();

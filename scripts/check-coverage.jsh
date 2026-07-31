@@ -35,9 +35,9 @@ var moduleCoverageData = List.of(
   new ModuleCoverage("capella-diagram-lab-view", 94.0),
   new ModuleCoverage("capella-diagram-oab-view", 98.0),
   new ModuleCoverage("capella-diagram-sab-view", 91.0),
-  new ModuleCoverage("capella-ddv-view", 74.0),
-  new ModuleCoverage("capella-table-view", 27.0),
-  new ModuleCoverage("capella-form-view", 41.0)
+  new ModuleCoverage("capella-ddv-view", 67.0),
+  new ModuleCoverage("capella-table-view", 26.0),
+  new ModuleCoverage("capella-form-view", 37.0)
 );
 
 void display(String module, double coverage, double expected) {

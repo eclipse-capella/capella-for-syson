@@ -12,20 +12,16 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view;
 
-import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
+import java.util.List;
+
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.core.services.ObjectService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.eclipse.syson.diagram.common.view.services.ViewToolService;
 import org.eclipse.syson.services.DeleteService;
 import org.eclipse.syson.services.LabelService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * Function table Java service provider.
@@ -45,12 +41,8 @@ public class FunctionTableViewJavaServiceProvider implements IJavaServiceProvide
         if (optDescription.isPresent()) {
             return List.of(DeleteService.class,
                     LabelService.class,
-                    LAQueryService.class,
-                    LAMutationService.class,
-                    LARepresentationQueryService.class,
-                    LARepresentationMutationService.class,
                     TransverseQueryService.class,
-                    ViewToolService.class,
+                    TransverseMutationService.class,
                     ObjectService.class);
         }
         return List.of();

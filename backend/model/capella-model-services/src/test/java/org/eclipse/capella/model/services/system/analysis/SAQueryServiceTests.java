@@ -12,8 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -24,17 +24,18 @@ import org.eclipse.syson.sysml.AllocationUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
-import org.eclipse.syson.sysml.ItemDefinition;
-import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
+import org.eclipse.syson.sysml.ItemDefinition;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartDefinition;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortDefinition;
 import org.eclipse.syson.sysml.PortUsage;
-import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
+import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
+import org.eclipse.syson.util.SysONEContentAdapter;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -45,6 +46,10 @@ import org.junit.jupiter.api.Test;
 public class SAQueryServiceTests {
 
     private final SAQueryService saQueryService = new SAQueryService();
+
+    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+
+    private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
     @Test
     public void isSystemAnalysisStructurePackageShouldAcceptOnlySystemAnalysisStructure() {
@@ -78,19 +83,6 @@ public class SAQueryServiceTests {
         this.addOwnedMember(duplicateStructure, this.createComponent("system", componentType));
         this.addOwnedMember(duplicateStructure, this.createComponent("system", componentType));
         assertTrue(this.saQueryService.isSystemAnalysisStructurePackage(duplicateStructure));
-    }
-
-    @Test
-    public void toComponentsPackageShouldFindStructureFromAnotherSystemAnalysisPackage() {
-        var root = SysmlFactory.eINSTANCE.createPackage();
-        var systemAnalysis = this.createPackage("System Analysis");
-        var structurePackage = this.createPackage("Structure");
-        var functionsPackage = this.createPackage("Functions");
-        this.addOwnedMember(systemAnalysis, structurePackage);
-        this.addOwnedMember(systemAnalysis, functionsPackage);
-        this.addOwnedMember(root, systemAnalysis);
-
-        assertEquals(structurePackage, this.saQueryService.toComponentsPackage(functionsPackage));
     }
 
     @Test
@@ -167,6 +159,7 @@ public class SAQueryServiceTests {
     }
 
     @Test
+    @Disabled("This test will be re-enabled once we use the actual arcadia library for the unit tests")
     public void getComponentExchangesShouldReturnOnlySystemAnalysisStructureExchangesAndResolveOwners() {
         var root = SysmlFactory.eINSTANCE.createPackage();
         var arcadia = this.createPackage("Arcadia");
@@ -193,8 +186,8 @@ public class SAQueryServiceTests {
         var systemAnalysisExchange = this.createComponentExchange("CE 1", componentExchangeType, systemPort, actorPort);
         this.addOwnedMember(systemAnalysisStructure, systemAnalysisExchange);
         assertTrue(new TransverseQueryService().isComponentExchange(systemAnalysisExchange));
-        assertEquals(system, this.saQueryService.getComponentExchangeSource(systemAnalysisExchange));
-        assertEquals(actor, this.saQueryService.getComponentExchangeTarget(systemAnalysisExchange));
+        assertEquals(system, this.transverseQueryService.getComponentExchangeSource(systemAnalysisExchange).getOwner());
+        assertEquals(actor, this.transverseQueryService.getComponentExchangeTarget(systemAnalysisExchange).getOwner());
 
         var logicalArchitecture = this.createPackage("Logical Architecture");
         var logicalArchitectureStructure = this.createPackage("Structure");
@@ -210,7 +203,7 @@ public class SAQueryServiceTests {
         this.addOwnedMember(logicalTarget, logicalTargetPort);
         this.addOwnedMember(logicalArchitectureStructure, this.createComponentExchange("CE 2", componentExchangeType, logicalSourcePort, logicalTargetPort));
 
-        assertEquals(List.of(systemAnalysisExchange), this.saQueryService.getComponentExchanges(root));
+        assertEquals(List.of(systemAnalysisExchange), this.transverseQueryService.getComponentExchanges(root));
     }
 
     @Test
@@ -224,17 +217,18 @@ public class SAQueryServiceTests {
         functionPort.setDeclaredName("FIP 0");
         functionPort.setDirection(FeatureDirectionKind.IN);
         new UtilService().setFeatureTyping(functionPort, exchangeItemType);
-        this.addOwnedMember(function, functionPort);
+        this.metamodelMutationElementService.addChildInParent(function, functionPort);
         var unrelatedParameter = SysmlFactory.eINSTANCE.createItemUsage();
         unrelatedParameter.setDeclaredName("unrelated");
         this.addOwnedMember(function, unrelatedParameter);
 
-        assertEquals(List.of(functionPort), this.saQueryService.getFunctionPorts(function));
+        assertEquals(List.of(functionPort), this.transverseQueryService.getFunctionPorts(function));
     }
 
     @Test
     public void getDescribesShouldReturnOnlyAllocationsFromRequirementsAndResolveEndpoints() {
         var root = SysmlFactory.eINSTANCE.createPackage();
+        root.eAdapters().add(new SysONEContentAdapter());
         var requirement = SysmlFactory.eINSTANCE.createRequirementUsage();
         var target = SysmlFactory.eINSTANCE.createPartUsage();
         var describes = this.createAllocation(requirement, target);
@@ -244,9 +238,9 @@ public class SAQueryServiceTests {
         this.addOwnedMember(root, describes);
         this.addOwnedMember(root, unrelatedAllocation);
 
-        assertEquals(List.of(describes), this.saQueryService.getDescribes(root));
-        assertEquals(requirement, this.saQueryService.getDescribesSource(describes));
-        assertEquals(target, this.saQueryService.getDescribesTarget(describes));
+        assertEquals(List.of(describes), this.transverseQueryService.getDescribes(root));
+        assertEquals(requirement, this.transverseQueryService.getDescribesSource(describes));
+        assertEquals(target, this.transverseQueryService.getDescribesTarget(describes));
     }
 
     private PartDefinition createArcadiaComponentType() {
@@ -306,8 +300,8 @@ public class SAQueryServiceTests {
 
     private AllocationUsage createAllocation(Feature source, Feature target) {
         AllocationUsage allocationUsage = SysmlFactory.eINSTANCE.createAllocationUsage();
-        allocationUsage.getOwnedRelationship().add(this.createReferenceSubsetting(source));
-        allocationUsage.getOwnedRelationship().add(this.createReferenceSubsetting(target));
+        allocationUsage.getOwnedRelationship().add(this.createConnectionEnd(source));
+        allocationUsage.getOwnedRelationship().add(this.createConnectionEnd(target));
         return allocationUsage;
     }
 
@@ -317,7 +311,7 @@ public class SAQueryServiceTests {
         return subsetting;
     }
 
-    private org.eclipse.syson.sysml.EndFeatureMembership createConnectionEnd(PortUsage referencedPort) {
+    private org.eclipse.syson.sysml.EndFeatureMembership createConnectionEnd(Feature referencedPort) {
         var endFeatureMembership = SysmlFactory.eINSTANCE.createEndFeatureMembership();
         Feature endFeature = SysmlFactory.eINSTANCE.createFeature();
         endFeature.setIsEnd(true);

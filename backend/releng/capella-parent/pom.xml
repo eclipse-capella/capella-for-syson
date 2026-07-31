@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2026 Obeo.
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the Eclipse Public License v2.0
+  ~ which accompanies this distribution, and is available at
+  ~ https://www.eclipse.org/legal/epl-2.0/
+  ~
+  ~ SPDX-License-Identifier: EPL-2.0
+  ~
+  ~ Contributors:
+  ~     Obeo - initial API and implementation
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.0</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>org.eclipse.capella</groupId>
+    <artifactId>capella-parent</artifactId>
+    <version>2026.7.0</version>
+    <packaging>pom</packaging>
+    <name>capella-parent</name>
+    <description>Capella Parent</description>
+
+    <scm child.scm.url.inherit.append.path="false">
+        <url>https://github.com/eclipse-capella/capella-for-syson</url>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>EPL-2.0</name>
+            <url>https://www.eclipse.org/legal/epl-2.0</url>
+        </license>
+    </licenses>
+
+    <properties>
+        <java.version>21</java.version>
+        <sirius.web.version>2026.7.2</sirius.web.version>
+        <syson.version>2026.7.2</syson.version>
+        <capella.skipProvidedHostDependenciesCheck>false</capella.skipProvidedHostDependenciesCheck>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>Central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>github-sirius-emfjson</id>
+            <url>https://maven.pkg.github.com/eclipse-sirius/sirius-emf-json</url>
+        </repository>
+        <repository>
+            <id>github-sirius-web</id>
+            <name>Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/eclipse-sirius/sirius-web</url>
+        </repository>
+        <repository>
+            <id>github-syson</id>
+            <name>Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/eclipse-syson/syson</url>
+        </repository>
+        <repository>
+            <id>Eclipse-Acceleo</id>
+            <url>https://download.eclipse.org/acceleo/updates/releases/4.2/R202603201315/</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <!-- See https://github.com/eclipse-sirius/sirius-web/issues/5670 -->
+        <dependencies>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>4.33.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>build-info</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.6.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>13.3.0</version>
+                        </dependency>
+                    </dependencies>
+                    <configuration>
+                        <configLocation>
+                            ${maven.multiModuleProjectDirectory}/backend/releng/capella-resources/checkstyle/CheckstyleConfiguration.xml
+                        </configLocation>
+                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                        <failsOnError>true</failsOnError>
+                        <consoleOutput>true</consoleOutput>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.14</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>report</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>require-provided-syson-and-sirius-web-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${capella.skipProvidedHostDependenciesCheck}</skip>
+                            <rules>
+                                <bannedDependencies>
+                                    <message>SysON and Sirius Web dependencies must have version ${syson.version} and<!--
+                                        --> ${sirius.web.version}, and use the provided or test scope.
+                                    </message>
+                                    <searchTransitive>false</searchTransitive>
+                                    <excludes>
+                                        <exclude>org.eclipse.syson:*</exclude>
+                                        <exclude>org.eclipse.sirius:*</exclude>
+                                    </excludes>
+                                    <includes>
+                                        <!-- groupId:artifactId:version:type:scope -->
+                                        <include>org.eclipse.syson:*:[${syson.version}]:*:provided</include>
+                                        <include>org.eclipse.sirius:*:[${sirius.web.version}]:*:provided</include>
+                                        <include>org.eclipse.syson:*:[${syson.version}]:*:test</include>
+                                        <include>org.eclipse.sirius:*:[${sirius.web.version}]:*:test</include>
+                                    </includes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>require-test-scope-for-capella-tests-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <message>Dependencies on capella-tests must use the test scope.</message>
+                                    <searchTransitive>false</searchTransitive>
+                                    <excludes>
+                                        <exclude>org.eclipse.capella:capella-tests</exclude>
+                                    </excludes>
+                                    <includes>
+                                        <!-- groupId:artifactId:version:type:scope -->
+                                        <include>org.eclipse.capella:capella-tests:*:*:test</include>
+                                    </includes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

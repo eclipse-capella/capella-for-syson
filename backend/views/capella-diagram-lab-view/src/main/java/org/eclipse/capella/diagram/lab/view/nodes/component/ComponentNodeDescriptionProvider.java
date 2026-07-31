@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
@@ -17,8 +18,7 @@ import java.util.List;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -26,6 +26,7 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -55,7 +56,7 @@ public class ComponentNodeDescriptionProvider extends AbstractNodeDescriptionPro
                 .name(this.getNodeDescriptionName())
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(LAQueryService::getSubComponents).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::allNestedComponents).aqlSelf())
                 .style(new ComponentNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createComponentNodeStyle())
                 .conditionalStyles(new ComponentConditionalStyleProvider(this.diagramBuilderHelper, this.colorProvider).createActorConditionalStyle())
                 .userResizable(UserResizableDirection.BOTH)
@@ -71,8 +72,11 @@ public class ComponentNodeDescriptionProvider extends AbstractNodeDescriptionPro
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
 
-            cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription.getChildrenDescriptions()::add);
+            // First add the node to the diagram to establish EMF containment/resource
             diagramDescription.getNodeDescriptions().add(nodeDescription);
+
+            // Then add children/borders (they will inherit containment from parent)
+            cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription.getChildrenDescriptions()::add);
             cache.getNodeDescription(ComponentPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
                     .ifPresent(componentPortNodeDescription -> nodeDescription.getReusedBorderNodeDescriptions().add(componentPortNodeDescription));
 

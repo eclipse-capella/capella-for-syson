@@ -34,7 +34,6 @@ test.describe('Explorer - Contextual Menu', () => {
     await playwrightExplorer.expand('contextual-menu.sysml');
     await playwrightExplorer.openMenu('My Model Name');
     const menuEntries = await page.getByTestId('Palette').locator('nav').first().locator('> *').allTextContents();
-    console.log(menuEntries);
     menuEntries.forEach((menuEntry, index) => {
       expect(
         menuEntry.trim().length,

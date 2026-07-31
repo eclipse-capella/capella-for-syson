@@ -15,13 +15,14 @@ package org.eclipse.capella.diagram.oab.view.edges.componentexchange;
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -44,11 +45,11 @@ public class CommunicationMeanComponentExchangeEdgeDescriptionProvider extends A
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(OAQueryService::getComponentExchanges).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(OAQueryService::getComponentExchangeSource).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchanges).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(OAQueryService::getComponentExchangeSourceOA).aqlSelf())
                 .style(new CommunicationMeanComponentExchangeEdgeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(ServiceMethod.of0(OAQueryService::getComponentExchangeTarget).aqlSelf())
+                .targetExpression(ServiceMethod.of0(OAQueryService::getComponentExchangeTargetOA).aqlSelf())
                 .palette(new CommunicationMeanComponentExchangePaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }

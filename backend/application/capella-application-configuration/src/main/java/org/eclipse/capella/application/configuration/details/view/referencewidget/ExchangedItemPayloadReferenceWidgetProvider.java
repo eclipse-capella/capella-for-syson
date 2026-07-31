@@ -12,7 +12,13 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -23,18 +29,12 @@ import org.eclipse.sirius.components.representations.Success;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
 import org.eclipse.sirius.components.widget.reference.ReferenceWidgetComponent;
-import org.eclipse.syson.services.DeleteService;
 import org.eclipse.syson.sysml.FeatureTyping;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.PayloadFeature;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Provide the functional exchange exchangedItem reference widget content.
@@ -50,13 +50,13 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
 
     private static final String ERROR_MSG = "Something went wrong while deleting the exchange item payload";
 
-    private final LAQueryService lAQueryService;
+    private final TransverseQueryService transverseQueryService;
 
-    private final DeleteService deleteService;
+    private final TransverseMutationService transverseMutationService;
 
     public ExchangedItemPayloadReferenceWidgetProvider() {
-        this.lAQueryService = new LAQueryService();
-        this.deleteService = new DeleteService();
+        this.transverseQueryService = new TransverseQueryService();
+        this.transverseMutationService = new TransverseMutationService();
     }
 
     @Override
@@ -73,8 +73,8 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            var allExchangeItems = new ArrayList<>(this.lAQueryService.getExchangeItems(eObject));
-            allExchangeItems.removeIf(this.lAQueryService::isFunctionPort);
+            var allExchangeItems = new ArrayList<>(this.transverseQueryService.getExchangeItems(eObject));
+            allExchangeItems.removeIf(this.transverseQueryService::isFunctionPort);
             return allExchangeItems;
         }
         return List.of();
@@ -84,7 +84,7 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof FlowUsage flowUsage) {
-            return Optional.ofNullable(flowUsage.getPayloadFeature()).stream().map(PayloadFeature::getType).flatMap(List::stream).filter(this.lAQueryService::isExchangeItem).toList();
+            return Optional.ofNullable(flowUsage.getPayloadFeature()).stream().map(PayloadFeature::getType).flatMap(List::stream).filter(this.transverseQueryService::isExchangeItem).toList();
         }
         return List.of();
     }
@@ -99,7 +99,7 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
                                 .filter(FeatureTyping.class::isInstance)
                                 .map(FeatureTyping.class::cast)
                                 .filter(typing -> itemUsage.equals(typing.getType()))
-                                .forEach(this.deleteService::deleteFromModel);
+                                .forEach(this.transverseMutationService::delete);
                     });
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
@@ -115,7 +115,7 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof FlowUsage flowUsage) {
-            Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.deleteService::deleteFromModel);
+            Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.transverseMutationService::delete);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

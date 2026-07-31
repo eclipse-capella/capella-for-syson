@@ -13,8 +13,7 @@
 package org.eclipse.capella.diagram.ddv.view.view.nodes.function;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.functional.context.DDVQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -22,6 +21,7 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -46,7 +46,7 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .domainType(domainType)
                 .insideLabel(new FunctionLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .name(this.getNodeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(LAQueryService::getReferencedAndReferencingFunctions).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(DDVQueryService::getReferencedAndReferencingFunctions).aqlSelf())
                 .style(functionNodeStyleProvider.createFunctionNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)

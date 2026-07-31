@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.model.services.transverse;
 
@@ -16,18 +17,22 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
-import org.eclipse.sirius.components.web.services.FeedbackMessageService;
-import org.eclipse.syson.diagram.common.view.services.ViewEdgeService;
+import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.diagrams.Diagram;
+import org.eclipse.sirius.components.diagrams.Node;
+import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.services.api.ISysMLMoveElementService;
 import org.eclipse.syson.sysml.AllocationUsage;
+import org.eclipse.syson.sysml.Comment;
 import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.EndFeatureMembership;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
-import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortUsage;
-import org.eclipse.syson.sysml.ReferenceSubsetting;
+import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 
 /**
  * Java services dedicated to the reconnection tools.
@@ -38,28 +43,50 @@ public class TransverseRepresentationReconnectToolServices {
 
     private final ISysMLMoveElementService moveService;
 
-    private final ViewEdgeService viewEdgeService;
+    private final DiagramMutationElementService diagramMutationElementService;
+
+    private final MetamodelMutationElementService metamodelMutationElementService;
 
     private final TransverseQueryService transverseQueryService;
 
     private final SAQueryService saQueryService;
 
-    public TransverseRepresentationReconnectToolServices(ISysMLMoveElementService moveService, FeedbackMessageService feedbackMessageService) {
+    public TransverseRepresentationReconnectToolServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService) {
         this.moveService = Objects.requireNonNull(moveService);
-        this.viewEdgeService = new ViewEdgeService(feedbackMessageService);
+        this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
+        this.metamodelMutationElementService = new MetamodelMutationElementService();
         this.transverseQueryService = new TransverseQueryService();
         this.saQueryService = new SAQueryService();
     }
 
-    public Element reconnectFunctionalExchangeEnd(FlowUsage functionalExchange, Element newTarget, boolean isSource) {
-        if (newTarget instanceof Feature feature && this.isValidFunctionalExchangePort(functionalExchange, feature, isSource)) {
-            if (isSource) {
-                this.viewEdgeService.reconnectSource(functionalExchange, feature);
-            } else {
-                this.viewEdgeService.reconnectTarget(functionalExchange, feature);
-            }
+    public Feature reconnectFunctionalExchangeSource(FlowUsage functionalExchange, Feature newSource, Feature oldSource, Node sourceNode, Node targetNode, IEditingContext editingContext,
+            Diagram diagram) {
+        Feature reconnectTarget = newSource;
+        if (this.transverseQueryService.isFunction(newSource) && this.transverseQueryService.isExchangeItem(oldSource)) {
+            this.moveService.moveSemanticElement(oldSource, newSource);
+            reconnectTarget = oldSource;
         }
-        return newTarget;
+
+        if (this.isValidFunctionalExchangePort(functionalExchange, reconnectTarget, true)) {
+            this.diagramMutationElementService.reconnectSource(functionalExchange, reconnectTarget, sourceNode, targetNode, editingContext, diagram);
+        }
+
+        return reconnectTarget;
+    }
+
+    public Feature reconnectFunctionalExchangeTarget(FlowUsage functionalExchange, Feature newTarget, Feature oldTarget, Node sourceNode, Node targetNode, IEditingContext editingContext,
+            Diagram diagram) {
+        Feature reconnectTarget = newTarget;
+        if (this.transverseQueryService.isFunction(newTarget) && this.transverseQueryService.isExchangeItem(oldTarget)) {
+            this.moveService.moveSemanticElement(oldTarget, newTarget);
+            reconnectTarget = oldTarget;
+        }
+
+        if (this.isValidFunctionalExchangePort(functionalExchange, newTarget, false)) {
+            this.diagramMutationElementService.reconnectTarget(functionalExchange, reconnectTarget, sourceNode, targetNode, editingContext, diagram);
+        }
+
+        return reconnectTarget;
     }
 
     private boolean isValidFunctionalExchangePort(FlowUsage functionalExchange, Feature feature, boolean isSource) {
@@ -78,85 +105,54 @@ public class TransverseRepresentationReconnectToolServices {
 
     private Feature getOtherFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
         if (isSource) {
-            return this.saQueryService.getFunctionalExchangeTarget(functionalExchange);
+            return this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange);
         }
-        return this.saQueryService.getFunctionalExchangeSource(functionalExchange);
+        return this.transverseQueryService.getFunctionalExchangeSource(functionalExchange);
     }
 
-    public Element reconnectComponentExchange(Element newTarget, Element oldTarget) {
+    public Element reconnectComponentExchange(InterfaceUsage componentExchange, Element newTarget, Element oldTarget) {
         if (this.transverseQueryService.isComponent(newTarget) && this.transverseQueryService.isComponentPort(oldTarget)) {
+            this.moveService.moveSemanticElement(oldTarget, newTarget);
+        } else if (this.transverseQueryService.isComponentPort(newTarget) && this.transverseQueryService.isComponentPort(oldTarget)) {
+            PortUsage sourcePort = null;
+            PortUsage targetPort = null;
+            if (Objects.equals(this.transverseQueryService.getComponentExchangeSource(componentExchange), oldTarget)) {
+                // We are reconnecting the source
+                sourcePort = (PortUsage) newTarget;
+                targetPort = this.transverseQueryService.getComponentExchangeTarget(componentExchange);
+            } else if (Objects.equals(this.transverseQueryService.getComponentExchangeTarget(componentExchange), oldTarget)) {
+                // We are reconnecting the target
+                sourcePort = this.transverseQueryService.getComponentExchangeSource(componentExchange);
+                targetPort = (PortUsage) newTarget;
+            }
+            if (sourcePort != null && targetPort != null && !Objects.equals(sourcePort.getOwner(), targetPort.getOwner())) {
+                // Do not allow reconnection that creates a ComponentExchange from/to the same component.
+                var endFeatureMemberships = componentExchange.getOwnedFeatureMembership().stream()
+                        .filter(EndFeatureMembership.class::isInstance)
+                        .map(EndFeatureMembership.class::cast)
+                        .toList();
+                componentExchange.getOwnedRelationship().removeAll(endFeatureMemberships);
+                this.metamodelMutationElementService.setConnectorEnds(componentExchange, sourcePort, targetPort, sourcePort.getOwner(), targetPort.getOwner(),
+                        componentExchange.getOwner());
+            }
+        }
+        return newTarget;
+    }
+
+    public Element reconnectAnnotating(Element newTarget, Element oldTarget) {
+        if (newTarget instanceof Comment || oldTarget instanceof Comment) {
             this.moveService.moveSemanticElement(oldTarget, newTarget);
         }
         return newTarget;
     }
 
-    public Element reconnectComponentExchangeEnd(InterfaceUsage componentExchange, Element newTarget, boolean isSource) {
-        var otherPort = this.getOtherComponentExchangePort(componentExchange, isSource);
-        this.toComponentPort(newTarget)
-                .filter(port -> this.areOwnedByDifferentComponents(port, otherPort))
-                .ifPresent(port -> this.updateComponentExchangeEnd(componentExchange, port, isSource));
-        return newTarget;
-    }
-
-    private void updateComponentExchangeEnd(InterfaceUsage componentExchange, PortUsage port, boolean isSource) {
-        if (isSource) {
-            if (!componentExchange.getConnectorEnd().isEmpty()) {
-                this.setReferencedFeature(componentExchange.getConnectorEnd().get(0), port);
-            }
-        } else if (componentExchange.getConnectorEnd().size() > 1) {
-            this.setReferencedFeature(componentExchange.getConnectorEnd().get(1), port);
-        }
-    }
-
-    private PortUsage getOtherComponentExchangePort(InterfaceUsage componentExchange, boolean isSource) {
-        if (isSource) {
-            return this.saQueryService.getComponentExchangeTargetPort(componentExchange);
-        }
-        return this.saQueryService.getComponentExchangeSourcePort(componentExchange);
-    }
-
-    private boolean areOwnedByDifferentComponents(PortUsage firstPort, PortUsage secondPort) {
-        return this.getOwningComponent(firstPort)
-                .flatMap(firstComponent -> this.getOwningComponent(secondPort).map(secondComponent -> firstComponent != secondComponent))
-                .orElse(false);
-    }
-
-    private Optional<PartUsage> getOwningComponent(PortUsage port) {
-        return Optional.ofNullable(port)
-                .map(Element::getOwner)
-                .filter(PartUsage.class::isInstance)
-                .map(PartUsage.class::cast)
-                .filter(this.transverseQueryService::isComponent);
-    }
-
-    private void setReferencedFeature(Feature connectorEnd, PortUsage port) {
-        ReferenceSubsetting referenceSubsetting = connectorEnd.getOwnedReferenceSubsetting();
-        if (referenceSubsetting != null) {
-            referenceSubsetting.setReferencedFeature(port);
-        }
-    }
-
-    private Optional<PortUsage> toComponentPort(Element element) {
-        return Optional.ofNullable(element)
-                .filter(this.transverseQueryService::isComponentPort)
-                .map(PortUsage.class::cast)
-                .or(() -> Optional.ofNullable(element)
-                        .filter(this.transverseQueryService::isComponent)
-                        .map(PartUsage.class::cast)
-                        .flatMap(feature -> feature.getOwnedFeature().stream()
-                                .filter(PortUsage.class::isInstance)
-                                .map(PortUsage.class::cast)
-                                .filter(this.transverseQueryService::isComponentPort)
-                                .findFirst()));
-    }
-
     public Element reconnectDescribes(AllocationUsage edgeSemanticElement, Element newReconnectionTarget, boolean isSource) {
         if (isSource) {
-            if (this.transverseQueryService.isRequirement(newReconnectionTarget)) {
-                this.viewEdgeService.reconnectSourceAllocateEdge(edgeSemanticElement, newReconnectionTarget);
+            if (newReconnectionTarget instanceof RequirementUsage || this.transverseQueryService.isRequirement(newReconnectionTarget)) {
+                this.diagramMutationElementService.reconnectSourceAllocateEdge(edgeSemanticElement, newReconnectionTarget);
             }
         } else {
-            this.viewEdgeService.reconnectTargetAllocateEdge(edgeSemanticElement, newReconnectionTarget);
+            this.diagramMutationElementService.reconnectTargetAllocateEdge(edgeSemanticElement, newReconnectionTarget);
         }
 
         return newReconnectionTarget;

@@ -9,14 +9,14 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.edges.functionalexchange;
 
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -26,6 +26,7 @@ import org.eclipse.sirius.components.view.diagram.ConditionalEdgeStyle;
 import org.eclipse.sirius.components.view.diagram.EdgeStyle;
 import org.eclipse.sirius.components.view.diagram.LineStyle;
 import org.eclipse.syson.sysml.FlowUsage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.ViewConstants;
 
 /**
@@ -46,7 +47,7 @@ public class FunctionalExchangeEdgeStyleProvider {
 
     public EdgeStyle createEdgeStyle() {
         return this.diagramBuilderHelper.newEdgeStyle()
-                .fontSize(8)
+                .fontSize(12)
                 .borderSize(0)
                 .color(this.colorProvider.getColor(LABViewConstants.FUNCTIONAL_EXCHANGE_BACKGROUND_COLOR))
                 .edgeWidth(2)
@@ -58,10 +59,10 @@ public class FunctionalExchangeEdgeStyleProvider {
 
     public ConditionalEdgeStyle createSeveralFCImpliedInConditionalEdgeStyle() {
         return this.diagramBuilderHelper.newConditionalEdgeStyle()
-                .condition(ServiceMethod.<LARepresentationQueryService, FlowUsage, IEditingContext, DiagramContext>of2(LARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(ServiceMethod.<TransverseRepresentationQueryService, FlowUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = 99")
                 .edgeWidth(3)
-                .fontSize(8)
+                .fontSize(12)
                 .borderSize(0)
                 .color(this.colorProvider.getColor(ViewConstants.DEFAULT_EDGE_COLOR))
                 .lineStyle(LineStyle.SOLID)
@@ -72,10 +73,10 @@ public class FunctionalExchangeEdgeStyleProvider {
 
     public ConditionalEdgeStyle createFCImpliedInConditionalEdgeStyle(int index) {
         return this.diagramBuilderHelper.newConditionalEdgeStyle()
-                .condition(ServiceMethod.<LARepresentationQueryService, FlowUsage, IEditingContext, DiagramContext>of2(LARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(ServiceMethod.<TransverseRepresentationQueryService, FlowUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
                 .edgeWidth(3)
-                .fontSize(8)
+                .fontSize(12)
                 .borderSize(0)
                 .color(this.colorProvider.getColor(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR + "_" + index))
                 .lineStyle(LineStyle.SOLID)

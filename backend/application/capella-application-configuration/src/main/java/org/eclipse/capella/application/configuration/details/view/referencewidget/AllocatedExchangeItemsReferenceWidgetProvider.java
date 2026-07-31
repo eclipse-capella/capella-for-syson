@@ -12,7 +12,13 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
@@ -30,13 +36,6 @@ import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
-
 /**
  * Provide the allocated exchange items reference widget content.
  *
@@ -52,15 +51,11 @@ public class AllocatedExchangeItemsReferenceWidgetProvider implements ICapellaRe
 
     private static final String ERROR_MSG = "Something went wrong while deleting the allocated exchange item";
 
-    private final LAQueryService lAQueryService;
-
-
     private final TransverseMutationService transverseMutationService;
 
     private final TransverseQueryService transverseQueryService;
 
     public AllocatedExchangeItemsReferenceWidgetProvider() {
-        this.lAQueryService = new LAQueryService();
         this.transverseMutationService = new TransverseMutationService();
         this.transverseQueryService = new TransverseQueryService();
     }
@@ -79,8 +74,8 @@ public class AllocatedExchangeItemsReferenceWidgetProvider implements ICapellaRe
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            var allExchangeItems = new ArrayList<>(this.lAQueryService.getExchangeItems(eObject));
-            allExchangeItems.removeIf(this.lAQueryService::isFunctionPort);
+            var allExchangeItems = new ArrayList<>(this.transverseQueryService.getExchangeItems(eObject));
+            allExchangeItems.removeIf(this.transverseQueryService::isFunctionPort);
             return allExchangeItems;
         }
         return List.of();

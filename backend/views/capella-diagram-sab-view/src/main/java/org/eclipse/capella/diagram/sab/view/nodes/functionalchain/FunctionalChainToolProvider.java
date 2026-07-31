@@ -12,8 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.functionalchain;
 
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
-import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -47,7 +47,7 @@ public class FunctionalChainToolProvider {
                 .dialogDescription(this.createFunctionalExchangesDialogDescription());
         cache.getNodeDescription(FunctionalChainNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> nodeToolBuilder.body(
                 this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of1(SARepresentationMutationService::createNewFunctionalChain).aqlSelf("selectedObjects"))
+                        .expression(ServiceMethod.of1(TransverseMutationService::createFunctionalChain).aqlSelf("selectedObjects"))
                         .children(this.diagramBuilderHelper.newCreateView()
                                 .containmentKind(NodeContainmentKind.CHILD_NODE)
                                 .elementDescription(nodeDescription)
@@ -62,14 +62,15 @@ public class FunctionalChainToolProvider {
     private DialogDescription createFunctionalExchangesDialogDescription() {
         return this.diagramBuilderHelper.newSelectionDialogDescription()
                 .multiple(true)
-                .descriptionExpression("Select the Functional Exchanges involved in the Functional Chain")
+                .defaultTitleExpression("Functional Exchanges")
+                .descriptionExpression("Select the Functional Exchanges implied in")
                 .selectionDialogTreeDescription(this.createDialogTreeDescription())
                 .build();
     }
 
     private SelectionDialogTreeDescription createDialogTreeDescription() {
         return this.diagramBuilderHelper.newSelectionDialogTreeDescription()
-                .elementsExpression(ServiceMethod.of0(SAQueryService::getFunctionalExchanges).aqlSelf())
+                .elementsExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchanges).aqlSelf())
                 .isSelectableExpression(AQLConstants.AQL + "true")
                 .childrenExpression(null)
                 .build();

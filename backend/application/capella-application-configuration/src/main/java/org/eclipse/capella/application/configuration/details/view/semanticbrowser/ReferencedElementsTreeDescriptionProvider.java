@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.IReferencedElementsTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
@@ -55,8 +54,9 @@ public class ReferencedElementsTreeDescriptionProvider implements IReferencedEle
     private final ILabelService labelService;
 
     private final CapellaImagePathsService capellaImagePathsService;
-    private final LAQueryService laQueryService;
+
     private final SemanticBrowserService semanticBrowserService;
+
     private final TransverseQueryService transverseQueryService;
 
     public ReferencedElementsTreeDescriptionProvider(IIdentityService identityService, ILabelService labelService, IRepresentationMetadataSearchService representationMetadataSearchService,
@@ -65,7 +65,6 @@ public class ReferencedElementsTreeDescriptionProvider implements IReferencedEle
         this.labelService = Objects.requireNonNull(labelService);
         this.capellaImagePathsService = new CapellaImagePathsService(labelService);
         this.transverseQueryService = new TransverseQueryService();
-        this.laQueryService = new LAQueryService();
         this.semanticBrowserService = new SemanticBrowserService(representationMetadataSearchService, identityService, representationSearchService);
     }
 
@@ -168,7 +167,7 @@ public class ReferencedElementsTreeDescriptionProvider implements IReferencedEle
         } else if (self instanceof String category) {
             result.addAll(this.semanticBrowserService.getReferencedCategoryElements(root, category));
         } else {
-            if (this.laQueryService.isFunction(root)
+            if (this.transverseQueryService.isFunction(root)
                     && self instanceof FlowUsage flowUsage) {
                 result.addAll(this.semanticBrowserService.getFunctionalExchangeCategoryIsReferencing(flowUsage));
             }

@@ -14,12 +14,12 @@ package org.eclipse.capella.diagram.sab.view;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.eclipse.capella.model.services.system.analysis.SAMutationService;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationReconnectToolServices;
-import org.eclipse.capella.model.services.system.analysis.SAMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
@@ -27,7 +27,6 @@ import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
-import org.eclipse.syson.services.DeleteService;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -63,6 +62,5 @@ public class SABViewJavaServiceProviderTests {
         assertTrue(services.contains(DiagramMutationExposeService.class));
         assertTrue(services.contains(DiagramMutationLabelService.class));
         assertTrue(services.contains(DiagramQueryLabelService.class));
-        assertTrue(services.contains(DeleteService.class));
     }
 }

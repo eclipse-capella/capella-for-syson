@@ -12,6 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer.services;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+
 import org.eclipse.capella.application.configuration.explorer.CapellaExplorerTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
@@ -30,14 +38,6 @@ import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.trees.Tree;
 import org.eclipse.sirius.components.trees.description.TreeDescription;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * ITreePathProvider implementation for the Capella Explorer tree.
@@ -135,7 +135,7 @@ public class CapellaExplorerTreePathProvider implements ITreePathProvider {
     private List<Object> applyFilters(List<Object> elements, List<String> activeFilterIds) {
         var alteredElements = new ArrayList<Object>(elements);
         if (activeFilterIds.contains(CapellaTreeFilterProvider.HIDE_PORTS_TREE_ITEM_FILTER_ID)) {
-            alteredElements.removeIf(element -> element instanceof EObject eObject && (this.transverseQueryService.isComponentPort(eObject) || this.laQueryService.isFunctionPort(eObject)));
+            alteredElements.removeIf(element -> element instanceof EObject eObject && (this.transverseQueryService.isComponentPort(eObject) || this.transverseQueryService.isFunctionPort(eObject)));
         }
         return alteredElements;
     }

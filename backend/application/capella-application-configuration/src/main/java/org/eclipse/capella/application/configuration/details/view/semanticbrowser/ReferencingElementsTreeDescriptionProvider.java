@@ -18,7 +18,6 @@ import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.IReferencingElementsTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
@@ -55,8 +54,9 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
     private final ILabelService labelService;
 
     private final CapellaImagePathsService capellaImagePathsService;
-    private final LAQueryService laQueryService;
+
     private final SemanticBrowserService semanticBrowserService;
+
     private final TransverseQueryService transverseQueryService;
 
     public ReferencingElementsTreeDescriptionProvider(IIdentityService identityService, ILabelService labelService,
@@ -66,7 +66,6 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
         this.labelService = Objects.requireNonNull(labelService);
         this.capellaImagePathsService = new CapellaImagePathsService(labelService);
         this.transverseQueryService = new TransverseQueryService();
-        this.laQueryService = new LAQueryService();
         this.semanticBrowserService = new SemanticBrowserService(representationMetadataSearchService, identityService, representationSearchService);
     }
 
@@ -169,7 +168,7 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
         } else if (self instanceof String category) {
             result.addAll(this.semanticBrowserService.getReferencingCategoryElements(root, category));
         } else {
-            if (this.laQueryService.isFunction(root)
+            if (this.transverseQueryService.isFunction(root)
                     && self instanceof FlowUsage flowUsage) {
                 result.addAll(this.semanticBrowserService.getFunctionalExchangeCategoryReferencedBy(flowUsage));
             }

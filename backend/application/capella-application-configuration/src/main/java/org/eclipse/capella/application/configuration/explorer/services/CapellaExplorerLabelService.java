@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer.services;
 
@@ -18,11 +19,13 @@ import java.util.Objects;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFragment;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerLabelService;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
 import org.eclipse.sirius.components.core.api.labels.StyledString;
 import org.eclipse.sirius.web.application.views.explorer.services.api.IExplorerLabelServiceDelegate;
 import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.RequirementUsage;
 import org.springframework.stereotype.Service;
 
 /**
@@ -39,10 +42,13 @@ public class CapellaExplorerLabelService implements IExplorerLabelServiceDelegat
 
     private final ILabelService labelService;
 
+    private final TransverseQueryService transverseQueryService;
+
     public CapellaExplorerLabelService(IReadOnlyObjectPredicate readOnlyObjectPredicate, ILabelService labelService, CapellaImagePathsService capellaImagePathsService) {
         this.readOnlyObjectPredicate = Objects.requireNonNull(readOnlyObjectPredicate);
         this.labelService = Objects.requireNonNull(labelService);
         this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
+        this.transverseQueryService = new TransverseQueryService();
     }
 
     @Override
@@ -68,6 +74,9 @@ public class CapellaExplorerLabelService implements IExplorerLabelServiceDelegat
         String label = "";
         if (self instanceof ICapellaExplorerFragment fragment) {
             label = fragment.getLabel();
+        } else if (self instanceof RequirementUsage requirement) {
+            // Use the same label format as LAB diagram for requirements
+            label = this.transverseQueryService.getRequirementLabel(requirement);
         } else {
             StyledString styledLabel = this.labelService.getStyledLabel(self);
             if (styledLabel != null) {

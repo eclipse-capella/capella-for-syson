@@ -16,11 +16,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.eclipse.capella</groupId>
-	<artifactId>capella-tests-parent</artifactId>
+    <artifactId>capella-tests-root</artifactId>
 	<version>2026.7.0</version>
 
-	<name>capella-tests-parent</name>
-	<description>Capella Tests Parent</description>
+    <name>capella-tests-root</name>
+    <description>Capella Tests Root</description>
 	<packaging>pom</packaging>
 
 	<modules>

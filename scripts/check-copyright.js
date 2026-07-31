@@ -19,8 +19,12 @@ const SUPPORTED_EXTENSIONS = new Set([".java", ".js", ".sh", ".ts", ".tsx", ".xm
 const isCopyrightCheckedFile = (filePath) => SUPPORTED_EXTENSIONS.has(path.extname(filePath));
 
 const hasCurrentEplHeader = (content, year) => {
-  const header = content.split(/\r?\n/).slice(0, 20).join("\n");
-  return header.includes("Copyright") && header.includes(year.toString()) && header.includes("SPDX-License-Identifier: EPL-2.0");
+  const headerLines = content.split(/\r?\n/).slice(0, 20);
+  const hasCurrentCopyright = headerLines.some(
+    (line) => line.includes("Copyright") && line.includes(year.toString()),
+  );
+  const hasEplIdentifier = headerLines.some((line) => line.includes("SPDX-License-Identifier: EPL-2.0"));
+  return hasCurrentCopyright && hasCurrentEplHeader;
 };
 
 const getFilesWithAnInvalidCopyright = (filePaths, workspace, year) =>

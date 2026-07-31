@@ -9,14 +9,14 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.function;
 
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -24,6 +24,7 @@ import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ConditionalNodeStyle;
 import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
 import org.eclipse.syson.sysml.ActionUsage;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Style for Function nodes.
@@ -45,14 +46,15 @@ public class FunctionNodeStyleProvider {
         return this.diagramBuilderHelper.newRectangularNodeStyleDescription()
                 .background(this.colorProvider.getColor(LABViewConstants.FUNCTION_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(LABViewConstants.FUNCTION_BORDER_COLOR))
-                .borderRadius(0)
+                .borderRadius(8)
                 .borderSize(2)
                 .build();
     }
 
     public ConditionalNodeStyle createSeveralFCImpliedInConditionalNodeStyle() {
         return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.<LARepresentationQueryService, ActionUsage, IEditingContext, DiagramContext>of2(LARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(
+                        ServiceMethod.<TransverseRepresentationQueryService, ActionUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = 99")
                 .style(this.createFunctionalChainFunctionNodeStyle(LABViewConstants.FUNCTION_BORDER_COLOR))
                 .build();
@@ -60,7 +62,8 @@ public class FunctionNodeStyleProvider {
 
     public ConditionalNodeStyle createFCImpliedInConditionalNodeStyle(int index) {
         return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.<LARepresentationQueryService, ActionUsage, IEditingContext, DiagramContext>of2(LARepresentationQueryService::getImpliedInFunctionalChainIndex)
+                .condition(
+                        ServiceMethod.<TransverseRepresentationQueryService, ActionUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
                         .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
                 .style(this.createFunctionalChainFunctionNodeStyle(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR + "_" + index))
                 .build();
@@ -71,7 +74,7 @@ public class FunctionNodeStyleProvider {
         return this.diagramBuilderHelper.newRectangularNodeStyleDescription()
                 .background(this.colorProvider.getColor(LABViewConstants.FUNCTION_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(color))
-                .borderRadius(0)
+                .borderRadius(8)
                 .borderSize(4)
                 .build();
     }

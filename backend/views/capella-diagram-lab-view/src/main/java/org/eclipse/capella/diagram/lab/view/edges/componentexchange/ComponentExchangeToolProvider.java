@@ -14,14 +14,14 @@ package org.eclipse.capella.diagram.lab.view.edges.componentexchange;
 
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentPortNodeDescriptionProvider;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide tools to create component exchanges.
@@ -47,7 +47,10 @@ public class ComponentExchangeToolProvider {
                 .targetElementDescriptions(targetPortDescription, targetNodeDescription)
                 .iconURLsExpression("/icons/full/obj16/ComponentExchange.svg")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of1(TransverseRepresentationMutationService::createComponentExchange).aql(EdgeDescription.SEMANTIC_EDGE_SOURCE, EdgeDescription.SEMANTIC_EDGE_TARGET))
+                        .expression(ServiceMethod.of1(TransverseMutationService::createComponentExchange)
+                                .aql(
+                                        EdgeDescription.SEMANTIC_EDGE_SOURCE,
+                                        EdgeDescription.SEMANTIC_EDGE_TARGET))
                         .build());
 
         return edgeToolBuilder.build();

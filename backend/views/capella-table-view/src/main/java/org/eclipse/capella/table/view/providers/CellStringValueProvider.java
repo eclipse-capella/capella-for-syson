@@ -12,18 +12,17 @@
  *******************************************************************************/
 package org.eclipse.capella.table.view.providers;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.SysmlPackage;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 /**
  * Provides string value of a cell in function table.
@@ -32,12 +31,9 @@ import java.util.stream.Collectors;
  */
 public class CellStringValueProvider implements BiFunction<VariableManager, Object, String> {
 
-    private final LAQueryService laQueryService;
-
     private final TransverseQueryService transverseQueryService;
 
     public CellStringValueProvider() {
-        this.laQueryService = new LAQueryService();
         this.transverseQueryService = new TransverseQueryService();
     }
 
@@ -51,19 +47,19 @@ public class CellStringValueProvider implements BiFunction<VariableManager, Obje
         String cellValue = "";
 
         if (columnTargetObject == SysmlPackage.eINSTANCE.getPartUsage()) {
-            var optComponent = this.laQueryService.getAllocatingComponent((ActionUsage) self);
+            var optComponent = this.transverseQueryService.getAllocatingComponent((ActionUsage) self);
             cellValue = optComponent
                     .map(Element::getDeclaredName)
                     .orElse("");
 
         } else if (columnTargetObject == SysmlPackage.eINSTANCE.getReferenceUsage()) {
-            cellValue = formatSysmlElements(this.laQueryService.getFunctionPorts(self));
+            cellValue = this.formatSysmlElements(this.transverseQueryService.getFunctionPorts(self));
 
         } else if (columnTargetObject == SysmlPackage.eINSTANCE.getLiteralString()) {
             cellValue = this.transverseQueryService.getArcadiaElementDescription(self);
 
         } else if (columnTargetObject == SysmlPackage.eINSTANCE.getOwningMembership()) {
-            var optionalFunctionStatus = Optional.ofNullable(this.laQueryService.getStatus((ActionUsage) self));
+            var optionalFunctionStatus = Optional.ofNullable(this.transverseQueryService.getStatus((ActionUsage) self));
             cellValue = optionalFunctionStatus.map(Element::getDeclaredName).orElse("");
         }
 

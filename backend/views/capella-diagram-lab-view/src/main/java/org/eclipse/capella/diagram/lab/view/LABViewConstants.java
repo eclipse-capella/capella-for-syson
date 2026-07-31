@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
@@ -43,4 +44,12 @@ public class LABViewConstants {
     public static final String REQUIREMENT_BACKGROUND_COLOR = "REQUIREMENT_BACKGROUND_COLOR";
     public static final String REQUIREMENT_BORDER_COLOR = "REQUIREMENT_BORDER_COLOR";
     public static final String REQUIREMENT_LABEL_COLOR = "REQUIREMENT_LABEL_COLOR";
+    public static final String COMMENT_BACKGROUND_COLOR = "COMMENT_BACKGROUND_COLOR";
+    public static final String COMMENT_BORDER_COLOR = "COMMENT_BORDER_COLOR";
+    public static final String COMMENT_LABEL_COLOR = "COMMENT_LABEL_COLOR";
+
+    // Package colors - matching SySON's General View style
+    public static final String PACKAGE_BACKGROUND_COLOR = "PACKAGE_BACKGROUND_COLOR";
+    public static final String PACKAGE_BORDER_COLOR = "PACKAGE_BORDER_COLOR";
+    public static final String PACKAGE_LABEL_COLOR = "PACKAGE_LABEL_COLOR";
 }

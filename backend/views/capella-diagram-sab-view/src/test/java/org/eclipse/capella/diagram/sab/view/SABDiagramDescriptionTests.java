@@ -19,14 +19,12 @@ import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.junit.jupiter.api.Disabled;
 
 /**
  * Checks the structure of the System Analysis Blank diagram.
  *
  * @author gdaniel
  */
-@Disabled
 public class SABDiagramDescriptionTests extends AbstractDiagramDescriptionTests {
 
     @Override

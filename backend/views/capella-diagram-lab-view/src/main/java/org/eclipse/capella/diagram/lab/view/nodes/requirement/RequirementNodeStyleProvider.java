@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.requirement;
 
@@ -41,9 +42,7 @@ public class RequirementNodeStyleProvider {
                 .borderColor(this.colorProvider.getColor(LABViewConstants.REQUIREMENT_BORDER_COLOR))
                 .borderRadius(0)
                 .borderSize(2)
+                .childrenLayoutStrategy(this.diagramBuilderHelper.newListLayoutStrategyDescription().build())
                 .build();
     }
-
-
-
 }

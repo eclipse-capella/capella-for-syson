@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
@@ -40,7 +41,7 @@ public class ComponentNodeStyleProvider {
                 .background(this.colorProvider.getColor(LABViewConstants.COMPONENT_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(LABViewConstants.COMPONENT_BORDER_COLOR))
                 .borderRadius(0)
-                .borderSize(2)
+                .borderSize(1)
                 .build();
     }
 
@@ -49,7 +50,7 @@ public class ComponentNodeStyleProvider {
                 .background(this.colorProvider.getColor(LABViewConstants.ACTOR_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(LABViewConstants.ACTOR_BORDER_COLOR))
                 .borderRadius(0)
-                .borderSize(2)
+                .borderSize(1)
                 .build();
     }
 }

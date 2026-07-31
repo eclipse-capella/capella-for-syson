@@ -16,14 +16,14 @@ import org.eclipse.capella.diagram.sab.view.nodes.actor.SystemActorNodeDescripti
 import org.eclipse.capella.diagram.sab.view.nodes.component.SystemComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDescriptionProvider;
-import org.eclipse.syson.util.ServiceMethod;
-import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide tools to create component exchanges in SAB.
@@ -51,7 +51,7 @@ public class ComponentExchangeToolProvider {
                 .targetElementDescriptions(targetPortDescription, systemNodeDescription, componentNodeDescription, actorNodeDescription)
                 .iconURLsExpression("/icons/full/obj16/ComponentExchange.svg")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of1(SARepresentationMutationService::createComponentExchange)
+                        .expression(ServiceMethod.of1(TransverseMutationService::createComponentExchange)
                                 .aql(EdgeDescription.SEMANTIC_EDGE_SOURCE, EdgeDescription.SEMANTIC_EDGE_TARGET))
                         .build())
                 .build();

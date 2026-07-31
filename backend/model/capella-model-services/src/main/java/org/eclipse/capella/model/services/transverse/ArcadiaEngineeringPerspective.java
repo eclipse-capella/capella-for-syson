@@ -12,14 +12,21 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.transverse;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * An enum listing all Arcadia Architecture Perspectives.
  *
  * @author fbarbin
  */
 public enum ArcadiaEngineeringPerspective {
-    OperationalAnalysis("Operational Analysis"), SystemAnalysis("System Analysis"), LogicalArchitecture("Logical Architecture"), PhysicalArchitecture("Physical Architecture"), EPBS(
-            "EPBS Architecture");
+    OperationalAnalysis("Operational Analysis"),
+    SystemAnalysis("System Analysis"),
+    LogicalArchitecture("Logical Architecture"),
+    PhysicalArchitecture("Physical Architecture"),
+    EPBS("EPBS Architecture");
 
     private final String label;
 
@@ -27,25 +34,13 @@ public enum ArcadiaEngineeringPerspective {
         this.label = label;
     }
 
-    public static boolean containsValue(String testValue) {
-        for (ArcadiaEngineeringPerspective perspective : ArcadiaEngineeringPerspective.values()) {
-            if (perspective.label.equals(testValue)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static ArcadiaEngineeringPerspective fromValue(String value) {
-        for (ArcadiaEngineeringPerspective perspective : ArcadiaEngineeringPerspective.values()) {
-            if (perspective.label.equals(value)) {
-                return perspective;
-            }
-        }
-        throw new IllegalArgumentException("No enum constant with value: " + value);
+    public static Optional<ArcadiaEngineeringPerspective> fromLabel(String label) {
+        return Arrays.stream(values())
+                .filter(arcadiaEngineeringPerspective -> Objects.equals(arcadiaEngineeringPerspective.getLabel(), label))
+                .findFirst();
     }
 
     public String getLabel() {
-        return label;
+        return this.label;
     }
 }

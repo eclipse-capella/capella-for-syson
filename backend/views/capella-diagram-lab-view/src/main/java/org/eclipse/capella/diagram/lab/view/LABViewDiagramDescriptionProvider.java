@@ -9,19 +9,27 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
+ *     DB Netz AG - implementation
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
+import org.eclipse.capella.diagram.lab.view.edges.annotating.AnnotatingEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.nodes.comment.CommentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.functionalchain.FunctionalChainNodeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.nodes.packagenode.LABPackageNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.nodes.requirement.compartment.LABCompartmentItemNodeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.nodes.requirement.compartment.LABCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -33,7 +41,9 @@ import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Description of the Logical Architecture Blank using the ViewBuilder API from Sirius Web.
@@ -43,6 +53,21 @@ import java.util.List;
 public class LABViewDiagramDescriptionProvider implements IRepresentationDescriptionProvider {
 
     public static final String DESCRIPTION_NAME = "LAB - Logical Architecture Blank";
+
+    /**
+     * Compartments with list items for RequirementUsage.
+     * Following SySON's pattern for compartment configuration.
+     */
+    public static final Map<EClass, List<EReference>> REQUIREMENT_COMPARTMENTS = Map.ofEntries(
+            Map.entry(SysmlPackage.eINSTANCE.getRequirementUsage(), List.of(
+                    SysmlPackage.eINSTANCE.getElement_Documentation(),
+                    SysmlPackage.eINSTANCE.getUsage_NestedAttribute(),
+                    SysmlPackage.eINSTANCE.getRequirementUsage_ActorParameter(),
+                    SysmlPackage.eINSTANCE.getRequirementUsage_AssumedConstraint(),
+                    SysmlPackage.eINSTANCE.getRequirementUsage_RequiredConstraint(),
+                    SysmlPackage.eINSTANCE.getUsage_NestedPort()
+            ))
+    );
 
     private final DiagramBuilders diagramBuilderHelper = new DiagramBuilders();
 
@@ -59,24 +84,32 @@ public class LABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .layoutOption(DiagramLayoutOption.NONE)
                 .domainType(domainType)
                 .name(DESCRIPTION_NAME)
-                .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .titleExpression(DESCRIPTION_NAME)
                 .preconditionExpression(ServiceMethod.of0(TransverseQueryService::isStructurePackage).aqlSelf())
                 .toolbar(toolbar)
+                .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
 
         var cache = new ViewDiagramElementFinder();
-        var diagramElementDescriptionProviders = List.of(
-                new ComponentNodeDescriptionProvider(colorProvider),
-                new FunctionNodeDescriptionProvider(colorProvider),
-                new ComponentPortNodeDescriptionProvider(colorProvider),
-                new ComponentExchangeEdgeDescriptionProvider(colorProvider),
-                new FunctionalExchangeEdgeDescriptionProvider(colorProvider),
-                new FunctionPortNodeDescriptionProvider(colorProvider),
-                new FunctionalChainNodeDescriptionProvider(colorProvider),
-                new RequirementNodeDescriptionProvider(colorProvider),
-                new DescribesEdgeDescriptionProvider(colorProvider)
-        );
+
+        // Core diagram element providers
+        var diagramElementDescriptionProviders = new ArrayList<IDiagramElementDescriptionProvider<?>>();
+        diagramElementDescriptionProviders.add(new ComponentNodeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new FunctionNodeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new ComponentPortNodeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new ComponentExchangeEdgeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new FunctionalExchangeEdgeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new FunctionPortNodeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new FunctionalChainNodeDescriptionProvider(colorProvider));
+
+        // Add RequirementUsage compartment providers (following SySON pattern)
+        diagramElementDescriptionProviders.addAll(this.createRequirementCompartmentProviders(colorProvider));
+
+        diagramElementDescriptionProviders.add(new RequirementNodeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new CommentNodeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new LABPackageNodeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new DescribesEdgeDescriptionProvider(colorProvider));
+        diagramElementDescriptionProviders.add(new AnnotatingEdgeDescriptionProvider(colorProvider));
 
         diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
 
@@ -86,5 +119,23 @@ public class LABViewDiagramDescriptionProvider implements IRepresentationDescrip
         diagramDescription.setPalette(palette);
 
         return diagramDescription;
+    }
+
+    /**
+     * Creates compartment providers for RequirementUsage following SySON's pattern.
+     */
+    private List<IDiagramElementDescriptionProvider<?>> createRequirementCompartmentProviders(IColorProvider colorProvider) {
+        List<IDiagramElementDescriptionProvider<?>> compartmentProviders = new ArrayList<>();
+
+        REQUIREMENT_COMPARTMENTS.forEach((eClass, eReferences) -> {
+            eReferences.forEach(eReference -> {
+                // Create compartment item provider (for the items inside the compartment)
+                compartmentProviders.add(new LABCompartmentItemNodeDescriptionProvider(eClass, eReference, colorProvider));
+                // Create compartment provider (the container)
+                compartmentProviders.add(new LABCompartmentNodeDescriptionProvider(eClass, eReference, colorProvider));
+            });
+        });
+
+        return compartmentProviders;
     }
 }

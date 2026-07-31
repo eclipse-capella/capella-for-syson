@@ -16,11 +16,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.eclipse.capella</groupId>
-	<artifactId>capella-model-parent</artifactId>
+    <artifactId>capella-model-root</artifactId>
 	<version>2026.7.0</version>
 
-	<name>capella-model-parent</name>
-	<description>Capella for SysON Model Parent</description>
+    <name>capella-model-root</name>
+    <description>Capella for SysON Model Root</description>
 	<packaging>pom</packaging>
 
 	<modules>

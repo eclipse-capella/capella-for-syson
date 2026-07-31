@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.form.view;
 
+import java.util.List;
+
 import org.eclipse.capella.form.view.util.CapellaViewFormService;
 import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
@@ -21,12 +23,12 @@ import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.core.services.ObjectService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.eclipse.syson.diagram.common.view.services.ViewToolService;
+import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
+import org.eclipse.syson.diagram.services.aql.DiagramQueryAQLService;
 import org.eclipse.syson.services.DeleteService;
 import org.eclipse.syson.services.LabelService;
+import org.eclipse.syson.tree.services.aql.TreeQueryAQLService;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * List of all Java services classes used by the {@link SystemArchitectureModelPageDescription}.
@@ -59,7 +61,9 @@ public class CapellaFormViewJavaServiceProvider implements IJavaServiceProvider 
                     LARepresentationQueryService.class,
                     LARepresentationMutationService.class,
                     TransverseQueryService.class,
-                    ViewToolService.class,
+                    DiagramMutationAQLService.class,
+                    DiagramQueryAQLService.class,
+                    TreeQueryAQLService.class,
                     CapellaViewFormService.class,
                     ObjectService.class);
         }

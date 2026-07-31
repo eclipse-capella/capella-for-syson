@@ -14,14 +14,14 @@ package org.eclipse.capella.diagram.sab.view.edges.componentexchange;
 
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortNodeDescriptionProvider;
-import org.eclipse.syson.util.ServiceMethod;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -44,11 +44,11 @@ public class ComponentExchangeEdgeDescriptionProvider extends AbstractEdgeDescri
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(EDGE_DESCRIPTION_NAME)
-                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getComponentExchanges).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(SAQueryService::getComponentExchangeSourcePort).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchanges).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchangeSource).aqlSelf())
                 .style(new ComponentExchangeEdgeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(ServiceMethod.of0(SAQueryService::getComponentExchangeTargetPort).aqlSelf())
+                .targetExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchangeTarget).aqlSelf())
                 .palette(new ComponentExchangePaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }

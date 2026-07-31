@@ -12,16 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
-import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
-import org.eclipse.sirius.components.view.builder.generated.diagram.NodeToolBuilder;
 import org.eclipse.sirius.components.view.builder.generated.view.ChangeContextBuilder;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide tools to create component node.
@@ -43,25 +42,10 @@ public class ComponentToolProvider {
                 .name("New Component")
                 .iconURLsExpression("/icons/full/obj16/LogicalComponent.svg");
 
-
-        return this.configureNewComponentNodeTool(nodeToolBuilder, cache, false);
-    }
-
-    public NodeTool createNewActorComponentNodeTool(IViewDiagramElementFinder cache) {
-
-        var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
-                .name("New Actor")
-                .iconURLsExpression("/icons/full/obj16/Actor.svg");
-
-        return this.configureNewComponentNodeTool(nodeToolBuilder, cache, true);
-    }
-
-    private NodeTool configureNewComponentNodeTool(NodeToolBuilder nodeToolBuilder, IViewDiagramElementFinder cache, boolean isActor) {
-
         cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of1(LARepresentationMutationService::createComponent).aqlSelf(String.valueOf(isActor)))
+                    .expression(ServiceMethod.of0(TransverseMutationService::createComponent).aqlSelf())
                     .children(
                             this.diagramBuilderHelper.newCreateView()
                                     .containmentKind(NodeContainmentKind.CHILD_NODE)
@@ -76,4 +60,27 @@ public class ComponentToolProvider {
         return nodeToolBuilder.build();
     }
 
+    public NodeTool createNewActorComponentNodeTool(IViewDiagramElementFinder cache) {
+
+        var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
+                .name("New Actor")
+                .iconURLsExpression("/icons/full/obj16/Actor.svg");
+
+        cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
+
+            ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
+                    .expression(ServiceMethod.of0(TransverseMutationService::createActor).aqlSelf())
+                    .children(
+                            this.diagramBuilderHelper.newCreateView()
+                                    .containmentKind(NodeContainmentKind.CHILD_NODE)
+                                    .elementDescription(nodeDescription)
+                                    .parentViewExpression("aql:selectedNode")
+                                    .semanticElementExpression(AQLConstants.AQL_SELF)
+                                    .variableName("newInstanceView").build());
+
+            nodeToolBuilder.body(changeContextBuilder.build());
+        });
+
+        return nodeToolBuilder.build();
+    }
 }
