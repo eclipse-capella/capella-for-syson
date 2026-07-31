@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <ellipse cx="8" cy="8" rx="7.326" ry="5.621" style="fill:#cbe5ac;fill-opacity:1;stroke:#264d14;stroke-width:.974;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:.96862745"/>
+    <g style="font-style:normal;font-weight:400;font-size:7.7103px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#313131;fill-opacity:.968627;stroke:none;stroke-width:.192757">
+        <path d="M6.958 9.299q0-.286-.143-.467-.139-.184-.651-.392-.617-.24-1.084-.624-.463-.388-.463-1.1 0-.693.485-1.11.486-.422 1.25-.422.787 0 1.254.474.47.475.47 1.216H6.97q0-.342-.151-.564-.147-.223-.486-.223-.312 0-.463.185-.147.184-.147.448 0 .267.223.448.225.18.594.343.768.274 1.149.689.38.414.38 1.091 0 .723-.456 1.126-.455.4-1.238.4-.47 0-.908-.193-.432-.192-.711-.591-.279-.4-.279-1.024h1.11q0 .497.197.7.2.204.59.204.32 0 .453-.174.131-.177.131-.44m1.845 1.441V5.26h3.034v.922H9.914v1.404h1.716v.918H9.914v2.237Z" aria-label="SF" style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-family:&quot;Roboto Condensed&quot;;-inkscape-font-specification:&quot;Roboto Condensed, Bold&quot;;fill:#313131;fill-opacity:.968627;stroke-width:.192757"/>
+    </g>
+</svg>

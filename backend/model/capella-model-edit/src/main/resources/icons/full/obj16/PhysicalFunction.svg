@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+    <ellipse cx="8" cy="8" rx="7.326" ry="5.621" style="fill:#cbe5ac;fill-opacity:1;stroke:#264d14;stroke-width:.974;stroke-linecap:square;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:1.431;stroke-opacity:.96862745"/>
+    <g style="font-style:normal;font-weight:400;font-size:7.7103px;line-height:1.25;font-family:sans-serif;letter-spacing:0;word-spacing:0;fill:#313131;fill-opacity:.968627;stroke:none;stroke-width:.192757">
+        <path d="M6.306 8.813h-.76v1.928H4.435V5.259h1.871q.828 0 1.303.516.478.512.478 1.299 0 .798-.478 1.269-.475.47-1.303.47m-.76-2.631V7.89h.76q.346 0 .5-.226.159-.23.159-.584t-.158-.625q-.155-.274-.5-.274zm3.275 4.558V5.26h3.034v.922H9.932v1.404h1.716v.918H9.932v2.237Z" aria-label="PF" style="font-style:normal;font-variant:normal;font-weight:700;font-stretch:normal;font-family:&quot;Roboto Condensed&quot;;-inkscape-font-specification:&quot;Roboto Condensed, Bold&quot;;fill:#313131;fill-opacity:.968627;stroke-width:.192757"/>
+    </g>
+</svg>

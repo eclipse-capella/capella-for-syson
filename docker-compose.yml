@@ -1,0 +1,51 @@
+#
+# Copyright (c) 2026 Obeo.
+# This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v2.0
+# which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#     Obeo - initial API and implementation
+#
+services:
+  database:
+    image: postgres:15
+    ports:
+      - "5442:5432"
+    environment:
+      POSTGRES_DB: capella-for-syson-db
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpwd
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dbuser -d capella-for-syson-db"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    volumes:
+      - capella-for-syson-postgres-data:/var/lib/postgresql/data
+  app:
+    image: '${IMAGE_TAG:-capella-for-syson:latest}'
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database/capella-for-syson-db
+      SPRING_DATASOURCE_USERNAME: dbuser
+      SPRING_DATASOURCE_PASSWORD: dbpwd
+      SIRIUS_COMPONENTS_CORS_ALLOWEDORIGINPATTERNS: "*"
+      SERVER_PORT: 8080
+      MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: false
+    healthcheck:
+      test: "wget --quiet --spider http://localhost:8080/actuator/health || exit 1"
+      interval: 20s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    depends_on:
+      database:
+        condition: service_healthy
+
+volumes:
+  capella-for-syson-postgres-data:

@@ -1,0 +1,70 @@
+#
+# Copyright (c) 2026 Obeo.
+# This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v2.0
+# which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#     Obeo - initial API and implementation
+#
+name: Pull Request Metadata Review
+
+on:
+  pull_request:
+    types:
+      [
+        opened,
+        synchronize,
+        reopened,
+        labeled,
+        unlabeled,
+        milestoned,
+        demilestoned,
+      ]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  metadata-review:
+    name: Metadata Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node SDK
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.16
+
+      - name: Check commit metadata
+        env:
+          GITHUB_EVENT: ${{ toJSON(github.event) }}
+        run: node scripts/check-commit-metadata.js
+
+      - name: Check that the CHANGELOG has been updated
+        env:
+          GITHUB_EVENT: ${{ toJSON(github.event) }}
+        run: node scripts/check-changelog.js
+
+      - name: Check copyright headers
+        env:
+          GITHUB_EVENT: ${{ toJSON(github.event) }}
+        run: node scripts/check-copyright.js
+
+      - name: Check pull request labels
+        env:
+          GITHUB_EVENT: ${{ toJSON(github.event) }}
+        run: node scripts/check-labels.js
+
+      - name: Check TypeScript conventions
+        env:
+          GITHUB_EVENT: ${{ toJSON(github.event) }}
+        run: node scripts/check-ts.js

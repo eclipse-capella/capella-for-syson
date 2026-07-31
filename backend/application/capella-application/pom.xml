@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2026 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+
+ SPDX-License-Identifier: EPL-2.0
+
+ Contributors:
+     Obeo - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>4.0.7</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>org.eclipse.capella</groupId>
+	<artifactId>capella-application</artifactId>
+	<version>2026.7.0</version>
+	<name>capella-application</name>
+	<description>Capella for SysON Application</description>
+
+	<properties>
+		<java.version>21</java.version>
+		<sirius.web.version>2026.7.0</sirius.web.version>
+		<syson.version>2026.7.0</syson.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- See https://github.com/eclipse-sirius/sirius-web/issues/5670 -->
+			<dependency>
+				<groupId>org.liquibase</groupId>
+				<artifactId>liquibase-core</artifactId>
+				<version>4.33.0</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<repositories>
+		<repository>
+			<id>Central</id>
+			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
+			<id>github-sirius-emfjson</id>
+			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-emf-json</url>
+		</repository>
+		<repository>
+			<id>github-sirius-web</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/eclipse-sirius/sirius-web</url>
+		</repository>
+		<repository>
+			<id>github-syson</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/eclipse-syson/syson</url>
+		</repository>
+		<repository>
+			<id>Eclipse-Acceleo</id>
+			<url>https://download.eclipse.org/acceleo/updates/releases/4.2/R202510230846/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-json</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-extension</artifactId>
+			<version>2026.7.0</version>
+			<!--
+			 We import the extension jar (as a regular installation via adding a classpath jar would do).
+			 The jar contains all the Capella for SysON modules, but maven still use the original
+			 POM's transitive dependencies.
+			 Without the exclusion, Maven would load both the shaded Capella for SysON dependencies and their original
+			 jars, duplicating them in the capella-application fat jar.
+			-->
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-sysml-metamodel</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-sysml-metamodel-edit</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-application-configuration</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-sysml-rest-api-services</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-diagram-common-view</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-standard-diagrams-view</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-tree-explorer-view</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-sysml-import</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-sysml-export</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-sysml-validation</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-table-requirements-view</artifactId>
+			<version>${syson.version}</version>
+		</dependency>
+
+		<!-- Test Dependencies -->
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-tests</artifactId>
+			<version>2026.7.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.sirius</groupId>
+			<artifactId>sirius-web-tests</artifactId>
+			<version>${sirius.web.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>build-info</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>3.4.0</version>
+				<configuration>
+					<configLocation>../../releng/capella-resources/checkstyle/CheckstyleConfiguration.xml
+					</configLocation>
+					<includeTestSourceDirectory>true</includeTestSourceDirectory>
+					<failsOnError>true</failsOnError>
+					<consoleOutput>true</consoleOutput>
+				</configuration>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.13</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>org.eclipse.capella</groupId>
+					<artifactId>capella-extension</artifactId>
+					<version>2026.7.0</version>
+					<!--
+                     We import the extension jar (as a regular installation via adding a classpath jar would do).
+                     The jar contains all the Capella for SysON modules, but maven still use the original
+                     POM's transitive dependencies.
+                     Without the exclusion, Maven would load both the shaded Capella for SysON dependencies and their original
+                     jars, duplicating them in the capella-application fat jar.
+                    -->
+					<exclusions>
+						<exclusion>
+							<groupId>*</groupId>
+							<artifactId>*</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+			</dependencies>
+
+			<build>
+				<plugins>
+					<plugin>
+						<!--
+                         Ensure the extension jar doesn't contain jars that are available in the host.
+                         If such jar is found, it should most likely be scoped as provided in the pom that declares it as a
+                         dependency.
+                         -->
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>ensure-extension-does-not-duplicate-host</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<banDuplicateClasses>
+											<scopes>
+												<scope>compile</scope>
+												<scope>runtime</scope>
+											</scopes>
+											<searchTransitive>true</searchTransitive>
+											<findAllDuplicates>true</findAllDuplicates>
+											<ignoreWhenIdentical>false</ignoreWhenIdentical>
+											<dependencies>
+												<!-- Ignore duplicated dependencies already present in SysON -->
+												<dependency>
+													<groupId>org.eclipse.core</groupId>
+													<artifactId>*</artifactId>
+													<ignoreClasses>
+														<ignoreClass>*</ignoreClass>
+													</ignoreClasses>
+												</dependency>
+												<dependency>
+													<groupId>org.eclipse.equinox</groupId>
+													<artifactId>*</artifactId>
+													<ignoreClasses>
+														<ignoreClass>*</ignoreClass>
+													</ignoreClasses>
+												</dependency>
+												<dependency>
+													<groupId>org.eclipse.osgi</groupId>
+													<artifactId>*</artifactId>
+													<ignoreClasses>
+														<ignoreClass>*</ignoreClass>
+													</ignoreClasses>
+												</dependency>
+											</dependencies>
+										</banDuplicateClasses>
+									</rules>
+								</configuration>
+							</execution>
+						</executions>
+
+						<dependencies>
+							<dependency>
+								<groupId>org.codehaus.mojo</groupId>
+								<artifactId>extra-enforcer-rules</artifactId>
+								<version>1.12.0</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>ide</id>
+			<dependencies>
+				<!--
+				 Remove exclusions to help IDEs find the transitive jars.
+				 Since incremental compilation doesn't rebuild complete jars every time, it relies on transitive
+				 dependencies to find the compiled code of workspace modules.
+				 Excluding them is relevant for distribution, because we want to avoid duplicates, but it actually
+				 prevents the IDEs from finding them when developing.
+				-->
+				<dependency>
+					<groupId>org.eclipse.capella</groupId>
+					<artifactId>capella-extension</artifactId>
+					<version>2026.7.0</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+</project>

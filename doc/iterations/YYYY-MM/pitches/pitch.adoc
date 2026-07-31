@@ -1,0 +1,58 @@
+:author: lists the author of this document
+:date: YYYY-MM-DD
+:status: {proposed | rejected | accepted | deprecated | superseded by}
+:consulted: lists everyone whose opinions are sought and with whom there is a two-way communication
+:informed: lists everyone who is kept up-to-date on progress in one-way communication
+:deciders: lists everyone involved in the decision
+:issue: link to the related issue
+
+= (appetite) Pitch title
+
+== Problem
+
+Short description of the problem.
+
+== Key Result
+
+How we will determine whether the problem has being solved.
+Qualitative and quantitative measures.
+
+=== Acceptance Criteria
+
+List the kind of tests expected to validate the implementation
+
+== Solution
+
+Describe the solution.
+The core elements we came up with, presented in a form that’s easy for people to immediately understand.
+
+Solution must define:
+
+=== Scenario
+
+The user scenario covered by the feature. It should define:
+
+* User
+* Scenario name
+* What we want to show
+* Scenario steps
+* Features
+
+=== Breadboarding
+
+UI description made by hand
+
+=== Cutting backs
+
+Sort the things todo, define the nice-to-have. What could be removed if finally the feature does not fit the appetite.
+
+== Rabbit holes
+
+Details about the solution worth calling out to avoid problems.
+Try to identify the most risky areas which can trip up our assumptions.
+Look critically at what we came up with. Did we miss anything?
+Are we making technical assumptions that aren't fair?
+
+== No-gos
+
+List the things which are explicitly out of scope, where we should not spent time.

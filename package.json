@@ -1,0 +1,31 @@
+{
+  "name": "@obeo/capella-for-syson-parent",
+  "version": "2026.7.0",
+  "author": "Obeo",
+  "license": "EPL-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eclipse-capella/capella-for-syson"
+  },
+  "engines": {
+    "node": "22.16.0",
+    "npm": "10.9.2"
+  },
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "./frontend/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "coverage": "turbo run coverage",
+    "format": "turbo run format",
+    "format-lint": "turbo run format-lint"
+  },
+  "devDependencies": {
+    "turbo": "2.4.4"
+  },
+  "dependencies": {
+    "i18next-http-backend": "^3.0.2"
+  }
+}

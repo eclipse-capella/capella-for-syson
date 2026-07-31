@@ -1,0 +1,12 @@
+.git
+.github
+.agents
+.codex
+.idea
+.turbo
+node_modules
+**/node_modules
+test-results
+playwright-report
+**/target/*
+!backend/application/capella-extension/target/capella-extension-*.jar
