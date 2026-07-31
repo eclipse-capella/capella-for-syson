@@ -23,7 +23,7 @@
     "format-lint": "turbo run format-lint"
   },
   "devDependencies": {
-    "turbo": "2.4.4"
+    "turbo": "2.9.14"
   },
   "dependencies": {
     "i18next-http-backend": "^3.0.2"
