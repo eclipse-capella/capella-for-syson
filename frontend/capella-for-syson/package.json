@@ -61,7 +61,7 @@
     "graphql": "16.8.1",
     "html-to-image": "1.11.11",
     "i18next": "25.6.3",
-    "i18next-http-backend": "3.0.2",
+    "i18next-http-backend": "3.0.5",
     "lexical": "0.42.0",
     "material-react-table": "3.2.1",
     "notistack": "3.0.1",

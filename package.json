@@ -26,6 +26,6 @@
     "turbo": "2.10.5"
   },
   "dependencies": {
-    "i18next-http-backend": "^3.0.2"
+    "i18next-http-backend": "^3.0.5"
   }
 }
