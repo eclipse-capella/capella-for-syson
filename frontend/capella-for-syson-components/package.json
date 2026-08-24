@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/eclipse-capella/capella-for-syson"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "main": "./dist/capella-for-syson-components.cjs.js",
   "module": "./dist/capella-for-syson-components.es.js",
   "types": "./dist/index.d.ts",
