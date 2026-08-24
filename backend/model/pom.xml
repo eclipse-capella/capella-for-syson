@@ -23,6 +23,14 @@
     <description>Capella for SysON Model Root</description>
 	<packaging>pom</packaging>
 
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
+		</repository>
+	</distributionManagement>
+
 	<modules>
 		<module>capella-model-edit</module>
 		<module>capella-model-services</module>

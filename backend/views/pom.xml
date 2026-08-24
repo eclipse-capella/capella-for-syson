@@ -23,6 +23,14 @@
     <description>Capella Views Root</description>
 	<packaging>pom</packaging>
 
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>Apache Maven Packages</name>
+			<url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
+		</repository>
+	</distributionManagement>
+
 	<modules>
 		<module>capella-diagram-common-view</module>
 		<module>capella-diagram-lab-view</module>
