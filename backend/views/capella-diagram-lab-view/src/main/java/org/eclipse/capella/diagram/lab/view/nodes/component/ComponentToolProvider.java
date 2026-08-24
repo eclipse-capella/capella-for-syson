@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
+import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -45,7 +46,7 @@ public class ComponentToolProvider {
         cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(TransverseMutationService::createComponent).aqlSelf())
+                    .expression(ServiceMethod.of0(LAMutationService::createComponentLA).aqlSelf())
                     .children(
                             this.diagramBuilderHelper.newCreateView()
                                     .containmentKind(NodeContainmentKind.CHILD_NODE)

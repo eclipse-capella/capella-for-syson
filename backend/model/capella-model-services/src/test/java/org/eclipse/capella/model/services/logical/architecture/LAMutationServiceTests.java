@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.eclipse.capella.model.services.transverse.AbstractSemanticTests;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
@@ -30,7 +31,6 @@ import org.eclipse.syson.sysml.PayloadFeature;
 import org.eclipse.syson.sysml.PerformActionUsage;
 import org.eclipse.syson.sysml.ReferenceSubsetting;
 import org.eclipse.syson.sysml.SysmlPackage;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,15 +38,41 @@ import org.junit.jupiter.api.Test;
  *
  * @author fbarbin
  */
-public class LAMutationServiceTests {
+public class LAMutationServiceTests extends AbstractSemanticTests {
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+
+    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+
+    private final LAMutationService laMutationService = new LAMutationService();
 
     private final LATestModelFixture fixture = new LATestModelFixture();
 
     @Test
-    @DisplayName("GIVEN a component and a function, WHEN allocating the function, THEN a perform action usage references the function")
-    public void testSetPerformedActionUsage() {
+    public void createComponentFromLABRootShouldAddComponentToSystem() {
+        Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage system = this.getSystem(structurePackage);
+
+        PartUsage createdComponent = this.laMutationService.createComponentLA(structurePackage);
+
+        assertThat(system.getOwnedElement()).contains(createdComponent);
+        assertThat(structurePackage.getOwnedElement()).doesNotContain(createdComponent);
+    }
+
+    @Test
+    public void createComponentInsideExistingComponentShouldAddItToComponent() {
+        Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage system = this.getSystem(structurePackage);
+        PartUsage partUsage = this.laMutationService.createComponentLA(system);
+
+        PartUsage createdComponent = this.laMutationService.createComponentLA(partUsage);
+
+        assertThat(partUsage.getOwnedElement()).contains(createdComponent);
+        assertThat(structurePackage.getOwnedElement()).doesNotContain(createdComponent);
+    }
+
+    @Test
+    public void setPerformActionShouldAllocateFunction() {
         Package root = this.fixture.createRootPackage();
         PartUsage component = this.fixture.createArcadiaTypedComponent(root, "Component");
         ActionUsage function = this.fixture.createArcadiaTypedFunction(root, "Function 1");
@@ -59,8 +85,7 @@ public class LAMutationServiceTests {
 
 
     @Test
-    @DisplayName("GIVEN multiple allocated functions, WHEN deleting one allocation, THEN only the target allocation is removed")
-    public void testDeletePerformedActionUsage() {
+    public void deletePerformedActionUsageShouldRemoveOnlySelectedAllocation() {
         Package root = this.fixture.createRootPackage();
         PartUsage component = this.fixture.createArcadiaTypedComponent(root, "Component");
         ActionUsage function1 = this.fixture.createArcadiaTypedFunction(root, "Function 1");
@@ -75,8 +100,7 @@ public class LAMutationServiceTests {
     }
 
     @Test
-    @DisplayName("GIVEN allocated functions, WHEN deleting one function, THEN the function is removed and inverse allocations are cleaned")
-    public void testDeleteFunction() {
+    public void deleteFunctionShouldRemoveItsAllocationAndRetainOtherFunctions() {
         Package root = this.fixture.createRootPackage();
         this.fixture.attachCrossReferenceAdapter(root);
 
@@ -94,8 +118,7 @@ public class LAMutationServiceTests {
     }
 
     @Test
-    @DisplayName("GIVEN a functional exchange payload, WHEN setting one then several items, THEN payload is created then replaced")
-    public void testSetFunctionalExchangePayload() {
+    public void setFunctionalExchangePayloadShouldReplaceExistingPayload() {
         Package root = this.fixture.createRootPackage();
         FlowUsage functionalExchange = this.fixture.createFlowUsage(root, "Functional Exchange");
         ItemUsage exchangeItem1 = this.fixture.createArcadiaTypedExchangeItem(root, "Exchange Item 1");
@@ -116,8 +139,7 @@ public class LAMutationServiceTests {
     }
 
     @Test
-    @DisplayName("GIVEN a valid status kind, WHEN setting then unsetting status, THEN status metadata is created then removed")
-    public void testSetStatusKindAndUnsetUsageStatusKind() {
+    public void setStatusKindThenUnSetUsageStatusKindShouldCreateThenRemoveStatusMetadata() {
         Package root = this.fixture.createRootPackage("ModelingMetadata");
         this.fixture.createStatusKindEnumeration(root, List.of("Draft", "Reviewed"));
         this.fixture.createModelingMetadataLibrary(root);
@@ -153,8 +175,7 @@ public class LAMutationServiceTests {
     }
 
     @Test
-    @DisplayName("GIVEN an Arcadia reference feature, WHEN setting single then multi values, THEN reference values are updated")
-    public void testSetArcadiaReferenceFeature() {
+    public void setArcadiaReferenceFeatureShouldReplaceReferenceValues() {
         Package root = this.fixture.createRootPackage();
         ActionUsage functionalChain = this.fixture.createArcadiaTypedFunctionalChain(root, "Functional Chain");
 
@@ -189,5 +210,13 @@ public class LAMutationServiceTests {
                 .filter(ActionUsage.class::isInstance)
                 .map(ActionUsage.class::cast)
                 .toList();
+    }
+
+    private PartUsage getSystem(Package structurePackage) {
+        return structurePackage.getOwnedElement().stream()
+                .filter(transverseQueryService::isComponent)
+                .map(PartUsage.class::cast)
+                .findFirst()
+                .orElseThrow();
     }
 }
