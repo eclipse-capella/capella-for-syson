@@ -97,7 +97,7 @@
     "prettier": "2.7.1",
     "typescript": "5.4.5",
     "vite": "8.1.5",
-    "vitest": "3.2.4"
+    "vitest": "3.2.6"
   },
   "overrides": {
     "@types/react-router-dom": {
