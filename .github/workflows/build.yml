@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
+      packages: write
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     steps:
@@ -87,6 +87,7 @@ jobs:
           cat > ~/.m2/settings.xml <<EOF
           <settings>
             <servers>
+              <server><id>github</id><username>${{ github.actor }}</username><password>${{ github.token }}</password></server>
               <server><id>github-sirius-emfjson</id><username>x-access-token</username><password>${{ github.token }}</password></server>
               <server><id>github-sirius-web</id><username>x-access-token</username><password>${{ github.token }}</password></server>
               <server><id>github-syson</id><username>x-access-token</username><password>${{ github.token }}</password></server>
@@ -193,3 +194,19 @@ jobs:
             integration-tests-playwright/playwright-report/
             integration-tests-playwright/test-results/
           retention-days: 5
+
+      - name: Publish the backend
+        if: github.event_name == 'push' && (env.GITHUB_REF == 'refs/heads/master' || startsWith(env.GITHUB_REF, 'refs/tags/v'))
+        run: |
+          VERSION="$(mvn --quiet help:evaluate -Dexpression=project.version -DforceStdout)"
+          if [ "$GITHUB_REF" = "refs/heads/master" ]; then
+            case "$VERSION" in
+              *-SNAPSHOT) ;;
+              *) echo "Skipping publication: $VERSION is not a SNAPSHOT version."; exit 0 ;;
+            esac
+          else
+            case "$VERSION" in
+              *-SNAPSHOT) echo "Refusing release publication: $VERSION is a SNAPSHOT version."; exit 1 ;;
+            esac
+          fi
+          mvn -B deploy

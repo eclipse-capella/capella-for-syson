@@ -31,6 +31,14 @@
     <name>capella-parent</name>
     <description>Capella Parent</description>
 
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/${env.GITHUB_REPOSITORY}</url>
+        </repository>
+    </distributionManagement>
+
     <scm child.scm.url.inherit.append.path="false">
         <url>https://github.com/eclipse-capella/capella-for-syson</url>
     </scm>
