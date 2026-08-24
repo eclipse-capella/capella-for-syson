@@ -210,3 +210,18 @@ jobs:
             esac
           fi
           mvn -B deploy
+
+      - name: Publish frontend package
+        if: github.event_name == 'push' && (env.GITHUB_REF == 'refs/heads/master' || startsWith(env.GITHUB_REF, 'refs/tags/v'))
+        env:
+          NODE_AUTH_TOKEN: ${{ github.token }}
+        run: |
+          PACKAGE_SCOPE="$(echo "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')"
+          npm pkg set --workspace=frontend/capella-for-syson-components "name=@${PACKAGE_SCOPE}/capella-for-syson-components" "repository.url=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          if [ "$GITHUB_REF" = "refs/heads/master" ]; then
+            BASE_VERSION="$(node -p "require('./package.json').version")"
+            npm pkg set --workspace=frontend/capella-for-syson-components "version=${BASE_VERSION}-snapshot.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+            npm publish --workspaces --tag snapshot
+          else
+            npm publish --workspaces --tag latest
+          fi
