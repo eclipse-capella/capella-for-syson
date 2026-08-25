@@ -906,6 +906,15 @@ public class TransverseQueryService {
         return this.getArcadiaPerspectiveOwnedPackage(element, FUNCTIONS_PACKAGE);
     }
 
+    public Optional<ActionUsage> getRootFunction(Element element) {
+        return this.getFunctionsPackage(element)
+                .stream()
+                .flatMap(functionsPackage -> functionsPackage.getOwnedElement().stream())
+                .filter(this::isFunction)
+                .map(ActionUsage.class::cast)
+                .findFirst();
+    }
+
     public Optional<Package> getRequirementsPackage(Element element) {
         return this.getArcadiaPerspectiveOwnedPackage(element, REQUIREMENTS_PACKAGE);
     }

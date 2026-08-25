@@ -28,6 +28,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionDefinition;
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.AttributeUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
@@ -211,8 +212,8 @@ public class SARepresentationMutationServiceTests {
 
         var function = this.transverseMutationService.createFunction(system);
 
-        assertEquals("Function 1", function.getDeclaredName());
-        assertTrue(functionsPackage.getOwnedElement().contains(function));
+        assertEquals("Function 2", function.getDeclaredName());
+        assertTrue(this.getRootFunction(functionsPackage).getNestedAction().contains(function));
         assertTrue(system.getNestedUsage().stream()
                 .filter(PerformActionUsage.class::isInstance)
                 .map(PerformActionUsage.class::cast)
@@ -232,7 +233,7 @@ public class SARepresentationMutationServiceTests {
 
         var subFunction = this.transverseMutationService.createFunction(function);
 
-        assertEquals("Function 2", subFunction.getDeclaredName());
+        assertEquals("Function 3", subFunction.getDeclaredName());
         assertTrue(function.getOwnedElement().contains(subFunction));
         assertTrue(system.getNestedUsage().stream()
                 .filter(PerformActionUsage.class::isInstance)
@@ -323,7 +324,8 @@ public class SARepresentationMutationServiceTests {
         var arcadia = this.createPackage("Arcadia");
         var componentType = this.createArcadiaComponentType();
         SAQueryServiceTests.addOwnedMember(arcadia, componentType);
-        SAQueryServiceTests.addOwnedMember(arcadia, this.createArcadiaFunctionType());
+        var functionType = this.createArcadiaFunctionType();
+        SAQueryServiceTests.addOwnedMember(arcadia, functionType);
         SAQueryServiceTests.addOwnedMember(arcadia, this.createArcadiaFunctionalChainType());
         SAQueryServiceTests.addOwnedMember(arcadia, this.createArcadiaExchangeItemType());
         SAQueryServiceTests.addOwnedMember(arcadia, this.createArcadiaFunctionalExchangeType());
@@ -342,6 +344,8 @@ public class SARepresentationMutationServiceTests {
         SAQueryServiceTests.addOwnedMember(systemAnalysis, functionsPackage);
         SAQueryServiceTests.addOwnedMember(systemAnalysis, requirementsPackage);
         SAQueryServiceTests.addOwnedMember(root, systemAnalysis);
+
+        SAQueryServiceTests.addOwnedMember(functionsPackage, this.createFunction("Root Function", functionType));
 
         var system = this.createComponent("system", componentType);
         SAQueryServiceTests.addOwnedMember(structurePackage, system);
@@ -367,8 +371,8 @@ public class SARepresentationMutationServiceTests {
         assertTrue(system.getOwnedElement().contains(retainedComponent));
         assertFalse(this.transverseQueryService.getFunctionalExchanges(systemAnalysisPackage).isEmpty());
         assertTrue(this.transverseQueryService.getFunctionalChains(systemAnalysisPackage).contains(functionalChain));
-        assertTrue(this.getFunctionsPackage(structurePackage).getOwnedElement().contains(deletedFunction));
-        assertTrue(this.getFunctionsPackage(structurePackage).getOwnedElement().contains(retainedFunction));
+        assertTrue(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(deletedFunction));
+        assertTrue(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(retainedFunction));
     }
 
     @Test
@@ -423,7 +427,7 @@ public class SARepresentationMutationServiceTests {
         this.transverseMutationService.delete(deletedFunction);
 
         var queryService = new TransverseQueryService();
-        assertFalse(this.getFunctionsPackage(structurePackage).getOwnedElement().contains(deletedFunction));
+        assertFalse(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(deletedFunction));
         assertTrue(queryService.getAllocatedFunctions(sourceComponent).isEmpty());
         assertEquals(java.util.List.of(retainedFunction), queryService.getAllocatedFunctions(targetComponent));
         assertTrue(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
@@ -557,11 +561,27 @@ public class SARepresentationMutationServiceTests {
                 .orElseThrow();
     }
 
+    private ActionUsage getRootFunction(Package functionsPackage) {
+        return functionsPackage.getOwnedElement().stream()
+                .filter(ActionUsage.class::isInstance)
+                .map(ActionUsage.class::cast)
+                .filter(this.transverseQueryService::isFunction)
+                .findFirst()
+                .orElseThrow();
+    }
+
     private PartUsage createComponent(String declaredName, PartDefinition componentType) {
         PartUsage partUsage = SysmlFactory.eINSTANCE.createPartUsage();
         partUsage.setDeclaredName(declaredName);
         new UtilService().setFeatureTyping(partUsage, componentType);
         return partUsage;
+    }
+
+    private ActionUsage createFunction(String declaredName, ActionDefinition functionType) {
+        ActionUsage actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
+        actionUsage.setDeclaredName(declaredName);
+        new UtilService().setFeatureTyping(actionUsage, functionType);
+        return actionUsage;
     }
 
     private Package createPackage(String declaredName) {
