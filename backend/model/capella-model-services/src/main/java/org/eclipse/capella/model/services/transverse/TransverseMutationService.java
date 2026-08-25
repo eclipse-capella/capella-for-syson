@@ -400,7 +400,7 @@ public class TransverseMutationService {
         ActionUsage actionUsage = null;
         Optional<Element> optionalParent = Optional.ofNullable(parent)
                 .filter(this.transverseQueryService::isFunction)
-                .or(() -> this.transverseQueryService.getFunctionsPackage(parent));
+                .or(() -> this.transverseQueryService.getRootFunction(parent));
         if (optionalParent.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);

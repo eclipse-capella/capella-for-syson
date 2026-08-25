@@ -82,7 +82,8 @@ public class LARepresentationMutationServiceTests {
         LogicalArchitecturePackages logicalArchitecturePackages = this.createLogicalArchitecturePackages(root);
 
         PartUsage component = this.fixture.createArcadiaTypedComponent(logicalArchitecturePackages.structurePackage(), "Component");
-        ActionUsage parentFunction = this.fixture.createArcadiaTypedFunction(logicalArchitecturePackages.functionsPackage(), "Parent Function");
+        ActionUsage rootFunction = this.fixture.createArcadiaTypedFunction(logicalArchitecturePackages.functionsPackage(), "Root Function");
+        ActionUsage parentFunction = this.fixture.createArcadiaTypedFunction(rootFunction, "Parent Function");
 
         Element functionInComponent = this.transverseMutationService.createFunction(component);
         Element functionInFunction = this.transverseMutationService.createFunction(parentFunction);
@@ -93,7 +94,7 @@ public class LARepresentationMutationServiceTests {
         ActionUsage createdInComponent = (ActionUsage) functionInComponent;
         ActionUsage createdInFunction = (ActionUsage) functionInFunction;
 
-        assertThat(logicalArchitecturePackages.functionsPackage().getOwnedElement()).contains(createdInComponent);
+        assertThat(rootFunction.getNestedAction()).contains(createdInComponent);
         assertThat(this.transverseQueryService.getAllocatedFunctions(component)).contains(createdInComponent);
 
         assertThat(parentFunction.getNestedAction()).contains(createdInFunction);

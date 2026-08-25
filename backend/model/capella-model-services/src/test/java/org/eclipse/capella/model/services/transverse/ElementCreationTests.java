@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;
@@ -51,6 +52,19 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(parent.getOwnedElement()).contains(actor);
         assertThat(this.transverseQueryService.isComponent(actor)).isTrue();
         assertThat(this.transverseQueryService.isComponentActor(actor)).isTrue();
+    }
+
+    @Test
+    public void createFunctionShouldCreateItInTheRootFunctionOfEachArchitecture() {
+        this.assertFunctionIsCreatedInRootFunction(
+                this.capellaModel.getOperationalAnalysisPerspective().getStructurePackage().getElement(),
+                this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getElement());
+        this.assertFunctionIsCreatedInRootFunction(
+                this.capellaModel.getSystemAnalysisPerspective().getStructurePackage().getElement(),
+                this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getElement());
+        this.assertFunctionIsCreatedInRootFunction(
+                this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement(),
+                this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getElement());
     }
 
     @Test
@@ -118,6 +132,19 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(componentExchange).isNull();
         assertThat(component1.getNestedPort()).isEmpty();
         assertThat(component2.getNestedPort()).isEmpty();
+    }
+
+    private void assertFunctionIsCreatedInRootFunction(Package structurePackage, Package functionsPackage) {
+        ActionUsage rootFunction = functionsPackage.getOwnedElement().stream()
+                .filter(ActionUsage.class::isInstance)
+                .map(ActionUsage.class::cast)
+                .filter(this.transverseQueryService::isFunction)
+                .findFirst()
+                .orElseThrow();
+
+        ActionUsage function = this.transverseMutationService.createFunction(structurePackage);
+
+        assertThat(rootFunction.getNestedAction()).contains(function);
     }
 
 }
