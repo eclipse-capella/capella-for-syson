@@ -62,6 +62,8 @@ public class CapellaImagePathsService {
 
     private static final String LOGICAL = "Logical";
 
+    private static final String SYSTEM = "System";
+
     private static final String ICONS_FULL_PATH = "/icons/full/obj16/%s.svg";
 
     private final TransverseQueryService transverseQueryService;
@@ -182,6 +184,8 @@ public class CapellaImagePathsService {
             }
         } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
             componentType = PHYSICAL + name;
+        } else if (ArcadiaEngineeringPerspective.SystemAnalysis.equals(perspective)) {
+            componentType = SYSTEM + name;
         }
         return Optional.ofNullable(componentType);
     }

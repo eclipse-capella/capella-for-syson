@@ -42,7 +42,7 @@ public class FunctionToolProvider {
     public NodeTool createNewFunctionNodeTool(IViewDiagramElementFinder cache) {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Function")
-                .iconURLsExpression("/icons/full/obj16/LogicalFunction.svg");
+                .iconURLsExpression("/icons/full/obj16/SystemFunction.svg");
 
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()

@@ -57,7 +57,7 @@ public class FunctionLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(SABViewConstants.FUNCTION_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/LogicalFunction.svg")
+                .labelIcon("/icons/full/obj16/SystemFunction.svg")
                 .withHeader(true)
                 .build();
     }
