@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import org.eclipse.capella.model.services.transverse.AbstractSemanticTests;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.tests.AbstractCapellaCodingRulesTests;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -62,14 +63,16 @@ public class CodingRulesTests extends AbstractCapellaCodingRulesTests {
     }
 
     /**
-     * Checks that semantic test methods follow the naming convention.
+     * Checks that semantic test methods follow the naming convention and don't have a {@code @DisplayName} annotation.
      * <p>
      * The naming convention is {@code <operation>[<operationContext][When<context>]Should<outcome>}. {@code operationContext} is usually used to add information on the operation being tested (e.g.
      * {@code deleteComponentExchange} when the {@code delete} operation is tested on a component exchange). {@code When} is usually used to provide additional contextual information, (e.g.
      * deleteComponentExchangeWhenPortHasOutDirection). A test should always end with a {@code Should} clause with an outcome.
+     * <p>
+     * {@code @DisplayName} annotation is not necessary since the method name has to be expressive. Duplicating the information in an annotation adds divergence risk while adding little value.
      */
     @Test
-    public void semanticTestMethodsShouldFollowNamingConvention() {
+    public void semanticTestMethodsShouldFollowNamingConventionAndShouldNotHaveDisplayNameAnnotation() {
         Set<String> testableMethodNames = this.getClasses().get(TransverseMutationService.class)
                 .getMethods()
                 .stream()
@@ -86,7 +89,9 @@ public class CodingRulesTests extends AbstractCapellaCodingRulesTests {
                 .and()
                 .areAnnotatedWith(Test.class)
                 .should(this.followNamingConvention(testableMethodNames))
-                .because("test method names should follow <operation>[When][<context>]Should<outcome>");
+                .andShould()
+                .notBeAnnotatedWith(DisplayName.class)
+                .because("test method names should follow <operation>[When][<context>]Should<outcome> and should be used as their display names");
 
         rule.check(this.getTestClasses());
     }
