@@ -69,7 +69,7 @@ public class FunctionPaletteProvider {
 
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Function")
-                .iconURLsExpression("/icons/full/obj16/LogicalFunction.svg");
+                .iconURLsExpression("/icons/full/obj16/SystemFunction.svg");
 
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(functionNodeDescription -> {
             nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
