@@ -59,12 +59,12 @@ jobs:
           GITHUB_EVENT: ${{ toJSON(github.event) }}
         run: node scripts/check-copyright.js
 
-      - name: Check pull request labels
-        env:
-          GITHUB_EVENT: ${{ toJSON(github.event) }}
-        run: node scripts/check-labels.js
-
       - name: Check TypeScript conventions
         env:
           GITHUB_EVENT: ${{ toJSON(github.event) }}
         run: node scripts/check-ts.js
+
+      - name: Check pull request labels
+        env:
+          GITHUB_EVENT: ${{ toJSON(github.event) }}
+        run: node scripts/check-labels.js
