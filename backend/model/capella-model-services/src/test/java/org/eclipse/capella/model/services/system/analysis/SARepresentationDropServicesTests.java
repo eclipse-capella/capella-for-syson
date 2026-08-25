@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.capella.model.services.transverse.AbstractSemanticTests;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -33,18 +34,11 @@ import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
 import org.eclipse.sirius.components.diagrams.layoutdata.DiagramLayoutData;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
-import org.eclipse.syson.services.UtilService;
-import org.eclipse.syson.sysml.ActionDefinition;
 import org.eclipse.syson.sysml.Element;
-import org.eclipse.syson.sysml.FlowDefinition;
 import org.eclipse.syson.sysml.FlowUsage;
-import org.eclipse.syson.sysml.ItemDefinition;
 import org.eclipse.syson.sysml.Package;
-import org.eclipse.syson.sysml.PartDefinition;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
-import org.eclipse.syson.sysml.SysmlFactory;
-import org.eclipse.syson.util.SysONEContentAdapter;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -53,15 +47,15 @@ import org.junit.jupiter.api.Test;
  * @author mbats
  * @author tbezierslafosse
  */
-public class SARepresentationDropServicesTests {
+public class SARepresentationDropServicesTests extends AbstractSemanticTests {
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
 
     private final SARepresentationMutationService mutationService = new SARepresentationMutationService();
 
     @Test
-    public void dropFunctionalExchangeShouldRevealDependenciesInSpecificationOrder() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
+    public void createFunctionalExchangeWhenDroppedShouldRevealDependenciesInSpecificationOrder() {
+        var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
         var sourceFunction = this.transverseMutationService.createFunction(system);
         var targetFunction = this.transverseMutationService.createFunction(system);
@@ -81,12 +75,12 @@ public class SARepresentationDropServicesTests {
     }
 
     @Test
-    public void dropFunctionalExchangeShouldNotCreatePartialViewsWhenAnEndpointFunctionIsNotAllocated() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
+    public void createFunctionalExchangeWhenDroppedWithAnUnallocatedEndpointShouldNotCreatePartialViews() {
+        var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
         var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = SysmlFactory.eINSTANCE.createActionUsage();
-        this.addOwnedMember(this.getFunctionsPackage(structurePackage), targetFunction);
+        var targetFunction = this.transverseMutationService.createFunction(system);
+        this.transverseMutationService.deletePerformedActionUsage(system, targetFunction);
 
         FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
         var diagramServices = new RecordingDiagramServices();
@@ -100,8 +94,8 @@ public class SARepresentationDropServicesTests {
     }
 
     @Test
-    public void dropFunctionalExchangeShouldReuseAlreadyRequestedDependencies() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
+    public void createFunctionalExchangeWhenDroppedTwiceShouldReuseAlreadyRequestedDependencies() {
+        var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
         var sourceFunction = this.transverseMutationService.createFunction(system);
         var targetFunction = this.transverseMutationService.createFunction(system);
@@ -121,8 +115,8 @@ public class SARepresentationDropServicesTests {
     }
 
     @Test
-    public void dropRequirementShouldCreateOnlyRequirementView() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
+    public void createRequirementWhenDroppedShouldCreateOnlyRequirementView() {
+        var structurePackage = this.getSystemAnalysisStructurePackage();
         RequirementUsage requirement = this.transverseMutationService.createRequirement(structurePackage);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
@@ -135,8 +129,8 @@ public class SARepresentationDropServicesTests {
     }
 
     @Test
-    public void dropSystemComponentShouldRevealItInTheDropTargetWhenItsSemanticParentViewIsNotFound() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
+    public void createComponentWhenDroppedWithoutSemanticParentViewShouldRevealItInTheDropTarget() {
+        var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
         var component = this.transverseMutationService.createComponent(system);
         component.setDeclaredName("C 1");
@@ -158,81 +152,8 @@ public class SARepresentationDropServicesTests {
                 .layoutData(diagramLayoutData).build());
     }
 
-    private Package getFunctionsPackage(Package structurePackage) {
-        return ((Element) structurePackage.getOwner()).getOwnedElement().stream()
-                .filter(Package.class::isInstance)
-                .map(Package.class::cast)
-                .filter(pkg -> "Functions".equals(pkg.getDeclaredName()))
-                .findFirst()
-                .orElseThrow();
-    }
-
-    private Package createSystemAnalysisStructurePackage() {
-        var root = SysmlFactory.eINSTANCE.createPackage();
-        root.eAdapters().add(new SysONEContentAdapter());
-        var arcadia = this.createPackage("Arcadia");
-        var componentType = this.createArcadiaComponentType();
-        this.addOwnedMember(arcadia, componentType);
-        this.addOwnedMember(arcadia, this.createArcadiaFunctionType());
-        this.addOwnedMember(arcadia, this.createArcadiaExchangeItemType());
-        this.addOwnedMember(arcadia, this.createArcadiaFunctionalExchangeType());
-        this.addOwnedMember(root, arcadia);
-
-        var systemAnalysis = this.createPackage("System Analysis");
-        var structurePackage = this.createPackage("Structure");
-        var functionsPackage = this.createPackage("Functions");
-        var requirementsPackage = this.createPackage("Requirements");
-        this.addOwnedMember(systemAnalysis, structurePackage);
-        this.addOwnedMember(systemAnalysis, functionsPackage);
-        this.addOwnedMember(systemAnalysis, requirementsPackage);
-        this.addOwnedMember(root, systemAnalysis);
-
-        var system = this.createComponent("system", componentType);
-        this.addOwnedMember(structurePackage, system);
-        return structurePackage;
-    }
-
-    private void addOwnedMember(Element owner, Element member) {
-        var membership = SysmlFactory.eINSTANCE.createOwningMembership();
-        membership.getOwnedRelatedElement().add(member);
-        owner.getOwnedRelationship().add(membership);
-    }
-
-    private PartDefinition createArcadiaComponentType() {
-        var componentType = SysmlFactory.eINSTANCE.createPartDefinition();
-        componentType.setDeclaredName("Component");
-        return componentType;
-    }
-
-    private ActionDefinition createArcadiaFunctionType() {
-        var functionType = SysmlFactory.eINSTANCE.createActionDefinition();
-        functionType.setDeclaredName("Function");
-        return functionType;
-    }
-
-    private ItemDefinition createArcadiaExchangeItemType() {
-        var exchangeItemType = SysmlFactory.eINSTANCE.createItemDefinition();
-        exchangeItemType.setDeclaredName("ExchangeItem");
-        return exchangeItemType;
-    }
-
-    private FlowDefinition createArcadiaFunctionalExchangeType() {
-        var functionalExchangeType = SysmlFactory.eINSTANCE.createFlowDefinition();
-        functionalExchangeType.setDeclaredName("FunctionalExchange");
-        return functionalExchangeType;
-    }
-
-    private PartUsage createComponent(String declaredName, PartDefinition componentType) {
-        PartUsage partUsage = SysmlFactory.eINSTANCE.createPartUsage();
-        partUsage.setDeclaredName(declaredName);
-        new UtilService().setFeatureTyping(partUsage, componentType);
-        return partUsage;
-    }
-
-    private Package createPackage(String declaredName) {
-        Package packageElement = SysmlFactory.eINSTANCE.createPackage();
-        packageElement.setDeclaredName(declaredName);
-        return packageElement;
+    private Package getSystemAnalysisStructurePackage() {
+        return this.capellaModel.getSystemAnalysisPerspective().getStructurePackage().getElement();
     }
 
     private PartUsage getSystem(Package structurePackage) {
