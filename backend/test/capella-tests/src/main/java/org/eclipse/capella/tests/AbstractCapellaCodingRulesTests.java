@@ -16,8 +16,16 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaCall;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
+import com.tngtech.archunit.core.domain.JavaModifier;
+import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
+import com.tngtech.archunit.lang.ConditionEvents;
+import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.sirius.components.annotations.Builder;
 import org.eclipse.sirius.components.annotations.Immutable;
@@ -30,6 +38,14 @@ import org.junit.jupiter.api.Test;
  * @author fbarbin
  */
 public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRulesTests {
+
+    private static final Set<String> PERSPECTIVE_SERVICE_PACKAGES = Set.of(
+            "org.eclipse.capella.model.services.operational.analysis",
+            "org.eclipse.capella.model.services.system.analysis",
+            "org.eclipse.capella.model.services.logical.architecture",
+            "org.eclipse.capella.model.services.physical.architecture");
+
+    private static final String TRANSVERSE_SERVICE_PACKAGE = "org.eclipse.capella.model.services.transverse";
 
     @Override
     public void noMethodsShouldBeStatic() {
@@ -100,6 +116,34 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
         rule.check(this.getClasses());
     }
 
+    /**
+     * Checks that a perspective-level service doesn't have the same name as a transverse service.
+     * <p>
+     * This rule avoids ambiguous AQL service calls. If two services named `myService` have the same arguments, AQL cannot determine which one to call and will select one in an undeterministic way. It
+     * is recommended to suffix perspective-level services with the perspective prefix (e.g. createComponentLA) to prevent this issue.
+     */
+    @Test
+    public void noPerspectiveLevelServiceShouldBeNamedAsTransverseService() {
+        Map<String, Set<String>> transverseServiceOwnersByMethodName = this.getClasses().stream()
+                .filter(javaClass -> javaClass.getPackageName().equals(TRANSVERSE_SERVICE_PACKAGE))
+                .filter(javaClass -> javaClass.getSimpleName().matches(".*Services?"))
+                .flatMap(javaClass -> javaClass.getMethods().stream())
+                .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
+                .collect(Collectors.groupingBy(JavaMethod::getName,
+                        Collectors.mapping(method -> method.getOwner().getSimpleName(), Collectors.toSet())));
+
+        ArchRule rule = ArchRuleDefinition.methods()
+                .that()
+                .arePublic()
+                .and(this.areDeclaredInPerspectiveLevelService())
+                .should(this.haveNameDistinctFromTransverseServices(transverseServiceOwnersByMethodName))
+                .because(
+                        "perspective-level and transverse services available in the same view should have unambiguous method names; rename the perspective-level method with its perspective suffix, for example createComponentLA")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
+    }
+
     @Test
     public void noClassShouldUseSysONDeleteService() {
         ArchRule rule = ArchRuleDefinition.noClasses()
@@ -131,6 +175,33 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 String targetOwnerName = javaMethodCall.getTargetOwner().getName();
                 String targetMethodName = javaMethodCall.getName();
                 return "org.eclipse.emf.ecore.util.EcoreUtil".equals(targetOwnerName) && ("delete".equals(targetMethodName) || "deleteAll".equals(targetMethodName));
+            }
+        };
+    }
+
+    private ArchCondition<JavaMethod> haveNameDistinctFromTransverseServices(Map<String, Set<String>> transverseServiceOwnersByMethodName) {
+        return new ArchCondition<>("have a name distinct from all transverse service methods") {
+            @Override
+            public void check(JavaMethod method, ConditionEvents events) {
+                String methodName = method.getName();
+                if (transverseServiceOwnersByMethodName.containsKey(methodName)) {
+                    String transverseServiceOwners = transverseServiceOwnersByMethodName.get(methodName).stream()
+                            .sorted()
+                            .collect(Collectors.joining(", "));
+                    String message = method.getFullName() + " has the same name as a public method in " + transverseServiceOwners;
+                    events.add(SimpleConditionEvent.violated(method, message));
+                }
+            }
+        };
+    }
+
+    private DescribedPredicate<JavaMethod> areDeclaredInPerspectiveLevelService() {
+        return new DescribedPredicate<>("are declared in a perspective-level service") {
+            @Override
+            public boolean test(JavaMethod method) {
+                String ownerPackageName = method.getOwner().getPackageName();
+                String ownerSimpleName = method.getOwner().getSimpleName();
+                return PERSPECTIVE_SERVICE_PACKAGES.contains(ownerPackageName) && ownerSimpleName.matches("(OA|SA|LA|PA).*Services?");
             }
         };
     }
