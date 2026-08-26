@@ -117,7 +117,7 @@ public class LABPackageNodeDescriptionProvider extends AbstractPackageNodeDescri
                 .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
-                .overflowStrategy(LabelOverflowStrategy.ELLIPSIS)
+                .overflowStrategy(LabelOverflowStrategy.WRAP)
                 .build();
     }
 

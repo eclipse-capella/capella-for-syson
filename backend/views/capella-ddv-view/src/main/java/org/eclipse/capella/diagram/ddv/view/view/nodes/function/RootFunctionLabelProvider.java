@@ -42,7 +42,7 @@ public class RootFunctionLabelProvider {
 
     public InsideLabelDescription createInsideLabelDescription() {
         return this.diagramBuilderHelper.newInsideLabelDescription()
-                .overflowStrategy(LabelOverflowStrategy.ELLIPSIS)
+                .overflowStrategy(LabelOverflowStrategy.WRAP)
                 .labelExpression("aql:self.name")
                 .position(InsideLabelPosition.MIDDLE_CENTER)
                 .style(this.createInsideLabelStyle())
