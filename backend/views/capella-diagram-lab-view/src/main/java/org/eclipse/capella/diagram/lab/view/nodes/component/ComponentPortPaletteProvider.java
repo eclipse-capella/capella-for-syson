@@ -22,7 +22,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.util.ServiceMethod;
 
 /**
@@ -38,13 +38,13 @@ public class ComponentPortPaletteProvider {
 
     private final NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider;
 
-    private final DefaultToolsFactory defaultToolsFactory;
+    private final DiagramDefaultToolsFactory diagramDefaultToolsFactory;
 
     public ComponentPortPaletteProvider(DiagramBuilders diagramBuilderHelper, ViewBuilders viewBuilderHelper, NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider) {
         this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
         this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
         this.nodeDeleteFromDiagramToolProvider = Objects.requireNonNull(nodeDeleteFromDiagramToolProvider);
-        this.defaultToolsFactory = new DefaultToolsFactory();
+        this.diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
     }
 
     public NodePalette createNodePalette(NodeDescription nodeDescription, IViewDiagramElementFinder cache) {
@@ -59,7 +59,7 @@ public class ComponentPortPaletteProvider {
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .edgeTools(
                         new ComponentExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentExchangeTool(cache))
-                .toolSections(this.defaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
     }
 

@@ -51,7 +51,7 @@ npm run build
 Copy frontend in backend folder:
 
 ```bash
-cp -r frontend/capella-for-syson/dist/* backend/application/capella-extension/src/main/resources/static/capella-for-syson/
+cp -r frontend/capella-for-syson/dist/* backend/application/capella-frontend/src/main/resources/static/capella-for-syson/
 ```
 
 Build the Maven modules:

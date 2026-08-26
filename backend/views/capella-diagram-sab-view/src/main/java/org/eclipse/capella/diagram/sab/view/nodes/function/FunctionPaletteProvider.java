@@ -27,8 +27,8 @@ import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -48,13 +48,13 @@ public class FunctionPaletteProvider {
 
     private final NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider;
 
-    private final DefaultToolsFactory defaultToolsFactory;
+    private final DiagramDefaultToolsFactory diagramDefaultToolsFactory;
 
     public FunctionPaletteProvider(DiagramBuilders diagramBuilderHelper, ViewBuilders viewBuilderHelper, NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider) {
         this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
         this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
         this.nodeDeleteFromDiagramToolProvider = Objects.requireNonNull(nodeDeleteFromDiagramToolProvider);
-        this.defaultToolsFactory = new DefaultToolsFactory();
+        this.diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
     }
 
     public NodePalette createNodePalette(NodeDescription nodeDescription, IViewDiagramElementFinder cache) {
@@ -94,7 +94,7 @@ public class FunctionPaletteProvider {
                         new FunctionPortToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOutputFunctionPortNodeTool(cache))
                 .edgeTools(new FunctionalExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewFunctionalExchangeTool(cache))
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
-                .toolSections(this.defaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
     }
 

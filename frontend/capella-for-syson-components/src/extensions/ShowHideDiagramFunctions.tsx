@@ -17,6 +17,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useState } from 'react';
 
+import { useMultiToast } from '@eclipse-sirius/sirius-components-core';
 import {
   GQLErrorPayload,
   GQLSetShowDiagramFunctionsPayload,
@@ -35,7 +36,10 @@ const setShowDiagramFunctionsMutation = gql`
         show
       }
       ... on ErrorPayload {
-        message
+        messages {
+          body
+          level
+        }
       }
     }
   }
@@ -51,8 +55,9 @@ export const ShowHideDiagramFunctions = ({ editingContextId, diagramId }: Diagra
   const [state, setState] = useState<ShowDiagramFunctionsState>({
     checked: null,
     tooltip: 'Show/Hide Functions in Diagram',
-    message: null,
   });
+
+  const { addMessages, addErrorMessage } = useMultiToast();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     updateDiagramFunctionsVisibility(event.target.checked);
@@ -105,9 +110,7 @@ export const ShowHideDiagramFunctions = ({ editingContextId, diagramId }: Diagra
   useEffect(() => {
     if (!loading) {
       if (error) {
-        setState((prevState) => {
-          return { ...prevState, message: 'An unexpected error has occurred, please refresh the page' };
-        });
+        addErrorMessage('An unexpected error has occurred, please refresh the page');
       }
       if (data) {
         const { showDiagramFunctions } = data;
@@ -117,9 +120,7 @@ export const ShowHideDiagramFunctions = ({ editingContextId, diagramId }: Diagra
           });
         }
         if (isErrorPayload(showDiagramFunctions)) {
-          setState((prevState) => {
-            return { ...prevState, message: showDiagramFunctions.message };
-          });
+          addMessages(showDiagramFunctions.messages);
         }
       }
     }

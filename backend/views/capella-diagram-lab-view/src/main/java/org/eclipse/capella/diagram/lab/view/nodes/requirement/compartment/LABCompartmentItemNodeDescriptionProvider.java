@@ -156,7 +156,7 @@ public class LABCompartmentItemNodeDescriptionProvider extends AbstractNodeDescr
                 .deleteTool(deleteTool.build())
                 .labelEditTool(editTool.build())
                 .quickAccessTools(this.getDuplicateElementAndNodeTool())
-                .toolSections(this.defaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
     }
 

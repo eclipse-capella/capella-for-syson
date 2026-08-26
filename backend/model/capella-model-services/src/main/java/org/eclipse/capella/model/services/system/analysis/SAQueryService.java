@@ -25,7 +25,6 @@ import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
-import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.Usage;
@@ -141,14 +140,14 @@ public class SAQueryService {
                 || qualifiedName.contains("'" + SYSTEM_ANALYSIS_PACKAGE_NAME + "'" + PATH_SEPARATOR + STRUCTURE_PACKAGE + PATH_SEPARATOR));
     }
 
-    public Optional<ActionUsage> getOwningFunction(Feature feature) {
+    public Optional<ActionUsage> getOwningFunction(Element element) {
         Optional<ActionUsage> result = Optional.empty();
-        if (feature instanceof Usage usage && usage.getOwningUsage() instanceof ActionUsage actionUsage) {
+        if (element instanceof Usage usage && usage.getOwningUsage() instanceof ActionUsage actionUsage) {
             result = Optional.of(actionUsage);
-        } else if (feature.getOwner() instanceof ActionUsage actionUsage) {
+        } else if (element.getOwner() instanceof ActionUsage actionUsage) {
             result = Optional.of(actionUsage);
         } else {
-            EObject container = feature.eContainer();
+            EObject container = element.eContainer();
             while (result.isEmpty() && container != null) {
                 if (container instanceof ActionUsage actionUsage) {
                     result = Optional.of(actionUsage);

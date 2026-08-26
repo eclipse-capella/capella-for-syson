@@ -103,7 +103,7 @@ public class TransverseRepresentationReconnectToolServices {
                 && !owningFunction.get().equals(otherOwningFunction.get());
     }
 
-    private Feature getOtherFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
+    private Element getOtherFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
         if (isSource) {
             return this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange);
         }

@@ -20,12 +20,13 @@ import java.util.Objects;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.sirius.components.collaborative.trees.api.ITreeItemContextMenuEntryProvider;
-import org.eclipse.sirius.components.collaborative.trees.dto.ITreeItemContextMenuEntry;
-import org.eclipse.sirius.components.collaborative.trees.dto.SingleClickTreeItemContextMenuEntry;
+import org.eclipse.sirius.components.collaborative.trees.dto.palette.SingleClickTreeItemTool;
+import org.eclipse.sirius.components.collaborative.trees.palette.api.ITreeItemPaletteCustomizer;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
+import org.eclipse.sirius.components.palette.dto.IPaletteEntry;
+import org.eclipse.sirius.components.palette.dto.Palette;
 import org.eclipse.sirius.components.trees.Tree;
 import org.eclipse.sirius.components.trees.TreeItem;
 import org.eclipse.sirius.components.trees.description.TreeDescription;
@@ -48,7 +49,7 @@ import org.springframework.stereotype.Service;
  * @author frouene
  */
 @Service
-public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeItemContextMenuEntryProvider {
+public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeItemPaletteCustomizer {
 
     public static final String NEW_OBJECTS_FROM_TEXT_MENU_ENTRY_CONTRIBUTION_ID = "newObjectsFromText";
 
@@ -78,60 +79,60 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
     }
 
     @Override
-    public List<ITreeItemContextMenuEntry> getTreeItemContextMenuEntries(IEditingContext editingContext, TreeDescription treeDescription, Tree tree, TreeItem treeItem) {
-        List<ITreeItemContextMenuEntry> result = new ArrayList<>();
+    public Palette customize(IEditingContext editingContext, TreeDescription treeDescription, Tree tree, TreeItem treeItem, Palette palette) {
+        List<IPaletteEntry> paletteEntries = new ArrayList<>();
         if (editingContext instanceof IEMFEditingContext emfEditingContext) {
-            result.addAll(this.getDocumentContextMenuEntries(emfEditingContext, treeItem));
-            result.addAll(this.getObjectContextMenuEntries(emfEditingContext, treeItem));
-            result.addAll(this.getRepresentationContextMenuEntries(emfEditingContext, treeItem));
-            result.addAll(this.getLibraryRelatedEntries(emfEditingContext, treeItem));
-            result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, this.messageService.treeToolExpandAll(), List.of(), false, List.of()));
+            paletteEntries.addAll(this.getDocumentContextMenuEntries(emfEditingContext, treeItem));
+            paletteEntries.addAll(this.getObjectContextMenuEntries(emfEditingContext, treeItem));
+            paletteEntries.addAll(this.getRepresentationContextMenuEntries(emfEditingContext, treeItem));
+            paletteEntries.addAll(this.getLibraryRelatedEntries(emfEditingContext, treeItem));
+            paletteEntries.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, this.messageService.treeToolExpandAll(), List.of(), false, List.of()));
         }
-        return result;
+        return new Palette("", List.of(), paletteEntries);
     }
 
-    private List<ITreeItemContextMenuEntry> getDocumentContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+    private List<IPaletteEntry> getDocumentContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
         var optionalResource = this.objectSearchService.getObject(editingContext, treeItem.getId())
                 .filter(Resource.class::isInstance)
                 .map(Resource.class::cast);
         if (optionalResource.isPresent()) {
             var resource = optionalResource.get();
 
-            List<ITreeItemContextMenuEntry> entries = new ArrayList<>();
-            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()));
-            entries.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, this.messageService.treeToolDownload(), List.of(), false, List.of()));
+            List<IPaletteEntry> entries = new ArrayList<>();
+            entries.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()));
+            entries.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, this.messageService.treeToolDownload(), List.of(), false, List.of()));
             return entries;
         }
         return List.of();
     }
 
-    private List<ITreeItemContextMenuEntry> getObjectContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+    private List<IPaletteEntry> getObjectContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
         var optionalEObject = this.objectSearchService.getObject(editingContext, treeItem.getId())
                 .filter(EObject.class::isInstance)
                 .map(EObject.class::cast);
         if (optionalEObject.isPresent()) {
             return List.of(
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()),
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, this.messageService.treeToolNewRepresentation(), List.of(), false, List.of()),
-                    new SingleClickTreeItemContextMenuEntry(NEW_OBJECTS_FROM_TEXT_MENU_ENTRY_CONTRIBUTION_ID, "", List.of(), false, List.of()));
+                    new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()),
+                    new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, this.messageService.treeToolNewRepresentation(), List.of(), false, List.of()),
+                    new SingleClickTreeItemTool(NEW_OBJECTS_FROM_TEXT_MENU_ENTRY_CONTRIBUTION_ID, "", List.of(), false, List.of()));
         }
         return List.of();
     }
 
-    private List<ITreeItemContextMenuEntry> getRepresentationContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+    private List<IPaletteEntry> getRepresentationContextMenuEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
         var optionalRepresentationMetadata = this.objectSearchService.getObject(editingContext, treeItem.getId())
                 .filter(RepresentationMetadata.class::isInstance)
                 .map(RepresentationMetadata.class::cast);
         if (optionalRepresentationMetadata.isPresent()) {
             return List.of(
-                    new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.DUPLICATE_REPRESENTATION, this.messageService.treeToolDuplicateRepresentation(), List.of(), false,
+                    new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.DUPLICATE_REPRESENTATION, this.messageService.treeToolDuplicateRepresentation(), List.of(), false,
                             List.of()));
         }
         return List.of();
     }
 
-    private List<ITreeItemContextMenuEntry> getLibraryRelatedEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
-        List<ITreeItemContextMenuEntry> result = new ArrayList<>();
+    private List<IPaletteEntry> getLibraryRelatedEntries(IEMFEditingContext editingContext, TreeItem treeItem) {
+        List<IPaletteEntry> result = new ArrayList<>();
         var optionalNotifier = this.objectSearchService.getObject(editingContext, treeItem.getId())
                 .filter(Notifier.class::isInstance)
                 .map(Notifier.class::cast);
@@ -154,8 +155,8 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
             var libraryMetadataAdapter = optionalLibraryMetadataAdapter.get();
             if (this.isDirectDependency(editingContext, libraryMetadataAdapter)) {
                 // We do not support the update or removal of a transitive dependency for the moment.
-                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.UPDATE_LIBRARY, this.messageService.treeToolUpdateLibrary(), List.of(), true, List.of()));
-                result.add(new SingleClickTreeItemContextMenuEntry(ExplorerTreeItemContextMenuEntryProvider.REMOVE_LIBRARY, this.messageService.treeToolRemoveLibrary(),
+                result.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.UPDATE_LIBRARY, this.messageService.treeToolUpdateLibrary(), List.of(), true, List.of()));
+                result.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.REMOVE_LIBRARY, this.messageService.treeToolRemoveLibrary(),
                         List.of("/icons/remove_library.svg"), true, List.of()));
             }
         }
