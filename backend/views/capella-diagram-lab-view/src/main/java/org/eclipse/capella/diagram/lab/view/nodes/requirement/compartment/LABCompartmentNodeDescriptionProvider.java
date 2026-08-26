@@ -23,6 +23,10 @@ import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.INodeToolProvider;
+import org.eclipse.sirius.components.view.diagram.InsideLabelDescription;
+import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
+import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
+import org.eclipse.sirius.components.view.diagram.LabelTextAlign;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.diagram.common.view.nodes.AbstractCompartmentNodeDescriptionProvider;
@@ -55,6 +59,17 @@ public class LABCompartmentNodeDescriptionProvider extends AbstractCompartmentNo
             customLabel = "require constraints";
         }
         return customLabel;
+    }
+
+    @Override
+    protected InsideLabelDescription createInsideLabelDescription() {
+        return this.diagramBuilderHelper.newInsideLabelDescription()
+                .labelExpression(this.getCompartmentLabel())
+                .overflowStrategy(LabelOverflowStrategy.WRAP)
+                .position(InsideLabelPosition.TOP_CENTER)
+                .style(this.createInsideLabelStyle())
+                .textAlign(LabelTextAlign.CENTER)
+                .build();
     }
 
     @Override

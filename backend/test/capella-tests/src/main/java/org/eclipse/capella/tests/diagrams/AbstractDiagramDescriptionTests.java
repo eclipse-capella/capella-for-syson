@@ -54,6 +54,8 @@ import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
+import org.eclipse.sirius.components.view.diagram.LabelDescription;
+import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
@@ -165,6 +167,16 @@ public abstract class AbstractDiagramDescriptionTests {
                                 .isNotNull();
                     }
                 });
+        softly.assertAll();
+    }
+
+    @Test
+    public void eachNodeLabelShouldWrapOverflowingText() {
+        SoftAssertions softly = new SoftAssertions();
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, LabelDescription.class)
+                .forEach(labelDescription -> softly.assertThat(labelDescription.getOverflowStrategy())
+                        .as("Label of %s should wrap overflowing text", this.getDescriptionName(labelDescription))
+                        .isEqualTo(LabelOverflowStrategy.WRAP));
         softly.assertAll();
     }
 
