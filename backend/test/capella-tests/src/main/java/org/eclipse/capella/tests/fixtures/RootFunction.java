@@ -14,20 +14,15 @@
 package org.eclipse.capella.tests.fixtures;
 
 import org.eclipse.syson.sysml.ActionUsage;
-import org.eclipse.syson.sysml.Package;
 
 /**
- * Provides access to an architecture's Functions package.
+ * Provides access to a root function.
  *
  * @author gdaniel
  */
-public final class FunctionsPackage extends AbstractArcadiaElement<Package> {
+public class RootFunction extends AbstractArcadiaElement<ActionUsage> {
 
-    FunctionsPackage(Package element) {
-        super(element);
-    }
-
-    public RootFunction getRootFunction() {
-        return new RootFunction(this.getOwnedElement("Root Function", ActionUsage.class));
+    public RootFunction(ActionUsage rootFunction) {
+        super(rootFunction);
     }
 }

@@ -29,7 +29,6 @@ import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.components.diagrams.ViewDeletionRequest;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
-import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Package;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,20 +45,6 @@ public class LARepresentationQueryServiceTests {
     private final LADiagramTestFixture diagramFixture = new LADiagramTestFixture();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
-
-    @Test
-    @DisplayName("GIVEN a functional exchange, WHEN querying source and target, THEN feature ends are unwrapped correctly")
-    public void testGetFunctionalExchangeSourceAndTarget() {
-        Package root = this.fixture.createRootPackage();
-        ItemUsage sourcePort = this.fixture.createArcadiaTypedExchangeItem(root, "Source Port");
-        ItemUsage targetPort = this.fixture.createArcadiaTypedExchangeItem(root, "Target Port");
-        FlowUsage flowUsage = this.fixture.createArcadiaTypedFunctionalExchange(root, "Functional Exchange", sourcePort, targetPort);
-
-        TransverseRepresentationQueryService transverseRepresentationQueryService = new TransverseRepresentationQueryService(new IObjectSearchService.NoOp());
-
-        assertThat(this.transverseQueryService.getFunctionalExchangeSource(flowUsage)).isSameAs(sourcePort);
-        assertThat(this.transverseQueryService.getFunctionalExchangeTarget(flowUsage)).isSameAs(targetPort);
-    }
 
     @Test
     @DisplayName("GIVEN a diagram context, WHEN querying functional chains in diagram, THEN only represented and non-deleted chains are returned")

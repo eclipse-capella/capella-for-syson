@@ -12,7 +12,6 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -36,7 +35,6 @@ import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowDefinition;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceDefinition;
-import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartDefinition;
 import org.eclipse.syson.sysml.PartUsage;
@@ -265,56 +263,6 @@ public class SARepresentationMutationServiceTests {
         assertEquals("FOP 2", outputPort.getDeclaredName());
     }
 
-    @Test
-    public void createFunctionalExchangeShouldConnectOutPortToInPort() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
-        var sourcePort = this.mutationService.createOutputFunctionPort(sourceFunction);
-        var targetPort = this.mutationService.createInputFunctionPort(targetFunction);
-
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort);
-
-        assertNotNull(functionalExchange);
-        assertEquals("FunctionalExchange 1", functionalExchange.getDeclaredName());
-        assertEquals(sourcePort, new TransverseQueryService().getFunctionalExchangeSource(functionalExchange));
-        assertEquals(targetPort, new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange));
-        assertEquals(functionalExchange, new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).get(0));
-    }
-
-    @Test
-    public void createFunctionalExchangeShouldRejectInvalidDirections() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
-        var sourcePort = this.mutationService.createInputFunctionPort(sourceFunction);
-        var targetPort = this.mutationService.createOutputFunctionPort(targetFunction);
-
-        assertNull(this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort));
-    }
-
-    @Test
-    public void createFunctionalExchangeShouldCreateMissingFunctionPortsWhenStartedFromFunctions() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
-
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
-
-        assertNotNull(functionalExchange);
-        var sourcePort = new TransverseQueryService().getFunctionalExchangeSource(functionalExchange);
-        var targetPort = new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange);
-        assertThat(sourcePort).isInstanceOf(ItemUsage.class);
-        assertThat(targetPort).isInstanceOf(ItemUsage.class);
-        assertEquals(FeatureDirectionKind.OUT, ((ItemUsage) sourcePort).getDirection());
-        assertEquals(FeatureDirectionKind.IN, ((ItemUsage) targetPort).getDirection());
-        assertTrue(sourceFunction.getOwnedElement().contains(sourcePort));
-        assertTrue(targetFunction.getOwnedElement().contains(targetPort));
-    }
-
     private Package createSystemAnalysisStructurePackage() {
         ResourceSet resourceSet = new ResourceSetImpl();
         resourceSet.eAdapters().add(new ECrossReferenceAdapter());
@@ -397,23 +345,6 @@ public class SARepresentationMutationServiceTests {
 
         assertFalse(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).contains(deletedFunctionalExchange));
         assertEquals(java.util.List.of(retainedFunctionalExchange), this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain));
-    }
-
-    @Test
-    public void deleteFunctionPortShouldDeleteFunctionalExchangesAndFunctionalChains() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
-
-        var functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
-        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
-        var sourcePort = this.transverseQueryService.getFunctionalExchangeSource(functionalExchange);
-
-        this.transverseMutationService.delete(sourcePort);
-
-        assertFalse(sourceFunction.getOwnedElement().contains(sourcePort));
-        assertTrue(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
     }
 
     @Test

@@ -867,10 +867,7 @@ public class TransverseQueryService {
     public boolean canCreateFunctionalExchange(Feature source, Feature target) {
         var sourceFunction = EMFUtils.getFirstAncestor(ActionUsage.class, source, this::isFunction);
         var targetFunction = EMFUtils.getFirstAncestor(ActionUsage.class, target, this::isFunction);
-        boolean validOwners = sourceFunction.isPresent() && targetFunction.isPresent() && !sourceFunction.equals(targetFunction);
-        boolean validSource = this.isFunction(source) || (this.isFunctionPort(source) && source.getDirection() == FeatureDirectionKind.OUT);
-        boolean validTarget = this.isFunction(target) || (this.isFunctionPort(target) && target.getDirection() == FeatureDirectionKind.IN);
-        return validOwners && validSource && validTarget;
+        return sourceFunction.isPresent() && targetFunction.isPresent() && !sourceFunction.equals(targetFunction);
     }
 
     public boolean canCreateComponentExchange(Feature source, Feature target) {
