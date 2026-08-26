@@ -56,3 +56,4 @@ This ensures that all the other metadata checks pass before checking the label, 
 `LARepresentationMutationServiceTests` has been removed since it doesn't contain any specific test anymore.
 - https://github.com/eclipse-capella/capella-for-syson/issues/59[#59] [enh] Move `LibraryServices` to the transverse package.
 The class has been renamed `ArcadiaLibraryServices` to better describe its scope.
+- https://github.com/eclipse-capella/capella-for-syson/issues/40[#40] [enh] Display function labels at the top of their nodes.
