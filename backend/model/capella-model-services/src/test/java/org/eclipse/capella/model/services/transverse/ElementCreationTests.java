@@ -17,9 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Objects;
 
+import org.eclipse.capella.tests.fixtures.FunctionsPackage;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
+import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
+import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortUsage;
@@ -56,15 +59,14 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
     @Test
     public void createFunctionShouldCreateItInTheRootFunctionOfEachArchitecture() {
-        this.assertFunctionIsCreatedInRootFunction(
-                this.capellaModel.getOperationalAnalysisPerspective().getStructurePackage().getElement(),
-                this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getElement());
-        this.assertFunctionIsCreatedInRootFunction(
-                this.capellaModel.getSystemAnalysisPerspective().getStructurePackage().getElement(),
-                this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getElement());
-        this.assertFunctionIsCreatedInRootFunction(
-                this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement(),
-                this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getElement());
+        ActionUsage function1 = this.transverseMutationService.createFunction(this.capellaModel.getOperationalAnalysisPerspective().getStructurePackage().getElement());
+        assertThat(function1.getOwner()).isEqualTo(this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement());
+
+        ActionUsage function2 = this.transverseMutationService.createFunction(this.capellaModel.getSystemAnalysisPerspective().getStructurePackage().getElement());
+        assertThat(function2.getOwner()).isEqualTo(this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement());
+
+        ActionUsage function3 = this.transverseMutationService.createFunction(this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement());
+        assertThat(function3.getOwner()).isEqualTo(this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement());
     }
 
     @Test
@@ -76,10 +78,12 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
         assertThat(this.transverseQueryService.getComponentExchangeSource(componentExchange))
                 .matches(this.transverseQueryService::isComponentPort)
+                .matches(sourcePort -> Objects.equals(sourcePort.getDirection(), FeatureDirectionKind.OUT))
                 .matches(sourcePort -> Objects.equals(sourcePort.getOwner(), component1));
 
         assertThat(this.transverseQueryService.getComponentExchangeTarget(componentExchange))
                 .matches(this.transverseQueryService::isComponentPort)
+                .matches(targetPort -> Objects.equals(targetPort.getDirection(), FeatureDirectionKind.IN))
                 .matches(targetPort -> Objects.equals(targetPort.getOwner(), component2));
 
         assertThat(componentExchange.getOwner()).isEqualTo(parent);
@@ -134,17 +138,75 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(component2.getNestedPort()).isEmpty();
     }
 
-    private void assertFunctionIsCreatedInRootFunction(Package structurePackage, Package functionsPackage) {
-        ActionUsage rootFunction = functionsPackage.getOwnedElement().stream()
-                .filter(ActionUsage.class::isInstance)
-                .map(ActionUsage.class::cast)
-                .filter(this.transverseQueryService::isFunction)
-                .findFirst()
-                .orElseThrow();
+    @Test
+    public void createFunctionalExchangeWhenEndpointsAreFunctionsShouldCreateAndConnectPorts() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
 
-        ActionUsage function = this.transverseMutationService.createFunction(structurePackage);
+        assertThat(this.transverseQueryService.getFunctionalExchangeSource(functionalExchange))
+                .matches(this.transverseQueryService::isFunctionPort)
+                .matches(sourcePort -> Objects.equals(((ItemUsage) sourcePort).getDirection(), FeatureDirectionKind.OUT))
+                .matches(sourcePort -> Objects.equals(sourcePort.getOwner(), function1));
 
-        assertThat(rootFunction.getNestedAction()).contains(function);
+        assertThat(this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange))
+                .matches(this.transverseQueryService::isFunctionPort)
+                .matches(targetPort -> Objects.equals(((ItemUsage) targetPort).getDirection(), FeatureDirectionKind.IN))
+                .matches(targetPort -> Objects.equals(targetPort.getOwner(), function2));
+
+        assertThat(functionalExchange.getOwner()).isEqualTo(functionsPackage.getElement());
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenEndpointsArePortsShouldConnectTheProvidedPorts() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage port1 = this.transverseMutationService.createFunctionPort(function1, FeatureDirectionKind.OUT);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage port2 = this.transverseMutationService.createFunctionPort(function2, FeatureDirectionKind.IN);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(port1, port2);
+
+        assertThat(this.transverseQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(port1);
+        assertThat(this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(port2);
+        assertThat(functionalExchange.getOwner()).isEqualTo(functionsPackage.getElement());
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenEndpointsAreTheSameFunctionShouldNotCreateFunctionalExchangeAndPorts() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function1);
+
+        assertThat(functionalExchange).isNull();
+        assertThat(function1.getNestedItem()).isEmpty();
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenEndpointPortsBelongToSameFunctionShouldNotCreateFunctionalExchange() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage port1 = this.transverseMutationService.createFunctionPort(function1, FeatureDirectionKind.OUT);
+        ItemUsage port2 = this.transverseMutationService.createFunctionPort(function1, FeatureDirectionKind.IN);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(port1, port2);
+
+        assertThat(functionalExchange).isNull();
+        assertThat(function1.getNestedItem()).hasSize(2);
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenFunctionsBelongToDifferentFunctionsPackagesShouldNotCreateFunctionalExchangeAndPorts() {
+        ActionUsage logicalArchitectureRootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(logicalArchitectureRootFunction);
+        ActionUsage systemAnalysisRootFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage function2 = this.transverseMutationService.createFunction(systemAnalysisRootFunction);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
+
+        assertThat(functionalExchange).isNull();
+        assertThat(function1.getNestedItem()).isEmpty();
+        assertThat(function2.getNestedItem()).isEmpty();
     }
 
 }

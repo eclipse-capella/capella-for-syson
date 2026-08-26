@@ -15,6 +15,10 @@ package org.eclipse.capella.model.services.transverse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.eclipse.capella.tests.fixtures.FunctionsPackage;
+import org.eclipse.syson.sysml.ActionUsage;
+import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
@@ -72,5 +76,49 @@ public class ElementDeletionTests extends AbstractSemanticTests {
         assertThat(parent.getOwnedElement())
                 .contains(component1, component2)
                 .doesNotContain(componentExchange);
+    }
+
+    @Test
+    public void deleteFunctionalExchangeSourcePortShouldDeleteFunctionalExchange() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        Element sourcePort = this.transverseQueryService.getFunctionalExchangeSource(functionalExchange);
+        assertThat(this.transverseQueryService.isFunctionPort(sourcePort)).isTrue();
+        assertThat(functionsPackage.getElement().getOwnedElement()).contains(functionalExchange);
+
+        this.transverseMutationService.delete(sourcePort);
+        assertThat(functionsPackage.getElement().getOwnedElement()).doesNotContain(functionalExchange);
+    }
+
+    @Test
+    public void deleteFunctionalExchangeTargetPortShouldDeleteFunctionalExchange() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        Element targetPort = this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange);
+        assertThat(this.transverseQueryService.isFunctionPort(targetPort)).isTrue();
+        assertThat(functionsPackage.getElement().getOwnedElement()).contains(functionalExchange);
+
+        this.transverseMutationService.delete(targetPort);
+        assertThat(functionsPackage.getElement().getOwnedElement()).doesNotContain(functionalExchange);
+    }
+
+    @Test
+    public void deleteFunctionalExchangeShouldNotDeleteConnectedFunctions() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
+
+        this.transverseMutationService.delete(functionalExchange);
+        assertThat(this.transverseQueryService.getFunctions(functionsPackage.getElement())).contains(function1, function2);
+        assertThat(rootFunction.getOwnedElement()).contains(function1, function2);
+        assertThat(functionsPackage.getElement().getOwnedElement()).doesNotContain(functionalExchange);
     }
 }

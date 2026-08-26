@@ -457,10 +457,11 @@ public class TransverseMutationService {
 
         if (optionalSourceFunctionsPackage.isPresent() && optionalSourceFunctionsPackage.equals(optionalTargetFunctionsPackage)) {
 
-            Feature sourcePort = this.getOrCreateFunctionPort(source, FeatureDirectionKind.OUT);
-            Feature targetPort = this.getOrCreateFunctionPort(target, FeatureDirectionKind.IN);
+            if (this.transverseQueryService.canCreateFunctionalExchange(source, target)) {
 
-            if (this.transverseQueryService.canCreateFunctionalExchange(sourcePort, targetPort)) {
+                Feature sourcePort = this.getOrCreateFunctionPort(source, FeatureDirectionKind.OUT);
+                Feature targetPort = this.getOrCreateFunctionPort(target, FeatureDirectionKind.IN);
+
                 // We can't use diagramMutationElementService#createFlowUsage here because the way SysON computes FlowUsage container doesn't work with Capella for SysON.
                 FlowUsage functionalExchange = this.metamodelMutationElementService.createFlowUsage(sourcePort, targetPort, source, target, optionalSourceFunctionsPackage.get());
 

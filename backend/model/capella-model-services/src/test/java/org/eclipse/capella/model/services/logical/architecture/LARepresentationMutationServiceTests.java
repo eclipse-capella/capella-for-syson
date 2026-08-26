@@ -22,7 +22,6 @@ import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
-import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.junit.jupiter.api.Test;
@@ -37,25 +36,6 @@ public class LARepresentationMutationServiceTests extends AbstractSemanticTests 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
-
-    @Test
-    public void createFunctionalExchangeShouldCreatePortsAndRejectInvalidEndpoints() {
-        ActionUsage sourceFunction = this.transverseMutationService.createFunction(this.getRootFunction());
-        ActionUsage targetFunction = this.transverseMutationService.createFunction(this.getRootFunction());
-
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
-
-        assertThat(functionalExchange).isNotNull();
-        List<Feature> sourcePorts = this.transverseQueryService.getFunctionPorts(sourceFunction);
-        List<Feature> targetPorts = this.transverseQueryService.getFunctionPorts(targetFunction);
-        assertThat(sourcePorts).hasSize(1);
-        assertThat(targetPorts).hasSize(1);
-        assertThat(sourcePorts.getFirst().getDirection()).isEqualTo(FeatureDirectionKind.OUT);
-        assertThat(targetPorts.getFirst().getDirection()).isEqualTo(FeatureDirectionKind.IN);
-
-        assertThat(this.transverseMutationService.createFunctionalExchange(null, targetFunction)).isNull();
-        assertThat(this.transverseMutationService.createFunctionalExchange(sourceFunction, null)).isNull();
-    }
 
     @Test
     public void createFunctionShouldCreateInSelectedComponentOrParentFunction() {
