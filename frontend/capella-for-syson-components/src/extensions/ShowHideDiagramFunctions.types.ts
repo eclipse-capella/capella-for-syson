@@ -11,10 +11,11 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
+import { GQLMessage } from '@eclipse-sirius/sirius-components-core';
+
 export interface ShowDiagramFunctionsState {
   checked: boolean | null;
   tooltip: string;
-  message: string | null;
 }
 
 export interface GQLShowDiagramFunctionsMutationData {
@@ -27,7 +28,7 @@ export interface GQLSetShowDiagramFunctionsPayload {
 }
 
 export interface GQLErrorPayload extends GQLSetShowDiagramFunctionsPayload {
-  message: string;
+  messages: GQLMessage[];
 }
 
 export interface GQLShowDiagramFunctionsMutationVariables {

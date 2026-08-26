@@ -23,7 +23,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
 import org.eclipse.syson.sysml.Comment;
@@ -42,13 +42,13 @@ public class CommentPaletteProvider {
 
     private final NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider;
 
-    private final DefaultToolsFactory defaultToolsFactory;
+    private final DiagramDefaultToolsFactory diagramDefaultToolsFactory;
 
     public CommentPaletteProvider(DiagramBuilders diagramBuilderHelper, ViewBuilders viewBuilderHelper, NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider) {
         this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
         this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
         this.nodeDeleteFromDiagramToolProvider = Objects.requireNonNull(nodeDeleteFromDiagramToolProvider);
-        this.defaultToolsFactory = new DefaultToolsFactory();
+        this.diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
     }
 
     public NodePalette createNodePalette(NodeDescription nodeDescription, IViewDiagramElementFinder cache) {
@@ -73,7 +73,7 @@ public class CommentPaletteProvider {
                 .labelEditTool(labelEditTool.build())
                 .edgeTools(linkTool)
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
-                .toolSections(this.defaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
     }
 }

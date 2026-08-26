@@ -31,8 +31,8 @@ import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -52,13 +52,13 @@ public class ComponentPaletteProvider {
 
     private final NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider;
 
-    private final DefaultToolsFactory defaultToolsFactory;
+    private final DiagramDefaultToolsFactory diagramDefaultToolsFactory;
 
     public ComponentPaletteProvider(DiagramBuilders diagramBuilderHelper, ViewBuilders viewBuilderHelper, NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider) {
         this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
         this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
         this.nodeDeleteFromDiagramToolProvider = Objects.requireNonNull(nodeDeleteFromDiagramToolProvider);
-        this.defaultToolsFactory = new DefaultToolsFactory();
+        this.diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
     }
 
     public NodePalette createNodePalette(NodeDescription nodeDescription, IViewDiagramElementFinder cache) {
@@ -86,7 +86,7 @@ public class ComponentPaletteProvider {
                         new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewActorComponentNodeTool(cache),
                         this.createNewComponentPortNodeTool(cache))
                 .edgeTools(new ComponentExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentExchangeTool(cache))
-                .toolSections(this.defaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
     }
 

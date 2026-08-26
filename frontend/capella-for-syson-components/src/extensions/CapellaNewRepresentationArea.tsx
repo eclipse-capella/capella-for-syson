@@ -11,7 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 import { gql, useMutation } from '@apollo/client';
-import { Toast, useSelection } from '@eclipse-sirius/sirius-components-core';
+import { useMultiToast, useSelection } from '@eclipse-sirius/sirius-components-core';
 import Collections from '@mui/icons-material/Collections';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -20,15 +20,14 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import {
+  CapellaNewRepresentationAreaProps,
   GQLCreateRepresentationData,
   GQLCreateRepresentationInput,
   GQLCreateRepresentationVariables,
   GQLErrorPayload,
-  CapellaNewRepresentationAreaProps,
-  CapellaNewRepresentationAreaState,
 } from './CapellaNewRepresentationArea.types';
 
 const useNewRepresentationAreaStyles = makeStyles()((theme) => ({
@@ -57,7 +56,10 @@ const createCapellaRepresentationMutation = gql`
         }
       }
       ... on ErrorPayload {
-        message
+        messages {
+          body
+          level
+        }
       }
     }
   }
@@ -66,11 +68,10 @@ const createCapellaRepresentationMutation = gql`
 const isErrorPayload = (payload): payload is GQLErrorPayload => payload.__typename === 'ErrorPayload';
 
 export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: CapellaNewRepresentationAreaProps) => {
-  const [state, setState] = useState<CapellaNewRepresentationAreaState>({
-    message: undefined,
-  });
   const { classes } = useNewRepresentationAreaStyles();
   const { setSelection } = useSelection();
+
+  const { addMessages, addErrorMessage } = useMultiToast();
 
   // Representation creation
   const [createRepresentation, { loading, data, error }] = useMutation<
@@ -81,7 +82,7 @@ export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: Cap
   useEffect(() => {
     if (!loading) {
       if (error) {
-        setState({ message: 'An unexpected error has occurred, please refresh the page' });
+        addErrorMessage('An unexpected error has occurred, please refresh the page');
       }
       if (data) {
         const { createCapellaRepresentation } = data;
@@ -90,7 +91,7 @@ export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: Cap
           setSelection({ entries: [{ id }] });
         }
         if (isErrorPayload(createCapellaRepresentation)) {
-          setState({ message: createCapellaRepresentation.message });
+          addMessages(createCapellaRepresentation.messages);
         }
       }
     }
@@ -160,7 +161,6 @@ export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: Cap
           </List>
         </CardContent>
       </Card>
-      <Toast message={state.message} open={!!state.message} onClose={() => setState({ message: undefined })} />
     </>
   );
 };

@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,6 +36,7 @@ import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowDefinition;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceDefinition;
+import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartDefinition;
 import org.eclipse.syson.sysml.PartUsage;
@@ -305,8 +307,10 @@ public class SARepresentationMutationServiceTests {
         assertNotNull(functionalExchange);
         var sourcePort = new TransverseQueryService().getFunctionalExchangeSource(functionalExchange);
         var targetPort = new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange);
-        assertEquals(FeatureDirectionKind.OUT, sourcePort.getDirection());
-        assertEquals(FeatureDirectionKind.IN, targetPort.getDirection());
+        assertThat(sourcePort).isInstanceOf(ItemUsage.class);
+        assertThat(targetPort).isInstanceOf(ItemUsage.class);
+        assertEquals(FeatureDirectionKind.OUT, ((ItemUsage) sourcePort).getDirection());
+        assertEquals(FeatureDirectionKind.IN, ((ItemUsage) targetPort).getDirection());
         assertTrue(sourceFunction.getOwnedElement().contains(sourcePort));
         assertTrue(targetFunction.getOwnedElement().contains(targetPort));
     }

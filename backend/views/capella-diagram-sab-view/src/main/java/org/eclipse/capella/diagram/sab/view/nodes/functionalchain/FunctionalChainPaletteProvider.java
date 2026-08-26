@@ -21,7 +21,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -63,7 +63,7 @@ public class FunctionalChainPaletteProvider {
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
-                .toolSections(new DefaultToolsFactory().createDefaultHideRevealNodeToolSection())
+                .toolSections(new DiagramDefaultToolsFactory().createDefaultHideRevealNodeToolSection())
                 .build();
     }
 }

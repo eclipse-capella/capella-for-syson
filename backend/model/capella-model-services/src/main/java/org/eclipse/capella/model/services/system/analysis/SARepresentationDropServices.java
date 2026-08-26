@@ -30,7 +30,6 @@ import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.services.api.ISysMLMoveElementService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
-import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
@@ -237,10 +236,10 @@ public class SARepresentationDropServices {
         return componentView;
     }
 
-    private boolean canRevealBorderNode(Feature feature, Object parent, IEditingContext editingContext, DiagramContext diagramContext,
+    private boolean canRevealBorderNode(Element element, Object parent, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        return this.findView(diagramContext, feature.getElementId()).isPresent()
-                || this.diagramMutationElementService.getBorderNodeDescriptionIdForRendering(feature, editingContext, diagramContext, parent, convertedNodes).isPresent();
+        return this.findView(diagramContext, element.getElementId()).isPresent()
+                || this.diagramMutationElementService.getBorderNodeDescriptionIdForRendering(element, editingContext, diagramContext, parent, convertedNodes).isPresent();
     }
 
     private Optional<Object> revealNode(Element element, Object parent, IEditingContext editingContext, DiagramContext diagramContext,
@@ -252,14 +251,14 @@ public class SARepresentationDropServices {
         return Optional.ofNullable(this.diagramMutationElementService.createView(element, editingContext, diagramContext, parent, convertedNodes));
     }
 
-    private Optional<Object> revealBorderNode(Feature feature, Object parent, IEditingContext editingContext, DiagramContext diagramContext,
+    private Optional<Object> revealBorderNode(Element element, Object parent, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        var existingView = this.findView(diagramContext, feature.getElementId());
+        var existingView = this.findView(diagramContext, element.getElementId());
         if (existingView.isPresent()) {
             return existingView;
         }
-        var descriptionId = this.diagramMutationElementService.getBorderNodeDescriptionIdForRendering(feature, editingContext, diagramContext, parent, convertedNodes);
-        return descriptionId.map(id -> this.diagramMutationElementService.createView(feature, this.getParentElementId(parent, diagramContext), id, editingContext, diagramContext,
+        var descriptionId = this.diagramMutationElementService.getBorderNodeDescriptionIdForRendering(element, editingContext, diagramContext, parent, convertedNodes);
+        return descriptionId.map(id -> this.diagramMutationElementService.createView(element, this.getParentElementId(parent, diagramContext), id, editingContext, diagramContext,
                 NodeContainmentKind.BORDER_NODE));
     }
 

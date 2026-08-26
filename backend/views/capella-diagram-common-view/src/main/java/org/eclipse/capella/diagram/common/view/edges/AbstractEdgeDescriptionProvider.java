@@ -18,7 +18,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IEdgeDescriptionProvider;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 
 /**
  * Common pieces of edge descriptions shared by {@link IEdgeDescriptionProvider} in all view.
@@ -31,7 +31,7 @@ public abstract class AbstractEdgeDescriptionProvider implements IEdgeDescriptio
 
     protected final DiagramBuilders diagramBuilderHelper = new DiagramBuilders();
 
-    protected final DefaultToolsFactory defaultToolsFactory = new DefaultToolsFactory();
+    protected final DiagramDefaultToolsFactory diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
 
     protected IColorProvider colorProvider;
 

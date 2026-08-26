@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.eclipse.sirius.components.annotations.Builder;
 import org.eclipse.sirius.components.annotations.Immutable;
 import org.eclipse.sirius.components.tests.architecture.AbstractCodingRulesTests;
+import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -158,6 +159,24 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 .orShould()
                 .callMethodWhere(this.isCallToEcoreDeleteMethod())
                 .because("semantic deletion should always be handled by TransverseMutationService#delete")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
+    }
+
+    /**
+     * Checks that no class use Sirius Web {@link DefaultToolsFactory}.
+     * <p>
+     * {@link DefaultToolsFactory} was initially designed to provide default tools when creating a studio, but its scope has expanded beyond that purpose. In the future, Sirius Web may break this
+     * factory, and we should rely on the SysON implementation instead. You can check <a href="https://github.com/eclipse-syson/syson/issues/2452">syson#2452</a> for more information.
+     */
+    @Test
+    public void noClassShouldUseDefaultToolsFactory() {
+        ArchRule rule = ArchRuleDefinition.noClasses()
+                .should()
+                .dependOnClassesThat()
+                .haveFullyQualifiedName(DefaultToolsFactory.class.getName())
+                .because("default tools should be provided by DiagramDefaultToolsFactory instead of DefaultToolsFactory")
                 .allowEmptyShould(true);
 
         rule.check(this.getClasses());

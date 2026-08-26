@@ -24,7 +24,7 @@
 
 === Dependency update
 
-- [releng] Update Sirius Web and SysON to `2026.7.2`
+- [releng] Update Sirius Web and SysON to `2026.7.3`
 
 === Bug fixes
 

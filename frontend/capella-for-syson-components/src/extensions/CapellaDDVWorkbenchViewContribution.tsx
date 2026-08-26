@@ -94,7 +94,10 @@ const setSaveCapellaDDVDiagramMutation = gql`
         representationId
       }
       ... on ErrorPayload {
-        message
+        messages {
+          body
+          level
+        }
       }
     }
   }

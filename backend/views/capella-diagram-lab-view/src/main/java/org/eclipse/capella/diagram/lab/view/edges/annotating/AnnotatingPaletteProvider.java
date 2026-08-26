@@ -23,7 +23,7 @@ import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.EdgeReconnectionTool;
 import org.eclipse.sirius.components.view.diagram.SourceEdgeEndReconnectionTool;
 import org.eclipse.sirius.components.view.diagram.TargetEdgeEndReconnectionTool;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -41,12 +41,12 @@ public class AnnotatingPaletteProvider {
 
     private final ViewBuilders viewBuilderHelper;
 
-    private final DefaultToolsFactory defaultToolsFactory;
+    private final DiagramDefaultToolsFactory diagramDefaultToolsFactory;
 
     public AnnotatingPaletteProvider(DiagramBuilders diagramBuilderHelper, ViewBuilders viewBuilderHelper) {
         this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
         this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
-        this.defaultToolsFactory = new DefaultToolsFactory();
+        this.diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
     }
 
     public EdgePalette createEdgePalette() {
@@ -66,7 +66,7 @@ public class AnnotatingPaletteProvider {
                 .deleteTool(deleteTool.build())
                 .centerLabelEditTool(labelEditTool.build())
                 .edgeReconnectionTools(this.createEdgeReconnectionTool())
-                .toolSections(this.defaultToolsFactory.createDefaultHideRevealEdgeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealEdgeToolSection())
                 .build();
     }
 

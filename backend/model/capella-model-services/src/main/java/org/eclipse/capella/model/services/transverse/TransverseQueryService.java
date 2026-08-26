@@ -542,35 +542,25 @@ public class TransverseQueryService {
                 .toList();
     }
 
-    public Feature getFunctionalExchangeSource(FlowUsage functionalExchange) {
-        Feature sourceOutputFeature = functionalExchange.getSourceOutputFeature();
-        return this.modelQueryAQLService.unwrapFeature(sourceOutputFeature);
+    public Element getFunctionalExchangeSource(FlowUsage functionalExchange) {
+        return this.modelQueryAQLService.getSourceFlowUsageEdge(functionalExchange);
     }
 
     public ActionUsage getFunctionalExchangeSourceFunction(FlowUsage flowUsage) {
-        return flowUsage.getSource().stream()
-                .findFirst()
-                .filter(Feature.class::isInstance)
-                .map(Feature.class::cast)
-                .filter(feature -> !feature.getChainingFeature().isEmpty())
-                .map(feature -> feature.getChainingFeature().getFirst())
+        return Optional.ofNullable(this.getFunctionalExchangeSource(flowUsage))
+                .map(Element::getOwner)
                 .filter(this::isFunction)
                 .map(ActionUsage.class::cast)
                 .orElse(null);
     }
 
-    public Feature getFunctionalExchangeTarget(FlowUsage functionalExchange) {
-        Feature targetInputFeature = functionalExchange.getTargetInputFeature();
-        return this.modelQueryAQLService.unwrapFeature(targetInputFeature);
+    public Element getFunctionalExchangeTarget(FlowUsage functionalExchange) {
+        return this.modelQueryAQLService.getTargetFlowUsageEdge(functionalExchange);
     }
 
     public ActionUsage getFunctionalExchangeTargetFunction(FlowUsage flowUsage) {
-        return flowUsage.getTarget().stream()
-                .findFirst()
-                .filter(Feature.class::isInstance)
-                .map(Feature.class::cast)
-                .filter(feature -> !feature.getChainingFeature().isEmpty())
-                .map(feature -> feature.getChainingFeature().getFirst())
+        return Optional.ofNullable(this.getFunctionalExchangeTarget(flowUsage))
+                .map(Element::getOwner)
                 .filter(this::isFunction)
                 .map(ActionUsage.class::cast)
                 .orElse(null);
@@ -709,24 +699,15 @@ public class TransverseQueryService {
     }
 
     public PortUsage getComponentExchangeSource(InterfaceUsage interfaceUsage) {
-        return interfaceUsage.getSource().stream()
-                .findFirst()
-                .filter(Feature.class::isInstance)
-                .map(Feature.class::cast)
-                .filter(feature -> !feature.getChainingFeature().isEmpty())
-                .map(feature -> feature.getChainingFeature().getLast())
+        return Optional.ofNullable(this.modelQueryAQLService.getConnectorSource(interfaceUsage))
                 .filter(this::isComponentPort)
                 .map(PortUsage.class::cast)
                 .orElse(null);
     }
 
     public PortUsage getComponentExchangeTarget(InterfaceUsage interfaceUsage) {
-        return interfaceUsage.getTarget().stream()
-                .findFirst()
-                .filter(Feature.class::isInstance)
-                .map(Feature.class::cast)
-                .filter(feature -> !feature.getChainingFeature().isEmpty())
-                .map(feature -> feature.getChainingFeature().getLast())
+        return Optional.ofNullable(this.modelQueryAQLService.getConnectorTarget(interfaceUsage))
+                .flatMap(targets -> targets.stream().findFirst())
                 .filter(this::isComponentPort)
                 .map(PortUsage.class::cast)
                 .orElse(null);
