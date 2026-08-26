@@ -77,6 +77,11 @@
             <url>https://maven.pkg.github.com/eclipse-syson/syson</url>
         </repository>
         <repository>
+            <id>github-arcadia</id>
+            <name>Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/eclipse-capella/arcadia-sysmlv2-lib</url>
+        </repository>
+        <repository>
             <id>Eclipse-Acceleo</id>
             <url>https://download.eclipse.org/acceleo/updates/releases/4.2/R202603201315/</url>
         </repository>
