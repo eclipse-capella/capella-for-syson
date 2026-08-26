@@ -56,6 +56,7 @@ import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.InsideLabelDescription;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
+import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.diagram.OutsideLabelDescription;
@@ -191,6 +192,16 @@ public abstract class AbstractDiagramDescriptionTests {
                         .as("OutsideLabel of %s should not have a strategy for overflowing text", this.getDescriptionName(outsideLabelDescription))
                         .isEqualTo(LabelOverflowStrategy.NONE));
         softly.assertAll();
+    }
+
+    @Test
+    @DisplayName("Each Function has its name vertically centered")
+    public void functionLabelsShouldBeVerticallyCentered() {
+        assertThat(EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(nodeDescription -> nodeDescription.getName() != null && nodeDescription.getName().endsWith("FunctionNodeDescription")))
+                .allSatisfy(nodeDescription -> assertThat(nodeDescription.getInsideLabel().getPosition())
+                        .as("Function NodeDescription %s should have its label vertically centered", nodeDescription.getName())
+                        .isEqualTo(InsideLabelPosition.MIDDLE_CENTER));
     }
 
     @Test
