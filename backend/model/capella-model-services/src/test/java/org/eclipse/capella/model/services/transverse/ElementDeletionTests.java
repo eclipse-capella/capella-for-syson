@@ -15,6 +15,8 @@ package org.eclipse.capella.model.services.transverse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 import org.eclipse.capella.tests.fixtures.FunctionsPackage;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
@@ -120,5 +122,73 @@ public class ElementDeletionTests extends AbstractSemanticTests {
         assertThat(this.transverseQueryService.getFunctions(functionsPackage.getElement())).contains(function1, function2);
         assertThat(rootFunction.getOwnedElement()).contains(function1, function2);
         assertThat(functionsPackage.getElement().getOwnedElement()).doesNotContain(functionalExchange);
+    }
+
+    @Test
+    public void deleteFunctionalExchangeShouldRemoveItFromTheFunctionalChainsInvolvingIt() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
+
+        ActionUsage function3 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange2 = this.transverseMutationService.createFunctionalExchange(function2, function3);
+
+        // functional exchange not involved in the chain.
+        FlowUsage functionalExchange3 = this.transverseMutationService.createFunctionalExchange(function3, function2);
+
+        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1, functionalExchange2));
+        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
+
+        // Deleting an unrelated functional exchange doesn't change the functional chain.
+        this.transverseMutationService.delete(functionalExchange3);
+        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
+
+        this.transverseMutationService.delete(functionalExchange1);
+        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange2);
+
+        this.transverseMutationService.delete(functionalExchange2);
+        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).isEmpty();
+    }
+
+    @Test
+    public void deleteFunctionalChainShouldNotDeleteTheInvolvedFunctionalExchangesAndFunctions() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
+
+        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1));
+
+        this.transverseMutationService.delete(functionalChain);
+
+        assertThat(rootFunction.getOwnedElement()).contains(function1, function2);
+        assertThat(functionsPackage.getElement().getOwnedElement()).contains(functionalExchange1);
+    }
+
+    @Test
+    public void deleteFunctionalChainShouldRemoveTheReferenceToTheFunctionalChainFromTheInvolvedFunctionalExchangesAndFunctions() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
+
+        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1));
+
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).containsExactly(functionalChain);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).containsExactly(functionalChain);
+
+        this.transverseMutationService.delete(functionalChain);
+
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).isEmpty();
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).isEmpty();
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).isEmpty();
     }
 }
