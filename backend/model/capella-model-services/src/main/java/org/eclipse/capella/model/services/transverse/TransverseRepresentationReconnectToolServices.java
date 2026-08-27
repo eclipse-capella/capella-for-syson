@@ -16,12 +16,12 @@ package org.eclipse.capella.model.services.transverse;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.services.api.ISysMLMoveElementService;
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.AllocationUsage;
 import org.eclipse.syson.sysml.Comment;
 import org.eclipse.syson.sysml.Element;
@@ -49,14 +49,11 @@ public class TransverseRepresentationReconnectToolServices {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final SAQueryService saQueryService;
-
     public TransverseRepresentationReconnectToolServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService) {
         this.moveService = Objects.requireNonNull(moveService);
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
         this.metamodelMutationElementService = new MetamodelMutationElementService();
         this.transverseQueryService = new TransverseQueryService();
-        this.saQueryService = new SAQueryService();
     }
 
     public Feature reconnectFunctionalExchangeSource(FlowUsage functionalExchange, Feature newSource, Feature oldSource, Node sourceNode, Node targetNode, IEditingContext editingContext,
@@ -95,8 +92,14 @@ public class TransverseRepresentationReconnectToolServices {
             expectedDirection = FeatureDirectionKind.OUT;
         }
         var otherPort = this.getOtherFunctionalExchangePort(functionalExchange, isSource);
-        var owningFunction = this.saQueryService.getOwningFunction(feature);
-        var otherOwningFunction = Optional.ofNullable(otherPort).flatMap(this.saQueryService::getOwningFunction);
+        var owningFunction = Optional.ofNullable(feature)
+                .map(Element::getOwner)
+                .filter(this.transverseQueryService::isFunction)
+                .map(ActionUsage.class::cast);
+        var otherOwningFunction = Optional.ofNullable(otherPort)
+                .map(Element::getOwner)
+                .filter(this.transverseQueryService::isFunction)
+                .map(ActionUsage.class::cast);
         return expectedDirection == feature.getDirection()
                 && owningFunction.isPresent()
                 && otherOwningFunction.isPresent()

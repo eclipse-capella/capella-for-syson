@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
-import org.eclipse.capella.model.services.logical.architecture.LibraryServices;
+import org.eclipse.capella.model.services.transverse.ArcadiaLibraryServices;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -41,7 +41,7 @@ public class SARepresentationMutationService {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final LibraryServices libraryServices;
+    private final ArcadiaLibraryServices arcadiaLibraryServices;
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
@@ -49,7 +49,7 @@ public class SARepresentationMutationService {
         this.transverseMutationService = new TransverseMutationService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.transverseQueryService = new TransverseQueryService();
-        this.libraryServices = new LibraryServices();
+        this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
     }
 
@@ -88,7 +88,7 @@ public class SARepresentationMutationService {
         itemUsage.setDirection(direction);
         this.metamodelMutationElementService.addChildInParent(container, itemUsage);
         this.elementInitializerSwitch.doSwitch(itemUsage);
-        this.libraryServices.typeWithExchangeItem(itemUsage);
+        this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
         String defaultName = switch (direction) {
             case IN -> "FIP";
             case OUT -> "FOP";

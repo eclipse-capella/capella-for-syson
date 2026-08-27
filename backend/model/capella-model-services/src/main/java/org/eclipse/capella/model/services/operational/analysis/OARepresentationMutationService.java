@@ -20,7 +20,7 @@ import static org.eclipse.capella.model.services.transverse.TransverseQueryServi
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.logical.architecture.LibraryServices;
+import org.eclipse.capella.model.services.transverse.ArcadiaLibraryServices;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
@@ -44,7 +44,7 @@ public class OARepresentationMutationService {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final LibraryServices libraryServices;
+    private final ArcadiaLibraryServices arcadiaLibraryServices;
 
     private final OAQueryService oaQueryService;
 
@@ -56,7 +56,7 @@ public class OARepresentationMutationService {
         this.transverseMutationService = new TransverseMutationService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.transverseQueryService = new TransverseQueryService();
-        this.libraryServices = new LibraryServices();
+        this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.oaQueryService = new OAQueryService();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
         this.transverseRepresentationMutationService = Objects.requireNonNull(transverseRepresentationMutationService);
@@ -80,7 +80,7 @@ public class OARepresentationMutationService {
                 this.transverseMutationService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_HUMAN, true);
             }
             this.elementInitializerSwitch.doSwitch(partUsage);
-            this.libraryServices.typeWithArcadiaComponent(partUsage);
+            this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
             long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName(name + " " + existingElementsCount);
         }
