@@ -59,7 +59,7 @@ public class ElementCreationTests extends AbstractSemanticTests {
     }
 
     @Test
-    public void createFunctionShouldCreateItInTheRootFunctionOfEachArchitecture() {
+    public void createFunctionWhenParentIsNotAFunctionShouldCreateItInTheRootFunctionOfEachArchitecture() {
         ActionUsage function1 = this.transverseMutationService.createFunction(this.capellaModel.getOperationalAnalysisPerspective().getStructurePackage().getElement());
         assertThat(function1.getOwner()).isEqualTo(this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement());
 
@@ -68,6 +68,61 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
         ActionUsage function3 = this.transverseMutationService.createFunction(this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement());
         assertThat(function3.getOwner()).isEqualTo(this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement());
+    }
+
+    @Test
+    public void createFunctionWhenParentIsFunctionShouldCreateTheFunctionInParentFunction() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+
+        assertThat(rootFunction.getOwnedElement()).contains(function1);
+
+        ActionUsage function2 = this.transverseMutationService.createFunction(function1);
+        assertThat(function1.getOwnedElement()).contains(function2);
+    }
+
+    @Test
+    public void createFunctionWhenParentIsComponentShouldAllocateTheFunctionToTheComponent() {
+        Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage component = this.transverseMutationService.createComponent(structurePackage);
+        ActionUsage function = this.transverseMutationService.createFunction(component);
+
+        assertThat(this.transverseQueryService.getAllocatingComponent(function))
+                .isPresent()
+                .get()
+                .isEqualTo(component);
+        assertThat(this.transverseQueryService.getAllocatedFunctions(component)).contains(function);
+    }
+
+    @Test
+    public void createFunctionWhenParentIsAllocatedFunctionShouldAllocateTheFunctionToItsParentAllocatingComponent() {
+        Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage component = this.transverseMutationService.createComponent(structurePackage);
+        ActionUsage function1 = this.transverseMutationService.createFunction(component);
+        ActionUsage function2 = this.transverseMutationService.createFunction(function1);
+
+        assertThat(this.transverseQueryService.getAllocatingComponent(function2))
+                .isPresent()
+                .get()
+                .isEqualTo(component);
+        assertThat(this.transverseQueryService.getAllocatedFunctions(component)).contains(function1, function2);
+    }
+
+    @Test
+    public void createFunctionPortShouldSetPortDirectionAndName() {
+        ActionUsage function = this.transverseMutationService.createFunction(this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement());
+
+        ItemUsage inPort = this.transverseMutationService.createFunctionPort(function, FeatureDirectionKind.IN);
+        assertThat(inPort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+        assertThat(inPort.getDeclaredName()).startsWith("FIP ");
+
+        ItemUsage outPort = this.transverseMutationService.createFunctionPort(function, FeatureDirectionKind.OUT);
+        assertThat(outPort.getDirection()).isEqualTo(FeatureDirectionKind.OUT);
+        assertThat(outPort.getDeclaredName()).startsWith("FOP ");
+
+        ItemUsage inOutPort = this.transverseMutationService.createFunctionPort(function, FeatureDirectionKind.INOUT);
+        assertThat(inOutPort.getDirection()).isEqualTo(FeatureDirectionKind.INOUT);
+        assertThat(inOutPort.getDeclaredName()).startsWith("FP ");
     }
 
     @Test
