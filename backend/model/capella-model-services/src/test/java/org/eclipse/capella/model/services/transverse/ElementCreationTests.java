@@ -15,6 +15,7 @@ package org.eclipse.capella.model.services.transverse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.tests.fixtures.FunctionsPackage;
@@ -207,6 +208,34 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(functionalExchange).isNull();
         assertThat(function1.getNestedItem()).isEmpty();
         assertThat(function2.getNestedItem()).isEmpty();
+    }
+
+    @Test
+    public void createFunctionalChainOnFunctionalExchangesShouldCreateAFunctionalChainWithExchangesInTheProvidedOrder() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
+
+        ActionUsage function3 = this.transverseMutationService.createFunction(rootFunction);
+        FlowUsage functionalExchange2 = this.transverseMutationService.createFunctionalExchange(function2, function3);
+
+        // functional exchange not involved in the chain.
+        FlowUsage functionalExchange3 = this.transverseMutationService.createFunctionalExchange(function3, function2);
+
+        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1, functionalExchange2));
+
+        assertThat(this.transverseQueryService.isFunctionalChain(functionalChain)).isTrue();
+        assertThat(functionsPackage.getElement().getOwnedElement()).contains(functionalChain);
+        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange2)).containsExactly(functionalChain);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).contains(functionalChain);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).contains(functionalChain);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function3)).contains(functionalChain);
+        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange3)).isEmpty();
     }
 
 }

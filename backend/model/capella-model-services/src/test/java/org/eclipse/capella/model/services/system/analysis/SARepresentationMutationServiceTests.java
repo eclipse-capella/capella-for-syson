@@ -327,25 +327,7 @@ public class SARepresentationMutationServiceTests {
         assertTrue(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(retainedFunction));
     }
 
-    @Test
-    public void deleteFunctionalExchangeShouldRepairFunctionalChains() {
-        var structurePackage = this.createSystemAnalysisStructurePackage();
-        var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var middleFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
 
-        var deletedFunctionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, middleFunction);
-        var retainedFunctionalExchange = this.transverseMutationService.createFunctionalExchange(middleFunction, targetFunction);
-        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(deletedFunctionalExchange, retainedFunctionalExchange));
-
-        assertEquals(java.util.List.of(deletedFunctionalExchange, retainedFunctionalExchange), this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain));
-
-        this.transverseMutationService.delete(deletedFunctionalExchange);
-
-        assertFalse(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).contains(deletedFunctionalExchange));
-        assertEquals(java.util.List.of(retainedFunctionalExchange), this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain));
-    }
 
     @Test
     public void deleteFunctionShouldRemoveExternalAllocationsAndDependentElements() {

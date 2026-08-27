@@ -14,8 +14,6 @@ package org.eclipse.capella.model.services.logical.architecture;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.List;
-
 import org.eclipse.capella.model.services.transverse.AbstractSemanticTests;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
@@ -68,22 +66,7 @@ public class LARepresentationMutationServiceTests extends AbstractSemanticTests 
         assertThat(inOutPort.getDeclaredName()).startsWith("FP ");
     }
 
-    @Test
-    public void createFunctionalChainShouldStoreExchangesInGivenOrder() {
-        var function1 = this.transverseMutationService.createFunction(this.getRootFunction());
-        var function2 = this.transverseMutationService.createFunction(this.getRootFunction());
 
-        var function3 = this.transverseMutationService.createFunction(this.getRootFunction());
-        var function4 = this.transverseMutationService.createFunction(this.getRootFunction());
-
-        var flowUsage1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
-        var flowUsage2 = this.transverseMutationService.createFunctionalExchange(function3, function4);
-
-        ActionUsage createdFunctionalChain = this.transverseMutationService.createFunctionalChain(this.getLogicalArchitectureFunctionsPackage(), List.of(flowUsage1, flowUsage2));
-
-        assertThat(this.transverseQueryService.getFeatureReferenceValue(createdFunctionalChain, TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES))
-                .containsExactly(flowUsage1, flowUsage2);
-    }
 
     private Package getLogicalArchitectureStructurePackage() {
         return this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
