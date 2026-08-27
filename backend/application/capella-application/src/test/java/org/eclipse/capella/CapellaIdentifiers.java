@@ -23,6 +23,10 @@ public final class CapellaIdentifiers {
 
     public static final String EDITING_CONTEXT_ID = "a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006";
 
+    public static final String CAPELLA_DOCUMENT_ID = "fd17cf24-44c0-4770-a4c0-f9445b77f124";
+
+    public static final String ROOT_OCCURRENCE_DEFINITION_ID = "5dc36abf-abaa-415d-8781-ddf29777da33";
+
     private CapellaIdentifiers() {
         // Prevent instantiation
     }
