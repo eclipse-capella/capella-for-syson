@@ -30,6 +30,7 @@ import org.eclipse.syson.services.api.ISysONResourceService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.Namespace;
+import org.eclipse.syson.sysml.PerformActionUsage;
 import org.eclipse.syson.sysml.util.ElementUtil;
 import org.springframework.stereotype.Service;
 
@@ -153,7 +154,8 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
             return isSupportedSysMLElement
                     // Describes is represented as an AllocationUsage, which isn't an Arcadia element.
                     || this.transverseQueryService.isDescribes(element)
-                    || this.transverseQueryService.isArcadiaElement(element);
+                    // PerformActionUsage are Arcadia elements (allocations) but should not be displayed in the explorer.
+                    || (this.transverseQueryService.isArcadiaElement(element) && !(element instanceof PerformActionUsage));
         }
         return object instanceof RepresentationMetadata;
     }

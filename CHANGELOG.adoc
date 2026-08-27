@@ -33,6 +33,8 @@
 - https://github.com/eclipse-capella/capella-for-syson/issues/28[#28] [fix] Fixed System Function icons.
 - https://github.com/eclipse-capella/capella-for-syson/issues/30[#30] [fix] Display LAB components created from the diagram root inside the Logical System when displayed.
 - https://github.com/eclipse-capella/capella-for-syson/issues/80[#80] [fix] Forbid wrap overflow strategy for outside labels.
+- https://github.com/eclipse-capella/capella-for-syson/issues/29[#29] [fix] Hide perform action usages from the Capella explorer.
+They represent function allocations, which are already visible in the details view and shouldn't be visible in the explorer.
 
 === New Features
 
