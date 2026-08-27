@@ -18,16 +18,13 @@ import static org.eclipse.capella.model.services.transverse.TransverseQueryServi
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.STRUCTURE_PACKAGE;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.capella.model.services.transverse.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
-import org.eclipse.syson.sysml.Usage;
 
 /**
  * System Analysis (SA) related mutation service.
@@ -140,22 +137,4 @@ public class SAQueryService {
                 || qualifiedName.contains("'" + SYSTEM_ANALYSIS_PACKAGE_NAME + "'" + PATH_SEPARATOR + STRUCTURE_PACKAGE + PATH_SEPARATOR));
     }
 
-    public Optional<ActionUsage> getOwningFunction(Element element) {
-        Optional<ActionUsage> result = Optional.empty();
-        if (element instanceof Usage usage && usage.getOwningUsage() instanceof ActionUsage actionUsage) {
-            result = Optional.of(actionUsage);
-        } else if (element.getOwner() instanceof ActionUsage actionUsage) {
-            result = Optional.of(actionUsage);
-        } else {
-            EObject container = element.eContainer();
-            while (result.isEmpty() && container != null) {
-                if (container instanceof ActionUsage actionUsage) {
-                    result = Optional.of(actionUsage);
-                } else {
-                    container = container.eContainer();
-                }
-            }
-        }
-        return result;
-    }
 }

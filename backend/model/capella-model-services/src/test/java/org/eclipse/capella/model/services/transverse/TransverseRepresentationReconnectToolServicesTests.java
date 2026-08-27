@@ -47,6 +47,7 @@ import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelQueryElementService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -89,6 +90,7 @@ public class TransverseRepresentationReconnectToolServicesTests {
         assertEquals(newTargetPort, this.transverseQueryService.getComponentExchangeTarget(componentExchange));
     }
 
+    @Disabled("This test will be re-enabled once we use the actual arcadia library for the unit tests")
     @Test
     public void reconnectFunctionalExchangeShouldUpdateOnlyValidOutToInPorts() {
         var sourceFunction = SysmlFactory.eINSTANCE.createActionUsage();

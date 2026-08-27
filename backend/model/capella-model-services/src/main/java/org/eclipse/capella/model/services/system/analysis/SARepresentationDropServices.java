@@ -188,8 +188,14 @@ public class SARepresentationDropServices {
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
         var sourcePort = this.transverseQueryService.getFunctionalExchangeSource(flowUsage);
         var targetPort = this.transverseQueryService.getFunctionalExchangeTarget(flowUsage);
-        var sourceFunction = this.saQueryService.getOwningFunction(sourcePort);
-        var targetFunction = this.saQueryService.getOwningFunction(targetPort);
+        var sourceFunction = Optional.ofNullable(sourcePort)
+                .map(Element::getOwner)
+                .filter(this.transverseQueryService::isFunction)
+                .map(ActionUsage.class::cast);
+        var targetFunction = Optional.ofNullable(targetPort)
+                .map(Element::getOwner)
+                .filter(this.transverseQueryService::isFunction)
+                .map(ActionUsage.class::cast);
         var sourceComponent = sourceFunction.flatMap(this.transverseQueryService::getAllocatingComponent);
         var targetComponent = targetFunction.flatMap(this.transverseQueryService::getAllocatingComponent);
         if (this.hasAllocatedEndpoints(sourceFunction, targetFunction, sourceComponent, targetComponent)

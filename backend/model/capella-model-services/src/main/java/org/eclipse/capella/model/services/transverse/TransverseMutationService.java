@@ -33,7 +33,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.eclipse.capella.model.services.CapellaDeleteService;
-import org.eclipse.capella.model.services.logical.architecture.LibraryServices;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -93,7 +92,7 @@ public class TransverseMutationService {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final LibraryServices libraryServices;
+    private final ArcadiaLibraryServices arcadiaLibraryServices;
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
@@ -103,7 +102,7 @@ public class TransverseMutationService {
         this.utilService = new UtilService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.transverseQueryService = new TransverseQueryService();
-        this.libraryServices = new LibraryServices();
+        this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
         this.capellaDeleteService = new CapellaDeleteService();
 
@@ -271,7 +270,7 @@ public class TransverseMutationService {
     public ItemUsage createNewExchangeItem(Element parent) {
         ItemUsage itemUsage = SysmlFactory.eINSTANCE.createItemUsage();
         this.metamodelMutationElementService.addChildInParent(parent, itemUsage);
-        this.libraryServices.typeWithExchangeItem(itemUsage);
+        this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
         this.elementInitializerSwitch.doSwitch(itemUsage);
         itemUsage.setDeclaredName(ARCADIA_EXCHANGE_ITEM + this.transverseQueryService.existingElementsCount(itemUsage));
 
@@ -347,7 +346,7 @@ public class TransverseMutationService {
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
             this.elementInitializerSwitch.doSwitch(partUsage);
-            this.libraryServices.typeWithArcadiaComponent(partUsage);
+            this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
             long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName("C" + WHITE_SPACE + existingElementsCount);
         }
@@ -370,7 +369,7 @@ public class TransverseMutationService {
         portUsage.setDirection(direction);
         this.metamodelMutationElementService.addChildInParent(container, portUsage);
         this.elementInitializerSwitch.doSwitch(portUsage);
-        this.libraryServices.typeWithArcadiaComponentPort(portUsage);
+        this.arcadiaLibraryServices.typeWithArcadiaComponentPort(portUsage);
         portUsage.setDeclaredName("CP " + this.transverseQueryService.existingElementsCount(portUsage));
         return portUsage;
     }
@@ -388,7 +387,7 @@ public class TransverseMutationService {
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
             this.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
             this.elementInitializerSwitch.doSwitch(partUsage);
-            this.libraryServices.typeWithArcadiaComponent(partUsage);
+            this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
             long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName("A" + WHITE_SPACE + existingElementsCount);
         }
@@ -404,7 +403,7 @@ public class TransverseMutationService {
         if (optionalParent.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);
-            this.libraryServices.typeWithArcadiaFunction(actionUsage);
+            this.arcadiaLibraryServices.typeWithArcadiaFunction(actionUsage);
             this.elementInitializerSwitch.doSwitch(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTION + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
 
@@ -439,7 +438,7 @@ public class TransverseMutationService {
         itemUsage.setDirection(direction);
         this.metamodelMutationElementService.addChildInParent(container, itemUsage);
         this.elementInitializerSwitch.doSwitch(itemUsage);
-        this.libraryServices.typeWithExchangeItem(itemUsage);
+        this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
         String defaultName = switch (direction) {
             case IN -> "FIP";
             case OUT -> "FOP";
@@ -466,7 +465,7 @@ public class TransverseMutationService {
                 FlowUsage functionalExchange = this.metamodelMutationElementService.createFlowUsage(sourcePort, targetPort, source, target, optionalSourceFunctionsPackage.get());
 
                 this.elementInitializerSwitch.doSwitch(functionalExchange);
-                this.libraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
+                this.arcadiaLibraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
                 long existingElementsCount = this.transverseQueryService.existingElementsCount(functionalExchange);
                 functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
                 return functionalExchange;
@@ -489,7 +488,7 @@ public class TransverseMutationService {
 
                 InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalSourceStructurePackage.get());
                 this.elementInitializerSwitch.doSwitch(componentExchange);
-                this.libraryServices.typeWithArcadiaComponentExchange(componentExchange);
+                this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
                 long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
                 componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
                 return componentExchange;
@@ -530,7 +529,7 @@ public class TransverseMutationService {
         if (optionalFunctionsPackage.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalFunctionsPackage.get(), actionUsage);
-            this.libraryServices.typeWithArcadiaFunctionalChain(actionUsage);
+            this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.elementInitializerSwitch.doSwitch(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
             this.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
@@ -588,7 +587,7 @@ public class TransverseMutationService {
                     .ifPresent(newStatusEnumElt -> {
                         var metaDataUsage = SysmlFactory.eINSTANCE.createMetadataUsage();
                         this.metamodelMutationElementService.addChildInParent(feature, metaDataUsage);
-                        this.libraryServices.typeWithLibrary(metaDataUsage, MODELING_METADATA_STATUS_INFO, SysmlPackage.eINSTANCE.getMetadataDefinition());
+                        this.arcadiaLibraryServices.typeWithLibrary(metaDataUsage, MODELING_METADATA_STATUS_INFO, SysmlPackage.eINSTANCE.getMetadataDefinition());
                         this.setFeatureReferenceValues(metaDataUsage, MODELING_METADATA_STATUS_INFO, STATUS, List.of(newStatusEnumElt),
                                 SysmlPackage.eINSTANCE.getAttributeUsage());
                     });

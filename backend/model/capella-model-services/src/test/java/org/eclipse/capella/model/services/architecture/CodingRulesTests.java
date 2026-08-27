@@ -63,6 +63,30 @@ public class CodingRulesTests extends AbstractCapellaCodingRulesTests {
     }
 
     /**
+     * Checks that transverse services do not depend on perspective-level services.
+     * <p>
+     * A transverse service should be usable in any context, and as such it shouldn't depend on any perspective-specific implementation.
+     */
+    @Test
+    public void noTransverseServiceShouldUsePerspectiveService() {
+        ArchRule rule = ArchRuleDefinition.noClasses()
+                .that()
+                .resideInAPackage("org.eclipse.capella.model.services.transverse..")
+                .should()
+                .dependOnClassesThat()
+                .resideInAnyPackage(
+                        "org.eclipse.capella.model.services.functional..",
+                        "org.eclipse.capella.model.services.logical..",
+                        "org.eclipse.capella.model.services.operational..",
+                        "org.eclipse.capella.model.services.physical..",
+                        "org.eclipse.capella.model.services.system..")
+                .because("transverse services should not depend on perspective services")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
+    }
+
+    /**
      * Checks that semantic test methods follow the naming convention and don't have a {@code @DisplayName} annotation.
      * <p>
      * The naming convention is {@code <operation>[<operationContext][When<context>]Should<outcome>}. {@code operationContext} is usually used to add information on the operation being tested (e.g.
