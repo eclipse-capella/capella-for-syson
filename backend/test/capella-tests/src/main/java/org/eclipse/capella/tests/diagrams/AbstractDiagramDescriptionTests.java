@@ -13,8 +13,6 @@
 
 package org.eclipse.capella.tests.diagrams;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -27,7 +25,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.SoftAssertions;
 import org.eclipse.acceleo.query.ast.Call;
 import org.eclipse.acceleo.query.parser.AstResult;
@@ -51,15 +48,9 @@ import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
-import org.eclipse.sirius.components.view.diagram.DiagramPalette;
-import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
-import org.eclipse.sirius.components.view.diagram.InsideLabelDescription;
-import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
-import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
-import org.eclipse.sirius.components.view.diagram.OutsideLabelDescription;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
@@ -69,10 +60,13 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Checks the structure of the Capella for SysON diagrams.
+ * <p>
+ * This class cannot be extended directly: subclasses should extend {@link AbstractEditableDiagramDescriptionTests} or {@link AbstractReadOnlyDiagramDescriptionTests} so the tests are tailored to the
+ * read-only nature of the diagram.
  *
  * @author gdaniel
  */
-public abstract class AbstractDiagramDescriptionTests {
+public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEditableDiagramDescriptionTests, AbstractReadOnlyDiagramDescriptionTests {
 
     protected static final String AQL_PREFIX = "aql:";
 
@@ -122,108 +116,6 @@ public abstract class AbstractDiagramDescriptionTests {
     protected abstract IJavaServiceProvider getJavaServiceProvider();
 
     @Test
-    @DisplayName("Each EdgeDescription has reconnect tools")
-    public void eachEdgeHasReconnectTools() {
-        SoftAssertions softly = new SoftAssertions();
-        this.diagramDescription.getEdgeDescriptions()
-                .forEach(edgeDescription -> softly.assertThat(edgeDescription.getPalette())
-                        .as("EdgeDescription %s should have a palette", edgeDescription.getName())
-                        .isNotNull()
-                        .extracting(EdgePalette::getEdgeReconnectionTools)
-                        .as("EdgeDescription %s should have %s reconnection tools", edgeDescription.getName(), 2)
-                        .asInstanceOf(InstanceOfAssertFactories.LIST)
-                        .hasSize(2));
-        softly.assertAll();
-    }
-
-    @Test
-    @DisplayName("Each EdgeDescription with a center label expression has a direct edit tool")
-    public void eachEdgeWithCenterLabelHasDirectEditTool() {
-        SoftAssertions softly = new SoftAssertions();
-        this.diagramDescription.getEdgeDescriptions().stream()
-                .filter(edgeDescription -> edgeDescription.getCenterLabelExpression() != null && !edgeDescription.getCenterLabelExpression().isBlank())
-                .forEach(edgeDescription -> softly.assertThat(edgeDescription.getPalette())
-                        .as("EdgeDescription %s should have a palette", edgeDescription.getName())
-                        .isNotNull()
-                        .extracting(EdgePalette::getCenterLabelEditTool)
-                        .as("EdgeDescription %s should have a center label edit tool", edgeDescription.getName(), edgeDescription.getCenterLabelExpression())
-                        .isNotNull());
-        softly.assertAll();
-    }
-
-    @Test
-    @DisplayName("Each NodeDescription with an inside label has a direct edit tool")
-    public void eachNodeHasDirectEditTool() {
-        SoftAssertions softly = new SoftAssertions();
-        EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
-                .filter(this.isCompartment().negate())
-                .filter(nodeDescription -> nodeDescription.getInsideLabel() != null && nodeDescription.getInsideLabel().getLabelExpression() != null
-                        && !nodeDescription.getInsideLabel().getLabelExpression().isBlank())
-                .forEach(nodeDescription -> {
-                    softly.assertThat(nodeDescription.getPalette())
-                            .as("NodeDescription %s should have a palette", nodeDescription.getName())
-                            .isNotNull();
-                    if (nodeDescription.getPalette() != null) {
-                        softly.assertThat(nodeDescription.getPalette().getLabelEditTool())
-                                .as("NodeDescription %s should have a label edit tool", nodeDescription.getName())
-                                .isNotNull();
-                    }
-                });
-        softly.assertAll();
-    }
-
-    @Test
-    @DisplayName("Each NodeDescription with an inside label should wrap overflowing text")
-    public void eachNodeInsideLabelShouldWrapOverflowingText() {
-        SoftAssertions softly = new SoftAssertions();
-        EMFUtils.allContainedObjectOfType(this.diagramDescription, InsideLabelDescription.class)
-                .forEach(insideLabelDescription -> softly.assertThat(insideLabelDescription.getOverflowStrategy())
-                        .as("InsideLabel of %s should wrap overflowing text", this.getDescriptionName(insideLabelDescription))
-                        .isEqualTo(LabelOverflowStrategy.WRAP));
-        softly.assertAll();
-    }
-
-    @Test
-    @DisplayName("Each NodeDescription with an outside label should not have a strategy for overflowing text")
-    public void eachNodeOutsideLabelShouldNotHaveAStrategyForOverflowingText() {
-        SoftAssertions softly = new SoftAssertions();
-        EMFUtils.allContainedObjectOfType(this.diagramDescription, OutsideLabelDescription.class)
-                .forEach(outsideLabelDescription -> softly.assertThat(outsideLabelDescription.getOverflowStrategy())
-                        .as("OutsideLabel of %s should not have a strategy for overflowing text", this.getDescriptionName(outsideLabelDescription))
-                        .isEqualTo(LabelOverflowStrategy.NONE));
-        softly.assertAll();
-    }
-
-    @Test
-    @DisplayName("Each Function has its name vertically centered")
-    public void functionLabelsShouldBeVerticallyCentered() {
-        assertThat(EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
-                .filter(nodeDescription -> nodeDescription.getName() != null && nodeDescription.getName().endsWith("FunctionNodeDescription")))
-                .allSatisfy(nodeDescription -> assertThat(nodeDescription.getInsideLabel().getPosition())
-                        .as("Function NodeDescription %s should have its label vertically centered", nodeDescription.getName())
-                        .isEqualTo(InsideLabelPosition.MIDDLE_CENTER));
-    }
-
-    @Test
-    @DisplayName("Each NodeDescription has a delete tool")
-    public void eachNodeHasDeleteTool() {
-        SoftAssertions softly = new SoftAssertions();
-        EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
-                .filter(this.isCompartment().negate())
-                .forEach(nodeDescription -> {
-                    softly.assertThat(nodeDescription.getPalette())
-                            .as("NodeDescription %s should have a palette", nodeDescription.getName())
-                            .isNotNull();
-                    if (nodeDescription.getPalette() != null) {
-                        softly.assertThat(nodeDescription.getPalette().getDeleteTool())
-                                .as("NodeDescription %s should have a delete tool", nodeDescription.getName())
-                                .isNotNull();
-                    }
-                });
-        softly.assertAll();
-    }
-
-    @Test
     @DisplayName("Every reused Node Description has a container")
     public void allReusedNodeDescriptionsHaveAContainer() {
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class).forEach(nodeDescription -> {
@@ -236,17 +128,6 @@ public abstract class AbstractDiagramDescriptionTests {
                         .formatted(reusedBorderNodeDescription.getName(), nodeDescription.getName())).isNotNull();
             });
         });
-    }
-
-    @Test
-    @DisplayName("Diagram has a semantic drag & drop tool")
-    public void diagramHasSemanticDragAndDropTool() {
-        assertThat(this.diagramDescription.getPalette())
-                .as("DiagramDescription should have a palette")
-                .isNotNull()
-                .extracting(DiagramPalette::getDropTool)
-                .as("DiagramDescription should have a drop tool")
-                .isNotNull();
     }
 
     @Test
@@ -268,7 +149,7 @@ public abstract class AbstractDiagramDescriptionTests {
     }
 
     @Test
-    @DisplayName("Each service called in AQL is a public method from a service classe")
+    @DisplayName("Each service called in AQL is a public method from a service class")
     public void eachAQLServicesIsPublicServiceMethod() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.eAllContentStreamWithSelf(this.diagramDescription)
@@ -382,7 +263,7 @@ public abstract class AbstractDiagramDescriptionTests {
                 .orElse(eObject.eClass().getName());
     }
 
-    private Predicate<NodeDescription> isCompartment() {
+    protected Predicate<NodeDescription> isCompartment() {
         return nodeDescription -> nodeDescription.getName() != null && nodeDescription.getName().contains("Compartment");
     }
 }

@@ -13,7 +13,7 @@
 package org.eclipse.capella.diagram.ocb.view;
 
 import org.eclipse.capella.diagram.common.view.ColorProvider;
-import org.eclipse.capella.tests.diagrams.AbstractDiagramDescriptionTests;
+import org.eclipse.capella.tests.diagrams.AbstractEditableDiagramDescriptionTests;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
@@ -24,7 +24,7 @@ import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
  *
  * @author tbezierslafosse
  */
-public class OCBDiagramDescriptionTests extends AbstractDiagramDescriptionTests {
+public class OCBDiagramDescriptionTests extends AbstractEditableDiagramDescriptionTests {
 
     @Override
     protected IColorProvider getColorProvider(View view) {
