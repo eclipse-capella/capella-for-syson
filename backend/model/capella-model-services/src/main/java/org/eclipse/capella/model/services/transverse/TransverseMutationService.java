@@ -324,7 +324,7 @@ public class TransverseMutationService {
         if (optionalRequirementsPackage.isPresent()) {
             String name = "Requirement";
             requirementUsage = SysmlFactory.eINSTANCE.createRequirementUsage();
-            this.arcadiaLibraryServices.typeWithArcadiaRequirement(requirementUsage);
+
             this.metamodelMutationElementService.addChildInParent(optionalRequirementsPackage.get(), requirementUsage);
             this.elementInitializerSwitch.doSwitch(requirementUsage);
             // Use native SysML v2 RequirementUsage without Arcadia typing
