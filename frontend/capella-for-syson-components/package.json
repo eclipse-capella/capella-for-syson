@@ -146,7 +146,7 @@
     "fontsource-roboto": "4.0.0",
     "graphql": "16.8.1",
     "html-to-image": "1.11.11",
-    "jsdom": "16.7.0",
+    "jsdom": "30.0.1",
     "lexical": "0.42.0",
     "material-react-table": "3.2.1",
     "notistack": "3.0.1",
