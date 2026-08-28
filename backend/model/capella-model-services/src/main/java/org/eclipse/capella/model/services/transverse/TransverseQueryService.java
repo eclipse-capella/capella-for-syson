@@ -56,6 +56,7 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.OperatorExpression;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PerformActionUsage;
@@ -81,6 +82,8 @@ public class TransverseQueryService {
     public static final String ARCADIA_PREFIX = "Arcadia" + PATH_SEPARATOR;
 
     public static final String ARCADIA_COMPONENT = "Component";
+
+    public static final String ARCADIA_CAPABILITY = "Capability";
 
     public static final String ARCADIA_ACTOR = "Actor";
 
@@ -362,6 +365,11 @@ public class TransverseQueryService {
         return false;
     }
 
+    public Boolean isCapability(EObject eObject) {
+        return eObject instanceof OccurrenceUsage occurrenceUsage
+                && this.checkType(occurrenceUsage, ARCADIA_PREFIX + ARCADIA_CAPABILITY);
+    }
+
     public Boolean isComponentExchange(EObject eObject) {
         if (eObject instanceof InterfaceUsage interfaceUsage) {
             return this.checkType(interfaceUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE);
@@ -517,6 +525,10 @@ public class TransverseQueryService {
             return this.isActor().test(partUsage) && this.isHuman().test(partUsage);
         }
         return false;
+    }
+
+    public Boolean isNotComponentHumanActor(EObject eObject) {
+        return !this.isComponentHumanActor(eObject);
     }
 
     public Boolean getHumanCheckboxValue(EObject eObject) {
@@ -792,6 +804,18 @@ public class TransverseQueryService {
                 .toList();
     }
 
+    public Optional<PartUsage> getParentComponent(EObject element) {
+        Optional<PartUsage> parent = Optional.empty();
+        if (element instanceof PartUsage component && component.getOwningUsage() instanceof PartUsage parentComponent
+                && this.isComponent(parentComponent)) {
+            parent = Optional.of(parentComponent);
+        } else if (element instanceof PartUsage component && component.getOwner() instanceof PartUsage parentComponent
+                && this.isComponent(parentComponent)) {
+            parent = Optional.of(parentComponent);
+        }
+        return parent;
+    }
+
     /**
      * Retrieve component node candidates for the LAB diagram. At diagram root (Structure Package), return all reachable components so nested components can be displayed directly. Inside a represented
      * component node, keep the direct-subcomponents behavior.
@@ -912,6 +936,18 @@ public class TransverseQueryService {
 
     public Optional<Package> getRequirementsPackage(Element element) {
         return this.getArcadiaPerspectiveOwnedPackage(element, REQUIREMENTS_PACKAGE);
+    }
+
+    public Optional<Package> getCapabilitiesPackage(Element element) {
+        return this.getArcadiaPerspectiveOwnedPackage(element, CAPABILITIES_PACKAGE);
+    }
+
+    public List<OccurrenceUsage> getCapabilities(EObject context) {
+        return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getOccurrenceUsage()).stream()
+            .filter(OccurrenceUsage.class::isInstance)
+            .map(OccurrenceUsage.class::cast)
+            .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_CAPABILITY))
+            .toList();
     }
 
     /**
