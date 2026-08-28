@@ -50,6 +50,14 @@ npm run build
 
 Copy frontend in backend folder:
 
+The first time it is neede to create the folder hierarchy:
+
+```bash
+mkdir -p backend/application/capella-frontend/src/main/resources/static/capella-for-syson/
+```
+
+Then:
+
 ```bash
 cp -r frontend/capella-for-syson/dist/* backend/application/capella-frontend/src/main/resources/static/capella-for-syson/
 ```
