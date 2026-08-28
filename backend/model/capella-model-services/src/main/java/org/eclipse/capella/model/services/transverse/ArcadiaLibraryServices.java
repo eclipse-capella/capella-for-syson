@@ -21,12 +21,10 @@ import static org.eclipse.capella.model.services.transverse.TransverseQueryServi
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_REQUIREMENT;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.Element;
-import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Type;
 import org.eclipse.syson.sysml.Usage;
@@ -73,16 +71,8 @@ public class ArcadiaLibraryServices {
         this.typeWithLibrary(usage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, SysmlPackage.eINSTANCE.getActionDefinition());
     }
 
-    public void typeWithArcadiaRequirement(RequirementUsage requirementUsage) {
-        this.typeWithArcadiaLibrary(requirementUsage, ARCADIA_REQUIREMENT, SysmlPackage.eINSTANCE.getRequirementDefinition());
-    }
-
     public void typeWithArcadiaCapability(Usage usage) {
-        this.typeWithArcadiaLibrary(usage, ARCADIA_CAPABILITY, SysmlPackage.eINSTANCE.getOccurrenceDefinition());
-    }
-
-    public void typeWithArcadiaLibrary(Usage usage, String arcadiaTypeName, EClass librarySysMLElementType) {
-        this.typeWithLibrary(usage, ARCADIA_PREFIX + arcadiaTypeName, librarySysMLElementType);
+        this.typeWithLibrary(usage, ARCADIA_PREFIX + ARCADIA_CAPABILITY, SysmlPackage.eINSTANCE.getOccurrenceDefinition());
     }
 
     public void typeWithLibrary(Usage usage, String typeQualifiedName, EClass librarySysMLElementType) {

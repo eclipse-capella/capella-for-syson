@@ -77,7 +77,7 @@ public class OARepresentationMutationService {
             Element targetContainer = optionalTargetContainer.get();
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
-            this.transverseMutationService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
+            this.transverseMutationService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, isActor);
             if (isActor) {
                 name = "OA";
                 this.transverseMutationService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_HUMAN, true);
