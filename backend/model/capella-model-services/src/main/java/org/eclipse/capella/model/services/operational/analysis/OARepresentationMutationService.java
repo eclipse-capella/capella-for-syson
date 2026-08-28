@@ -64,6 +64,9 @@ public class OARepresentationMutationService {
 
     public PartUsage createEntityComponent(Element parent, boolean isActor) {
         PartUsage partUsage = null;
+        if (parent instanceof PartUsage parentComponent && this.transverseQueryService.isComponentHumanActor(parentComponent)) {
+            return null;
+        }
         Optional<Element> optionalTargetContainer = Optional.of(parent);
         if (!(parent instanceof PartUsage)) {
             optionalTargetContainer = this.transverseQueryService.getStructurePackage(parent)
