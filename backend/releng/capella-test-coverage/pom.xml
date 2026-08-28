@@ -61,6 +61,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-ocb-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-diagram-sab-view</artifactId>
 			<version>2026.7.0</version>
 		</dependency>

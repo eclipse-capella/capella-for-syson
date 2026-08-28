@@ -60,6 +60,10 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
     private static final String OAB_REPRESENTATION_NAME = "OAB - Operational Analysis Blank";
 
+    private static final String OCB_REPRESENTATION_DESCRIPTION_ID = "OCB";
+
+    private static final String OCB_REPRESENTATION_NAME = "OCB - Operational Capability Blank";
+
     private static final String LAB_REPRESENTATION_DESCRIPTION_ID = "LAB";
 
     private static final String LAB_REPRESENTATION_NAME = "LAB - Logical Architecture Blank";
@@ -108,22 +112,12 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
         if (input instanceof CreateCapellaRepresentationInput createRepresentationInput) {
             Optional<DiagramDescription> optionalDiagramDescription = this.findDiagramDescription(editingContext, createRepresentationInput.representationDescriptionId());
-            Optional<Package> optionalParentPackage = switch (createRepresentationInput.representationDescriptionId()) {
-                case OAB_REPRESENTATION_DESCRIPTION_ID -> this.getStructureInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis);
-                case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getStructureInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis);
-                case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getStructureInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture);
-                default -> Optional.empty();
-            };
+            Optional<Package> optionalParentPackage = this.findParentPackage(editingContext, createRepresentationInput.representationDescriptionId());
 
             if (optionalDiagramDescription.isPresent() && optionalParentPackage.isPresent()) {
                 DiagramDescription diagramDescription = optionalDiagramDescription.get();
                 Object parentPackage = optionalParentPackage.get();
-                var diagramName = switch (createRepresentationInput.representationDescriptionId()) {
-                    case OAB_REPRESENTATION_DESCRIPTION_ID -> OAB_REPRESENTATION_NAME;
-                    case SAB_REPRESENTATION_DESCRIPTION_ID -> SAB_REPRESENTATION_NAME;
-                    case LAB_REPRESENTATION_DESCRIPTION_ID -> LAB_REPRESENTATION_NAME;
-                    default -> "";
-                };
+                var diagramName = this.getRepresentationName(createRepresentationInput.representationDescriptionId());
                 var variableManager = new VariableManager();
                 variableManager.put(VariableManager.SELF, parentPackage);
                 variableManager.put(DiagramDescription.LABEL, diagramName);
@@ -152,9 +146,9 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
         changeDescriptionSink.tryEmitNext(changeDescription);
     }
 
-    private Optional<Package> getStructureInArchitecture(IEditingContext editingContext, ArcadiaEngineeringPerspective engineeringPerspective) {
-        Package packageLA;
-        Package packageStructureOnLA = null;
+    private Optional<Package> getPackageInArchitecture(IEditingContext editingContext, ArcadiaEngineeringPerspective engineeringPerspective, String packageName) {
+        Package architecturePackage;
+        Package targetPackage = null;
         if (editingContext instanceof IEMFEditingContext emfEditingContext) {
             var resourceSet = emfEditingContext.getDomain().getResourceSet();
             var resources = resourceSet.getResources().stream()
@@ -162,14 +156,26 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
                     .toList();
             for (Resource resource : resources) {
                 var contents = resource.getContents();
-                packageLA = this.findPackageByName(contents, engineeringPerspective.getLabel());
-                if (packageLA != null) {
-                    packageStructureOnLA = this.findPackageByName(packageLA.eContents(), TransverseQueryService.STRUCTURE_PACKAGE);
-                    break;
+                architecturePackage = this.findPackageByName(contents, engineeringPerspective.getLabel());
+                if (architecturePackage != null) {
+                    targetPackage = this.findPackageByName(architecturePackage.eContents(), packageName);
+                    if (targetPackage != null) {
+                        break;
+                    }
                 }
             }
         }
-        return Optional.ofNullable(packageStructureOnLA);
+        return Optional.ofNullable(targetPackage);
+    }
+
+    private Optional<Package> findParentPackage(IEditingContext editingContext, String representationDescriptionId) {
+        return switch (representationDescriptionId) {
+            case OAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.STRUCTURE_PACKAGE);
+            case OCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.CAPABILITIES_PACKAGE);
+            case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, TransverseQueryService.STRUCTURE_PACKAGE);
+            case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture, TransverseQueryService.STRUCTURE_PACKAGE);
+            default -> Optional.empty();
+        };
     }
 
     private Package findPackageByName(EList<EObject> eObjects, String packageName) {
@@ -191,12 +197,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
     }
 
     private Optional<DiagramDescription> findDiagramDescription(IEditingContext editingContext, String representationDescriptionId) {
-        String expectedDescriptionName = switch (representationDescriptionId) {
-            case OAB_REPRESENTATION_DESCRIPTION_ID -> OAB_REPRESENTATION_NAME;
-            case SAB_REPRESENTATION_DESCRIPTION_ID -> SAB_REPRESENTATION_NAME;
-            case LAB_REPRESENTATION_DESCRIPTION_ID -> LAB_REPRESENTATION_NAME;
-            default -> "";
-        };
+        String expectedDescriptionName = this.getRepresentationName(representationDescriptionId);
 
         return this.representationDescriptionSearchService.findAll(editingContext)
                 .values()
@@ -205,6 +206,16 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
                 .map(DiagramDescription.class::cast)
                 .filter(diagramDescription -> this.matchesDiagramDescription(diagramDescription, representationDescriptionId, expectedDescriptionName))
                 .findFirst();
+    }
+
+    private String getRepresentationName(String representationDescriptionId) {
+        return switch (representationDescriptionId) {
+            case OAB_REPRESENTATION_DESCRIPTION_ID -> OAB_REPRESENTATION_NAME;
+            case OCB_REPRESENTATION_DESCRIPTION_ID -> OCB_REPRESENTATION_NAME;
+            case SAB_REPRESENTATION_DESCRIPTION_ID -> SAB_REPRESENTATION_NAME;
+            case LAB_REPRESENTATION_DESCRIPTION_ID -> LAB_REPRESENTATION_NAME;
+            default -> "";
+        };
     }
 
     private boolean matchesDiagramDescription(DiagramDescription diagramDescription, String representationDescriptionId, String expectedDescriptionName) {
