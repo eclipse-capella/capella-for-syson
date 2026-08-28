@@ -54,6 +54,7 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.ParameterMembership;
 import org.eclipse.syson.sysml.PartUsage;
@@ -323,7 +324,7 @@ public class TransverseMutationService {
         if (optionalRequirementsPackage.isPresent()) {
             String name = "Requirement";
             requirementUsage = SysmlFactory.eINSTANCE.createRequirementUsage();
-
+            this.arcadiaLibraryServices.typeWithArcadiaRequirement(requirementUsage);
             this.metamodelMutationElementService.addChildInParent(optionalRequirementsPackage.get(), requirementUsage);
             this.elementInitializerSwitch.doSwitch(requirementUsage);
             // Use native SysML v2 RequirementUsage without Arcadia typing
@@ -508,6 +509,18 @@ public class TransverseMutationService {
         this.addEndToAllocateEdge(allocation, source);
         this.addEndToAllocateEdge(allocation, target);
         return allocation;
+    }
+
+    public OccurrenceUsage createOperationalCapability(Element parent) {
+        return this.transverseQueryService.getCapabilitiesPackage(parent)
+                .map(capabilitiesPackage -> {
+                    var capability = SysmlFactory.eINSTANCE.createOccurrenceUsage();
+                    this.metamodelMutationElementService.addChildInParent(capabilitiesPackage, capability);
+                    this.elementInitializerSwitch.doSwitch(capability);
+                    this.arcadiaLibraryServices.typeWithArcadiaCapability(capability);
+                    return capability;
+                })
+                .orElse(null);
     }
 
     private void addEndToAllocateEdge(AllocationUsage edge, Element end) {

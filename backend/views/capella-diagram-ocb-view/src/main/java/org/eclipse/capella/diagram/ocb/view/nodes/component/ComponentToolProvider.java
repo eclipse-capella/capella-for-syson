@@ -10,7 +10,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.oab.view.nodes.component;
+package org.eclipse.capella.diagram.ocb.view.nodes.component;
 
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
@@ -27,14 +27,14 @@ import org.eclipse.syson.util.AQLConstants;
 /**
  * Provide tools to create entity component node.
  *
- * @author frouene
+ * @author tbezierslafosse
  */
-public class EntityComponentToolProvider {
+public class ComponentToolProvider {
 
     protected final ViewBuilders viewBuilderHelper;
     private final DiagramBuilders diagramBuilderHelper;
 
-    public EntityComponentToolProvider(ViewBuilders viewBuilderHelper, DiagramBuilders diagramBuilderHelper) {
+    public ComponentToolProvider(ViewBuilders viewBuilderHelper, DiagramBuilders diagramBuilderHelper) {
         this.viewBuilderHelper = viewBuilderHelper;
         this.diagramBuilderHelper = diagramBuilderHelper;
     }
@@ -43,7 +43,6 @@ public class EntityComponentToolProvider {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Operational Entity")
                 .iconURLsExpression("/icons/full/obj16/LogicalComponent.svg");
-
 
         return this.configureNewComponentNodeTool(nodeToolBuilder, cache, false);
     }
@@ -61,7 +60,7 @@ public class EntityComponentToolProvider {
 
         nodeToolBuilder.preconditionExpression(ServiceMethod.of0(TransverseQueryService::isNotComponentHumanActor).aqlSelf());
 
-        cache.getNodeDescription(EntityComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
+        cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
                     .expression(ServiceMethod.of1(OARepresentationMutationService::createEntityComponent).aqlSelf(String.valueOf(isActor)))

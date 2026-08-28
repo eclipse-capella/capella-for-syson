@@ -14,8 +14,10 @@ package org.eclipse.capella.model.services.operational.analysis;
 
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.InterfaceUsage;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 
 /**
  * Operational Analysis (OA) related mutation service.
@@ -43,4 +45,12 @@ public class OAMutationService {
         return componentExchange;
     }
 
+    public OccurrenceUsage createOperationalCapabilityOA(Element parent) {
+        var capability = this.transverseMutationService.createOperationalCapability(parent);
+        if (capability != null) {
+            long existingElementsCount = this.transverseQueryService.existingElementsCount(capability);
+            capability.setDeclaredName("OC " + existingElementsCount);
+        }
+        return capability;
+    }
 }

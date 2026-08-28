@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.label.services;
 
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_PORT;
@@ -110,6 +111,7 @@ public class CapellaImagePathsService {
     public Optional<String> getImageFromArcadiaType(ArcadiaEngineeringPerspective perspective, Element element, String arcadiaType) {
         String imageName = switch (arcadiaType) {
             case ARCADIA_COMPONENT, ARCADIA_FUNCTION -> this.computeElementNameWithArchitecture(perspective, arcadiaType, element).orElse(null);
+            case ARCADIA_CAPABILITY -> arcadiaType;
             case ARCADIA_COMPONENT_PORT -> "FlowPort";
             case ARCADIA_COMPONENT_EXCHANGE -> arcadiaType;
             case ARCADIA_FUNCTIONAL_EXCHANGE -> arcadiaType;
@@ -177,6 +179,14 @@ public class CapellaImagePathsService {
         if (ArcadiaEngineeringPerspective.LogicalArchitecture.equals(perspective)) {
             if (this.transverseQueryService.isComponentHumanActor(element)) {
                 componentType = LOGICAL + name + "Human";
+            } else if (this.transverseQueryService.isComponentActor(element)) {
+                componentType = LOGICAL + "Actor";
+            } else {
+                componentType = LOGICAL + name;
+            }
+        } else if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+            if (this.transverseQueryService.isComponentHumanActor(element)) {
+                componentType = LOGICAL + "ActorHuman";
             } else if (this.transverseQueryService.isComponentActor(element)) {
                 componentType = LOGICAL + "Actor";
             } else {
