@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
 import org.eclipse.sirius.components.core.api.IEditingContext;

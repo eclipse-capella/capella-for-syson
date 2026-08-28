@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer.services;
 
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.ChildCreationDescription;
 import org.eclipse.sirius.components.core.api.IEditServiceDelegate;

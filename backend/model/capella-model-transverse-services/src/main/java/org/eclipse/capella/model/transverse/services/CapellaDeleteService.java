@@ -11,7 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.capella.model.services;
+package org.eclipse.capella.model.transverse.services;
 
 import java.util.Collection;
 import java.util.HashSet;

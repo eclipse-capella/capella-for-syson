@@ -20,7 +20,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortToo
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionToolProvider;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

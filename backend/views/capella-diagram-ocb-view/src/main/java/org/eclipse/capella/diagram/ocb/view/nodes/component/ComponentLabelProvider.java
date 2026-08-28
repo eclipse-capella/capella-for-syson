@@ -12,9 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view.nodes.component;
 
+import java.util.Objects;
+
 import org.eclipse.capella.diagram.ocb.view.OCBViewConstants;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ConditionalInsideLabelStyle;
@@ -24,8 +25,7 @@ import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.InsideLabelStyle;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.LabelTextAlign;
-
-import java.util.Objects;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Label for Entity Component nodes.

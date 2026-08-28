@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.function;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;

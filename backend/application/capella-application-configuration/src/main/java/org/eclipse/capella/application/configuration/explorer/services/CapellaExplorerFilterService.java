@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFilterService;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sirius.components.core.api.IEditingContext;

@@ -19,7 +19,7 @@ import org.eclipse.capella.model.services.logical.architecture.LAMutationService
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.core.services.ObjectService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;

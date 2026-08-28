@@ -12,10 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.architecture;
 
+import com.tngtech.archunit.core.domain.JavaClasses;
+
 import org.eclipse.capella.tests.AbstractCapellaCodingRulesTests;
 import org.junit.jupiter.api.Test;
-
-import com.tngtech.archunit.core.domain.JavaClasses;
 
 /**
  * Coding rules tests.
@@ -32,6 +32,11 @@ public class CodingRulesTests extends AbstractCapellaCodingRulesTests {
     @Override
     protected JavaClasses getClasses() {
         return ArchitectureConstants.CLASSES;
+    }
+
+    @Override
+    protected JavaClasses getTestClasses() {
+        return ArchitectureConstants.TEST_CLASSES;
     }
 
     @Test

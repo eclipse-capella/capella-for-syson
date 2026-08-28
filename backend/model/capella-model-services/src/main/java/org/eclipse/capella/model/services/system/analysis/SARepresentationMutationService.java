@@ -12,9 +12,9 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
-import org.eclipse.capella.model.services.transverse.ArcadiaLibraryServices;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.ArcadiaLibraryServices;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;

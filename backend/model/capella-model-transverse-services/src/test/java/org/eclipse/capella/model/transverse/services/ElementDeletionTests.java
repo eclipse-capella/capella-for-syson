@@ -11,7 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.capella.model.services.transverse;
+package org.eclipse.capella.model.transverse.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author gdaniel
  */
-public class ElementDeletionTests extends AbstractSemanticTests {
+public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.AbstractSemanticTests {
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
 

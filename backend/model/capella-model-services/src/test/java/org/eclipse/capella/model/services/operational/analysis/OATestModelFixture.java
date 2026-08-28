@@ -12,8 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
-import org.eclipse.capella.model.services.transverse.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;

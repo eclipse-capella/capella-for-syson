@@ -18,7 +18,7 @@ import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.IReferencingElementsTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
 import org.eclipse.sirius.components.core.CoreImageConstants;

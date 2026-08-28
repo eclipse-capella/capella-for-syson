@@ -19,7 +19,7 @@ import java.util.Objects;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFragment;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerLabelService;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
 import org.eclipse.sirius.components.core.api.labels.StyledString;

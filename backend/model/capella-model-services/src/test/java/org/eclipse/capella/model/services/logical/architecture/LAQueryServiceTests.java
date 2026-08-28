@@ -13,14 +13,14 @@
 package org.eclipse.capella.model.services.logical.architecture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.FUNCTIONS_PACKAGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.REQUIREMENTS_PACKAGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.STRUCTURE_PACKAGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.FUNCTIONS_PACKAGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.REQUIREMENTS_PACKAGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STRUCTURE_PACKAGE;
 
 import java.util.List;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.EnumerationUsage;

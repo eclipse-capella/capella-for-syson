@@ -35,5 +35,6 @@
 		<module>capella-model-edit</module>
 		<module>capella-model-services</module>
 		<module>capella-arcadia-loader</module>
+		<module>capella-model-transverse-services</module>
 	</modules>
 </project>

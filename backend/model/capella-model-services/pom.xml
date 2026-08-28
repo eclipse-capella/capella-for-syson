@@ -40,6 +40,11 @@
 			<version>${sirius.web.version}</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.eclipse.capella</groupId>
+            <artifactId>capella-model-transverse-services</artifactId>
+            <version>2026.7.0</version>
+        </dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-tests</artifactId>

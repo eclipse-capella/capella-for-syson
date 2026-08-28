@@ -20,11 +20,11 @@ import org.eclipse.capella.model.services.system.analysis.SARepresentationDropSe
 import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationReconnectToolServices;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;

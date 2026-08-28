@@ -15,8 +15,8 @@ package org.eclipse.capella.model.services.system.analysis;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;

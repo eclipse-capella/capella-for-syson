@@ -11,7 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.capella.model.services.transverse;
+package org.eclipse.capella.tests.semantic;
 
 import org.eclipse.capella.tests.fixtures.CapellaModel;
 import org.eclipse.capella.tests.fixtures.SemanticDataTestFixture;

@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;

@@ -10,36 +10,46 @@
   Contributors:
       Obeo - initial API and implementation
 -->
-# Capella-model-services
 
-This module contains various services used in the project.
-Each service is self-contained and uses composition rather than inheritance to promote reuse and maintainability.
+# Capella Model
 
-## Guide to Using and Structuring Services
+This root module contains various model services used in the project.
 
-Services are organized in five layers, mirroring the four Arcadia layers plus a Transverse layer.
-Each layer exposes four services: Mutation, Query, RepresentationMutation, RepresentationQuery.
+- `capella-model-edit`: contains the icons used in the application to display Arcadia elements.
+- `capella-model-services`: contains Arcadia perspective-level services
+- `capella-model-transverse-services`: contains transverse services
 
-### Layers and Services
+## Guide to using and structuring services
 
-* Logical Architecture
+Before adding a new service or method, use the rules below to decide where it belongs.
+
+Each Arcadia perspective exposes four services: Mutation, Query, RepresentationMutation, RepresentationQuery.
+In addition, the `capella-model-transverse-services` module defines _transverse_ services which are used by several pieces of the application (e.g. several perspective, the explorer, etc).
+
+### Perspective and transverse services
+
+- Logical Architecture
   `LAMutationService`, `LAQueryService`, `LARepresentationMutationService`, `LARepresentationQueryService`
-* Operational Analysis
+- Operational Analysis
   `OAMutationService`, `OAQueryService`, `OARepresentationMutationService`, `OARepresentationQueryService`
-* Physical Architecture
+- Physical Architecture
   `PAMutationService`, `PAQueryService`, `PARepresentationMutationService`, `PARepresentationQueryService`
-* System Analysis
+- System Analysis
   `SAMutationService`, `SAQueryService`, `SARepresentationMutationService`, `SARepresentationQueryService`
-* Transverse
+- Transverse
   `TransverseMutationService`, `TransverseQueryService`, `TransverseRepresentationMutationService`, `TransverseRepresentationQueryService`
 
 ### Key considerations for adding methods
 
-* Layer specificity: does the method belong to a specific layer or is it transverse
-* Service requirements: do you need injected beans or the editing context
-  If yes, use a Representation service.
-  Non-representation services must keep an empty constructor and should not declare constructors with parameters.
-* Model modification: if it changes the model, use a Mutation service, otherwise a Query service
+- Perspective specificity: does the method belong to a specific perspective or is it transverse
+  - A service is transverse as soon as it is needed by more than one representation, for example, a creation service is typically used in a diagram but also in the explorer, or in the details view.
+- Service requirements: do you need injected beans, the editing context, or view-level objects (like diagram nodes)
+  - If yes, use a representation service, but make sure you separate the part of the code that needs to access graphical-level data from the part that operates on pure semantic elements (e.g. an edge creation service may require source/target nodes to compute its container, but the creation itself is a regular service).
+  - Non-representation services must keep an empty constructor and should not declare constructors with parameters.
+  - Note that representation services are harder to test, so they should only be used when strictly necessary.
+- Model modification: if the service changes the model, use a Mutation service, otherwise a Query service
+
+As a rule of thumb, new services should be considered transverse, non-representation services by default, and moved to a specific perspective or a representation service when necessary.
 
 ---
 
@@ -63,18 +73,19 @@ AQLUtils.getSelfServiceCallExpression("setNewValue",
 
 Benefits:
 
-* Refactoring friendly: IDE rename updates the method reference
-* Find usages and navigation work out of the box
-* Fewer string literals, fewer typos
-* Same AQL output as before
-* Compile errors when the Service class changes!
+- Refactoring friendly: IDE rename updates the method reference
+- Find usages and navigation work out of the box
+- Fewer string literals, fewer typos
+- Automated arity check
+- Same AQL output as before
+- Compile errors when the Service class changes!
 
 ### How it works
 
-* You pass a **serializable method reference** to `ServiceMethod.ofN(...)`
+- You pass a **serializable method reference** to `ServiceMethod.ofN(...)`
   The helper reads the method name from the lambda metadata and stores it.
-* You then build the AQL expression with `.aqlSelf(...)` or `.aql(var, ...)`
-* Parameters to `.aql*` are AQL snippets as strings, exactly like `AQLUtils` expects
+- You then build the AQL expression with `.aqlSelf(...)` or `.aql(var, ...)`
+- Parameters to `.aql*` are AQL snippets as strings, exactly like `AQLUtils` expects
 
 The helper is very small. It does not instantiate your service or invoke it. It only extracts the Java method name and delegates to `AQLUtils`.
 
@@ -161,19 +172,13 @@ ServiceMethod.of2(
 
 `ServiceMethod` mirrors the common `AQLUtils` shapes:
 
-* `.aqlSelf()` → `getSelfServiceCallExpression(serviceName)`
-* `.aqlSelf(p1, ..., pn)` → `getSelfServiceCallExpression(serviceName, List.of(...))`
-* `.aql(var)` → `getServiceCallExpression(var, serviceName)`
-* `.aql(var, p1, ..., pn)` → `getServiceCallExpression(var, serviceName, List.of(...))`
+- `.aqlSelf()` → `getSelfServiceCallExpression(serviceName)`
+- `.aqlSelf(p1, ..., pn)` → `getSelfServiceCallExpression(serviceName, List.of(...))`
+- `.aql(var)` → `getServiceCallExpression(var, serviceName)`
+- `.aql(var, p1, ..., pn)` → `getServiceCallExpression(var, serviceName, List.of(...))`
 
 ### Performance and constraints
 
-* Overhead is negligible at startup. The helper only reflects the lambda once to read the method name.
-* Works for unbound instance and static methods.
-* If you later persist the produced AQL strings into models, note that persisted strings will not be automatically refactored. You still gain safety in all Java call sites that build those strings.
-
-### Where to put the helper
-
-* Keep the `ServiceMethod` helper in a small shared utility module used by your view and form builders.
-* Do not introduce dependencies from it to your service implementations. It should depend only on `AQLUtils` and standard Java.
-
+- Overhead is negligible at startup. The helper only reflects the lambda once to read the method name.
+- Works for unbound instance and static methods.
+- If you later persist the produced AQL strings into models, note that persisted strings will not be automatically refactored. You still gain safety in all Java call sites that build those strings.

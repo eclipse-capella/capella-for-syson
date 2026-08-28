@@ -14,7 +14,7 @@ package org.eclipse.capella.application.configuration.details.view.semanticbrows
 
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.ICurrentElementTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;

@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.AllocationUsage;
 import org.eclipse.syson.sysml.Element;

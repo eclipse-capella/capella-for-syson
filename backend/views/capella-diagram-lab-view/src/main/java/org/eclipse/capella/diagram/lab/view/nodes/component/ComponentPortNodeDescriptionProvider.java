@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.lab.view.nodes.component;
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.common.view.nodes.ImageNodeStyleDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;

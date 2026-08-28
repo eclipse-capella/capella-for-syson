@@ -21,7 +21,7 @@ import org.eclipse.capella.application.configuration.explorer.services.api.ICape
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFragment;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerLabelService;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;

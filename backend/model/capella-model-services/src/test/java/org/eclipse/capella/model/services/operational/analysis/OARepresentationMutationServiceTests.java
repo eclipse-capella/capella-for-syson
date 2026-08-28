@@ -15,9 +15,9 @@ package org.eclipse.capella.model.services.operational.analysis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;

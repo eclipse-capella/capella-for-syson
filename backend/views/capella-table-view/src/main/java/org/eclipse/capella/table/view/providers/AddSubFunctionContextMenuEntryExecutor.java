@@ -15,7 +15,7 @@ package org.eclipse.capella.table.view.providers;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.collaborative.tables.api.IRowContextMenuEntryExecutor;
 import org.eclipse.sirius.components.core.api.IEditingContext;

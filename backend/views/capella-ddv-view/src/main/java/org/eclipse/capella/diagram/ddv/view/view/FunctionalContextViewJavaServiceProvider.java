@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.capella.model.services.functional.context.DDVQueryService;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.diagram.services.DiagramQueryElementService;

@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.syson.sysml.ActionUsage;
