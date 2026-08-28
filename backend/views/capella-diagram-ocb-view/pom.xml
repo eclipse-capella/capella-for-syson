@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (c) 2026 Obeo.
+ This program and the accompanying materials
+ are made available under the terms of the Eclipse Public License v2.0
+ which accompanies this distribution, and is available at
+ https://www.eclipse.org/legal/epl-2.0/
+
+ SPDX-License-Identifier: EPL-2.0
+
+ Contributors:
+     Obeo - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.eclipse.capella</groupId>
+        <artifactId>capella-parent</artifactId>
+        <version>2026.7.0</version>
+        <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
+    </parent>
+
+    <artifactId>capella-diagram-ocb-view</artifactId>
+	<name>capella-diagram-ocb-view</name>
+	<description>Capella diagram description of Operational Capability Blank View</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-application</artifactId>
+			<version>${syson.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-common-view</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-model-services</artifactId>
+			<version>2026.7.0</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>

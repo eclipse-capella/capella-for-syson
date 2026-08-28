@@ -203,6 +203,41 @@ VALUES (
                                         }
                                       ]
                                     }
+                                  },
+                                  {
+                                    "id": "c0e1fe7c-fc60-4da1-8ddb-93bceb930e09",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "8227da3f-64ed-4ff0-a705-2c0aca636b00",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "434d4d45-b436-4cf4-a105-907c89d5e251",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Capabilities",
+                                            "elementId": "c5f10243-5a76-4bc1-b81b-ceb7233b8c00",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "e386d33f-b5e9-4c91-8769-20991238fbd2",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "12f7b287-6a22-4363-a9a4-25c331b9a617",
+                                                  "importedNamespace": "bd7a2c78-ac97-435a-b2e6-3ebe097a0c7a"
+                                                }
+                                              },
+                                              {
+                                                "id": "4d19aec4-2d51-4708-af87-e97d71d2ede2",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "2ab5adb3-3973-4c95-92ea-6744bfb8af95",
+                                                  "importedNamespace": "2c0356db-7873-4418-9695-25d464cad4f8"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
                                   }
                                 ]
                               }
