@@ -13,6 +13,7 @@
 package org.eclipse.capella.model.services.transverse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,7 @@ import org.eclipse.syson.sysml.PartDefinition;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortDefinition;
 import org.eclipse.syson.sysml.PortUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelQueryElementService;
@@ -152,6 +154,24 @@ public class TransverseRepresentationReconnectToolServicesTests {
 
         assertEquals(newSourcePort, new TransverseQueryService().getFunctionalExchangeSource(functionalExchange));
         assertEquals(newTargetPort, new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange));
+    }
+
+    @Test
+    public void reconnectGeneralizationShouldUpdateTheReconnectedEndpointAndItsOwnership() {
+        var oldSpecific = SysmlFactory.eINSTANCE.createPartUsage();
+        var newSpecific = SysmlFactory.eINSTANCE.createPartUsage();
+        var oldGeneral = SysmlFactory.eINSTANCE.createPartUsage();
+        var newGeneral = SysmlFactory.eINSTANCE.createPartUsage();
+        var generalization = this.transverseMutationService.createGeneralization(oldSpecific, oldGeneral);
+
+        this.reconnectToolServices.reconnectGeneralization(generalization, newSpecific, oldSpecific);
+        this.reconnectToolServices.reconnectGeneralization(generalization, newGeneral, oldGeneral);
+
+        assertEquals(newSpecific, this.transverseQueryService.getGeneralizationSource(generalization));
+        assertEquals(newGeneral, this.transverseQueryService.getGeneralizationTarget(generalization));
+        assertEquals(newSpecific, generalization.getSpecific());
+        assertEquals(newGeneral, generalization.getGeneral());
+        assertTrue(newSpecific.getOwnedRelationship().contains(generalization));
     }
 
     private PortDefinition createArcadiaComponentPortType() {

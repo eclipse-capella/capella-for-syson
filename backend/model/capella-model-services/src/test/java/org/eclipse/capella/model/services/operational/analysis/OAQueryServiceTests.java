@@ -18,7 +18,10 @@ import static org.mockito.Mockito.mock;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
+import org.eclipse.capella.tests.fixtures.CapellaModel;
+import org.eclipse.capella.tests.fixtures.SemanticDataTestFixture;
 import org.eclipse.syson.sysml.InterfaceUsage;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
@@ -32,6 +35,8 @@ import org.junit.jupiter.api.Test;
  * @author fbarbin
  */
 public class OAQueryServiceTests {
+
+    private static final SemanticDataTestFixture SEMANTIC_DATA_TEST_FIXTURE = new SemanticDataTestFixture();
 
     private final OATestModelFixture fixture = new OATestModelFixture();
 
@@ -62,6 +67,15 @@ public class OAQueryServiceTests {
 
         assertThat(this.transverseQueryService.getSubComponents(oaPackages.operationalAnalysisPackage())).containsExactly(componentA);
         assertThat(this.transverseQueryService.getSubComponents(componentA)).containsExactly(nestedTypedComponent);
+    }
+
+    @Test
+    public void getCapabilitiesShouldReturnOperationalCapabilitiesFromTheCapabilitiesPackage() {
+        CapellaModel capellaModel = SEMANTIC_DATA_TEST_FIXTURE.createCapellaModel();
+        Package capabilitiesPackage = capellaModel.getOperationalAnalysisPerspective().getCapabilitiesPackage().getElement();
+        OccurrenceUsage capability = new OAMutationService().createOperationalCapability(capabilitiesPackage);
+
+        assertThat(this.oaQueryService.getCapabilities(capabilitiesPackage)).containsExactly(capability);
     }
 
     @Test
