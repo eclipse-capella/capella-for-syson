@@ -16,20 +16,18 @@ package org.eclipse.capella.diagram.ddv.view;
 import org.eclipse.capella.diagram.common.view.ColorProvider;
 import org.eclipse.capella.diagram.ddv.view.view.FunctionalContextViewDiagramDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.FunctionalContextViewJavaServiceProvider;
-import org.eclipse.capella.tests.diagrams.AbstractDiagramDescriptionTests;
+import org.eclipse.capella.tests.diagrams.AbstractReadOnlyDiagramDescriptionTests;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.junit.jupiter.api.Disabled;
 
 /**
  * Checks the structure of the Functional Context diagram.
  *
  * @author gdaniel
  */
-@Disabled
-public class FunctionalContextViewDiagramDescriptionTests extends AbstractDiagramDescriptionTests {
+public class FunctionalContextViewDiagramDescriptionTests extends AbstractReadOnlyDiagramDescriptionTests {
 
     @Override
     protected IColorProvider getColorProvider(View view) {
