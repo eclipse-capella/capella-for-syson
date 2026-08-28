@@ -13,8 +13,7 @@
 package org.eclipse.capella.diagram.ocb.view.nodes.component;
 
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.diagram.NodeToolBuilder;
@@ -23,6 +22,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide tools to create entity component node.

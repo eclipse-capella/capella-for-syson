@@ -14,9 +14,11 @@ package org.eclipse.capella.tests;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaCall;
+import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
 import com.tngtech.archunit.core.domain.JavaModifier;
+import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
@@ -24,13 +26,16 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.annotations.Builder;
 import org.eclipse.sirius.components.annotations.Immutable;
 import org.eclipse.sirius.components.tests.architecture.AbstractCodingRulesTests;
 import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -47,6 +52,12 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
             "org.eclipse.capella.model.services.physical.architecture");
 
     private static final String TRANSVERSE_SERVICE_PACKAGE = "org.eclipse.capella.model.services.transverse";
+
+    private static final String WHEN = "When";
+
+    private static final String SHOULD = "Should";
+
+    protected abstract JavaClasses getTestClasses();
 
     @Override
     public void noMethodsShouldBeStatic() {
@@ -183,6 +194,43 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     }
 
     /**
+     * Checks that semantic test methods follow the naming convention.
+     * <p>
+     * The naming convention is {@code <operation>[<operationContext][When<context>]Should<outcome>}. {@code operationContext} is usually used to add information on the operation being tested (e.g.
+     * {@code deleteComponentExchange} when the {@code delete} operation is tested on a component exchange). {@code When} is usually used to provide additional contextual information, (e.g.
+     * deleteComponentExchangeWhenPortHasOutDirection). A test should always end with a {@code Should} clause with an outcome.
+     * <p>
+     * {@code @DisplayName} annotation is not necessary since the method name has to be expressive. Duplicating the information in an annotation adds divergence risk while adding little value.
+     */
+    @Test
+    public void semanticTestMethodsShouldFollowNamingConvention() {
+        JavaClasses transverseServiceClasses = new ClassFileImporter().importPackages("org.eclipse.capella.model.transverse.services..");
+
+        Set<String> testableMethodNames = transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.TransverseMutationService")
+                .getMethods()
+                .stream()
+                .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
+                .map(JavaMethod::getName)
+                .collect(Collectors.toSet());
+
+        ArchRule rule = ArchRuleDefinition.methods()
+                .that()
+                .areDeclaredInClassesThat()
+                .areAssignableTo(AbstractSemanticTests.class)
+                .and()
+                .arePublic()
+                .and()
+                .areAnnotatedWith(Test.class)
+                .should(this.followNamingConvention(testableMethodNames))
+                .andShould()
+                .notBeAnnotatedWith(DisplayName.class)
+                .because("test method names should follow <operation>[When][<context>]Should<outcome> and should be used as their display names")
+                .allowEmptyShould(true);
+
+        rule.check(this.getTestClasses());
+    }
+
+    /**
      * Matches calls to the {@code delete} overloads and {@code deleteAll} on {@code EcoreUtil}.
      *
      * @return A predicate used to reject direct calls to EcoreUtil deletion methods
@@ -296,6 +344,43 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 return !(javaMethod.getRawReturnType().isAnnotatedWith(Builder.class) || javaMethod.getRawReturnType().getSimpleName().endsWith("Builder"));
             }
         };
+    }
+
+    private ArchCondition<JavaMethod> followNamingConvention(Set<String> testableMethodNames) {
+        return new ArchCondition<>("follow the test method naming convention") {
+            @Override
+            public void check(JavaMethod testMethod, ConditionEvents events) {
+                AbstractCapellaCodingRulesTests.this.findNamingViolation(testMethod.getName(), testableMethodNames)
+                        .ifPresent(message -> events.add(SimpleConditionEvent.violated(testMethod, testMethod.getFullName() + " " + message)));
+            }
+        };
+    }
+
+    private Optional<String> findNamingViolation(String testMethodName, Set<String> testableMethodNames) {
+        Optional<String> result = Optional.empty();
+        int shouldIndex = testMethodName.indexOf(SHOULD);
+        if (shouldIndex < 0) {
+            result = Optional.of("does not contain the mandatory Should clause");
+        } else if (shouldIndex == 0 || shouldIndex + SHOULD.length() == testMethodName.length()) {
+            result = Optional.of("must have an operation before Should and an outcome after it");
+        } else if (testMethodName.indexOf(SHOULD, shouldIndex + SHOULD.length()) >= 0) {
+            result = Optional.of("contains more than one Should clause");
+        } else {
+            boolean startsWithTestableMethodName = testableMethodNames.stream().anyMatch(testMethodName::startsWith);
+            if (!startsWithTestableMethodName) {
+                result = Optional.of("does not start with a public TransverseMutationService method name");
+            } else {
+                int whenIndex = testMethodName.indexOf(WHEN);
+                if (whenIndex > shouldIndex) {
+                    result = Optional.of("has a When clause after its Should clause");
+                } else if (whenIndex >= 0 && testMethodName.indexOf(WHEN, whenIndex + WHEN.length()) >= 0) {
+                    result = Optional.of("contains more than one When clause");
+                } else if (whenIndex >= 0 && whenIndex + WHEN.length() == shouldIndex) {
+                    result = Optional.of("has a When clause without a context");
+                }
+            }
+        }
+        return result;
     }
 
 }

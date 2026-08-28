@@ -11,7 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.capella.model.services;
+package org.eclipse.capella.model.transverse.services;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.syson.services.RelatedElementsSwitch;

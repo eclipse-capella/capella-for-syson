@@ -20,7 +20,7 @@ import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolPr
 import org.eclipse.capella.diagram.lab.view.edges.componentexchange.ComponentExchangeToolProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationDropServices;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

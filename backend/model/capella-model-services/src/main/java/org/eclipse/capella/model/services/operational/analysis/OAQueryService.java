@@ -12,12 +12,12 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import java.util.Optional;
+
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.PartUsage;
-
-import java.util.Optional;
 
 /**
  * Operational Analysis (OA) related query service. It is important to note that this service must retain its empty constructor and should not have constructors with parameters.

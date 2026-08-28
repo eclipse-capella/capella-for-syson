@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.sab.view.nodes.actor;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;

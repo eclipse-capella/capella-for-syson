@@ -23,7 +23,7 @@ import java.util.UUID;
 import org.eclipse.capella.application.configuration.explorer.CapellaExplorerTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.trees.api.ITreePathProvider;
 import org.eclipse.sirius.components.collaborative.trees.dto.TreePath;

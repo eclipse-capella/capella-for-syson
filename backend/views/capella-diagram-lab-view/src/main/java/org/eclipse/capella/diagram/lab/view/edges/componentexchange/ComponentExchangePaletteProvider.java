@@ -14,8 +14,8 @@ package org.eclipse.capella.diagram.lab.view.edges.componentexchange;
 
 import java.util.Objects;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;

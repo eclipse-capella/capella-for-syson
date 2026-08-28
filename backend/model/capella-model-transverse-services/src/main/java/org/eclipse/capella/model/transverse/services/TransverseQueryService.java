@@ -9,9 +9,8 @@
  *
  * Contributors:
  *     Obeo - initial API and implementation
- *     DB Netz AG - implementation
  *******************************************************************************/
-package org.eclipse.capella.model.services.transverse;
+package org.eclipse.capella.model.transverse.services;
 
 import java.util.ArrayList;
 import java.util.HashSet;

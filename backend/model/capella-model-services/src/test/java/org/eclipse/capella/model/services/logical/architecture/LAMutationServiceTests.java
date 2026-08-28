@@ -16,9 +16,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.eclipse.capella.model.services.transverse.AbstractSemanticTests;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;

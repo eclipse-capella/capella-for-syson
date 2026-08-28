@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;

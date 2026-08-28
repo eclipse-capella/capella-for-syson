@@ -34,6 +34,11 @@ public class CodingRulesTests extends AbstractCapellaCodingRulesTests {
         return ArchitectureConstants.CLASSES;
     }
 
+    @Override
+    protected JavaClasses getTestClasses() {
+        return ArchitectureConstants.TEST_CLASSES;
+    }
+
     @Test
     @Override
     public void noClassesShouldUseApacheCommons() {

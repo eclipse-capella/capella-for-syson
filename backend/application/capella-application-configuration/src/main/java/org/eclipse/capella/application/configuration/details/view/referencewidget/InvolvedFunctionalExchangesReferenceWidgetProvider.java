@@ -12,15 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
 
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;

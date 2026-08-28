@@ -12,18 +12,18 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_ACTOR;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_HUMAN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_HUMAN;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.transverse.ArcadiaLibraryServices;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
+import org.eclipse.capella.model.transverse.services.ArcadiaLibraryServices;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlFactory;

@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment;
 
 import java.util.Objects;
 
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;

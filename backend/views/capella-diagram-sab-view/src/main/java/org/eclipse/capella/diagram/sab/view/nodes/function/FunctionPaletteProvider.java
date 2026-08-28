@@ -17,7 +17,7 @@ import java.util.Objects;
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.sab.view.edges.functionalexchange.FunctionalExchangeToolProvider;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

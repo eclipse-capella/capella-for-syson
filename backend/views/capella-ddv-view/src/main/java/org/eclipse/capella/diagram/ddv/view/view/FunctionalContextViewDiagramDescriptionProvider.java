@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.capella.diagram.ddv.view.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.RootFunctionNodeDescriptionProvider;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;

@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.table.view.providers.CellIconURLsProvider;
 import org.eclipse.capella.table.view.providers.CellOptionIdProvider;
 import org.eclipse.capella.table.view.providers.CellOptionLabelProvider;

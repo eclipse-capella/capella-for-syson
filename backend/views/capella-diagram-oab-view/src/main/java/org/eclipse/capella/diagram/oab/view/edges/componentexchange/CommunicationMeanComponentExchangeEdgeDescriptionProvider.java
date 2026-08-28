@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.oab.view.edges.componentexchange;
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;

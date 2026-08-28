@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;

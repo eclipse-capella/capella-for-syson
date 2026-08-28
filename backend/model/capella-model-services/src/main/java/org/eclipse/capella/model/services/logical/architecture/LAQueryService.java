@@ -16,7 +16,7 @@ package org.eclipse.capella.model.services.logical.architecture;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.Annotation;
 import org.eclipse.syson.sysml.Comment;

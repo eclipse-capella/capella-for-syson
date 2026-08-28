@@ -10,21 +10,21 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.model.services.transverse;
+package org.eclipse.capella.model.transverse.services;
 
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_DESCRIPTION;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTION;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_ACTOR;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.MODELING_METADATA_STATUS_INFO;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.PATH_SEPARATOR;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.STATUS;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_DESCRIPTION;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTION;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.MODELING_METADATA_STATUS_INFO;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.PATH_SEPARATOR;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STATUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-import org.eclipse.capella.model.services.CapellaDeleteService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.sirius.components.core.api.IEditingContext;

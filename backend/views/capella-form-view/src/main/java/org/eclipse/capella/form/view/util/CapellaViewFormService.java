@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.transverse.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;

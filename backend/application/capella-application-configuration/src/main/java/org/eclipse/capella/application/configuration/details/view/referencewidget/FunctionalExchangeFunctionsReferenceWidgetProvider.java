@@ -15,7 +15,7 @@ package org.eclipse.capella.application.configuration.details.view.referencewidg
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;

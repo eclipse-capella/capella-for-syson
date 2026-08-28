@@ -33,7 +33,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.functionalchain.FunctionalChai
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDescriptionProvider;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.diagram.DeleteView;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;

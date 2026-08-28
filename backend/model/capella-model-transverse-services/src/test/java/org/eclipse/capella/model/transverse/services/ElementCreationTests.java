@@ -11,7 +11,7 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-package org.eclipse.capella.model.services.transverse;
+package org.eclipse.capella.model.transverse.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.tests.fixtures.FunctionsPackage;
+import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowUsage;

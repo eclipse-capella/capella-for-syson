@@ -27,7 +27,7 @@ import org.eclipse.capella.diagram.lab.view.nodes.packagenode.LABPackageNodeDesc
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.compartment.LABCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.compartment.LABCompartmentNodeDescriptionProvider;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.RepresentationDescription;

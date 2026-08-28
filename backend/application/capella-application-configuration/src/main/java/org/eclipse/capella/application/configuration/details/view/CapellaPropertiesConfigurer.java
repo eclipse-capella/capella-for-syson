@@ -12,14 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view;
 
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_ACTOR;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_IS_HUMAN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_HUMAN;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,8 +36,8 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.ICapellaReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionalExchangesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionsWidgetProvider;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;

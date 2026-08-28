@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.transverse.AbstractSemanticTests;
-import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.DiagramStyle;

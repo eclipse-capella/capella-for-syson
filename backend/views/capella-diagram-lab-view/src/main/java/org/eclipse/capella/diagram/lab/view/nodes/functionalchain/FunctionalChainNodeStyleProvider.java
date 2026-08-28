@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.lab.view.nodes.functionalchain;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
-import org.eclipse.capella.model.services.transverse.TransverseRepresentationQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;

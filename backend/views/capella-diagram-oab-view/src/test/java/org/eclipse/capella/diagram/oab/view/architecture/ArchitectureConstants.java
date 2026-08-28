@@ -30,6 +30,10 @@ public final class ArchitectureConstants {
             .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
             .importPackages(CAPELLA_DIAGRAM_OAB);
 
+    public static final JavaClasses TEST_CLASSES = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.ONLY_INCLUDE_TESTS)
+            .importPackages(CAPELLA_DIAGRAM_OAB);
+
     private ArchitectureConstants() {
         // Prevent instantiation
     }

@@ -19,7 +19,7 @@ import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescrip
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentNodeDescriptionProvider;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;

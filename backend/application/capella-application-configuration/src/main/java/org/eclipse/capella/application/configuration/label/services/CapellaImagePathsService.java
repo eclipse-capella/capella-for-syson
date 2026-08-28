@@ -13,24 +13,23 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.label.services;
 
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_CAPABILITY;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTION;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_REQUIREMENT;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_CAPABILITY;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTION;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_REQUIREMENT;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.services.transverse.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
@@ -71,11 +70,8 @@ public class CapellaImagePathsService {
 
     private final ILabelService labelService;
 
-    private final LAQueryService laQueryService;
-
     public CapellaImagePathsService(ILabelService labelService) {
         this.transverseQueryService = new TransverseQueryService();
-        this.laQueryService = new LAQueryService();
         this.labelService = Objects.requireNonNull(labelService);
     }
 

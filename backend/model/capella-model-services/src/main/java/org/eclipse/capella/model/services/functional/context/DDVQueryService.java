@@ -16,7 +16,7 @@ package org.eclipse.capella.model.services.functional.context;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
