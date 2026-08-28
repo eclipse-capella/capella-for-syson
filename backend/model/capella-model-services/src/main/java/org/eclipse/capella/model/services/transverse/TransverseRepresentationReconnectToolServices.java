@@ -32,6 +32,7 @@ import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 
 /**
@@ -156,5 +157,17 @@ public class TransverseRepresentationReconnectToolServices {
         }
 
         return newReconnectionTarget;
+    }
+
+    public Feature reconnectGeneralization(Subsetting generalization, Feature newTarget, Feature oldTarget) {
+        if (Objects.equals(generalization.getSubsettingFeature(), oldTarget)) {
+            generalization.setSubsettingFeature(newTarget);
+            generalization.setSpecific(newTarget);
+            newTarget.getOwnedRelationship().add(generalization);
+        } else if (Objects.equals(generalization.getSubsettedFeature(), oldTarget)) {
+            generalization.setSubsettedFeature(newTarget);
+            generalization.setGeneral(newTarget);
+        }
+        return newTarget;
     }
 }

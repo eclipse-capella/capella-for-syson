@@ -12,12 +12,20 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_CAPABILITY;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_PREFIX;
+
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.InterfaceUsage;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.PartUsage;
+import org.eclipse.syson.sysml.SysmlPackage;
 
 /**
  * Operational Analysis (OA) related query service. It is important to note that this service must retain its empty constructor and should not have constructors with parameters.
@@ -66,5 +74,20 @@ public class OAQueryService {
                 .filter(this.transverseQueryService::isComponent)
                 .map(PartUsage.class::cast)
                 .orElse(null);
+    }
+
+    public List<OccurrenceUsage> getCapabilities(EObject context) {
+        if (context instanceof Element element) {
+            var capabilitiesPackage = this.transverseQueryService.getCapabilitiesPackage(element);
+            if (capabilitiesPackage.isPresent()) {
+                return this.transverseQueryService.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getOccurrenceUsage()).stream()
+                        .filter(OccurrenceUsage.class::isInstance)
+                        .map(OccurrenceUsage.class::cast)
+                        .filter(this.transverseQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_CAPABILITY))
+                        .filter(capability -> Objects.equals(this.transverseQueryService.getCapabilitiesPackage(capability), capabilitiesPackage))
+                        .toList();
+            }
+        }
+        return List.of();
     }
 }

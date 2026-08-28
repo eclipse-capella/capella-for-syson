@@ -64,6 +64,7 @@ import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.Redefinition;
 import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
@@ -121,6 +122,16 @@ public class TransverseMutationService {
                 });
         descriptionDoc.setBody(newDescription);
         return element;
+    }
+
+    public Subsetting createGeneralization(Feature specific, Feature general) {
+        var generalization = SysmlFactory.eINSTANCE.createSubsetting();
+        generalization.setSubsettingFeature(specific);
+        generalization.setSubsettedFeature(general);
+        generalization.setSpecific(specific);
+        generalization.setGeneral(general);
+        specific.getOwnedRelationship().add(generalization);
+        return generalization;
     }
 
     public Usage setBooleanAttribute(Usage usage, String prefix, String attributeName, boolean newValue) {

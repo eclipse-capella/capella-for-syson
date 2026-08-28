@@ -27,6 +27,7 @@ import org.eclipse.syson.sysml.Usage;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTION;
 import static org.eclipse.capella.model.services.transverse.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
@@ -89,8 +90,12 @@ public class LibraryServices {
         this.typeWithArcadiaLibrary(requirementUsage, ARCADIA_REQUIREMENT, SysmlPackage.eINSTANCE.getRequirementDefinition());
     }
 
+    public void typeWithArcadiaCapability(Usage usage) {
+        this.typeWithArcadiaLibrary(usage, ARCADIA_CAPABILITY, SysmlPackage.eINSTANCE.getOccurrenceDefinition());
+    }
+
     public void typeWithArcadiaLibrary(Usage usage, String arcadiaTypeName, EClass librarySysMLElementType) {
-        typeWithLibrary(usage, ARCADIA_PREFIX + arcadiaTypeName, librarySysMLElementType);
+        this.typeWithLibrary(usage, ARCADIA_PREFIX + arcadiaTypeName, librarySysMLElementType);
     }
 
     public void typeWithLibrary(Usage usage, String typeQualifiedName, EClass librarySysMLElementType) {

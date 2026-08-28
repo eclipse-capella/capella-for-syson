@@ -56,6 +56,7 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.OperatorExpression;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PerformActionUsage;
@@ -64,6 +65,7 @@ import org.eclipse.syson.sysml.Redefinition;
 import org.eclipse.syson.sysml.ReferenceSubsetting;
 import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
 import org.eclipse.syson.sysml.VariantMembership;
@@ -82,6 +84,8 @@ public class TransverseQueryService {
 
     public static final String ARCADIA_COMPONENT = "Component";
 
+    public static final String ARCADIA_CAPABILITY = "Capability";
+
     public static final String ARCADIA_ACTOR = "Actor";
 
     public static final String ARCADIA_FUNCTION = "Function";
@@ -98,6 +102,8 @@ public class TransverseQueryService {
 
     public static final String ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES = "involvedFunctionalExchanges";
 
+    public static final String ARCADIA_INVOLVED_COMPONENTS = "involvedComponents";
+
     public static final String ARCADIA_REQUIREMENT = "ArcadiaRequirement";
 
     public static final String ARCADIA_IS_ACTOR = "isActor";
@@ -113,6 +119,8 @@ public class TransverseQueryService {
     public static final String FUNCTIONS_PACKAGE = "Functions";
 
     public static final String REQUIREMENTS_PACKAGE = "Requirements";
+
+    public static final String CAPABILITIES_PACKAGE = "Capabilities";
 
     public static final String STATUS = "status";
 
@@ -358,6 +366,11 @@ public class TransverseQueryService {
             return this.checkType(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT);
         }
         return false;
+    }
+
+    public Boolean isCapability(EObject eObject) {
+        return eObject instanceof OccurrenceUsage occurrenceUsage
+                && this.checkType(occurrenceUsage, ARCADIA_PREFIX + ARCADIA_CAPABILITY);
     }
 
     public Boolean isComponentExchange(EObject eObject) {
@@ -756,12 +769,34 @@ public class TransverseQueryService {
                 .toList();
     }
 
+    public List<PartUsage> getInvolvedComponents(Usage capability) {
+        return this.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).stream()
+                .filter(this::isComponentActor)
+                .map(PartUsage.class::cast)
+                .toList();
+    }
+
+    public List<Subsetting> getGeneralizations(EObject context) {
+        return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getSubsetting()).stream()
+                .filter(Subsetting.class::isInstance)
+                .map(Subsetting.class::cast)
+                .toList();
+    }
+
+    public Feature getGeneralizationSource(Subsetting generalization) {
+        return generalization.getSubsettingFeature();
+    }
+
+    public Feature getGeneralizationTarget(Subsetting generalization) {
+        return generalization.getSubsettedFeature();
+    }
+
     public List<AllocationUsage> getDescribes(EObject eObject) {
         var allAllocationUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getAllocationUsage());
         return allAllocationUsage.stream()
                 .filter(AllocationUsage.class::isInstance)
                 .map(AllocationUsage.class::cast)
-                .filter(allocationUsage -> this.isRequirement(this.getDescribesSource(allocationUsage)))
+                .filter(this::isDescribes)
                 .toList();
     }
 
@@ -877,8 +912,9 @@ public class TransverseQueryService {
 
     public boolean isDescribes(Object eObject) {
         if (eObject instanceof AllocationUsage allocationUsage) {
-            return allocationUsage.getSource().stream()
-                    .anyMatch(source -> Objects.equals(this.getArcadiaType(source).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(""), ARCADIA_REQUIREMENT));
+            Element source = this.getDescribesSource(allocationUsage);
+            Element target = this.getDescribesTarget(allocationUsage);
+            return this.isRequirement(source) && target != null && !Objects.equals(source, target);
         }
         return false;
     }
@@ -917,6 +953,10 @@ public class TransverseQueryService {
 
     public Optional<Package> getRequirementsPackage(Element element) {
         return this.getArcadiaPerspectiveOwnedPackage(element, REQUIREMENTS_PACKAGE);
+    }
+
+    public Optional<Package> getCapabilitiesPackage(Element element) {
+        return this.getArcadiaPerspectiveOwnedPackage(element, CAPABILITIES_PACKAGE);
     }
 
     /**
