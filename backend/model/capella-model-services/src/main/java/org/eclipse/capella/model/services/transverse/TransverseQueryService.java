@@ -110,6 +110,8 @@ public class TransverseQueryService {
 
     public static final String STRUCTURE_PACKAGE = "Structure";
 
+    public static final String CAPABILITIES_PACKAGE = "Capabilities";
+
     public static final String FUNCTIONS_PACKAGE = "Functions";
 
     public static final String REQUIREMENTS_PACKAGE = "Requirements";
@@ -419,6 +421,18 @@ public class TransverseQueryService {
     public boolean isStructurePackage(Object element) {
         return element instanceof Package packageElt
                 && STRUCTURE_PACKAGE.equals(packageElt.getDeclaredName());
+    }
+
+    public boolean isOperationalAnalysisPerspective(Element element) {
+        return this.getArcadiaPerspective(element)
+                        .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
+                        .isPresent();
+    }
+
+    public boolean isOperationalAnalysisCapabilitiesPackage(Object element) {
+        return element instanceof Package packageElt
+                && CAPABILITIES_PACKAGE.equals(packageElt.getDeclaredName())
+                && this.isOperationalAnalysisPerspective(packageElt);
     }
 
     public boolean isFunctionsPackage(Object element) {
