@@ -20,6 +20,7 @@ import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeD
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
@@ -58,7 +59,7 @@ public class OABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
 
-        var cache = new ViewDiagramElementFinder();
+        var cache = new DefaultViewDiagramElementFinder();
         var diagramElementDescriptionProviders = List.of(
                 new EntityComponentNodeDescriptionProvider(colorProvider),
                 new CommunicationMeanComponentExchangeEdgeDescriptionProvider(colorProvider),
