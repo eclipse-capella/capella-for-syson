@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.diagram.ocb.view.edges.componentexchange.CommunicationMeanComponentExchangeToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -79,6 +80,7 @@ public class ComponentPaletteProvider {
                 .nodeTools(
                         new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewEntityComponentNodeTool(cache),
                         new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewActorComponentNodeTool(cache))
+                .edgeTools(new CommunicationMeanComponentExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentExchangeTool(cache))
                 .toolSections(this.defaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
     }

@@ -16,12 +16,14 @@ import java.util.List;
 
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
+import org.eclipse.capella.model.services.operational.analysis.OAReconnectToolServices;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.capella.model.services.transverse.TransverseRepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
@@ -53,10 +55,12 @@ public class OCBViewJavaServiceProvider implements IJavaServiceProvider {
         if (optDescription.isPresent()) {
             return List.of(LabelService.class,
                     OAQueryService.class,
+                    OAReconnectToolServices.class,
                     OARepresentationDropServices.class,
                     OAMutationService.class,
                     OARepresentationQueryService.class,
                     OARepresentationMutationService.class,
+                    TransverseRepresentationReconnectToolServices.class,
                     TransverseMutationService.class,
                     TransverseQueryService.class,
                     TransverseRepresentationMutationService.class,

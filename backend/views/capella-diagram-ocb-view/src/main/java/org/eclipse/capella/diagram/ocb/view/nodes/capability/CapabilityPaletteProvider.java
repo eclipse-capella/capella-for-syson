@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.ocb.view.nodes.capability;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.diagram.ocb.view.edges.generalization.GeneralizationToolProvider;
+import org.eclipse.capella.diagram.ocb.view.edges.involvement.InvolvementToolProvider;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -62,6 +64,8 @@ public class CapabilityPaletteProvider {
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
+                .edgeTools(new InvolvementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInvolvementTool(cache),
+                        new GeneralizationToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewGeneralizationTool(cache))
                 .toolSections(new DefaultToolsFactory().createDefaultHideRevealNodeToolSection())
                 .build();
     }
