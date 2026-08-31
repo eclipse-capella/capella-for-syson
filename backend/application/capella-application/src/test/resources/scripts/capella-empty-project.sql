@@ -1,33 +1,42 @@
-INSERT INTO semantic_data (id, created_on, last_modified_on)
-VALUES ('a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006', '2026-01-01 00:00:00+00', '2026-01-01 00:00:00+00');
+INSERT INTO semantic_data (
+  id,
+  created_on,
+  last_modified_on
+) VALUES (
+  'a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006',
+  '2026-01-01 00:00:00+00',
+  '2026-01-01 00:00:00+00'
+);
 
-INSERT INTO semantic_data_domain (semantic_data_id, uri)
-VALUES ('a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006', 'http://www.eclipse.org/syson/sysml');
+INSERT INTO semantic_data_domain (
+  semantic_data_id, uri
+) VALUES (
+  'a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006',
+  'http://www.eclipse.org/syson/sysml'
+);
 
-INSERT INTO document (id, semantic_data_id, name, content, is_read_only, created_on, last_modified_on)
-VALUES (
-    'fd17cf24-44c0-4770-a4c0-f9445b77f124',
-    'a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006',
-    'Capella.sysml',
-    $$
+INSERT INTO document (
+  id,
+  semantic_data_id,
+  name,
+  content,
+  is_read_only,
+  created_on,
+  last_modified_on
+) VALUES (
+  'fd17cf24-44c0-4770-a4c0-f9445b77f124',
+  'a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006',
+  'Capella.sysml',
+  $$
 {
-  "json": {
-    "version": "1.0",
-    "encoding": "utf-8"
-  },
-  "ns": {
-    "sysml": "http://www.eclipse.org/syson/sysml"
-  },
+  "json": { "version": "1.0", "encoding": "utf-8" },
+  "ns": { "sysml": "http://www.eclipse.org/syson/sysml" },
   "content": [
     {
       "id": "1e1105b6-7cd3-4679-9fb4-0f6659f82cb8",
       "eClass": "sysml:Namespace",
       "data": {
-        "eAnnotations": [
-          {
-            "source": "org.eclipse.syson.sysml.imported"
-          }
-        ],
+        "eAnnotations": [{ "source": "org.eclipse.syson.sysml.imported" }],
         "elementId": "5ffd10fa-8153-4f16-9bac-b00a2a9c9d2c",
         "ownedRelationship": [
           {
@@ -40,6 +49,8 @@ VALUES (
                   "id": "5dc36abf-abaa-415d-8781-ddf29777da33",
                   "eClass": "sysml:OccurrenceDefinition",
                   "data": {
+                    "declaredName": "My Model Name",
+                    "declaredShortName": "My_Model_Short_Name",
                     "elementId": "b18b805b-2cc4-4a81-86ae-d61c6543be64",
                     "ownedRelationship": [
                       {
@@ -167,35 +178,156 @@ VALUES (
                               "eClass": "sysml:Package",
                               "data": {
                                 "declaredName": "Operational Analysis",
+                                "declaredShortName": "OA",
                                 "elementId": "73b91e49-f69f-4296-a084-211317c58665",
                                 "ownedRelationship": [
                                   {
-                                    "id": "f2852617-ec21-4788-a681-db0506dc929e",
+                                    "id": "d08878b0-57c8-4d57-955e-1b7ff7b3efe8",
                                     "eClass": "sysml:OwningMembership",
                                     "data": {
-                                      "elementId": "afdaa18e-5e91-451c-b8ae-8c45f9d59b62",
+                                      "elementId": "32dddd78-db46-4da8-8810-31733b897ac4",
                                       "ownedRelatedElement": [
                                         {
-                                          "id": "2c0356db-7873-4418-9695-25d464cad4f8",
-                                          "eClass": "sysml:Package",
+                                          "id": "a20d46b2-8f2d-4ca7-bcce-204ab841b413",
+                                          "eClass": "sysml:MetadataUsage",
                                           "data": {
-                                            "declaredName": "Structure",
-                                            "elementId": "e01b6b39-576a-4ee8-9f00-f6debb68c991",
+                                            "elementId": "549975c6-dcc2-40ec-a887-7f68728eca13",
                                             "ownedRelationship": [
                                               {
-                                                "id": "48f5b1d3-3dd3-4e7c-9670-32561553ce00",
-                                                "eClass": "sysml:NamespaceImport",
+                                                "id": "7c888950-b583-4ab3-8206-7c64888fa170",
+                                                "eClass": "sysml:FeatureMembership",
                                                 "data": {
-                                                  "elementId": "16924b68-236c-4d4b-bb13-c1904fdcfaa7",
-                                                  "importedNamespace": "bd7a2c78-ac97-435a-b2e6-3ebe097a0c7a"
+                                                  "elementId": "e83e4544-a0c2-4405-8dc3-8dec51aebd52",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "8555f2cc-709d-4b10-925f-2a25840f61a0",
+                                                      "eClass": "sysml:ReferenceUsage",
+                                                      "data": {
+                                                        "elementId": "8f7d6d7b-e11a-4303-a36e-037c6676292b",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "9bfd3d9f-7fee-4fbf-963e-e5434de96f44",
+                                                            "eClass": "sysml:FeatureValue",
+                                                            "data": {
+                                                              "elementId": "ee520bf7-a796-4c7c-8b39-e89ca755aebe",
+                                                              "ownedRelatedElement": [
+                                                                {
+                                                                  "id": "6afebd4c-ca8c-4f92-ad0e-90afb386f19c",
+                                                                  "eClass": "sysml:FeatureReferenceExpression",
+                                                                  "data": {
+                                                                    "elementId": "8ce12c3d-8104-4b78-a7f6-fa8305cf0c5f",
+                                                                    "ownedRelationship": [
+                                                                      {
+                                                                        "id": "966d9749-b852-493f-803c-6a3881dfdab7",
+                                                                        "eClass": "sysml:Membership",
+                                                                        "data": {
+                                                                          "elementId": "adcae55e-c880-48e8-b358-57f15f8846e6",
+                                                                          "memberElement": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#b7a146f6-6762-41c6-80ce-c273e9f4874b"
+                                                                        }
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          {
+                                                            "id": "4c64127f-f50a-4c6d-9690-10a3c7afcb6d",
+                                                            "eClass": "sysml:Redefinition",
+                                                            "data": {
+                                                              "elementId": "c2872ef6-8775-4c2f-bf63-b1cb64e71100",
+                                                              "redefinedFeature": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#e69df7d5-61e8-4c22-8d6f-ac0442947b7c",
+                                                              "redefiningFeature": "8555f2cc-709d-4b10-925f-2a25840f61a0"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
                                                 }
                                               },
                                               {
-                                                "id": "f243de7f-dd5e-4745-b944-139a1a1c1fc7",
+                                                "id": "61c2768e-e50b-433d-9d75-9ba73e7345ac",
+                                                "eClass": "sysml:FeatureTyping",
+                                                "data": {
+                                                  "elementId": "349dee4d-ae59-41a4-ba53-83a05490f5fa",
+                                                  "type": "sysml:MetadataDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#37a6850e-bec4-483c-9e4c-dd46d8bb9e9c",
+                                                  "typedFeature": "a20d46b2-8f2d-4ca7-bcce-204ab841b413"
+                                                }
+                                              }
+                                            ],
+                                            "isComposite": true
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "fce167d8-d695-4a62-a381-2dbd712177dd",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "ea9ed550-75b5-4ee9-a8ee-8c600514de26",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "b8b29917-f823-43f5-9d08-ca0b6d049e28",
+                                          "eClass": "sysml:Documentation",
+                                          "data": {
+                                            "elementId": "8ded8d67-9b6b-4a58-a7b5-7182748d7cd3",
+                                            "body": "Defines the operational view of the system context and stakeholder needs.\r\n\t\tCaptures missions, actors, and activities without technical constraints.\r\n\t\tServes as the foundation for deriving system-level requirements."
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "fb56a24a-d6fd-4cdb-bc20-7a126aad099c",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "ee276d75-f7ad-4d9a-898f-da22e661fd04",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "bd7a2c78-ac97-435a-b2e6-3ebe097a0c7a",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Functions",
+                                            "elementId": "58586daa-9b80-41f7-93b8-58c19fa1ee07",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "6bc37a7d-61f2-4d2c-bd00-ef70dad19003",
                                                 "eClass": "sysml:NamespaceImport",
                                                 "data": {
-                                                  "elementId": "1408a9c7-f1b0-4f96-b644-590cb251cb4b",
+                                                  "elementId": "64b4ad6a-842b-4897-95ae-6711fa5e004e",
                                                   "importedNamespace": "ab142a11-730e-4149-a710-c21dd724721e"
+                                                }
+                                              },
+                                              {
+                                                "id": "92532a05-abee-4d5e-89f5-7d84b65c814d",
+                                                "eClass": "sysml:OwningMembership",
+                                                "data": {
+                                                  "elementId": "4a1976d6-9e35-482c-84fc-36227d777870",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "e436545f-4d78-43e7-b408-3eee96b1c280",
+                                                      "eClass": "sysml:ActionUsage",
+                                                      "data": {
+                                                        "declaredName": "Root Function",
+                                                        "elementId": "988d2d31-3444-4e8b-815e-86872d8ac61d",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "47e517f0-3772-41bb-bd59-da0e457fc8ac",
+                                                            "eClass": "sysml:FeatureTyping",
+                                                            "data": {
+                                                              "elementId": "5e40fd77-cd9a-4ea4-95f6-9ec948e818aa",
+                                                              "type": "sysml:ActionDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#60271a26-38b2-403c-b6b8-166ec135979d",
+                                                              "typedFeature": "e436545f-4d78-43e7-b408-3eee96b1c280"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
                                                 }
                                               }
                                             ]
@@ -238,6 +370,92 @@ VALUES (
                                         }
                                       ]
                                     }
+                                  },
+                                  {
+                                    "id": "668c17aa-0367-4354-8688-2a69cb347974",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "3f4d9ab1-9444-439d-8355-b4727983979c",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "279b2cf1-d349-4cf1-819c-ac3073251da0",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Interfaces",
+                                            "elementId": "bf9adad3-df4b-4438-8c6b-d932b5fb6c09"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "4529b013-dd07-4695-b4d6-7c53c6a88334",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "dac56edd-ae9a-4e91-8c38-89632eebf505",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "ab142a11-730e-4149-a710-c21dd724721e",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Data",
+                                            "elementId": "605b6f63-d8f8-4041-9438-749184f23920"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "f2852617-ec21-4788-a681-db0506dc929e",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "afdaa18e-5e91-451c-b8ae-8c45f9d59b62",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "2c0356db-7873-4418-9695-25d464cad4f8",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Structure",
+                                            "elementId": "e01b6b39-576a-4ee8-9f00-f6debb68c991",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "48f5b1d3-3dd3-4e7c-9670-32561553ce00",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "16924b68-236c-4d4b-bb13-c1904fdcfaa7",
+                                                  "importedNamespace": "bd7a2c78-ac97-435a-b2e6-3ebe097a0c7a"
+                                                }
+                                              },
+                                              {
+                                                "id": "f243de7f-dd5e-4745-b944-139a1a1c1fc7",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "1408a9c7-f1b0-4f96-b644-590cb251cb4b",
+                                                  "importedNamespace": "ab142a11-730e-4149-a710-c21dd724721e"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "780d0155-53d6-4aa4-8546-001edc9ec8b1",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "00e345fe-1ac1-4fa1-8a31-0b4fbf99d5e1",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "d8c11283-d2ca-4de1-a277-5bc643599210",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Requirements",
+                                            "elementId": "5acc96fc-b201-4528-a8e2-3f85432872a3"
+                                          }
+                                        }
+                                      ]
+                                    }
                                   }
                                 ]
                               }
@@ -256,8 +474,233 @@ VALUES (
                               "eClass": "sysml:Package",
                               "data": {
                                 "declaredName": "System Analysis",
+                                "declaredShortName": "SA",
                                 "elementId": "e57e947c-449c-4ac3-b711-4d869abbd2e0",
                                 "ownedRelationship": [
+                                  {
+                                    "id": "46825f68-194e-4a1f-b70c-1b6e033b58e9",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "6a353907-de8c-4844-82b9-f408cd3e9842",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "c335349a-6702-47e6-9664-9fbca998b438",
+                                          "eClass": "sysml:MetadataUsage",
+                                          "data": {
+                                            "elementId": "782763ff-e568-47f1-b933-587a3609de7b",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "8c25e1d1-45b8-493d-b9b0-5b8e24db4fd8",
+                                                "eClass": "sysml:FeatureMembership",
+                                                "data": {
+                                                  "elementId": "7cc07853-6f2b-4bc9-91da-eaf88bc457c5",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "0fb495bf-287c-462c-b2ed-1596fae91d7b",
+                                                      "eClass": "sysml:ReferenceUsage",
+                                                      "data": {
+                                                        "elementId": "7482eeb6-c55e-498c-b6fe-1ace3fcc111f",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "0a9ff6ae-7344-450e-82e2-3fec4aea54b5",
+                                                            "eClass": "sysml:FeatureValue",
+                                                            "data": {
+                                                              "elementId": "f0ec8c5a-32d5-45b5-be56-fb797540688d",
+                                                              "ownedRelatedElement": [
+                                                                {
+                                                                  "id": "86f01f3d-0e27-4b2c-8029-b176e09d71ff",
+                                                                  "eClass": "sysml:FeatureReferenceExpression",
+                                                                  "data": {
+                                                                    "elementId": "c4cee0ff-ec4d-44f4-ac86-373d52ce5c71",
+                                                                    "ownedRelationship": [
+                                                                      {
+                                                                        "id": "c8e3db4f-557f-446a-8e1d-ab6dda0981e8",
+                                                                        "eClass": "sysml:Membership",
+                                                                        "data": {
+                                                                          "elementId": "f2f9914e-b050-466e-898f-8765ca6eacb8",
+                                                                          "memberElement": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#ddef19be-3df8-4a32-b6e0-013b26a205c6"
+                                                                        }
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          {
+                                                            "id": "d6e7f8c6-5ded-4ffc-8a78-7a1a8372941f",
+                                                            "eClass": "sysml:Redefinition",
+                                                            "data": {
+                                                              "elementId": "b5fc0e0a-0bf9-4dd7-a8f1-bc0c60c9e2bb",
+                                                              "redefinedFeature": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#e69df7d5-61e8-4c22-8d6f-ac0442947b7c",
+                                                              "redefiningFeature": "0fb495bf-287c-462c-b2ed-1596fae91d7b"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "id": "c3f1a357-5f5a-40c4-b980-2fe8e2acfa5e",
+                                                "eClass": "sysml:FeatureTyping",
+                                                "data": {
+                                                  "elementId": "441209d9-9968-4b84-b00d-bd228529b927",
+                                                  "type": "sysml:MetadataDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#37a6850e-bec4-483c-9e4c-dd46d8bb9e9c",
+                                                  "typedFeature": "c335349a-6702-47e6-9664-9fbca998b438"
+                                                }
+                                              }
+                                            ],
+                                            "isComposite": true
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "18311868-7128-420c-983c-ad57628ee839",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "8ef9a7b8-425a-48e4-829e-f852dc12d78b",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "51f9d8e7-ce3a-4ab9-b738-cd39d521f1b0",
+                                          "eClass": "sysml:Documentation",
+                                          "data": {
+                                            "elementId": "d4967973-93d7-4f19-a361-6499787d6e92",
+                                            "body": "Defines the system’s intended behavior and responsibilities in response to stakeholder needs.\r\n\t\tDescribes system functions, interfaces, and interactions, independently from implementation choices.\r\n\t\tServes as a basis for the logical architecture."
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "e12ce859-08c1-41c6-8a21-97a8be562a7d",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "b304f794-4aa9-4f7e-a246-0ad4b5f9732a",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "26905e9d-f33c-47a3-aebc-190b26038410",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Functions",
+                                            "elementId": "a9a11503-2c97-4587-a2a7-0db5a8fdfea1",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "5d4ea7e7-61bc-4130-9b32-a1b75f56d0b9",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "f4fc6bbf-09d7-4c9d-8bad-55944ae0f13f",
+                                                  "importedNamespace": "55340c06-26de-415e-8e3a-db31dcf8ff03"
+                                                }
+                                              },
+                                              {
+                                                "id": "df2a500d-62b3-4b2e-8bdd-dc64480f995e",
+                                                "eClass": "sysml:OwningMembership",
+                                                "data": {
+                                                  "elementId": "87b84e08-1a6d-4d8c-b31d-2107684b4382",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "73762e72-d040-4cfe-b447-889df9131a41",
+                                                      "eClass": "sysml:ActionUsage",
+                                                      "data": {
+                                                        "declaredName": "Root Function",
+                                                        "elementId": "8737cbcf-1b91-412c-b06d-de0765f3a810",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "0cc7e519-8b72-4e7d-983d-aa41b0365401",
+                                                            "eClass": "sysml:FeatureTyping",
+                                                            "data": {
+                                                              "elementId": "8f4fbf28-28d1-4de7-ae6f-4cc1be0b8ea7",
+                                                              "type": "sysml:ActionDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#60271a26-38b2-403c-b6b8-166ec135979d",
+                                                              "typedFeature": "73762e72-d040-4cfe-b447-889df9131a41"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "2189242c-4a3f-4461-a69d-1e70321657d4",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "dcbe3cbb-9b0e-4b30-9fc3-4f200ea0d41a",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "55ba4593-76b1-4efd-bcc2-ac3dde43da3c",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Capabilities",
+                                            "elementId": "85982c02-5d63-4034-8e4e-47df5af17cfe",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "c92f981e-e299-4042-8426-2bff44f6b88a",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "8f2f36a5-be52-4d81-9f53-1ed7b30ffe9d",
+                                                  "importedNamespace": "26905e9d-f33c-47a3-aebc-190b26038410"
+                                                }
+                                              },
+                                              {
+                                                "id": "c3fca4d7-4c09-4865-aff6-51c620493f9a",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "55d04acd-faf9-4038-b844-89761c814abe",
+                                                  "importedNamespace": "a00fc07c-bc6e-499b-ac3d-f2598ab505f0"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "8b9e4280-7ba9-4a62-bc3d-f72a80e85bd0",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "46ecf9b0-ae12-4218-819b-36c096f2801c",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "1b92b4dc-1558-4077-9662-78db81a01dc9",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Interfaces",
+                                            "elementId": "6929647b-faca-4de7-bef7-601fff63c36f"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "091740d5-0547-42d3-919c-d95502ca4071",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "145e3d36-c6cd-4495-8a84-9ce9b06b0717",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "55340c06-26de-415e-8e3a-db31dcf8ff03",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Data",
+                                            "elementId": "c996963f-f0c3-4adc-8bb0-fc72ca754a6f"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
                                   {
                                     "id": "943fe0cc-9247-4432-a319-a4eaaeefe177",
                                     "eClass": "sysml:OwningMembership",
@@ -321,6 +764,23 @@ VALUES (
                                         }
                                       ]
                                     }
+                                  },
+                                  {
+                                    "id": "2638cb4c-4641-4256-958a-612bf7288104",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "aa3da30b-d956-48a9-b673-c91ab74d9dad",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "0300093e-a6c4-4d1f-b7b4-303f3e29d77c",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Requirements",
+                                            "elementId": "32e601f8-8d9c-44d7-b35d-3a21453e843d"
+                                          }
+                                        }
+                                      ]
+                                    }
                                   }
                                 ]
                               }
@@ -339,8 +799,233 @@ VALUES (
                               "eClass": "sysml:Package",
                               "data": {
                                 "declaredName": "Logical Architecture",
+                                "declaredShortName": "LA",
                                 "elementId": "8b4627fb-e17a-46ff-b26b-f89c08dc0f95",
                                 "ownedRelationship": [
+                                  {
+                                    "id": "94c5d6ed-2549-4c94-8073-426221169286",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "c32ba3fe-941e-49d9-a8ef-af17ff4baaa9",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "5c4d9acf-f6fd-4b9a-97f9-53d3b69845d4",
+                                          "eClass": "sysml:MetadataUsage",
+                                          "data": {
+                                            "elementId": "6382f54e-dd4d-4fd7-b8f4-6148b65c717f",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "64b279c8-0d52-4bcb-bc79-0957575c12f8",
+                                                "eClass": "sysml:FeatureMembership",
+                                                "data": {
+                                                  "elementId": "b2c49da8-d44a-4208-be37-6759418d96b5",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "3464c2a7-c174-4259-950f-4953c82dface",
+                                                      "eClass": "sysml:ReferenceUsage",
+                                                      "data": {
+                                                        "elementId": "df9c1b58-1bc0-462d-a1d0-386126f37b42",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "f1afc10c-2e19-4e4f-84c7-5bb322765f6d",
+                                                            "eClass": "sysml:FeatureValue",
+                                                            "data": {
+                                                              "elementId": "ed838517-0f8f-4652-bd16-50a8bd2d45cc",
+                                                              "ownedRelatedElement": [
+                                                                {
+                                                                  "id": "2a44644d-9619-48a7-903c-0e0041a15a7b",
+                                                                  "eClass": "sysml:FeatureReferenceExpression",
+                                                                  "data": {
+                                                                    "elementId": "806a44ac-b599-461a-a57d-e9e35b5c98ab",
+                                                                    "ownedRelationship": [
+                                                                      {
+                                                                        "id": "ec7234a9-8adf-4940-a25d-22e90014c4ef",
+                                                                        "eClass": "sysml:Membership",
+                                                                        "data": {
+                                                                          "elementId": "ef14a5c5-9984-472a-acce-a5efe688875a",
+                                                                          "memberElement": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#f5cc11de-c442-44b6-bc09-d844f550f8b1"
+                                                                        }
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          {
+                                                            "id": "e67d12ec-d0d0-4863-ba92-f3de449f7762",
+                                                            "eClass": "sysml:Redefinition",
+                                                            "data": {
+                                                              "elementId": "a5108b4a-14ec-4fa0-ba0f-f294f63380a7",
+                                                              "redefinedFeature": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#e69df7d5-61e8-4c22-8d6f-ac0442947b7c",
+                                                              "redefiningFeature": "3464c2a7-c174-4259-950f-4953c82dface"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "id": "0a78a97f-1995-48c7-be78-2d64cb83a675",
+                                                "eClass": "sysml:FeatureTyping",
+                                                "data": {
+                                                  "elementId": "ec19c2bb-5c19-4a7d-a4e7-6f04a3c5466e",
+                                                  "type": "sysml:MetadataDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#37a6850e-bec4-483c-9e4c-dd46d8bb9e9c",
+                                                  "typedFeature": "5c4d9acf-f6fd-4b9a-97f9-53d3b69845d4"
+                                                }
+                                              }
+                                            ],
+                                            "isComposite": true
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "4536776d-6fad-4774-986a-00cea7e9afe4",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "361f5b34-0770-4459-aff4-a63aa59f4c55",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "6efa9fab-00b2-4711-95f5-02e0d8ca5d13",
+                                          "eClass": "sysml:Documentation",
+                                          "data": {
+                                            "elementId": "2de2cbd8-9d08-4d61-bcf9-3359ce18264b",
+                                            "body": "Defines the logical architecture of the system.\r\n\t\tContains logical components, functions, and their interactions, abstracted from implementation details.\r\n\t\tServes as a bridge between system needs and physical design."
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "6a5d5775-00b4-4495-88aa-690182420fa4",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "699fde2f-4a4b-481f-970a-58fc79dfd733",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "50ccfafd-2545-4675-ba22-d16f6777c43a",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Functions",
+                                            "elementId": "571fd6b1-d384-47e8-a0c9-c28465ee13ef",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "7c174afe-8782-4ef5-b106-3e7f4aa61018",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "5051b911-87a9-4b4f-bd86-36f4f1c43d2b",
+                                                  "importedNamespace": "8ee1f432-4ab0-4149-87ce-35e6bd9610ff"
+                                                }
+                                              },
+                                              {
+                                                "id": "aef0eb31-9bd0-4149-acc5-c70b6708db43",
+                                                "eClass": "sysml:OwningMembership",
+                                                "data": {
+                                                  "elementId": "55ddaf1d-02da-4e0b-b636-0a48f1b5659e",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "477cd7b0-78a7-472d-8bfb-e19d33b1d9e7",
+                                                      "eClass": "sysml:ActionUsage",
+                                                      "data": {
+                                                        "declaredName": "Root Function",
+                                                        "elementId": "32464224-402a-4a12-a6c4-36ec2efbd050",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "8516bcfb-d041-4d45-afbc-9656a7990e3c",
+                                                            "eClass": "sysml:FeatureTyping",
+                                                            "data": {
+                                                              "elementId": "f79e1a55-181c-492c-95ea-f0f78d8cac33",
+                                                              "type": "sysml:ActionDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#60271a26-38b2-403c-b6b8-166ec135979d",
+                                                              "typedFeature": "477cd7b0-78a7-472d-8bfb-e19d33b1d9e7"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "5044bd2f-b8bd-4887-8560-4b975fb46b60",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "207373cb-3961-4fdc-bf18-2cf81512ff5a",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "49db1830-f6e5-4bde-bbb5-614decedbd7f",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Capabilities",
+                                            "elementId": "5f24dc85-c963-49be-b518-17f5c38fcad3",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "790d9dec-a04a-490c-87bf-40d66ad9b45c",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "5257c313-e0d4-4ca6-b2a7-ce41836515c7",
+                                                  "importedNamespace": "50ccfafd-2545-4675-ba22-d16f6777c43a"
+                                                }
+                                              },
+                                              {
+                                                "id": "8cdd2983-e397-4736-8971-d446e9391f4d",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "daa01190-06bc-41a6-999d-3300b0b58d4e",
+                                                  "importedNamespace": "d6fe85e1-db06-430f-9812-c74e26d0a711"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "e4fc3ac4-9e06-4474-9dce-b9c965cd8ed3",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "7679b382-103d-41e9-8e7e-63af611e0356",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "eabb15bf-8e14-4ed9-94b2-14d412bd3ff8",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Interfaces",
+                                            "elementId": "995ac3d7-9e76-47cc-9ee7-407ef487220a"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "b39d6ff2-01d7-40d0-ae4d-2011830ff44e",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "21405860-0666-4f87-9269-4f804b8e29a0",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "8ee1f432-4ab0-4149-87ce-35e6bd9610ff",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Data",
+                                            "elementId": "7dc6c6f0-572e-4e98-9465-9280e93a69de"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
                                   {
                                     "id": "435a5988-3d62-48ee-b2ab-85e40e7b15ec",
                                     "eClass": "sysml:OwningMembership",
@@ -404,6 +1089,673 @@ VALUES (
                                         }
                                       ]
                                     }
+                                  },
+                                  {
+                                    "id": "51609c92-aeab-4438-890f-c83734099641",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "13357e96-8f3d-4343-b9b2-733a9972cc2c",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "50d85c91-be2d-4346-8e30-e36a375e5677",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Requirements",
+                                            "elementId": "6eac31f2-3ca1-4780-9594-7706008be579"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "552e02f4-69a5-43f9-b0fb-d345fcae0b7f",
+                        "eClass": "sysml:OwningMembership",
+                        "data": {
+                          "elementId": "19273273-78d0-492e-a6d7-f16af78aebf8",
+                          "ownedRelatedElement": [
+                            {
+                              "id": "deb46ca4-d952-4c2c-930f-b3dff072ad88",
+                              "eClass": "sysml:Package",
+                              "data": {
+                                "declaredName": "Physical Architecture",
+                                "declaredShortName": "PA",
+                                "elementId": "f798645d-9c8f-4792-85ca-db7231bc2d60",
+                                "ownedRelationship": [
+                                  {
+                                    "id": "f024e47e-5231-4478-a695-7099804ec6c6",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "50046ca2-d0e7-4fa6-8442-1c23bbbff903",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "c2ee4c26-36cb-4d25-a93c-c4bc9073327d",
+                                          "eClass": "sysml:MetadataUsage",
+                                          "data": {
+                                            "elementId": "5f17161b-bc71-4834-b580-aa7398af81c4",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "f3377c89-ddc9-4d2d-a8e4-3f74344563d6",
+                                                "eClass": "sysml:FeatureMembership",
+                                                "data": {
+                                                  "elementId": "baa6f7c3-ebba-4099-9c6d-d596558c31e0",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "c75893b1-b542-4466-9e2a-9f99ab952993",
+                                                      "eClass": "sysml:ReferenceUsage",
+                                                      "data": {
+                                                        "elementId": "98b69d0e-7c49-402b-800c-08b83e811c77",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "a6ca865e-bc9e-496b-8c80-0d30b07a6dd9",
+                                                            "eClass": "sysml:FeatureValue",
+                                                            "data": {
+                                                              "elementId": "9af03728-72cc-4968-8583-c171268427d0",
+                                                              "ownedRelatedElement": [
+                                                                {
+                                                                  "id": "cf228581-51e7-422c-a31b-b9d062b41c84",
+                                                                  "eClass": "sysml:FeatureReferenceExpression",
+                                                                  "data": {
+                                                                    "elementId": "4ab46a59-905e-4dcc-a76b-3655ce9b5273",
+                                                                    "ownedRelationship": [
+                                                                      {
+                                                                        "id": "1bcad0bb-10bd-43ae-940c-25024adcaf9c",
+                                                                        "eClass": "sysml:Membership",
+                                                                        "data": {
+                                                                          "elementId": "eb99777a-ae82-4f4a-805b-8a41cdb5966f",
+                                                                          "memberElement": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#a5d768e2-68a4-4219-a01f-47e6bf050b26"
+                                                                        }
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          {
+                                                            "id": "e97b0916-f6e7-4f79-87e2-d6b634f51990",
+                                                            "eClass": "sysml:Redefinition",
+                                                            "data": {
+                                                              "elementId": "428c0d11-b984-4cc0-baa6-882d2e4f5ee8",
+                                                              "redefinedFeature": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#e69df7d5-61e8-4c22-8d6f-ac0442947b7c",
+                                                              "redefiningFeature": "c75893b1-b542-4466-9e2a-9f99ab952993"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "id": "0fda36e5-1cb1-4b9f-adf6-990cd8ceba70",
+                                                "eClass": "sysml:FeatureTyping",
+                                                "data": {
+                                                  "elementId": "97df7674-dc0d-4ee5-bd7a-96e601125a49",
+                                                  "type": "sysml:MetadataDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#37a6850e-bec4-483c-9e4c-dd46d8bb9e9c",
+                                                  "typedFeature": "c2ee4c26-36cb-4d25-a93c-c4bc9073327d"
+                                                }
+                                              }
+                                            ],
+                                            "isComposite": true
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "765938db-4f71-49d9-822f-79f16ad452eb",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "ba411b6f-8976-4c15-8812-4a54f6a5d59f",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "19f261c4-8639-4615-ae28-ccc5697f3ccb",
+                                          "eClass": "sysml:Documentation",
+                                          "data": {
+                                            "elementId": "c33244b2-64a1-4b52-8c85-0d3d15b897f3",
+                                            "body": "Defines the physical components and their interactions that realize the logical architecture.\r\n\t\tIncludes hardware, software, and communication elements, with consideration for implementation constraints.\r\n\t\tSupports integration, validation, and preparation for deployment."
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "3312137d-49dc-408b-bef6-eac89e5e8cda",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "6a1de92b-8b1f-4874-b74a-4b2462048849",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "b9136670-9b72-4686-9fb8-1ba0fec6d0dd",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Functions",
+                                            "elementId": "813a9664-6b15-4f83-90f2-5e064f0f0c46",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "6c217dc6-c980-423b-98d8-5d48426cf498",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "2c9abb76-4465-4e70-abfd-0be7917d60ca",
+                                                  "importedNamespace": "3207299c-3068-4f87-bd45-755137294738"
+                                                }
+                                              },
+                                              {
+                                                "id": "1eeb8a00-d142-46e8-b033-f70e8834104e",
+                                                "eClass": "sysml:OwningMembership",
+                                                "data": {
+                                                  "elementId": "1f54369c-7934-4d41-8822-df45f105be82",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "7255abcd-33ee-4535-8354-3cca28ed9eaa",
+                                                      "eClass": "sysml:ActionUsage",
+                                                      "data": {
+                                                        "declaredName": "Root Function",
+                                                        "elementId": "a0ed4359-13c8-42a1-b13b-448c993bcbb0",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "9aba752d-3d26-4494-8085-782ff8eee213",
+                                                            "eClass": "sysml:FeatureTyping",
+                                                            "data": {
+                                                              "elementId": "78365d9d-d0e7-44e0-8690-45c8da812584",
+                                                              "type": "sysml:ActionDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#60271a26-38b2-403c-b6b8-166ec135979d",
+                                                              "typedFeature": "7255abcd-33ee-4535-8354-3cca28ed9eaa"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "ce75ef35-6b68-488e-abd7-018b5f59999c",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "598a19a3-c8f8-46ef-a78b-42f623266660",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "3168489f-cce0-409d-bff2-a490bcc562dd",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Capabilities",
+                                            "elementId": "e63bac4a-4d75-4436-a2ff-6617e03958a5",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "76f622a5-0559-410e-a40c-bb80a07dede2",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "bf6c02b7-32ef-4355-9d25-a31154cf3849",
+                                                  "importedNamespace": "b9136670-9b72-4686-9fb8-1ba0fec6d0dd"
+                                                }
+                                              },
+                                              {
+                                                "id": "1fd194b8-3ae8-414f-9773-455e154c01c8",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "6b7eb35e-e2fc-4fa9-8115-cf798857d743",
+                                                  "importedNamespace": "41854f65-5ced-43bc-acc5-44253b38df5a"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "4a3db748-dab1-490a-b7d4-39a8837d680a",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "1091e497-a89d-4c53-be41-4666723003ca",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "fb1bff7d-0f2f-4006-b8d2-e5c3e7cac6bd",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Interfaces",
+                                            "elementId": "6645d8d8-f912-4569-86a4-1c0268953d53"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "9852957f-d83f-4bdb-9609-e1e9f1d4f003",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "7940becc-6541-42cc-9438-916bc14d995e",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "3207299c-3068-4f87-bd45-755137294738",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Data",
+                                            "elementId": "6e2cd01d-8322-49e6-accf-69202033ad6b"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "f6594a15-a91b-401f-a5b9-6284740f346f",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "ef49b5da-4c27-443c-a3d1-501174bc3e6f",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "41854f65-5ced-43bc-acc5-44253b38df5a",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Structure",
+                                            "elementId": "8a415b8c-4241-4466-ae34-615102bfbf47",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "d93e4cd2-cb17-4310-8f0c-6680e76d8775",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "8f8cdf77-b1bb-4909-89b4-693039fda0d8",
+                                                  "importedNamespace": "3207299c-3068-4f87-bd45-755137294738"
+                                                }
+                                              },
+                                              {
+                                                "id": "0d4bec84-6a4d-457f-8545-b72c99001dfb",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "ec272a3f-6f51-494d-87bc-551ea884442f",
+                                                  "importedNamespace": "b9136670-9b72-4686-9fb8-1ba0fec6d0dd"
+                                                }
+                                              },
+                                              {
+                                                "id": "b03121bc-a803-4d44-9b2f-b6952d71a84f",
+                                                "eClass": "sysml:OwningMembership",
+                                                "data": {
+                                                  "elementId": "94de0ccd-c3c6-4152-8f25-b4aa4242d794",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "e502a44b-edc0-4233-8b42-689a4a2ada3f",
+                                                      "eClass": "sysml:PartUsage",
+                                                      "data": {
+                                                        "declaredName": "system",
+                                                        "elementId": "c1b3f16b-a106-4003-8dbf-4b8d4383b0c7",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "1435d48f-d052-4629-8ecc-e3dffad85bea",
+                                                            "eClass": "sysml:FeatureTyping",
+                                                            "data": {
+                                                              "elementId": "0006e98d-67cb-4ad5-94fa-7e77d2ba4c79",
+                                                              "type": "sysml:PartDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#0bab9a5b-37e1-48a7-a66b-42594664e3a9",
+                                                              "typedFeature": "e502a44b-edc0-4233-8b42-689a4a2ada3f"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "9f6c6054-cc61-44ed-8eeb-4a1c3d33fdb6",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "965da5ce-b7cc-462e-88ce-771af140a929",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "54c0742c-823e-4244-9673-cac30dda1182",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Requirements",
+                                            "elementId": "d0e85e20-5d46-42e5-a1f5-31170fff1b51"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "id": "c57d9002-d126-4bf2-86b8-e856188cec6f",
+                        "eClass": "sysml:OwningMembership",
+                        "data": {
+                          "elementId": "81ab7557-c523-4449-a956-a976a1eff822",
+                          "ownedRelatedElement": [
+                            {
+                              "id": "781a6efe-76f2-437e-8e97-38f5cd28f073",
+                              "eClass": "sysml:Package",
+                              "data": {
+                                "declaredName": "EPBS Architecture",
+                                "declaredShortName": "EPBS",
+                                "elementId": "e563394b-2914-4d72-b7cc-de370c679823",
+                                "ownedRelationship": [
+                                  {
+                                    "id": "1f5a6304-5fe1-4054-8f86-04fc9ae17165",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "0eead48a-bd46-4f30-a23e-2702f1d7b792",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "44d19cdb-1809-4d97-9974-11583bd4a2c6",
+                                          "eClass": "sysml:MetadataUsage",
+                                          "data": {
+                                            "elementId": "41070195-d57c-4a44-bb9e-37ecc1687f65",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "77f3daab-35b8-4ffd-a76e-67a95e7ef756",
+                                                "eClass": "sysml:FeatureMembership",
+                                                "data": {
+                                                  "elementId": "616339a8-8158-4083-9de8-a94dd55e343e",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "fc6a9f76-764c-4503-8bb4-1bc5da85c337",
+                                                      "eClass": "sysml:ReferenceUsage",
+                                                      "data": {
+                                                        "elementId": "054d3178-5c49-4818-9a32-198fa6203e98",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "548ee1b2-be4e-4a2c-927f-4d3685e6f820",
+                                                            "eClass": "sysml:FeatureValue",
+                                                            "data": {
+                                                              "elementId": "e37a8d63-9bac-422e-b244-d7e9714dfe55",
+                                                              "ownedRelatedElement": [
+                                                                {
+                                                                  "id": "b4fa4763-ac15-4020-a11f-2f2d794758c7",
+                                                                  "eClass": "sysml:FeatureReferenceExpression",
+                                                                  "data": {
+                                                                    "elementId": "0a1b4d56-9a03-4b3d-bc89-e443a9a1eb2b",
+                                                                    "ownedRelationship": [
+                                                                      {
+                                                                        "id": "ab5b8faf-de9c-4f3d-b0a1-48015186d574",
+                                                                        "eClass": "sysml:Membership",
+                                                                        "data": {
+                                                                          "elementId": "83973a4f-f7be-41eb-b944-13b5d5cdbb08",
+                                                                          "memberElement": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#650dc434-9b1f-4892-a83d-350b48303394"
+                                                                        }
+                                                                      }
+                                                                    ]
+                                                                  }
+                                                                }
+                                                              ]
+                                                            }
+                                                          },
+                                                          {
+                                                            "id": "d999d3a5-d079-4c56-b9df-1d74c08798cd",
+                                                            "eClass": "sysml:Redefinition",
+                                                            "data": {
+                                                              "elementId": "85c156fd-89ce-4cd8-9f83-f4ee282069fd",
+                                                              "redefinedFeature": "sysml:EnumerationUsage sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#e69df7d5-61e8-4c22-8d6f-ac0442947b7c",
+                                                              "redefiningFeature": "fc6a9f76-764c-4503-8bb4-1bc5da85c337"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              {
+                                                "id": "9a13b180-ff0a-42c7-bffa-a21ba50027e5",
+                                                "eClass": "sysml:FeatureTyping",
+                                                "data": {
+                                                  "elementId": "428c4ea3-68de-48dd-afc7-3e3e27ba020e",
+                                                  "type": "sysml:MetadataDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#37a6850e-bec4-483c-9e4c-dd46d8bb9e9c",
+                                                  "typedFeature": "44d19cdb-1809-4d97-9974-11583bd4a2c6"
+                                                }
+                                              }
+                                            ],
+                                            "isComposite": true
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "bc579bfd-efc3-48ba-81a5-1dbaebd101f2",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "5dbc38cb-cd5f-45dd-b5f1-d371603e7d0e",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "f65fdd6a-0fa2-4235-95bf-d64a8c69ba9d",
+                                          "eClass": "sysml:Documentation",
+                                          "data": {
+                                            "elementId": "71cd0eb0-35c5-416c-a62b-7702ffe20e48",
+                                            "body": "Defines the configuration of the system as delivered to the customer.\r\n\t\tDescribes the breakdown of end products, including deliverable items, versions, and traceability to physical components and requirements.\r\n\t\tSupports verification, acceptance, and product management."
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "69cb3da6-a318-465b-8fd3-7957fe46dc51",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "e1438dff-182c-41c0-b795-6563bfb07e79",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "9f2eae08-f7e9-41cc-b5fb-6f80f4b74204",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Functions",
+                                            "elementId": "8071557a-a2ca-4442-b2fb-67a31789150a",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "e982f60a-7d6d-4924-8338-dadbd8042d4a",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "cb29dd14-a17f-4f9a-a041-d0f595e291df",
+                                                  "importedNamespace": "9bc16dee-5623-4ab1-bb8e-3d3b843fd008"
+                                                }
+                                              },
+                                              {
+                                                "id": "988ff3d6-3fea-456a-8409-2c5401ad47ba",
+                                                "eClass": "sysml:OwningMembership",
+                                                "data": {
+                                                  "elementId": "7254c91a-5a56-41dd-87c4-1b80195445a5",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "43d85e5c-b822-47ee-ba9c-4dc9a5a66e71",
+                                                      "eClass": "sysml:ActionUsage",
+                                                      "data": {
+                                                        "declaredName": "Root Function",
+                                                        "elementId": "dd2810ea-7266-4c63-a3aa-f6de2b321638",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "aaa3e23b-6f6d-438e-b8a8-08a0ad45a408",
+                                                            "eClass": "sysml:FeatureTyping",
+                                                            "data": {
+                                                              "elementId": "ea55cabf-9e4c-4edc-8769-bb01a3c772f5",
+                                                              "type": "sysml:ActionDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#60271a26-38b2-403c-b6b8-166ec135979d",
+                                                              "typedFeature": "43d85e5c-b822-47ee-ba9c-4dc9a5a66e71"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "f61fc5c6-1f88-4716-9921-2cd9bf032aa4",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "6f9960af-07cc-40b3-96c0-d4c38b6dc632",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "67141874-d0ff-4b3a-ab25-e5bda2dae031",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Capabilities",
+                                            "elementId": "a6d7817a-c99a-43e4-95e0-d9b59a871244",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "835c0898-a1dc-40d8-938f-7192fda70dca",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "e0a6f4c1-239f-44e9-88f0-6e643ed7c591",
+                                                  "importedNamespace": "9f2eae08-f7e9-41cc-b5fb-6f80f4b74204"
+                                                }
+                                              },
+                                              {
+                                                "id": "16eba330-2508-4f88-9b05-e0447dbc9b2f",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "3945dd83-8b64-46eb-b47e-27af2d3bcdb8",
+                                                  "importedNamespace": "3a3f86fb-2623-43cd-b969-d5c58dbd6906"
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "b2150e2e-476b-42d8-9cdf-caa032c6ae24",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "e8bc4b25-042c-4cb8-810d-df543c7acf36",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "4281fd99-5bc1-4b49-9ba9-ec7e89cd6c46",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Interfaces",
+                                            "elementId": "bd6509d9-7173-4d19-b17e-9080e1b86b9f"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "2247831c-cdd5-40b9-b943-3738090cb4fe",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "53b8011f-a76d-4d80-95d3-4566663164bc",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "9bc16dee-5623-4ab1-bb8e-3d3b843fd008",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Data",
+                                            "elementId": "24877b83-e7e4-4e37-937f-682038292ef4"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "48dbd710-ec4e-4aa6-aa61-1525947d7599",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "1fef9dd3-fc04-4378-a964-823b5fee3ece",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "3a3f86fb-2623-43cd-b969-d5c58dbd6906",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Structure",
+                                            "elementId": "3877a367-1ac3-4b11-b2f6-02d4d70a0cb6",
+                                            "ownedRelationship": [
+                                              {
+                                                "id": "4e0b3918-f8aa-4aec-a6ed-7dce1b90afef",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "be30e2d6-bf3c-4eb3-9cd8-c4db092a3d83",
+                                                  "importedNamespace": "9bc16dee-5623-4ab1-bb8e-3d3b843fd008"
+                                                }
+                                              },
+                                              {
+                                                "id": "653c34b6-23c7-42ea-bdf4-cad43e5ebab3",
+                                                "eClass": "sysml:NamespaceImport",
+                                                "data": {
+                                                  "elementId": "cfa04990-afd4-431f-8758-aac4897d5a6c",
+                                                  "importedNamespace": "9f2eae08-f7e9-41cc-b5fb-6f80f4b74204"
+                                                }
+                                              },
+                                              {
+                                                "id": "5ab019fd-34c3-4bfe-a505-01ddb0608a8d",
+                                                "eClass": "sysml:OwningMembership",
+                                                "data": {
+                                                  "elementId": "81fdb4be-919d-4e0f-bdb9-b1b88dcfbeed",
+                                                  "ownedRelatedElement": [
+                                                    {
+                                                      "id": "e4ca9484-cb25-4522-a566-46a00791c0a4",
+                                                      "eClass": "sysml:PartUsage",
+                                                      "data": {
+                                                        "declaredName": "system",
+                                                        "elementId": "4207c307-bd91-4bd1-ba7e-237a042292fa",
+                                                        "ownedRelationship": [
+                                                          {
+                                                            "id": "bdc4ecf8-edfa-491e-8312-59ec9f295b55",
+                                                            "eClass": "sysml:FeatureTyping",
+                                                            "data": {
+                                                              "elementId": "95cd6139-2214-4529-9983-970ef31a6ecd",
+                                                              "type": "sysml:PartDefinition sirius:///0fbf595a-7e8d-3814-a11b-12ba3223e7f7#0bab9a5b-37e1-48a7-a66b-42594664e3a9",
+                                                              "typedFeature": "e4ca9484-cb25-4522-a566-46a00791c0a4"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "isComposite": true
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  {
+                                    "id": "f0a94bf8-6d41-4694-b898-f4d1a9883db5",
+                                    "eClass": "sysml:OwningMembership",
+                                    "data": {
+                                      "elementId": "e0f4c255-9bbe-4f5d-9acb-1d192ce36f03",
+                                      "ownedRelatedElement": [
+                                        {
+                                          "id": "43d63bf9-9e63-426c-928d-91df82e75578",
+                                          "eClass": "sysml:Package",
+                                          "data": {
+                                            "declaredName": "Requirements",
+                                            "elementId": "ab917aef-28a7-45e4-ba1d-42f92e90f2dd"
+                                          }
+                                        }
+                                      ]
+                                    }
                                   }
                                 ]
                               }
@@ -423,16 +1775,43 @@ VALUES (
   ]
 }
 $$,
-    false,
-    '2026-01-01 00:00:00+00',
-    '2026-01-01 00:00:00+00'
+  false,
+  '2026-01-01 00:00:00+00',
+  '2026-01-01 00:00:00+00'
 );
 
-INSERT INTO project (id, name, created_on, last_modified_on)
-VALUES ('2b0d2d8a-4cc9-48a6-9137-b1f879d6f49c', 'Capella empty project', '2026-01-01 00:00:00+00', '2026-01-01 00:00:00+00');
+INSERT INTO project (
+  id,
+  name,
+  created_on,
+  last_modified_on
+) VALUES (
+  '2b0d2d8a-4cc9-48a6-9137-b1f879d6f49c',
+  'Capella empty project',
+  '2026-01-01 00:00:00+00',
+  '2026-01-01 00:00:00+00'
+);
 
-INSERT INTO nature (project_id, name)
-VALUES ('2b0d2d8a-4cc9-48a6-9137-b1f879d6f49c', 'siriusWeb://nature?kind=capella');
+INSERT INTO nature (
+  project_id,
+  name
+) VALUES (
+  '2b0d2d8a-4cc9-48a6-9137-b1f879d6f49c',
+  'siriusWeb://nature?kind=capella'
+);
 
-INSERT INTO project_semantic_data (id, project_id, semantic_data_id, name, created_on, last_modified_on)
-VALUES ('9b74e1c3-aa1d-43d4-a6ff-f750a2fe342b', '2b0d2d8a-4cc9-48a6-9137-b1f879d6f49c', 'a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006', 'main', '2026-01-01 00:00:00+00', '2026-01-01 00:00:00+00');
+INSERT INTO project_semantic_data (
+  id,
+  project_id,
+  semantic_data_id,
+  name,
+  created_on,
+  last_modified_on
+) VALUES (
+  '9b74e1c3-aa1d-43d4-a6ff-f750a2fe342b',
+  '2b0d2d8a-4cc9-48a6-9137-b1f879d6f49c',
+  'a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006',
+  'main',
+  '2026-01-01 00:00:00+00',
+  '2026-01-01 00:00:00+00'
+);
