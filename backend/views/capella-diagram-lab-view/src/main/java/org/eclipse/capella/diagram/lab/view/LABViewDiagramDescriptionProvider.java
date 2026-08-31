@@ -13,6 +13,10 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.capella.diagram.lab.view.edges.annotating.AnnotatingEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.edges.describes.DescribesEdgeDescriptionProvider;
@@ -31,6 +35,7 @@ import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
@@ -40,10 +45,6 @@ import org.eclipse.sirius.components.view.diagram.DiagramLayoutOption;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Description of the Logical Architecture Blank using the ViewBuilder API from Sirius Web.
@@ -90,7 +91,7 @@ public class LABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
 
-        var cache = new ViewDiagramElementFinder();
+        var cache = new DefaultViewDiagramElementFinder();
 
         // Core diagram element providers
         var diagramElementDescriptionProviders = new ArrayList<IDiagramElementDescriptionProvider<?>>();
