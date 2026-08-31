@@ -81,6 +81,19 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     }
 
     @Test
+    public void deleteCapabilityInvolvementShouldRemoveTheLastInvolvedComponentReference() {
+        var perspective = this.capellaModel.getOperationalAnalysisPerspective();
+        var capability = this.transverseMutationService.createOperationalCapability(perspective.getElement());
+        var component = this.transverseMutationService.createComponent(perspective.getStructurePackage().getElement());
+        this.transverseMutationService.addCapabilityInvolvement(capability, component);
+
+        var result = this.transverseMutationService.deleteCapabilityInvolvement(capability, component);
+
+        assertThat(result).isSameAs(capability);
+        assertThat(this.transverseQueryService.getInvolvedComponents(capability)).isEmpty();
+    }
+
+    @Test
     public void deleteComponentExchangeBetweenSubComponentsShouldRemoveTheComponentExchangeFromTheParentComponent() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage parentComponent = this.transverseMutationService.createComponent(parent);

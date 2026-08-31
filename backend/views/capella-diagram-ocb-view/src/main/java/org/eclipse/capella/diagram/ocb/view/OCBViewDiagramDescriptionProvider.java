@@ -13,7 +13,10 @@
 package org.eclipse.capella.diagram.ocb.view;
 
 import java.util.List;
-
+import org.eclipse.capella.diagram.ocb.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.ocb.view.edges.describes.DescribesEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.ocb.view.edges.generalization.GeneralizationEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.ocb.view.edges.involvement.InvolvementEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementNodeDescriptionProvider;
@@ -32,7 +35,7 @@ import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
- * Description of the Operational Capability Blank using the ViewBuilder API from Sirius Web.
+ * Description of the Operational Capability Blank diagram.
  *
  * @author tbezierslafosse
  */
@@ -68,7 +71,11 @@ public class OCBViewDiagramDescriptionProvider implements IRepresentationDescrip
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new OCBCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
-                new RequirementNodeDescriptionProvider(colorProvider));
+                new RequirementNodeDescriptionProvider(colorProvider),
+                new CommunicationMeanComponentExchangeEdgeDescriptionProvider(colorProvider),
+                new DescribesEdgeDescriptionProvider(colorProvider),
+                new InvolvementEdgeDescriptionProvider(colorProvider),
+                new GeneralizationEdgeDescriptionProvider(colorProvider));
 
         diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
         diagramElementDescriptionProviders.forEach(provider -> provider.link(diagramDescription, cache));

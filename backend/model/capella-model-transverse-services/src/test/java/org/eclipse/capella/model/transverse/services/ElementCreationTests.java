@@ -27,6 +27,7 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -358,6 +359,46 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
         ActionUsage functionalChain2 = this.transverseMutationService.createFunctionalChain(structurePackage, List.of(functionalExchange11, functionalExchange12, functionalExchange21));
         assertThat(functionalChain2.getOwner()).isEqualTo(rootFunction);
+    }
+
+    @Test
+    public void setCapabilityGeneralisationSourceShouldRejectComponentsWithoutModifyingTheGeneralization() {
+        var perspective = this.capellaModel.getOperationalAnalysisPerspective();
+        var sourceCapability = this.transverseMutationService.createOperationalCapability(perspective.getElement());
+        var targetCapability = this.transverseMutationService.createOperationalCapability(perspective.getElement());
+        var component = this.transverseMutationService.createComponent(perspective.getStructurePackage().getElement());
+        this.transverseMutationService.addCapabilityGeneralisation(sourceCapability, targetCapability);
+        var generalization = sourceCapability.getOwnedRelationship().stream()
+                .filter(Subsetting.class::isInstance)
+                .map(Subsetting.class::cast)
+                .findFirst()
+                .orElseThrow();
+
+        var sourceResult = this.transverseMutationService.setCapabilityGeneralisationSource(generalization, sourceCapability, component);
+
+        assertThat(sourceResult).isSameAs(sourceCapability);
+        assertThat(generalization.getSubsettingFeature()).isSameAs(sourceCapability);
+        assertThat(generalization.getSubsettedFeature()).isSameAs(targetCapability);
+    }
+
+    @Test
+    public void setCapabilityGeneralisationTargetShouldRejectComponentsWithoutModifyingTheGeneralization() {
+        var perspective = this.capellaModel.getOperationalAnalysisPerspective();
+        var sourceCapability = this.transverseMutationService.createOperationalCapability(perspective.getElement());
+        var targetCapability = this.transverseMutationService.createOperationalCapability(perspective.getElement());
+        var component = this.transverseMutationService.createComponent(perspective.getStructurePackage().getElement());
+        this.transverseMutationService.addCapabilityGeneralisation(sourceCapability, targetCapability);
+        var generalization = sourceCapability.getOwnedRelationship().stream()
+                .filter(Subsetting.class::isInstance)
+                .map(Subsetting.class::cast)
+                .findFirst()
+                .orElseThrow();
+
+        var targetResult = this.transverseMutationService.setCapabilityGeneralisationTarget(generalization, targetCapability, component);
+
+        assertThat(targetResult).isSameAs(targetCapability);
+        assertThat(generalization.getSubsettingFeature()).isSameAs(sourceCapability);
+        assertThat(generalization.getSubsettedFeature()).isSameAs(targetCapability);
     }
 
 }

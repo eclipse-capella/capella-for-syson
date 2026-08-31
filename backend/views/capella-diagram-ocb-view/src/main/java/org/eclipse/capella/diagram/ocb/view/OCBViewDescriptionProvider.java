@@ -58,7 +58,7 @@ public class OCBViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(OCBViewConstants.CAPABILITY_BORDER_COLOR, "#6B5F2A"));
         colorPalette.getColors().add(this.createFixedColor(OCBViewConstants.CAPABILITY_LABEL_COLOR, "#1C2A3F"));
         colorPalette.getColors().add(this.createFixedColor(OCBViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
-        colorPalette.getColors().add(this.createFixedColor(OCBViewConstants.COMPONENT_EXCHANGE_BACKGROUND_COLOR, "#1C2A3F"));
+        colorPalette.getColors().add(this.createFixedColor(OCBViewConstants.COMPONENT_EXCHANGE_BACKGROUND_COLOR, "#888888"));
         colorPalette.getColors().add(this.createFixedColor(OCBViewConstants.INVOLVEMENT_COLOR, "#1C2A3F"));
         return colorPalette;
     }

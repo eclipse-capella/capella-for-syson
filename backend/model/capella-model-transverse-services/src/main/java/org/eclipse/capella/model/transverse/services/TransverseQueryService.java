@@ -65,6 +65,7 @@ import org.eclipse.syson.sysml.Redefinition;
 import org.eclipse.syson.sysml.ReferenceSubsetting;
 import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
 import org.eclipse.syson.sysml.VariantMembership;
@@ -98,6 +99,8 @@ public class TransverseQueryService {
     public static final String ARCADIA_FUNCTIONAL_CHAIN = "FunctionalChain";
 
     public static final String ARCADIA_EXCHANGE_ITEM = "ExchangeItem";
+
+    public static final String ARCADIA_INVOLVED_COMPONENTS = "involvedComponents";
 
     public static final String ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES = "involvedFunctionalExchanges";
 
@@ -1027,4 +1030,33 @@ public class TransverseQueryService {
                 .flatMap(ancestors -> ancestors.stream().findFirst());
     }
 
+    public List<PartUsage> getInvolvedComponents(Usage capability) {
+        return this.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).stream()
+                .filter(this::isComponent)
+                .map(PartUsage.class::cast)
+                .toList();
+    }
+
+    public List<Subsetting> getGeneralizations(EObject context) {
+        return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getSubsetting()).stream()
+                .filter(Subsetting.class::isInstance)
+                .map(Subsetting.class::cast)
+                .toList();
+    }
+
+    public List<Feature> getGeneralizationReferenceValue(Feature capability) {
+        return capability.getOwnedRelationship().stream()
+                .filter(relationship -> relationship.eClass() == SysmlPackage.eINSTANCE.getSubsetting())
+                .map(Subsetting.class::cast)
+                .map(this::getGeneralizationTarget)
+                .toList();
+    }
+
+    public Feature getGeneralizationSource(Subsetting generalization) {
+        return generalization.getSubsettingFeature();
+    }
+
+    public Feature getGeneralizationTarget(Subsetting generalization) {
+        return generalization.getSubsettedFeature();
+    }
 }
