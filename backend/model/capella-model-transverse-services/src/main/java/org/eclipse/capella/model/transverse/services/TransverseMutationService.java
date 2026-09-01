@@ -53,8 +53,8 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
-import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Namespace;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.ParameterMembership;
 import org.eclipse.syson.sysml.PartUsage;
@@ -543,12 +543,17 @@ public class TransverseMutationService {
         }
     }
 
-    public ActionUsage createFunctionalChain(Element container, Object selectedObjects) {
+    public ActionUsage createFunctionalChain(Element container, List<Object> selectedObjects) {
         ActionUsage actionUsage = null;
-        Optional<Package> optionalFunctionsPackage = this.transverseQueryService.getFunctionsPackage(container);
-        if (optionalFunctionsPackage.isPresent()) {
+        List<Element> selectedElements = selectedObjects.stream()
+                .filter(Element.class::isInstance)
+                .map(Element.class::cast)
+                .toList();
+        Optional<Namespace> optionalCommonAncestor = this.transverseQueryService.findClosestCommonAncestor(selectedElements,
+                candidate -> this.transverseQueryService.isFunction(candidate) || this.transverseQueryService.isFunctionsPackage(candidate));
+        if (optionalCommonAncestor.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
-            this.metamodelMutationElementService.addChildInParent(optionalFunctionsPackage.get(), actionUsage);
+            this.metamodelMutationElementService.addChildInParent(optionalCommonAncestor.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.elementInitializerSwitch.doSwitch(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));

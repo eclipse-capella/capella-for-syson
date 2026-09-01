@@ -55,8 +55,8 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.Namespace;
-import org.eclipse.syson.sysml.OperatorExpression;
 import org.eclipse.syson.sysml.OccurrenceUsage;
+import org.eclipse.syson.sysml.OperatorExpression;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PerformActionUsage;
@@ -1008,9 +1008,23 @@ public class TransverseQueryService {
      * @return the common ancestor if it exists
      */
     public Optional<Namespace> findClosestCommonAncestor(Element element1, Element element2, Predicate<EObject> predicate) {
-        List<Namespace> element1Ancestors = EMFUtils.getAncestors(Namespace.class, element1, predicate);
-        List<Namespace> element2CommonAncestors = EMFUtils.getAncestors(Namespace.class, element2, predicate.and(element1Ancestors::contains));
-        return element2CommonAncestors.stream().findFirst();
+        return this.findClosestCommonAncestor(List.of(element1, element2), predicate);
+    }
+
+    /**
+     * Finds the closest common ancestor of {@code elements} wich matches {@code predicate}.
+     *
+     * @param elements
+     *         the elements to find the common ancestor of
+     * @param predicate
+     *         the predicate the common ancestor should match
+     * @return the common ancestor if it exists
+     */
+    public Optional<Namespace> findClosestCommonAncestor(List<Element> elements, Predicate<EObject> predicate) {
+        return elements.stream()
+                .map(element -> EMFUtils.getAncestors(Namespace.class, element, predicate))
+                .reduce((common, ancestors) -> common.stream().filter(ancestors::contains).toList())
+                .flatMap(ancestors -> ancestors.stream().findFirst());
     }
 
 }
