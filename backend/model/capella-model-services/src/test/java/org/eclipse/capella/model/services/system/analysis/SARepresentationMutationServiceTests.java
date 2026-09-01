@@ -56,8 +56,6 @@ public class SARepresentationMutationServiceTests {
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
 
-    private final SARepresentationMutationService mutationService = new SARepresentationMutationService();
-
     private final SAMutationService semanticMutationService = new SAMutationService();
 
     @Test
@@ -156,9 +154,9 @@ public class SARepresentationMutationServiceTests {
                 .findFirst()
                 .orElseThrow();
 
-        var inputPort = this.mutationService.createInputComponentPort(system);
-        var outputPort = this.mutationService.createOutputComponentPort(system);
-        var inOutPort = this.mutationService.createInOutComponentPort(system);
+        var inputPort = this.transverseMutationService.createComponentPort(system, FeatureDirectionKind.IN);
+        var outputPort = this.transverseMutationService.createComponentPort(system, FeatureDirectionKind.OUT);
+        var inOutPort = this.transverseMutationService.createComponentPort(system, FeatureDirectionKind.INOUT);
 
         assertEquals(FeatureDirectionKind.IN, inputPort.getDirection());
         assertEquals(FeatureDirectionKind.OUT, outputPort.getDirection());
@@ -252,8 +250,8 @@ public class SARepresentationMutationServiceTests {
                 .orElseThrow();
         var function = this.transverseMutationService.createFunction(system);
 
-        var inputPort = this.mutationService.createInputFunctionPort(function);
-        var outputPort = this.mutationService.createOutputFunctionPort(function);
+        var inputPort = this.transverseMutationService.createFunctionPort(function, FeatureDirectionKind.IN);
+        var outputPort = this.transverseMutationService.createFunctionPort(function, FeatureDirectionKind.OUT);
 
         assertEquals(FeatureDirectionKind.IN, inputPort.getDirection());
         assertEquals(FeatureDirectionKind.OUT, outputPort.getDirection());
