@@ -491,13 +491,16 @@ public class TransverseMutationService {
                 PortUsage sourcePort = this.getOrCreateComponentPort(source, FeatureDirectionKind.OUT);
                 PortUsage targetPort = this.getOrCreateComponentPort(target, FeatureDirectionKind.IN);
 
-                InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalSourceStructurePackage.get());
-                this.elementInitializerSwitch.doSwitch(componentExchange);
-                this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
-                long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
-                componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
-                return componentExchange;
+                Optional<Namespace> optionalComponentExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target, e -> this.transverseQueryService.isComponent(e) || this.transverseQueryService.isStructurePackage(e));
+                if (optionalComponentExchangeParent.isPresent()) {
 
+                    InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalComponentExchangeParent.get());
+                    this.elementInitializerSwitch.doSwitch(componentExchange);
+                    this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
+                    long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
+                    componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
+                    return componentExchange;
+                }
             }
         }
         return null;

@@ -146,6 +146,17 @@ public class ElementCreationTests extends AbstractSemanticTests {
     }
 
     @Test
+    public void createComponentExchangeWhenEndpointsAreSubComponentsShouldCreateExchangeInParentComponent() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage parentComponent = this.transverseMutationService.createComponent(parent);
+        PartUsage component1 = this.transverseMutationService.createComponent(parentComponent);
+        PartUsage component2 = this.transverseMutationService.createComponent(parentComponent);
+        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(component1, component2);
+
+        assertThat(componentExchange.getOwner()).isEqualTo(parentComponent);
+    }
+
+    @Test
     public void createComponentExchangeWhenEndpointsArePortsShouldConnectTheProvidedPorts() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component1 = this.transverseMutationService.createComponent(parent);
@@ -157,6 +168,19 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(this.transverseQueryService.getComponentExchangeSource(componentExchange)).isEqualTo(port1);
         assertThat(this.transverseQueryService.getComponentExchangeTarget(componentExchange)).isEqualTo(port2);
         assertThat(componentExchange.getOwner()).isEqualTo(parent);
+    }
+
+    @Test
+    public void createComponentExchangeWhenEndpointsArePortsOfSubComponentsShouldCreateExchangeInParentComponent() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage parentComponent = this.transverseMutationService.createComponent(parent);
+        PartUsage component1 = this.transverseMutationService.createComponent(parentComponent);
+        PortUsage port1 = this.transverseMutationService.createComponentPort(component1, FeatureDirectionKind.OUT);
+        PartUsage component2 = this.transverseMutationService.createComponent(parentComponent);
+        PortUsage port2 = this.transverseMutationService.createComponentPort(component2, FeatureDirectionKind.IN);
+        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(port1, port2);
+
+        assertThat(componentExchange.getOwner()).isEqualTo(parentComponent);
     }
 
     @Test
