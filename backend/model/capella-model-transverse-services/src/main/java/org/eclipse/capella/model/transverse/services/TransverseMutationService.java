@@ -34,7 +34,6 @@ import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnumLiteral;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.AllocationUsage;
@@ -596,11 +595,22 @@ public class TransverseMutationService {
         return allocatingComponent;
     }
 
-    public Feature setStatusKind(Feature feature, Object newValue,
-            IEditingContext editingContext) {
+    /**
+     * Sets the status kind of the provided {@code feature} to {@code newValue}.
+     * <p>
+     * This method expects the provided {@code feature} to be part of a {@link org.eclipse.emf.ecore.resource.ResourceSet} containing the Arcadia library. If it is not the case then the status kind
+     * won't be set.
+     *
+     * @param feature
+     *         the feature to set
+     * @param newValue
+     *         the status kind value to set
+     * @return the updated feature
+     */
+    public Feature setStatusKind(Feature feature, String newValue) {
         this.unSetUsageStatusKind(feature);
         if (newValue != null) {
-            this.transverseQueryService.getStatusKindEnum(editingContext).stream()
+            this.transverseQueryService.getStatusKindEnum(feature).stream()
                     .filter(Objects::nonNull)
                     .filter(statusKind -> newValue.equals(statusKind.getDeclaredName()))
                     .findFirst()

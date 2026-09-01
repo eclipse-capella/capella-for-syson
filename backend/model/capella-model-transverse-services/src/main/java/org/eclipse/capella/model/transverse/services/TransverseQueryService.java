@@ -30,9 +30,8 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.sirius.components.core.api.IEditingContext;
-import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -299,8 +298,17 @@ public class TransverseQueryService {
         return Optional.ofNullable(element).map(Element::getDeclaredName).orElse("");
     }
 
-    public List<EnumerationUsage> getStatusKindEnum(IEditingContext editingContext) {
-        var resourceSet = ((EditingContext) editingContext).getDomain().getResourceSet();
+    /**
+     * Returns the status kind enumerations.
+     * <p>
+     * This method expects {@code element} to be any object in a {@link ResourceSet} containing the Arcadia library. The object itself is simply used to access the resource set.
+     *
+     * @param element
+     *         the contextual element
+     * @return the list of status kind enumerations.
+     */
+    public List<EnumerationUsage> getStatusKindEnum(Element element) {
+        ResourceSet resourceSet = element.eResource().getResourceSet();
         var statusKindEnum = resourceSet.getResources().stream()
                 .flatMap(res -> {
                     Iterable<EObject> iterable = () -> EcoreUtil.getAllContents(res, true);
@@ -321,9 +329,17 @@ public class TransverseQueryService {
                 .toList();
     }
 
-    public List<String> getStatusKindEnumLiterals(IEditingContext editingContext) {
-
-        return this.getStatusKindEnum(editingContext)
+    /**
+     * Returns the status kind enumeration literals.
+     * <p>
+     * This method expects {@code element} to be any object in a {@link ResourceSet} containing the Arcadia library. The object itself is simply used to access the resource set.
+     *
+     * @param element
+     *         the contextual element
+     * @return the list of status kind enumeration literals.
+     */
+    public List<String> getStatusKindEnumLiterals(Element element) {
+        return this.getStatusKindEnum(element)
                 .stream()
                 .map(EnumerationUsage::getDeclaredName)
                 .toList();

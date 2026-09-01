@@ -14,12 +14,10 @@ package org.eclipse.capella.table.view.providers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.BiFunction;
 
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
@@ -31,21 +29,14 @@ import org.eclipse.syson.sysml.SysmlPackage;
  */
 public class CellOptionsProvider implements BiFunction<VariableManager, Object, List<Object>> {
 
-    private final IEditingContext editingContext;
-
-    private final TransverseQueryService transverseQueryService;
-
-    public CellOptionsProvider(IEditingContext editingContext) {
-        this.editingContext = Objects.requireNonNull(editingContext);
-        this.transverseQueryService = new TransverseQueryService();
-    }
+    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
     @Override
     public List<Object> apply(VariableManager variableManager, Object columnTargetObject) {
         EObject self = variableManager.get(VariableManager.SELF, EObject.class).orElse(null);
-        if (self instanceof ActionUsage
+        if (self instanceof ActionUsage function
                 && columnTargetObject == SysmlPackage.eINSTANCE.getOwningMembership()) {
-            List<String> statusLiterals = this.transverseQueryService.getStatusKindEnumLiterals(this.editingContext);
+            List<String> statusLiterals = this.transverseQueryService.getStatusKindEnumLiterals(function);
 
             return new ArrayList<>(statusLiterals);
 
