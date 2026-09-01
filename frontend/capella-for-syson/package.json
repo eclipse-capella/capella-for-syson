@@ -81,7 +81,7 @@
     "tss-react": "4.9.16"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "5.14.1",
+    "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "12.1.2",
     "@testing-library/user-event": "13.2.1",
     "@types/d3": "7.0.0",
