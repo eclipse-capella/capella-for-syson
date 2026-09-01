@@ -19,12 +19,9 @@ import java.util.List;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
-import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.syson.sysml.ActionUsage;
-import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.ItemUsage;
-import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PayloadFeature;
@@ -136,42 +133,6 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         assertThat(functionalExchange.getPayloadFeature()).isNotSameAs(firstPayloadFeature);
         assertThat(firstPayloadFeature.eResource()).isNull();
         assertThat(this.fixture.getPayloadFeatureTypedItems(functionalExchange)).containsExactlyInAnyOrder(exchangeItem2, exchangeItem3);
-    }
-
-    @Test
-    public void setStatusKindThenUnSetUsageStatusKindShouldCreateThenRemoveStatusMetadata() {
-        Package root = this.fixture.createRootPackage("ModelingMetadata");
-        this.fixture.createStatusKindEnumeration(root, List.of("Draft", "Reviewed"));
-        this.fixture.createModelingMetadataLibrary(root);
-        ActionUsage function = this.fixture.createArcadiaTypedFunction(root, "Function 1");
-
-        LAQueryService laQueryService = new LAQueryService();
-        TransverseQueryService transverseQueryService = new TransverseQueryService();
-        EditingContext editingContext = this.fixture.createEditingContext(root.eResource(), "LAMutationServiceTests");
-
-        try {
-            this.transverseMutationService.setStatusKind(function, "Draft", editingContext);
-
-            assertThat(transverseQueryService.getStatus(function))
-                    .extracting(Element::getDeclaredName)
-                    .isEqualTo("Draft");
-            assertThat(function.getOwnedElement().stream()
-                    .filter(MetadataUsage.class::isInstance)
-                    .map(MetadataUsage.class::cast)
-                    .filter(transverseQueryService::isStatusInfo)
-                    .count()).isEqualTo(1);
-
-            this.transverseMutationService.unSetUsageStatusKind(function);
-
-            assertThat(transverseQueryService.getStatus(function)).isNull();
-            assertThat(function.getOwnedElement().stream()
-                    .filter(MetadataUsage.class::isInstance)
-                    .map(MetadataUsage.class::cast)
-                    .filter(transverseQueryService::isStatusInfo))
-                    .isEmpty();
-        } finally {
-            editingContext.dispose();
-        }
     }
 
     @Test

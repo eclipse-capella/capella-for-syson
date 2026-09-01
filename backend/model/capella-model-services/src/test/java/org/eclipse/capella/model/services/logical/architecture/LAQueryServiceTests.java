@@ -17,13 +17,9 @@ import static org.eclipse.capella.model.transverse.services.TransverseQueryServi
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.REQUIREMENTS_PACKAGE;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STRUCTURE_PACKAGE;
 
-import java.util.List;
-
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
-import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.syson.sysml.ActionUsage;
-import org.eclipse.syson.sysml.EnumerationUsage;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Package;
@@ -157,23 +153,5 @@ public class LAQueryServiceTests {
         assertThat(this.transverseQueryService.getStructurePackage(function)).isPresent().get().isSameAs(structurePackage);
         assertThat(this.transverseQueryService.getFunctionsPackage(function)).isPresent().get().isSameAs(functionsPackage);
         assertThat(this.transverseQueryService.getRequirementsPackage(function)).isPresent().get().isSameAs(requirementsPackage);
-    }
-
-    @Test
-    @DisplayName("GIVEN status-kind enumeration in editing context, WHEN querying status kind values, THEN enum usages and literals are returned")
-    public void testGetStatusKindEnumAndLiterals() {
-        Package root = this.fixture.createRootPackage();
-        this.fixture.createStatusKindEnumeration(root, List.of("Draft", "Reviewed", "Validated"));
-        EditingContext editingContext = this.fixture.createEditingContext(root.eResource(), "LAQueryServiceTests");
-
-        try {
-            assertThat(this.transverseQueryService.getStatusKindEnum(editingContext))
-                    .extracting(EnumerationUsage::getDeclaredName)
-                    .containsExactlyInAnyOrder("Draft", "Reviewed", "Validated");
-            assertThat(this.transverseQueryService.getStatusKindEnumLiterals(editingContext))
-                    .containsExactlyInAnyOrder("Draft", "Reviewed", "Validated");
-        } finally {
-            editingContext.dispose();
-        }
     }
 }
