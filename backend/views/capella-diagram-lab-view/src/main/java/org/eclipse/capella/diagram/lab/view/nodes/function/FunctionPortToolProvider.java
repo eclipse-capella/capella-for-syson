@@ -10,10 +10,9 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.sab.view.nodes.componentport;
+package org.eclipse.capella.diagram.lab.view.nodes.function;
 
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -22,41 +21,37 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
- * Tools to create SAB component ports.
+ * Provide function port creation tools in LAB.
  *
- * @author mbats
+ * @author tbezierslafosse
  */
-public class ComponentPortToolProvider {
+public class FunctionPortToolProvider {
 
     protected final ViewBuilders viewBuilderHelper;
 
     private final DiagramBuilders diagramBuilderHelper;
 
-    public ComponentPortToolProvider(ViewBuilders viewBuilderHelper, DiagramBuilders diagramBuilderHelper) {
+    public FunctionPortToolProvider(ViewBuilders viewBuilderHelper, DiagramBuilders diagramBuilderHelper) {
         this.viewBuilderHelper = viewBuilderHelper;
         this.diagramBuilderHelper = diagramBuilderHelper;
     }
 
-    public NodeTool createNewInputComponentPortNodeTool(IViewDiagramElementFinder cache) {
-        return this.createComponentPortTool(cache, "New Input Port", "/icons/full/obj16/InFlowPort.svg",
-                ServiceMethod.of1(TransverseMutationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::_in"));
+    public NodeTool createNewInputFunctionPortNodeTool(IViewDiagramElementFinder cache) {
+        return this.createFunctionPortTool(cache, "New Input Function Port", "/icons/full/obj16/FunctionInputPort.svg",
+                ServiceMethod.of1(TransverseMutationService::createFunctionPort).aqlSelf("sysml::FeatureDirectionKind::_in"));
     }
 
-    public NodeTool createNewOutputComponentPortNodeTool(IViewDiagramElementFinder cache) {
-        return this.createComponentPortTool(cache, "New Output Port", "/icons/full/obj16/OutFlowPort.svg",
-                ServiceMethod.of1(TransverseMutationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::out"));
+    public NodeTool createNewOutputFunctionPortNodeTool(IViewDiagramElementFinder cache) {
+        return this.createFunctionPortTool(cache, "New Output Function Port", "/icons/full/obj16/FunctionOutputPort.svg",
+                ServiceMethod.of1(TransverseMutationService::createFunctionPort).aqlSelf("sysml::FeatureDirectionKind::out"));
     }
 
-    public NodeTool createNewInOutComponentPortNodeTool(IViewDiagramElementFinder cache) {
-        return this.createComponentPortTool(cache, "New InOut Port", "/icons/full/obj16/InOutFlowPort.svg",
-                ServiceMethod.of1(TransverseMutationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::inout"));
-    }
-
-    private NodeTool createComponentPortTool(IViewDiagramElementFinder cache, String name, String icon, String expression) {
+    private NodeTool createFunctionPortTool(IViewDiagramElementFinder cache, String name, String icon, String expression) {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool().name(name).iconURLsExpression(icon);
-        cache.getNodeDescription(ComponentPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
+        cache.getNodeDescription(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
                     .expression(expression)
                     .children(this.diagramBuilderHelper.newCreateView()

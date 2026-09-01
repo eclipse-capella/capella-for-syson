@@ -51,8 +51,6 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
 
-    private final SARepresentationMutationService mutationService = new SARepresentationMutationService();
-
     @Test
     public void createFunctionalExchangeWhenDroppedShouldRevealDependenciesInSpecificationOrder() {
         var structurePackage = this.getSystemAnalysisStructurePackage();
