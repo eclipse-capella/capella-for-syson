@@ -81,6 +81,19 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     }
 
     @Test
+    public void deleteComponentExchangeBetweenSubComponentsShouldRemoveTheComponentExchangeFromTheParentComponent() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage parentComponent = this.transverseMutationService.createComponent(parent);
+        PartUsage component1 = this.transverseMutationService.createComponent(parentComponent);
+        PartUsage component2 = this.transverseMutationService.createComponent(parentComponent);
+        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(component1, component2);
+        assertThat(parentComponent.getOwnedElement()).contains(componentExchange);
+
+        this.transverseMutationService.delete(componentExchange);
+        assertThat(parentComponent.getOwnedElement()).doesNotContain(componentExchange);
+    }
+
+    @Test
     public void deleteFunctionalExchangeSourcePortShouldDeleteFunctionalExchange() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
