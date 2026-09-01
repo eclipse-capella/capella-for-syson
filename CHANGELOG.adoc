@@ -68,3 +68,5 @@ Diagram description tests should now extend `AbstractEditableDiagramDescriptionT
 All the implementations have been removed and `DefaultViewDiagramElementFinder` should be used instead.
 - https://github.com/eclipse-capella/capella-for-syson/issues/82[#82] [services] Ensure functional exchange are created in the appropriate parent.
 The parent is now the first common ancestor which is either a function or a package.
+- https://github.com/eclipse-capella/capella-for-syson/issues/88[#88] [services] Ensure functional chains are created in the appropriate parent.
+The parent is now the root function of the perspective's _Functions_ package.

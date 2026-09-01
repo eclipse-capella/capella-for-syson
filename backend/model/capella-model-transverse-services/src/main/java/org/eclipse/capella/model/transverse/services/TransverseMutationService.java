@@ -542,10 +542,10 @@ public class TransverseMutationService {
 
     public ActionUsage createFunctionalChain(Element container, Object selectedObjects) {
         ActionUsage actionUsage = null;
-        Optional<Package> optionalFunctionsPackage = this.transverseQueryService.getFunctionsPackage(container);
-        if (optionalFunctionsPackage.isPresent()) {
+        Optional<ActionUsage> optionalRootFunction = this.transverseQueryService.getRootFunction(container);
+        if (optionalRootFunction.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
-            this.metamodelMutationElementService.addChildInParent(optionalFunctionsPackage.get(), actionUsage);
+            this.metamodelMutationElementService.addChildInParent(optionalRootFunction.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.elementInitializerSwitch.doSwitch(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));

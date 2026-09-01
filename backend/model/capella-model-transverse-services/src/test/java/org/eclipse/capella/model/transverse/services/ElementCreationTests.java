@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.capella.tests.fixtures.FunctionsPackage;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
@@ -282,8 +281,8 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
     @Test
     public void createFunctionalChainOnFunctionalExchangesShouldCreateAFunctionalChainWithExchangesInTheProvidedOrder() {
-        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
-        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
 
         ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
         ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
@@ -295,10 +294,11 @@ public class ElementCreationTests extends AbstractSemanticTests {
         // functional exchange not involved in the chain.
         FlowUsage functionalExchange3 = this.transverseMutationService.createFunctionalExchange(function3, function2);
 
-        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1, functionalExchange2));
+        // Functional chains are usually created on the diagram background, so the first argument is the diagram's semantic element: the structure package.
+        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, List.of(functionalExchange1, functionalExchange2));
 
         assertThat(this.transverseQueryService.isFunctionalChain(functionalChain)).isTrue();
-        assertThat(functionsPackage.getElement().getOwnedElement()).contains(functionalChain);
+        assertThat(rootFunction.getOwnedElement()).contains(functionalChain);
         assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange2)).containsExactly(functionalChain);
