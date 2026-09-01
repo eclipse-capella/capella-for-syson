@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.capella.tests.fixtures.FunctionsPackage;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
@@ -306,8 +305,8 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
     @Test
     public void createFunctionalChainOnFunctionalExchangesShouldCreateAFunctionalChainWithExchangesInTheProvidedOrder() {
-        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
-        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
 
         ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
         ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
@@ -319,10 +318,11 @@ public class ElementCreationTests extends AbstractSemanticTests {
         // functional exchange not involved in the chain.
         FlowUsage functionalExchange3 = this.transverseMutationService.createFunctionalExchange(function3, function2);
 
-        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1, functionalExchange2));
+        // Functional chains are usually created on the diagram background, so the first argument is the diagram's semantic element: the structure package.
+        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, List.of(functionalExchange1, functionalExchange2));
 
         assertThat(this.transverseQueryService.isFunctionalChain(functionalChain)).isTrue();
-        assertThat(functionsPackage.getElement().getOwnedElement()).contains(functionalChain);
+        assertThat(rootFunction.getOwnedElement()).contains(functionalChain);
         assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange2)).containsExactly(functionalChain);
@@ -330,6 +330,34 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).contains(functionalChain);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function3)).contains(functionalChain);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange3)).isEmpty();
+    }
+
+    @Test
+    public void createFunctionalChainOnFunctionalExchangesInSubFunctionsShouldCreateAFunctionalChainInTheAppropriateParent() {
+        Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+
+        ActionUsage subFunction1 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage subFunction11 = this.transverseMutationService.createFunction(subFunction1);
+        ActionUsage subFunction12 = this.transverseMutationService.createFunction(subFunction1);
+        FlowUsage functionalExchange11 = this.transverseMutationService.createFunctionalExchange(subFunction11, subFunction12);
+        assertThat(functionalExchange11.getOwner()).isEqualTo(subFunction1);
+
+        ActionUsage subFunction13 = this.transverseMutationService.createFunction(subFunction1);
+        FlowUsage functionalExchange12 = this.transverseMutationService.createFunctionalExchange(subFunction12, subFunction13);
+        assertThat(functionalExchange12.getOwner()).isEqualTo(subFunction1);
+
+        ActionUsage functionalChain1 = this.transverseMutationService.createFunctionalChain(structurePackage, List.of(functionalExchange11, functionalExchange12));
+        assertThat(functionalChain1.getOwner()).isEqualTo(subFunction1);
+
+        ActionUsage subFunction2 = this.transverseMutationService.createFunction(rootFunction);
+        ActionUsage subFunction21 = this.transverseMutationService.createFunction(subFunction2);
+        ActionUsage subFunction22 = this.transverseMutationService.createFunction(subFunction2);
+        FlowUsage functionalExchange21 = this.transverseMutationService.createFunctionalExchange(subFunction21, subFunction22);
+        assertThat(functionalExchange21.getOwner()).isEqualTo(subFunction2);
+
+        ActionUsage functionalChain2 = this.transverseMutationService.createFunctionalChain(structurePackage, List.of(functionalExchange11, functionalExchange12, functionalExchange21));
+        assertThat(functionalChain2.getOwner()).isEqualTo(rootFunction);
     }
 
 }
