@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.oab.view.nodes.component;
 
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -57,6 +58,8 @@ public class EntityComponentToolProvider {
     }
 
     private NodeTool configureNewComponentNodeTool(NodeToolBuilder nodeToolBuilder, IViewDiagramElementFinder cache, boolean isActor) {
+
+        nodeToolBuilder.preconditionExpression(ServiceMethod.of0(TransverseQueryService::isNotComponentHumanActor).aqlSelf());
 
         cache.getNodeDescription(EntityComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 

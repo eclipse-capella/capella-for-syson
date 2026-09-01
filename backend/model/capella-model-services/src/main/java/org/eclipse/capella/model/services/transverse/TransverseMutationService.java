@@ -55,6 +55,7 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.ParameterMembership;
 import org.eclipse.syson.sysml.PartUsage;
@@ -64,6 +65,7 @@ import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.Redefinition;
 import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
@@ -121,6 +123,16 @@ public class TransverseMutationService {
                 });
         descriptionDoc.setBody(newDescription);
         return element;
+    }
+
+    public Subsetting createGeneralization(Feature specific, Feature general) {
+        var generalization = SysmlFactory.eINSTANCE.createSubsetting();
+        generalization.setSubsettingFeature(specific);
+        generalization.setSubsettedFeature(general);
+        generalization.setSpecific(specific);
+        generalization.setGeneral(general);
+        specific.getOwnedRelationship().add(generalization);
+        return generalization;
     }
 
     public Usage setBooleanAttribute(Usage usage, String prefix, String attributeName, boolean newValue) {
@@ -509,6 +521,18 @@ public class TransverseMutationService {
         this.addEndToAllocateEdge(allocation, source);
         this.addEndToAllocateEdge(allocation, target);
         return allocation;
+    }
+
+    public OccurrenceUsage createOperationalCapability(Element parent) {
+        return this.transverseQueryService.getCapabilitiesPackage(parent)
+                .map(capabilitiesPackage -> {
+                    var capability = SysmlFactory.eINSTANCE.createOccurrenceUsage();
+                    this.metamodelMutationElementService.addChildInParent(capabilitiesPackage, capability);
+                    this.elementInitializerSwitch.doSwitch(capability);
+                    this.libraryServices.typeWithArcadiaCapability(capability);
+                    return capability;
+                })
+                .orElse(null);
     }
 
     private void addEndToAllocateEdge(AllocationUsage edge, Element end) {

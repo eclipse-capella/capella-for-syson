@@ -56,6 +56,7 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.OperatorExpression;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PerformActionUsage;
@@ -64,6 +65,7 @@ import org.eclipse.syson.sysml.Redefinition;
 import org.eclipse.syson.sysml.ReferenceSubsetting;
 import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
 import org.eclipse.syson.sysml.VariantMembership;
@@ -82,6 +84,8 @@ public class TransverseQueryService {
 
     public static final String ARCADIA_COMPONENT = "Component";
 
+    public static final String ARCADIA_CAPABILITY = "Capability";
+
     public static final String ARCADIA_ACTOR = "Actor";
 
     public static final String ARCADIA_FUNCTION = "Function";
@@ -96,6 +100,8 @@ public class TransverseQueryService {
 
     public static final String ARCADIA_EXCHANGE_ITEM = "ExchangeItem";
 
+    public static final String ARCADIA_INVOLVED_COMPONENTS = "involvedComponents";
+
     public static final String ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES = "involvedFunctionalExchanges";
 
     public static final String ARCADIA_REQUIREMENT = "ArcadiaRequirement";
@@ -109,6 +115,8 @@ public class TransverseQueryService {
     public static final String MODELING_METADATA_STATUS_INFO = "ModelingMetadata::StatusInfo";
 
     public static final String STRUCTURE_PACKAGE = "Structure";
+
+    public static final String CAPABILITIES_PACKAGE = "Capabilities";
 
     public static final String FUNCTIONS_PACKAGE = "Functions";
 
@@ -360,6 +368,11 @@ public class TransverseQueryService {
         return false;
     }
 
+    public Boolean isCapability(EObject eObject) {
+        return eObject instanceof OccurrenceUsage occurrenceUsage
+                && this.checkType(occurrenceUsage, ARCADIA_PREFIX + ARCADIA_CAPABILITY);
+    }
+
     public Boolean isComponentExchange(EObject eObject) {
         if (eObject instanceof InterfaceUsage interfaceUsage) {
             return this.checkType(interfaceUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE);
@@ -419,6 +432,18 @@ public class TransverseQueryService {
     public boolean isStructurePackage(Object element) {
         return element instanceof Package packageElt
                 && STRUCTURE_PACKAGE.equals(packageElt.getDeclaredName());
+    }
+
+    public boolean isOperationalAnalysisPerspective(Element element) {
+        return this.getArcadiaPerspective(element)
+                        .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
+                        .isPresent();
+    }
+
+    public boolean isOperationalAnalysisCapabilitiesPackage(Object element) {
+        return element instanceof Package packageElt
+                && CAPABILITIES_PACKAGE.equals(packageElt.getDeclaredName())
+                && this.isOperationalAnalysisPerspective(packageElt);
     }
 
     public boolean isFunctionsPackage(Object element) {
@@ -503,6 +528,10 @@ public class TransverseQueryService {
             return this.isActor().test(partUsage) && this.isHuman().test(partUsage);
         }
         return false;
+    }
+
+    public Boolean isNotComponentHumanActor(EObject eObject) {
+        return !this.isComponentHumanActor(eObject);
     }
 
     public Boolean getHumanCheckboxValue(EObject eObject) {
@@ -778,6 +807,18 @@ public class TransverseQueryService {
                 .toList();
     }
 
+    public Optional<PartUsage> getParentComponent(EObject element) {
+        Optional<PartUsage> parent = Optional.empty();
+        if (element instanceof PartUsage component && component.getOwningUsage() instanceof PartUsage parentComponent
+                && this.isComponent(parentComponent)) {
+            parent = Optional.of(parentComponent);
+        } else if (element instanceof PartUsage component && component.getOwner() instanceof PartUsage parentComponent
+                && this.isComponent(parentComponent)) {
+            parent = Optional.of(parentComponent);
+        }
+        return parent;
+    }
+
     /**
      * Retrieve component node candidates for the LAB diagram. At diagram root (Structure Package), return all reachable components so nested components can be displayed directly. Inside a represented
      * component node, keep the direct-subcomponents behavior.
@@ -897,6 +938,18 @@ public class TransverseQueryService {
         return this.getArcadiaPerspectiveOwnedPackage(element, REQUIREMENTS_PACKAGE);
     }
 
+    public Optional<Package> getCapabilitiesPackage(Element element) {
+        return this.getArcadiaPerspectiveOwnedPackage(element, CAPABILITIES_PACKAGE);
+    }
+
+    public List<OccurrenceUsage> getCapabilities(EObject context) {
+        return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getOccurrenceUsage()).stream()
+            .filter(OccurrenceUsage.class::isInstance)
+            .map(OccurrenceUsage.class::cast)
+            .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_CAPABILITY))
+            .toList();
+    }
+
     /**
      * Returns the package named {@code packageName} and owned by the provided {@code element}'s perspective package.
      *
@@ -946,4 +999,25 @@ public class TransverseQueryService {
                 .toList();
     }
 
+    public List<PartUsage> getInvolvedComponents(Usage capability) {
+        return this.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).stream()
+                .filter(this::isComponentActor)
+                .map(PartUsage.class::cast)
+                .toList();
+    }
+
+    public List<Subsetting> getGeneralizations(EObject context) {
+        return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getSubsetting()).stream()
+                .filter(Subsetting.class::isInstance)
+                .map(Subsetting.class::cast)
+                .toList();
+    }
+
+    public Feature getGeneralizationSource(Subsetting generalization) {
+        return generalization.getSubsettingFeature();
+    }
+
+    public Feature getGeneralizationTarget(Subsetting generalization) {
+        return generalization.getSubsettedFeature();
+    }
 }
