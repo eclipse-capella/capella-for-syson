@@ -45,7 +45,6 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.sirius.components.collaborative.forms.services.api.IPropertiesDescriptionRegistry;
 import org.eclipse.sirius.components.collaborative.forms.services.api.IPropertiesDescriptionRegistryConfigurer;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IFeedbackMessageService;
 import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
 import org.eclipse.sirius.components.emf.services.IDAdapter;
@@ -237,9 +236,9 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         statusSelectDescription.setLabelExpression("Status");
         statusSelectDescription.setValueExpression(ServiceMethod.of0(TransverseQueryService::getStatusStringValue).aqlSelf());
         statusSelectDescription.setCandidateLabelExpression(AQLConstants.AQL + SelectComponent.CANDIDATE_VARIABLE);
-        statusSelectDescription.setCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getStatusKindEnumLiterals).aql(IEditingContext.EDITING_CONTEXT));
+        statusSelectDescription.setCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getStatusKindEnumLiterals).aqlSelf());
         var setNewStatusOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setNewStatusOperation.setExpression(ServiceMethod.of2(TransverseMutationService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE, IEditingContext.EDITING_CONTEXT));
+        setNewStatusOperation.setExpression(ServiceMethod.of1(TransverseMutationService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE));
         statusSelectDescription.getBody().add(setNewStatusOperation);
         return List.of(textfieldName, richTextDescription, statusSelectDescription);
     }
