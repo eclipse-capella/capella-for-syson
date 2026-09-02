@@ -17,6 +17,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.component.SystemComponentNodeD
 import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDescriptionProvider;
 import org.eclipse.capella.model.services.transverse.TransverseMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -48,6 +49,8 @@ public class ComponentExchangeToolProvider {
         NodeDescription actorNodeDescription = cache.getNodeDescription(SystemActorNodeDescriptionProvider.NODE_DESCRIPTION_NAME).orElse(null);
         return this.diagramBuilderHelper.newEdgeTool()
                 .name("New Component Exchange")
+                .preconditionExpression(ServiceMethod.of0(TransverseQueryService::canBeExchangeSource)
+                        .aqlSelf())
                 .targetElementDescriptions(targetPortDescription, systemNodeDescription, componentNodeDescription, actorNodeDescription)
                 .iconURLsExpression("/icons/full/obj16/ComponentExchange.svg")
                 .body(this.viewBuilderHelper.newChangeContext()

@@ -33,6 +33,7 @@
 - https://github.com/eclipse-capella/capella-for-syson/issues/28[#28] [fix] Fixed System Function icons.
 - https://github.com/eclipse-capella/capella-for-syson/issues/30[#30] [fix] Display LAB components created from the diagram root inside the Logical System when displayed.
 - https://github.com/eclipse-capella/capella-for-syson/issues/80[#80] [fix] Forbid wrap overflow strategy for outside labels.
+- https://github.com/eclipse-capella/capella-for-syson/issues/51[#51] [fix] Restrict functional and component exchange tools to compatible port directions.
 
 === New Features
 

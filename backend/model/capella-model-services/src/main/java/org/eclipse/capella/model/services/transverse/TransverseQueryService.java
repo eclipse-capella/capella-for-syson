@@ -905,13 +905,33 @@ public class TransverseQueryService {
     public boolean canCreateFunctionalExchange(Feature source, Feature target) {
         var sourceFunction = EMFUtils.getFirstAncestor(ActionUsage.class, source, this::isFunction);
         var targetFunction = EMFUtils.getFirstAncestor(ActionUsage.class, target, this::isFunction);
-        return sourceFunction.isPresent() && targetFunction.isPresent() && !sourceFunction.equals(targetFunction);
+        if (sourceFunction.isEmpty() || targetFunction.isEmpty() || sourceFunction.equals(targetFunction)) {
+            return false;
+        }
+        return this.canBeExchangeSource(source) && this.canBeExchangeTarget(target);
     }
 
     public boolean canCreateComponentExchange(Feature source, Feature target) {
         var sourceComponent = EMFUtils.getFirstAncestor(PartUsage.class, source, this::isComponent);
         var targetComponent = EMFUtils.getFirstAncestor(PartUsage.class, target, this::isComponent);
-        return sourceComponent.isPresent() && targetComponent.isPresent() && !sourceComponent.equals(targetComponent);
+        if (sourceComponent.isEmpty() || targetComponent.isEmpty() || sourceComponent.equals(targetComponent)) {
+            return false;
+        }
+        return this.canBeExchangeSource(source) && this.canBeExchangeTarget(target);
+    }
+
+    public boolean canBeExchangeSource(Feature feature) {
+        if (!this.isFunctionPort(feature) && !this.isComponentPort(feature)) {
+            return true;
+        }
+        return this.isOutFeature(feature) || this.isInOutFeature(feature);
+    }
+
+    public boolean canBeExchangeTarget(Feature feature) {
+        if (!this.isFunctionPort(feature) && !this.isComponentPort(feature)) {
+            return true;
+        }
+        return this.isInFeature(feature) || this.isInOutFeature(feature);
     }
 
     public Optional<Package> getStructurePackage(Element element) {
