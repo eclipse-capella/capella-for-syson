@@ -420,11 +420,58 @@ public class TransverseMutationService {
         }
         FeatureDirectionKind direction = FeatureDirectionKind.get(literalValue);
         if (direction != null) {
-            feature.setDirection(direction);
+            FeatureDirectionKind oppositeDirection = this.getOppositeDirection(direction);
+            if (oppositeDirection != null) {
+                this.getConnectedPortsToInvert(feature).ifPresent(connectedPortsToInvert -> {
+                    feature.setDirection(direction);
+                    connectedPortsToInvert.forEach(connectedPort -> connectedPort.setDirection(this.getOppositeDirection(connectedPort.getDirection())));
+                });
+            } else {
+                feature.setDirection(direction);
+            }
         } else {
             feature.unsetDirection();
         }
         return feature;
+    }
+
+    private Optional<List<Feature>> getConnectedPortsToInvert(Feature feature) {
+        var connectedPortsToInvert = new ArrayList<Feature>();
+        connectedPortsToInvert.add(feature);
+        if (!this.collectConnectedPortsToInvert(feature, null, connectedPortsToInvert)) {
+            this.logger.atWarn()
+                    .setMessage("Cannot update port direction because connected ports contain a cycle")
+                    .addKeyValue("featureId", feature.getElementId())
+                    .log();
+            return Optional.empty();
+        }
+        // first port is added to the list to be considered in cycle analysis
+        // but we remove it after since its direction has already been changed by the user
+        connectedPortsToInvert.removeFirst();
+        return Optional.of(connectedPortsToInvert);
+    }
+
+    private boolean collectConnectedPortsToInvert(Feature currentPort, Feature previousPort, List<Feature> connectedPortsToInvert) {
+        var cycleDetected = false;
+        for (Feature connectedPort : this.transverseQueryService.getOppositeConnectedFeatures(currentPort)) {
+            if (!cycleDetected && !Objects.equals(connectedPort, previousPort)) {
+                if (connectedPortsToInvert.contains(connectedPort)) {
+                    cycleDetected = true;
+                } else {
+                    connectedPortsToInvert.add(connectedPort);
+                    cycleDetected = !this.collectConnectedPortsToInvert(connectedPort, currentPort, connectedPortsToInvert);
+                }
+            }
+        }
+        return !cycleDetected;
+    }
+
+    private FeatureDirectionKind getOppositeDirection(FeatureDirectionKind direction) {
+        return switch (direction) {
+            case IN -> FeatureDirectionKind.OUT;
+            case OUT -> FeatureDirectionKind.IN;
+            default -> null;
+        };
     }
 
     public Element delete(Element element) {

@@ -30,6 +30,7 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
@@ -74,8 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Transverse mutation service. It is important to note that this service must retain its empty constructor and should
- * not have constructors with parameters.
+ * Transverse mutation service. It is important to note that this service must retain its empty constructor and should not have constructors with parameters.
  *
  * @author frouene
  */
@@ -176,6 +176,49 @@ public class TransverseQueryService {
         return null;
     }
 
+    /**
+     * Returns the features at the opposite end of directed binary connectors involving the given feature.
+     *
+     * @param feature
+     *         the feature for which connected features are requested
+     * @return the distinct opposite features, excluding invalid connectors and self-loops
+     */
+    public List<Feature> getOppositeConnectedFeatures(Feature feature) {
+        return EMFUtils.getInverse(feature).stream()
+                .map(Setting::getEObject)
+                .map(inverse -> EMFUtils.getFirstAncestor(ConnectorAsUsage.class, inverse, null))
+                .flatMap(Optional::stream)
+                .distinct()
+                .map(connector -> this.getOppositeConnectorEnd(connector, feature))
+                .flatMap(Optional::stream)
+                .distinct()
+                .toList();
+    }
+
+    private Optional<Feature> getOppositeConnectorEnd(ConnectorAsUsage connector, Feature feature) {
+        var connectorEnds = connector.getConnectorEnd().stream()
+                .map(this::resolveConnectorEnd)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        Optional<Feature> oppositeEnd = Optional.empty();
+        if (connectorEnds.size() == 2 && connectorEnds.contains(feature) &&
+                connectorEnds.stream().allMatch(feat -> FeatureDirectionKind.IN.equals(feat.getDirection()) || FeatureDirectionKind.OUT.equals(feat.getDirection()))) {
+            oppositeEnd = connectorEnds.stream()
+                    .filter(connectorEnd -> !Objects.equals(connectorEnd, feature))
+                    .findFirst();
+        }
+        return oppositeEnd;
+    }
+
+    private Feature resolveConnectorEnd(Feature connectorEnd) {
+        return Optional.ofNullable(connectorEnd)
+                .map(Feature::getOwnedReferenceSubsetting)
+                .map(ReferenceSubsetting::getReferencedFeature)
+                .map(Feature::getFeatureTarget)
+                .orElse(null);
+    }
+
     public Optional<ArcadiaEngineeringPerspective> getArcadiaPerspective(Element element) {
         return this.getArcadiaPerspectivePackage(element).map(Element::getDeclaredName).flatMap(ArcadiaEngineeringPerspective::fromLabel);
     }
@@ -184,7 +227,7 @@ public class TransverseQueryService {
      * Returns the Owning Perspective Package for the given Element (Logical Architecture, Physical Architecture etc.).
      *
      * @param element
-     *            the SysML element to retrieve the parent Perspective package.
+     *         the SysML element to retrieve the parent Perspective package.
      * @return an Optional containing the package if found.
      */
     public Optional<Package> getArcadiaPerspectivePackage(Element element) {
@@ -218,9 +261,9 @@ public class TransverseQueryService {
      * Rely on SysON UtilService#getAllReachable but restricted to the same resource.
      *
      * @param eObject
-     *            the eObject in the resource to look for.
+     *         the eObject in the resource to look for.
      * @param type
-     *            the searched {@link EClass}
+     *         the searched {@link EClass}
      * @return the reachable objects.
      */
     public List<EObject> getAllReachableInResource(EObject eObject, EClass type) {
@@ -241,9 +284,9 @@ public class TransverseQueryService {
      * Provides the values for the given reference on the given usage.
      *
      * @param usage
-     *            the Usage.
+     *         the Usage.
      * @param referenceName
-     *            the reference name in the Arcadia Lib.
+     *         the reference name in the Arcadia Lib.
      * @return the list of values.
      */
     public List<Feature> getFeatureReferenceValue(Usage usage, String referenceName) {
@@ -259,11 +302,9 @@ public class TransverseQueryService {
 
         if (expression instanceof FeatureReferenceExpression featureReferenceExpression) {
             features.add(featureReferenceExpression.getReferent());
-        }
-        else if (expression instanceof FeatureChainExpression featureChainExpression) {
+        } else if (expression instanceof FeatureChainExpression featureChainExpression) {
             features.add(featureChainExpression.getTargetFeature());
-        }
-        else if (expression instanceof OperatorExpression operatorExpression) {
+        } else if (expression instanceof OperatorExpression operatorExpression) {
             // Recurse through all arguments of the operator (e.g., the elements in [fx1, fx2])
             for (Expression arg : operatorExpression.getArgument()) {
                 features.addAll(this.extractAllFeatures(arg));
@@ -464,8 +505,8 @@ public class TransverseQueryService {
 
     public boolean isOperationalAnalysisPerspective(Element element) {
         return this.getArcadiaPerspective(element)
-                        .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
-                        .isPresent();
+                .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
+                .isPresent();
     }
 
     public boolean isOperationalAnalysisCapabilitiesPackage(Object element) {
@@ -499,11 +540,8 @@ public class TransverseQueryService {
     }
 
     /**
-     * Get the formatted label for a Requirement header.
-     * Format: "id - name" with fallbacks:
-     * - If no id and name is empty/default: "Requirement"
-     * - If name is empty/default but id exists: just the id
-     * - Otherwise: "id - name"
+     * Get the formatted label for a Requirement header. Format: "id - name" with fallbacks: - If no id and name is empty/default: "Requirement" - If name is empty/default but id exists: just the id -
+     * Otherwise: "id - name"
      */
     public String getRequirementLabel(RequirementUsage requirement) {
         String reqId = requirement.getReqId();
@@ -1006,10 +1044,10 @@ public class TransverseQueryService {
 
     public List<OccurrenceUsage> getCapabilities(EObject context) {
         return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getOccurrenceUsage()).stream()
-            .filter(OccurrenceUsage.class::isInstance)
-            .map(OccurrenceUsage.class::cast)
-            .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_CAPABILITY))
-            .toList();
+                .filter(OccurrenceUsage.class::isInstance)
+                .map(OccurrenceUsage.class::cast)
+                .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_CAPABILITY))
+                .toList();
     }
 
     /**
