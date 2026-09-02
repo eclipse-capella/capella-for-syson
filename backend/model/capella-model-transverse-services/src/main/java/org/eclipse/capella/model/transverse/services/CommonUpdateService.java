@@ -31,6 +31,7 @@ import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Documentation;
 import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.EndFeatureMembership;
 import org.eclipse.syson.sysml.Expression;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
@@ -353,11 +354,86 @@ public class CommonUpdateService {
         }
         FeatureDirectionKind direction = FeatureDirectionKind.get(literalValue);
         if (direction != null) {
-            feature.setDirection(direction);
+            FeatureDirectionKind oppositeDirection = this.getOppositeDirection(direction);
+            if (oppositeDirection != null) {
+                this.getConnectedPortsToInvert(feature).ifPresent(connectedPortsToInvert -> {
+                    var portsWithUpdatedDirection = new ArrayList<>(connectedPortsToInvert);
+                    portsWithUpdatedDirection.add(feature);
+                    feature.setDirection(direction);
+                    connectedPortsToInvert.forEach(connectedPort -> connectedPort.setDirection(this.getOppositeDirection(connectedPort.getDirection())));
+                    this.updateFunctionalExchangeEnds(portsWithUpdatedDirection);
+                });
+            } else {
+                feature.setDirection(direction);
+            }
         } else {
             feature.unsetDirection();
         }
         return feature;
+    }
+
+    private void updateFunctionalExchangeEnds(List<Feature> portsWithUpdatedDirection) {
+        this.commonQueryService.getFunctionalExchanges(portsWithUpdatedDirection.getFirst())
+                .forEach(functionalExchange -> {
+                    Feature source = (Feature) this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
+                    Feature target = (Feature) this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
+                    var endFeatureMemberships = functionalExchange.getOwnedFeatureMembership().stream()
+                            .filter(EndFeatureMembership.class::isInstance)
+                            .toList();
+                    functionalExchange.getOwnedRelationship().removeAll(endFeatureMemberships);
+                    this.metamodelMutationElementService.setConnectorEnds(functionalExchange, target, source, target.getOwner(), source.getOwner(), functionalExchange.getOwner());
+                });
+    }
+
+    private Optional<List<Feature>> getConnectedPortsToInvert(Feature feature) {
+        var connectedPortsToInvert = new ArrayList<Feature>();
+        connectedPortsToInvert.add(feature);
+        if (!this.collectConnectedPortsToInvert(feature, null, connectedPortsToInvert)) {
+            this.logger.atWarn()
+                    .setMessage("Cannot update port direction because connected ports contain a cycle")
+                    .addKeyValue("featureId", feature.getElementId())
+                    .log();
+            return Optional.empty();
+        }
+        connectedPortsToInvert.removeFirst();
+        return Optional.of(connectedPortsToInvert);
+    }
+
+    /**
+     * Collects the ports that must be inverted to preserve the direction consistency of the connected ports.
+     *
+     * Only ports connected through an opposite {@code IN}/{@code OUT} direction relationship are collected. The collection stops when such a relationship forms a cycle.
+     *
+     * @param currentPort
+     *         the port currently traversed
+     * @param previousPort
+     *         the port from which the current port was reached, or {@code null} for the initial port
+     * @param connectedPortsToInvert
+     *         the ports collected during the traversal
+     * @return {@code true} if no cycle is found, {@code false} otherwise
+     */
+    private boolean collectConnectedPortsToInvert(Feature currentPort, Feature previousPort, List<Feature> connectedPortsToInvert) {
+        var cycleDetected = false;
+        for (Feature connectedPort : this.commonQueryService.getOppositeConnectedFeatures(currentPort)) {
+            if (!cycleDetected && !Objects.equals(connectedPort, previousPort)
+                    && this.getOppositeDirection(currentPort.getDirection()) == connectedPort.getDirection()) {
+                if (connectedPortsToInvert.contains(connectedPort)) {
+                    cycleDetected = true;
+                } else {
+                    connectedPortsToInvert.add(connectedPort);
+                    cycleDetected = !this.collectConnectedPortsToInvert(connectedPort, currentPort, connectedPortsToInvert);
+                }
+            }
+        }
+        return !cycleDetected;
+    }
+
+    private FeatureDirectionKind getOppositeDirection(FeatureDirectionKind direction) {
+        return switch (direction) {
+            case IN -> FeatureDirectionKind.OUT;
+            case OUT -> FeatureDirectionKind.IN;
+            default -> null;
+        };
     }
 
     public Element setPerformAction(Element ownerElement, ActionUsage function) {

@@ -30,6 +30,7 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
@@ -139,6 +140,49 @@ public class CommonQueryService {
     public CommonQueryService() {
         this.modelQueryAQLService = new ModelQueryAQLService();
         this.utilService = new UtilService();
+    }
+
+    /**
+     * Returns the features at the opposite end of directed binary connectors involving the given feature.
+     *
+     * @param feature
+     *         the feature for which connected features are requested
+     * @return the distinct opposite features, excluding invalid connectors and self-loops
+     */
+    public List<Feature> getOppositeConnectedFeatures(Feature feature) {
+        return EMFUtils.getInverse(feature).stream()
+                .map(Setting::getEObject)
+                .map(inverse -> EMFUtils.getFirstAncestor(ConnectorAsUsage.class, inverse, null))
+                .flatMap(Optional::stream)
+                .distinct()
+                .map(connector -> this.getOppositeConnectorEnd(connector, feature))
+                .flatMap(Optional::stream)
+                .distinct()
+                .toList();
+    }
+
+    private Optional<Feature> getOppositeConnectorEnd(ConnectorAsUsage connector, Feature feature) {
+        var connectorEnds = connector.getConnectorEnd().stream()
+                .map(this::resolveConnectorEnd)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+        Optional<Feature> oppositeEnd = Optional.empty();
+        if (connectorEnds.size() == 2 && connectorEnds.contains(feature)
+                && connectorEnds.stream().allMatch(feat -> FeatureDirectionKind.IN.equals(feat.getDirection()) || FeatureDirectionKind.OUT.equals(feat.getDirection()))) {
+            oppositeEnd = connectorEnds.stream()
+                    .filter(connectorEnd -> !Objects.equals(connectorEnd, feature))
+                    .findFirst();
+        }
+        return oppositeEnd;
+    }
+
+    private Feature resolveConnectorEnd(Feature connectorEnd) {
+        return Optional.ofNullable(connectorEnd)
+                .map(Feature::getOwnedReferenceSubsetting)
+                .map(ReferenceSubsetting::getReferencedFeature)
+                .map(Feature::getFeatureTarget)
+                .orElse(null);
     }
 
     public Boolean isArcadiaElement(EObject eObject) {
