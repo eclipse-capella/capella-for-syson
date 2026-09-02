@@ -57,19 +57,19 @@ public class OARepresentationMutationServiceTests {
 
         OATestModelFixture.OperationalAnalysisPackages oaPackages = this.fixture.createOperationalAnalysisPackages(root);
 
-        PartUsage actorEntity = this.oaRepresentationMutationService.createEntityComponent(oaPackages.structurePackage(), false);
+        PartUsage entity = this.oaRepresentationMutationService.createEntityComponent(oaPackages.structurePackage(), false);
         PartUsage humanActorEntity = this.oaRepresentationMutationService.createEntityComponent(oaPackages.structurePackage(), true);
 
-        assertThat(oaPackages.structurePackage().getOwnedElement()).contains(actorEntity, humanActorEntity);
+        assertThat(oaPackages.structurePackage().getOwnedElement()).contains(entity, humanActorEntity);
 
-        assertThat(actorEntity.getDeclaredName()).startsWith("OE ");
+        assertThat(entity.getDeclaredName()).startsWith("OE ");
         assertThat(humanActorEntity.getDeclaredName()).startsWith("OA ");
 
-        assertThat(this.transverseQueryService.checkType(actorEntity, TransverseQueryService.ARCADIA_PREFIX + TransverseQueryService.ARCADIA_COMPONENT)).isTrue();
+        assertThat(this.transverseQueryService.checkType(entity, TransverseQueryService.ARCADIA_PREFIX + TransverseQueryService.ARCADIA_COMPONENT)).isTrue();
         assertThat(this.transverseQueryService.checkType(humanActorEntity, TransverseQueryService.ARCADIA_PREFIX + TransverseQueryService.ARCADIA_COMPONENT)).isTrue();
 
-        assertThat(this.transverseQueryService.isComponentActor(actorEntity)).isTrue();
-        assertThat(this.transverseQueryService.isComponentHumanActor(actorEntity)).isFalse();
+        assertThat(this.transverseQueryService.isComponentActor(entity)).isFalse();
+        assertThat(this.transverseQueryService.isComponentHumanActor(entity)).isFalse();
 
         assertThat(this.transverseQueryService.isComponentActor(humanActorEntity)).isTrue();
         assertThat(this.transverseQueryService.isComponentHumanActor(humanActorEntity)).isTrue();
