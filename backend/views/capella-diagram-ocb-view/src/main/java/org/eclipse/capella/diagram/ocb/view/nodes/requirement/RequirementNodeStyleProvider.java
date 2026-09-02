@@ -41,6 +41,7 @@ public class RequirementNodeStyleProvider {
                 .borderColor(this.colorProvider.getColor(OCBViewConstants.REQUIREMENT_BORDER_COLOR))
                 .borderRadius(0)
                 .borderSize(2)
+                .childrenLayoutStrategy(this.diagramBuilderHelper.newListLayoutStrategyDescription().build())
                 .build();
     }
 

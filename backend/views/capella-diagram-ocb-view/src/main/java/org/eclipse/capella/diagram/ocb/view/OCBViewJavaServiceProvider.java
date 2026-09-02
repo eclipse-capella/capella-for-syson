@@ -30,6 +30,7 @@ import org.eclipse.syson.diagram.services.DiagramQueryElementService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
 import org.eclipse.syson.diagram.services.aql.DiagramQueryAQLService;
+import org.eclipse.syson.diagram.common.view.services.ViewLabelService;
 import org.eclipse.syson.model.services.aql.ModelMutationAQLService;
 import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
 import org.eclipse.syson.services.LabelService;
@@ -68,7 +69,8 @@ public class OCBViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramMutationExposeService.class,
                     ModelMutationAQLService.class,
                     ModelQueryAQLService.class,
-                    TreeQueryAQLService.class);
+                    TreeQueryAQLService.class,
+                    ViewLabelService.class);
         }
         return List.of();
     }

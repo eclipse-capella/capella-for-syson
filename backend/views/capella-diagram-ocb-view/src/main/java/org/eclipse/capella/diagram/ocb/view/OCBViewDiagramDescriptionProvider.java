@@ -17,6 +17,8 @@ import java.util.List;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentItemNodeDescriptionProvider;
+import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -62,6 +64,10 @@ public class OCBViewDiagramDescriptionProvider implements IRepresentationDescrip
         var diagramElementDescriptionProviders = List.of(
                 new ComponentNodeDescriptionProvider(colorProvider),
                 new CapabilityNodeDescriptionProvider(colorProvider),
+                new OCBCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new OCBCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new RequirementNodeDescriptionProvider(colorProvider));
 
         diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);

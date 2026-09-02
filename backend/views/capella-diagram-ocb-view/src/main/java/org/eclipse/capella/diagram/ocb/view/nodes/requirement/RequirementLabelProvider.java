@@ -15,6 +15,7 @@ package org.eclipse.capella.diagram.ocb.view.nodes.requirement;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.ocb.view.OCBViewConstants;
+import org.eclipse.capella.model.services.transverse.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
@@ -23,6 +24,7 @@ import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.InsideLabelStyle;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.LabelTextAlign;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Label for Requirements nodes.
@@ -43,8 +45,8 @@ public class RequirementLabelProvider {
     public InsideLabelDescription createInsideLabelDescription() {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
-                .labelExpression("aql:self.name")
-                .position(InsideLabelPosition.MIDDLE_CENTER)
+                .labelExpression(ServiceMethod.of0(TransverseQueryService::getRequirementLabel).aqlSelf())
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
                 .build();
@@ -53,7 +55,7 @@ public class RequirementLabelProvider {
     private InsideLabelStyle createInsideLabelStyle() {
         return this.diagramBuilderHelper.newInsideLabelStyle()
                 .borderSize(0)
-                .headerSeparatorDisplayMode(HeaderSeparatorDisplayMode.NEVER)
+                .headerSeparatorDisplayMode(HeaderSeparatorDisplayMode.IF_CHILDREN)
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(OCBViewConstants.REQUIREMENT_LABEL_COLOR))
                 .showIconExpression("aql:true")
