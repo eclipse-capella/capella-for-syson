@@ -160,6 +160,46 @@ public class ElementCreationTests extends AbstractSemanticTests {
     }
 
     @Test
+    public void createComponentExchangeWhenEndpointsAreInOutPortsShouldConnectTheProvidedPorts() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage sourcePort = this.transverseMutationService.createComponentPort(sourceComponent, FeatureDirectionKind.INOUT);
+        PartUsage targetComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage targetPort = this.transverseMutationService.createComponentPort(targetComponent, FeatureDirectionKind.INOUT);
+
+        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
+
+        assertThat(this.transverseQueryService.getComponentExchangeSource(componentExchange)).isEqualTo(sourcePort);
+        assertThat(this.transverseQueryService.getComponentExchangeTarget(componentExchange)).isEqualTo(targetPort);
+    }
+
+    @Test
+    public void createComponentExchangeWhenSourcePortIsInShouldNotCreateComponentExchange() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage sourcePort = this.transverseMutationService.createComponentPort(sourceComponent, FeatureDirectionKind.IN);
+        PartUsage targetComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage targetPort = this.transverseMutationService.createComponentPort(targetComponent, FeatureDirectionKind.IN);
+
+        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
+
+        assertThat(componentExchange).isNull();
+    }
+
+    @Test
+    public void createComponentExchangeWhenTargetPortIsOutShouldNotCreateComponentExchange() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage sourcePort = this.transverseMutationService.createComponentPort(sourceComponent, FeatureDirectionKind.OUT);
+        PartUsage targetComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage targetPort = this.transverseMutationService.createComponentPort(targetComponent, FeatureDirectionKind.OUT);
+
+        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
+
+        assertThat(componentExchange).isNull();
+    }
+
+    @Test
     public void createComponentExchangeWhenEndpointsAreTheSameComponentShouldNotCreateComponentExchangeAndPorts() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component1 = this.transverseMutationService.createComponent(parent);
@@ -228,6 +268,46 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(this.transverseQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(port1);
         assertThat(this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(port2);
         assertThat(functionalExchange.getOwner()).isEqualTo(functionsPackage.getElement());
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenEndpointsAreInOutPortsShouldConnectTheProvidedPorts() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage sourceFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage sourcePort = this.transverseMutationService.createFunctionPort(sourceFunction, FeatureDirectionKind.INOUT);
+        ActionUsage targetFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage targetPort = this.transverseMutationService.createFunctionPort(targetFunction, FeatureDirectionKind.INOUT);
+
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort);
+
+        assertThat(this.transverseQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(sourcePort);
+        assertThat(this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(targetPort);
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenSourcePortIsInShouldNotCreateFunctionalExchange() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage sourceFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage sourcePort = this.transverseMutationService.createFunctionPort(sourceFunction, FeatureDirectionKind.IN);
+        ActionUsage targetFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage targetPort = this.transverseMutationService.createFunctionPort(targetFunction, FeatureDirectionKind.IN);
+
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort);
+
+        assertThat(functionalExchange).isNull();
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenTargetPortIsOutShouldNotCreateFunctionalExchange() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage sourceFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage sourcePort = this.transverseMutationService.createFunctionPort(sourceFunction, FeatureDirectionKind.OUT);
+        ActionUsage targetFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage targetPort = this.transverseMutationService.createFunctionPort(targetFunction, FeatureDirectionKind.OUT);
+
+        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort);
+
+        assertThat(functionalExchange).isNull();
     }
 
     @Test

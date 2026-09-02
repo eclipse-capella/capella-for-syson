@@ -13,6 +13,7 @@
 package org.eclipse.capella.model.services.transverse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -75,11 +76,11 @@ public class TransverseRepresentationReconnectToolServicesTests {
         var structurePackage = this.createStructurePackage();
         var sourceComponent = this.createComponent("Source", componentType, structurePackage);
         var targetComponent = this.createComponent("Target", componentType, structurePackage);
-        var sourcePort = this.createComponentPort(sourceComponent, "CP 1", componentPortType);
-        var targetPort = this.createComponentPort(targetComponent, "CP 2", componentPortType);
-        var newSourcePort = this.createComponentPort(sourceComponent, "CP 3", componentPortType);
-        var newTargetPort = this.createComponentPort(targetComponent, "CP 4", componentPortType);
-        var invalidTargetPort = this.createComponentPort(sourceComponent, "CP 5", componentPortType);
+        var sourcePort = this.createComponentPort(sourceComponent, "CP 1", componentPortType, FeatureDirectionKind.OUT);
+        var targetPort = this.createComponentPort(targetComponent, "CP 2", componentPortType, FeatureDirectionKind.IN);
+        var newSourcePort = this.createComponentPort(sourceComponent, "CP 3", componentPortType, FeatureDirectionKind.INOUT);
+        var newTargetPort = this.createComponentPort(targetComponent, "CP 4", componentPortType, FeatureDirectionKind.INOUT);
+        var invalidTargetPort = this.createComponentPort(sourceComponent, "CP 5", componentPortType, FeatureDirectionKind.IN);
         InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
 
         this.reconnectToolServices.reconnectComponentExchange(componentExchange, newSourcePort, sourcePort);
@@ -92,13 +93,13 @@ public class TransverseRepresentationReconnectToolServicesTests {
 
     @Disabled("This test will be re-enabled once we use the actual arcadia library for the unit tests")
     @Test
-    public void reconnectFunctionalExchangeShouldUpdateOnlyValidOutToInPorts() {
+    public void reconnectFunctionalExchangeShouldUpdateOnlyValidDirectionalPorts() {
         var sourceFunction = SysmlFactory.eINSTANCE.createActionUsage();
         var targetFunction = SysmlFactory.eINSTANCE.createActionUsage();
         var sourcePort = this.createFunctionPort(sourceFunction, FeatureDirectionKind.OUT);
         var targetPort = this.createFunctionPort(targetFunction, FeatureDirectionKind.IN);
-        var newSourcePort = this.createFunctionPort(sourceFunction, FeatureDirectionKind.OUT);
-        var newTargetPort = this.createFunctionPort(targetFunction, FeatureDirectionKind.IN);
+        var newSourcePort = this.createFunctionPort(sourceFunction, FeatureDirectionKind.INOUT);
+        var newTargetPort = this.createFunctionPort(targetFunction, FeatureDirectionKind.INOUT);
         var invalidSourcePort = this.createFunctionPort(targetFunction, FeatureDirectionKind.OUT);
         var invalidTargetPort = this.createFunctionPort(sourceFunction, FeatureDirectionKind.IN);
         FlowUsage functionalExchange = new org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService().createFlowUsage(sourcePort, targetPort, null, null, sourceFunction);
@@ -200,9 +201,10 @@ public class TransverseRepresentationReconnectToolServicesTests {
         return component;
     }
 
-    private PortUsage createComponentPort(PartUsage component, String declaredName, PortDefinition componentPortType) {
+    private PortUsage createComponentPort(PartUsage component, String declaredName, PortDefinition componentPortType, FeatureDirectionKind direction) {
         PortUsage portUsage = SysmlFactory.eINSTANCE.createPortUsage();
         portUsage.setDeclaredName(declaredName);
+        portUsage.setDirection(direction);
         new UtilService().setFeatureTyping(portUsage, componentPortType);
         this.metamodelMutationElementService.addChildInParent(component, portUsage);
         return portUsage;
