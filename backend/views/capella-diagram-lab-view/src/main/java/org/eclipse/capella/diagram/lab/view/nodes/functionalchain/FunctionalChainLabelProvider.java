@@ -51,7 +51,7 @@ public class FunctionalChainLabelProvider {
     public OutsideLabelDescription createOutsideLabelDescription() {
         return this.diagramBuilderHelper.newOutsideLabelDescription()
                 .labelExpression("aql:self.name")
-                .overflowStrategy(LabelOverflowStrategy.WRAP)
+                .overflowStrategy(LabelOverflowStrategy.NONE)
                 .textAlign(LabelTextAlign.CENTER)
                 .style(this.createOutsideLabelStyle())
                 .build();

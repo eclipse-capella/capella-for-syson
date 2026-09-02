@@ -54,13 +54,14 @@ import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
-import org.eclipse.sirius.components.view.diagram.LabelDescription;
+import org.eclipse.sirius.components.view.diagram.InsideLabelDescription;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
+import org.eclipse.sirius.components.view.diagram.OutsideLabelDescription;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
-import org.eclipse.syson.sysml.helper.EMFUtils;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -171,12 +172,24 @@ public abstract class AbstractDiagramDescriptionTests {
     }
 
     @Test
-    public void eachNodeLabelShouldWrapOverflowingText() {
+    @DisplayName("Each NodeDescription with an inside label should wrap overflowing text")
+    public void eachNodeInsideLabelShouldWrapOverflowingText() {
         SoftAssertions softly = new SoftAssertions();
-        EMFUtils.allContainedObjectOfType(this.diagramDescription, LabelDescription.class)
-                .forEach(labelDescription -> softly.assertThat(labelDescription.getOverflowStrategy())
-                        .as("Label of %s should wrap overflowing text", this.getDescriptionName(labelDescription))
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, InsideLabelDescription.class)
+                .forEach(insideLabelDescription -> softly.assertThat(insideLabelDescription.getOverflowStrategy())
+                        .as("InsideLabel of %s should wrap overflowing text", this.getDescriptionName(insideLabelDescription))
                         .isEqualTo(LabelOverflowStrategy.WRAP));
+        softly.assertAll();
+    }
+
+    @Test
+    @DisplayName("Each NodeDescription with an outside label should not have a strategy for overflowing text")
+    public void eachNodeOutsideLabelShouldNotHaveAStrategyForOverflowingText() {
+        SoftAssertions softly = new SoftAssertions();
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, OutsideLabelDescription.class)
+                .forEach(outsideLabelDescription -> softly.assertThat(outsideLabelDescription.getOverflowStrategy())
+                        .as("OutsideLabel of %s should not have a strategy for overflowing text", this.getDescriptionName(outsideLabelDescription))
+                        .isEqualTo(LabelOverflowStrategy.NONE));
         softly.assertAll();
     }
 
