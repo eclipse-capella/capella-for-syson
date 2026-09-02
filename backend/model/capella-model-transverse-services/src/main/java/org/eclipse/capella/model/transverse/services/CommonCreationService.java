@@ -262,7 +262,14 @@ public class CommonCreationService {
                     functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
                     return functionalExchange;
                 }
-
+            } else {
+                this.logger.atWarn()
+                        .setMessage("Cannot create functional exchange between '{}' ({}) and '{}' ({}): incompatible endpoints.")
+                        .addArgument(source.getDeclaredName())
+                        .addArgument(source.getDirection())
+                        .addArgument(target.getDeclaredName())
+                        .addArgument(target.getDirection())
+                        .log();
             }
         }
         return null;
@@ -289,6 +296,14 @@ public class CommonCreationService {
                     componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
                     return componentExchange;
                 }
+            } else {
+                this.logger.atWarn()
+                        .setMessage("Cannot create component exchange between '{}' ({}) and '{}' ({}): incompatible endpoints.")
+                        .addArgument(source.getDeclaredName())
+                        .addArgument(source.getDirection())
+                        .addArgument(target.getDeclaredName())
+                        .addArgument(target.getDirection())
+                        .log();
             }
         }
         return null;

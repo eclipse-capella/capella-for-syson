@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oab.view.edges.componentexchange;
 
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -42,6 +43,8 @@ public class CommunicationMeanComponentExchangeToolProvider {
         NodeDescription targetNodeDescription = cache.getNodeDescription(EntityComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).orElse(null);
         var edgeToolBuilder = this.diagramBuilderHelper.newEdgeTool()
                 .name("New Communication Mean")
+                .preconditionExpression(ServiceMethod.of0(CommonQueryService::canBeExchangeSource)
+                        .aqlSelf())
                 .targetElementDescriptions(targetNodeDescription)
                 .iconURLsExpression("/icons/full/obj16/ComponentExchange.svg")
                 .body(this.viewBuilderHelper.newChangeContext()

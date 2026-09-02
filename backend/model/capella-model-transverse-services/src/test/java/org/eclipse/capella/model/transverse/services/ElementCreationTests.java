@@ -187,6 +187,46 @@ public class ElementCreationTests extends AbstractSemanticTests {
     }
 
     @Test
+    public void createComponentExchangeWhenEndpointsAreInOutPortsShouldConnectTheProvidedPorts() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.commonCreationService.createComponent(parent);
+        PortUsage sourcePort = this.commonCreationService.createComponentPort(sourceComponent, FeatureDirectionKind.INOUT);
+        PartUsage targetComponent = this.commonCreationService.createComponent(parent);
+        PortUsage targetPort = this.commonCreationService.createComponentPort(targetComponent, FeatureDirectionKind.INOUT);
+
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(sourcePort, targetPort);
+
+        assertThat(this.commonQueryService.getComponentExchangeSource(componentExchange)).isEqualTo(sourcePort);
+        assertThat(this.commonQueryService.getComponentExchangeTarget(componentExchange)).isEqualTo(targetPort);
+    }
+
+    @Test
+    public void createComponentExchangeWhenSourcePortIsInShouldNotCreateComponentExchange() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.commonCreationService.createComponent(parent);
+        PortUsage sourcePort = this.commonCreationService.createComponentPort(sourceComponent, FeatureDirectionKind.IN);
+        PartUsage targetComponent = this.commonCreationService.createComponent(parent);
+        PortUsage targetPort = this.commonCreationService.createComponentPort(targetComponent, FeatureDirectionKind.IN);
+
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(sourcePort, targetPort);
+
+        assertThat(componentExchange).isNull();
+    }
+
+    @Test
+    public void createComponentExchangeWhenTargetPortIsOutShouldNotCreateComponentExchange() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.commonCreationService.createComponent(parent);
+        PortUsage sourcePort = this.commonCreationService.createComponentPort(sourceComponent, FeatureDirectionKind.OUT);
+        PartUsage targetComponent = this.commonCreationService.createComponent(parent);
+        PortUsage targetPort = this.commonCreationService.createComponentPort(targetComponent, FeatureDirectionKind.OUT);
+
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(sourcePort, targetPort);
+
+        assertThat(componentExchange).isNull();
+    }
+
+    @Test
     public void createComponentExchangeWhenEndpointsAreTheSameComponentShouldNotCreateComponentExchangeAndPorts() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component1 = this.commonCreationService.createComponent(parent);
@@ -269,6 +309,46 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(this.commonQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(port1);
         assertThat(this.commonQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(port2);
         assertThat(functionalExchange.getOwner()).isEqualTo(rootFunction);
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenEndpointsAreInOutPortsShouldConnectTheProvidedPorts() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage sourceFunction = this.commonCreationService.createFunction(rootFunction);
+        ItemUsage sourcePort = this.commonCreationService.createFunctionPort(sourceFunction, FeatureDirectionKind.INOUT);
+        ActionUsage targetFunction = this.commonCreationService.createFunction(rootFunction);
+        ItemUsage targetPort = this.commonCreationService.createFunctionPort(targetFunction, FeatureDirectionKind.INOUT);
+
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourcePort, targetPort);
+
+        assertThat(this.commonQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(sourcePort);
+        assertThat(this.commonQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(targetPort);
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenSourcePortIsInShouldNotCreateFunctionalExchange() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage sourceFunction = this.commonCreationService.createFunction(rootFunction);
+        ItemUsage sourcePort = this.commonCreationService.createFunctionPort(sourceFunction, FeatureDirectionKind.IN);
+        ActionUsage targetFunction = this.commonCreationService.createFunction(rootFunction);
+        ItemUsage targetPort = this.commonCreationService.createFunctionPort(targetFunction, FeatureDirectionKind.IN);
+
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourcePort, targetPort);
+
+        assertThat(functionalExchange).isNull();
+    }
+
+    @Test
+    public void createFunctionalExchangeWhenTargetPortIsOutShouldNotCreateFunctionalExchange() {
+        ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage sourceFunction = this.commonCreationService.createFunction(rootFunction);
+        ItemUsage sourcePort = this.commonCreationService.createFunctionPort(sourceFunction, FeatureDirectionKind.OUT);
+        ActionUsage targetFunction = this.commonCreationService.createFunction(rootFunction);
+        ItemUsage targetPort = this.commonCreationService.createFunctionPort(targetFunction, FeatureDirectionKind.OUT);
+
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourcePort, targetPort);
+
+        assertThat(functionalExchange).isNull();
     }
 
     @Test

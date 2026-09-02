@@ -71,8 +71,8 @@ public class ElementModificationTests extends AbstractSemanticTests {
         PortUsage secondPort = this.commonCreationService.createComponentPort(secondComponent, FeatureDirectionKind.IN);
         PartUsage thirdComponent = this.commonCreationService.createComponent(parent);
         PortUsage thirdPort = this.commonCreationService.createComponentPort(thirdComponent, FeatureDirectionKind.OUT);
-        this.commonCreationService.createComponentExchange(firstPort, secondPort);
-        this.commonCreationService.createComponentExchange(secondPort, thirdPort);
+        this.metamodelMutationElementService.createConnectionUsage(firstPort, secondPort, firstComponent, secondComponent, parent);
+        this.metamodelMutationElementService.createConnectionUsage(secondPort, thirdPort, secondComponent, thirdComponent, parent);
 
         this.commonUpdateService.setFeatureDirection(firstPort, FeatureDirectionKind.IN);
 
@@ -92,10 +92,10 @@ public class ElementModificationTests extends AbstractSemanticTests {
         PortUsage thirdPort = this.commonCreationService.createComponentPort(thirdComponent, FeatureDirectionKind.OUT);
         PartUsage fourthComponent = this.commonCreationService.createComponent(parent);
         PortUsage fourthPort = this.commonCreationService.createComponentPort(fourthComponent, FeatureDirectionKind.IN);
-        this.commonCreationService.createComponentExchange(firstPort, secondPort);
-        this.commonCreationService.createComponentExchange(secondPort, thirdPort);
-        this.commonCreationService.createComponentExchange(thirdPort, fourthPort);
-        this.commonCreationService.createComponentExchange(fourthPort, firstPort);
+        this.metamodelMutationElementService.createConnectionUsage(firstPort, secondPort, firstComponent, secondComponent, parent);
+        this.metamodelMutationElementService.createConnectionUsage(secondPort, thirdPort, secondComponent, thirdComponent, parent);
+        this.metamodelMutationElementService.createConnectionUsage(thirdPort, fourthPort, thirdComponent, fourthComponent, parent);
+        this.metamodelMutationElementService.createConnectionUsage(fourthPort, firstPort, fourthComponent, firstComponent, parent);
 
         this.commonUpdateService.setFeatureDirection(firstPort, FeatureDirectionKind.IN);
 
