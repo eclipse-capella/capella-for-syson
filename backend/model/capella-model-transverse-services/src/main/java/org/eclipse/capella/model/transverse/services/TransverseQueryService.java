@@ -19,7 +19,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
@@ -40,6 +39,7 @@ import org.eclipse.syson.sysml.ConnectorAsUsage;
 import org.eclipse.syson.sysml.Documentation;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.EndFeatureMembership;
+import org.eclipse.syson.sysml.EnumerationDefinition;
 import org.eclipse.syson.sysml.EnumerationUsage;
 import org.eclipse.syson.sysml.Expression;
 import org.eclipse.syson.sysml.Feature;
@@ -52,6 +52,7 @@ import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
+import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.Namespace;
 import org.eclipse.syson.sysml.OperatorExpression;
@@ -66,8 +67,9 @@ import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
-import org.eclipse.syson.sysml.VariantMembership;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Transverse mutation service. It is important to note that this service must retain its empty constructor and should
@@ -76,6 +78,7 @@ import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
  * @author frouene
  */
 public class TransverseQueryService {
+
     public static final String PATH_SEPARATOR = "::";
 
     public static final String ARCADIA_PREFIX = "Arcadia" + PATH_SEPARATOR;
@@ -110,6 +113,8 @@ public class TransverseQueryService {
 
     public static final String MODELING_METADATA_STATUS_INFO = "ModelingMetadata::StatusInfo";
 
+    public static final String MODELING_METADATA_STATUS_KIND = "ModelingMetadata::StatusKind";
+
     public static final String STRUCTURE_PACKAGE = "Structure";
 
     public static final String CAPABILITIES_PACKAGE = "Capabilities";
@@ -121,6 +126,8 @@ public class TransverseQueryService {
     public static final String STATUS = "status";
 
     public static final String STATUS_KIND = "StatusKind";
+
+    private final Logger logger = LoggerFactory.getLogger(TransverseQueryService.class);
 
     private final ModelQueryAQLService modelQueryAQLService;
 
@@ -303,30 +310,28 @@ public class TransverseQueryService {
      * <p>
      * This method expects {@code element} to be any object in a {@link ResourceSet} containing the Arcadia library. The object itself is simply used to access the resource set.
      *
-     * @param element
-     *         the contextual element
+     * @param namespace
+     *         the contextual namespace
      * @return the list of status kind enumerations.
      */
-    public List<EnumerationUsage> getStatusKindEnum(Element element) {
-        ResourceSet resourceSet = element.eResource().getResourceSet();
-        var statusKindEnum = resourceSet.getResources().stream()
-                .flatMap(res -> {
-                    Iterable<EObject> iterable = () -> EcoreUtil.getAllContents(res, true);
-                    return StreamSupport.stream(iterable.spliterator(), false);
-                })
-                .filter(obj -> obj instanceof org.eclipse.syson.sysml.EnumerationDefinition)
-                .map(org.eclipse.syson.sysml.EnumerationDefinition.class::cast)
-                .filter(enumDef -> STATUS_KIND.equals(enumDef.getDeclaredName())).findFirst();
+    public List<EnumerationUsage> getStatusKindEnum(Namespace namespace) {
+        // resolve "ModelingMetadata::StatusKind"
+        List<EnumerationUsage> result = new ArrayList<>();
+        Optional<EnumerationDefinition> optionalStatusKindEnumerationDefinition = Optional.ofNullable(namespace.resolve(MODELING_METADATA_STATUS_KIND))
+                .map(Membership::getMemberElement)
+                .filter(EnumerationDefinition.class::isInstance)
+                .map(EnumerationDefinition.class::cast);
 
-        return statusKindEnum.get()
-                .getOwnedRelationship()
-                .stream()
-                .filter(relationship -> relationship instanceof VariantMembership)
-                .map(VariantMembership.class::cast)
-                .flatMap(variantMembership -> variantMembership.getOwnedRelatedElement().stream())
-                .filter(EnumerationUsage.class::isInstance)
-                .map(EnumerationUsage.class::cast)
-                .toList();
+        if (optionalStatusKindEnumerationDefinition.isPresent()) {
+            result = optionalStatusKindEnumerationDefinition.get().getEnumeratedValue();
+        } else {
+            this.logger.atWarn()
+                    .setMessage("Cannot find enumeration definition {}")
+                    .addArgument(MODELING_METADATA_STATUS_KIND)
+                    .addKeyValue("namespaceId", namespace.getElementId())
+                    .log();
+        }
+        return result;
     }
 
     /**
@@ -334,12 +339,12 @@ public class TransverseQueryService {
      * <p>
      * This method expects {@code element} to be any object in a {@link ResourceSet} containing the Arcadia library. The object itself is simply used to access the resource set.
      *
-     * @param element
-     *         the contextual element
+     * @param namespace
+     *         the contextual namespace
      * @return the list of status kind enumeration literals.
      */
-    public List<String> getStatusKindEnumLiterals(Element element) {
-        return this.getStatusKindEnum(element)
+    public List<String> getStatusKindEnumLiterals(Namespace namespace) {
+        return this.getStatusKindEnum(namespace)
                 .stream()
                 .map(EnumerationUsage::getDeclaredName)
                 .toList();

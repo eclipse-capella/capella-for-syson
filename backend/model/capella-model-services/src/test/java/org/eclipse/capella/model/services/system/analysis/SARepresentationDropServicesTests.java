@@ -27,6 +27,7 @@ import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
+import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.DiagramStyle;
 import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
@@ -66,7 +67,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
-        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService)
+        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService, new IObjectSearchService.NoOp())
                 .dropIntoDiagramFromExplorer(functionalExchange, null, null, diagramContext, Map.of());
 
         assertEquals(List.of(system, sourceFunction, targetFunction, sourcePort, targetPort, functionalExchange), diagramServices.createdElements);
@@ -86,7 +87,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
-        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService)
+        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService, new IObjectSearchService.NoOp())
                 .dropIntoDiagramFromExplorer(functionalExchange, null, null, diagramContext, Map.of());
 
         assertEquals(List.of(), diagramServices.createdElements);
@@ -103,12 +104,12 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
         FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
-        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService)
+        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService, new IObjectSearchService.NoOp())
                 .dropIntoDiagramFromExplorer(functionalExchange, null, null, diagramContext, Map.of());
         diagramServices.createdElements.clear();
         diagramServices.containmentKinds.clear();
 
-        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService)
+        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService, new IObjectSearchService.NoOp())
                 .dropIntoDiagramFromExplorer(functionalExchange, null, null, diagramContext, Map.of());
 
         assertEquals(List.of(functionalExchange), diagramServices.createdElements);
@@ -121,7 +122,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
-        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService)
+        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService, new IObjectSearchService.NoOp())
                 .dropIntoDiagramFromExplorer(requirement, null, null, diagramContext, Map.of());
 
         assertEquals(List.of(requirement), diagramServices.createdElements);
@@ -137,7 +138,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
-        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService)
+        new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService, new IObjectSearchService.NoOp())
                 .dropIntoDiagramFromExplorer(component, "system node", null, diagramContext, Map.of());
 
         assertEquals(List.of(component), diagramServices.createdElements);

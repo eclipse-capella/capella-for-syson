@@ -358,7 +358,7 @@ public class SARepresentationMutationServiceTests {
         var targetComponent = this.transverseMutationService.createComponent(system);
         var function = this.transverseMutationService.createFunction(sourceComponent);
 
-        this.semanticMutationService.moveFunctionToComponent(function, targetComponent);
+        this.semanticMutationService.moveFunctionToComponent(function, sourceComponent, targetComponent);
 
         var queryService = new TransverseQueryService();
         assertTrue(queryService.getAllocatedFunctions(sourceComponent).isEmpty());
