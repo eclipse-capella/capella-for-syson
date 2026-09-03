@@ -115,4 +115,5 @@ public class FunctionPaletteProvider {
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(droppableNodes::add);
         return droppableNodes;
     }
+
 }

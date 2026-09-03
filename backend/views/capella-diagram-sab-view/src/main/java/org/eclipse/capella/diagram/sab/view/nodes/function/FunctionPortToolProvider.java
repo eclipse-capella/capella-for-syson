@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.function;
 
-import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
+import org.eclipse.capella.model.services.transverse.TransverseMutationService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -41,12 +41,12 @@ public class FunctionPortToolProvider {
 
     public NodeTool createNewInputFunctionPortNodeTool(IViewDiagramElementFinder cache) {
         return this.createFunctionPortTool(cache, "New Input Function Port", "/icons/full/obj16/FunctionInputPort.svg",
-                ServiceMethod.of0(SARepresentationMutationService::createInputFunctionPort).aqlSelf());
+                ServiceMethod.of1(TransverseMutationService::createFunctionPort).aqlSelf("sysml::FeatureDirectionKind::_in"));
     }
 
     public NodeTool createNewOutputFunctionPortNodeTool(IViewDiagramElementFinder cache) {
         return this.createFunctionPortTool(cache, "New Output Function Port", "/icons/full/obj16/FunctionOutputPort.svg",
-                ServiceMethod.of0(SARepresentationMutationService::createOutputFunctionPort).aqlSelf());
+                ServiceMethod.of1(TransverseMutationService::createFunctionPort).aqlSelf("sysml::FeatureDirectionKind::_out"));
     }
 
     private NodeTool createFunctionPortTool(IViewDiagramElementFinder cache, String name, String icon, String expression) {

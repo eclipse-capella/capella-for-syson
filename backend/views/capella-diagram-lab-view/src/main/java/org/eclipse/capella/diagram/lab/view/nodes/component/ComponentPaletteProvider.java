@@ -84,7 +84,9 @@ public class ComponentPaletteProvider {
                 .nodeTools(this.createNewFunctionNodeTool(cache),
                         new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentNodeTool(cache),
                         new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewActorComponentNodeTool(cache),
-                        this.createNewComponentPortNodeTool(cache))
+                        this.createNewComponentPortNodeTool("New Input Port", "/icons/full/obj16/InFlowPort.svg", "sysml::FeatureDirectionKind::_in"),
+                        this.createNewComponentPortNodeTool("New Output Port", "/icons/full/obj16/OutFlowPort.svg", "sysml::FeatureDirectionKind::out"),
+                        this.createNewComponentPortNodeTool("New InOut Port", "/icons/full/obj16/InOutFlowPort.svg", "sysml::FeatureDirectionKind::inout"))
                 .edgeTools(new ComponentExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentExchangeTool(cache))
                 .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
@@ -132,16 +134,14 @@ public class ComponentPaletteProvider {
         return nodeToolBuilder.build();
     }
 
-    private NodeTool createNewComponentPortNodeTool(IViewDiagramElementFinder cache) {
+    private NodeTool createNewComponentPortNodeTool(String name, String icon, String direction) {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
-                .name("New Port")
-                .iconURLsExpression("/icons/full/obj16/OutFlowPort.svg");
-
+                .name(name)
+                .iconURLsExpression(icon);
 
         nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
                 .expression(ServiceMethod.of1(TransverseMutationService::createComponentPort)
-                        // The port as no direction when created
-                        .aqlSelf((String) null))
+                        .aqlSelf(direction))
                 .build());
 
         return nodeToolBuilder.build();
