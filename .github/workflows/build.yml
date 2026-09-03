@@ -147,9 +147,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804
         with:
-          images: capella-for-syson
+          images: eclipsecapella/capella-for-syson
           tags: |
-            type=sha,format=long,prefix=ci-
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/master' }}
+            type=raw,value=ci,enable=${{ github.event_name == 'pull_request' }}
+            type=ref,event=tag
 
       - name: Build the SysON plugin image
         uses: docker/build-push-action@v6
@@ -177,7 +179,7 @@ jobs:
       - name: Run Playwright tests
         working-directory: integration-tests-playwright
         env:
-          IMAGE_TAG: capella-for-syson:${{ steps.meta.outputs.version }}
+          IMAGE_TAG: eclipsecapella/capella-for-syson:${{ steps.meta.outputs.version }}
         run: |
           docker compose --project-name capella-for-syson-ci --file ../docker-compose.yml up --detach
           trap 'docker compose --project-name capella-for-syson-ci --file ../docker-compose.yml logs; docker compose --project-name capella-for-syson-ci --file ../docker-compose.yml down --volumes' EXIT
@@ -225,3 +227,23 @@ jobs:
           else
             npm publish --workspaces --tag latest
           fi
+
+      - name: Log in to Docker Hub
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          username: ${{ secrets.ORG_DOCKER_HUB_USER }}
+          password: ${{ secrets.ORG_DOCKER_HUB_TOKEN }}
+
+      - name: Push Docker image
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: backend/application/capella-extension/Dockerfile
+          push: true
+          build-args: |
+            SYSON_IMAGE=${{ env.SYSON_IMAGE }}
+            EXTENSION_JAR=${{ env.EXTENSION_JAR }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

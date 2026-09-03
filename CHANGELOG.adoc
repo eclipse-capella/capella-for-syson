@@ -66,3 +66,4 @@ Diagram description tests should now extend `AbstractEditableDiagramDescriptionT
 - https://github.com/eclipse-capella/capella-for-syson/issues/78[#78] [tests] Use the empty Capella project as integration test data.
 - https://github.com/eclipse-capella/capella-for-syson/issues/81[#81] [diagrams] Factorize `ViewDiagramElementFinder`.
 All the implementations have been removed and `DefaultViewDiagramElementFinder` should be used instead.
+- https://github.com/eclipse-capella/capella-for-syson/issues/109[#109] [releng] Publish docker image to dockerhub.
