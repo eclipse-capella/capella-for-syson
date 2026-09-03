@@ -12,16 +12,13 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
-import org.eclipse.syson.sysml.SysmlFactory;
 
 /**
  * System Analysis semantic mutation service.
@@ -71,33 +68,10 @@ public class SAMutationService {
         return result;
     }
 
-    public void moveFunctionToComponent(ActionUsage function, PartUsage targetComponent) {
-        var root = this.getRoot(function);
-        var components = new ArrayList<PartUsage>();
-        root.eAllContents().forEachRemaining(child -> {
-            if (child instanceof PartUsage partUsage) {
-                components.add(partUsage);
-            }
-        });
-        components.forEach(component -> this.transverseMutationService.deletePerformedActionUsage(component, function));
-        this.createPerformActionUsage(targetComponent, function);
-    }
-
-    private EObject getRoot(EObject eObject) {
-        EObject root = eObject;
-        while (root.eContainer() != null) {
-            root = root.eContainer();
+    public void moveFunctionToComponent(ActionUsage function, Object previousParent, PartUsage targetComponent) {
+        if (previousParent != targetComponent && previousParent instanceof PartUsage previousParentPartUsage && this.transverseQueryService.isComponent(previousParentPartUsage)) {
+            this.transverseMutationService.deletePerformedActionUsage(previousParentPartUsage, function);
+            this.transverseMutationService.setPerformAction(targetComponent, function);
         }
-        return root;
-    }
-
-    private void createPerformActionUsage(PartUsage component, ActionUsage function) {
-        var membership = SysmlFactory.eINSTANCE.createFeatureMembership();
-        component.getOwnedRelationship().add(membership);
-        var performActionUsage = SysmlFactory.eINSTANCE.createPerformActionUsage();
-        membership.getOwnedRelatedElement().add(performActionUsage);
-        var referenceSubsetting = SysmlFactory.eINSTANCE.createReferenceSubsetting();
-        referenceSubsetting.setReferencedFeature(function);
-        performActionUsage.getOwnedRelationship().add(referenceSubsetting);
     }
 }
