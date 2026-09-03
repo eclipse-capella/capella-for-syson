@@ -22,13 +22,15 @@ import static org.eclipse.capella.model.transverse.services.TransverseQueryServi
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
 
+import java.util.Optional;
+
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.syson.services.UtilService;
-import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Type;
 import org.eclipse.syson.sysml.Usage;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Services related to the Arcadia library.
@@ -36,6 +38,8 @@ import org.eclipse.syson.sysml.Usage;
  * @author fbarbin
  */
 public class ArcadiaLibraryServices {
+
+    private final Logger logger = LoggerFactory.getLogger(ArcadiaLibraryServices.class);
 
     private final UtilService utilService;
 
@@ -76,13 +80,17 @@ public class ArcadiaLibraryServices {
     }
 
     public void typeWithLibrary(Usage usage, String typeQualifiedName, EClass librarySysMLElementType) {
-        var elementType = this.utilService.getAllReachable(usage, librarySysMLElementType).stream()
-                .filter(librarySysMLElementType::isInstance)
-                .filter(Element.class::isInstance)
-                .map(Type.class::cast)
-                .filter(element -> element.getQualifiedName().equals(typeQualifiedName))
-                .findFirst()
-                .orElse(null);
-        this.utilService.setFeatureTyping(usage, elementType);
+        // UtilService#findByNameAndType ensures the lookup is performed from the root namespace, so local elements shadowing the Arcadia package aren't taken into account.
+        // The solution isn't perfect though, since multiple Arcadia packages can still be defined in the root namespace.
+        Optional<Type> optionalLibraryType = Optional.ofNullable(this.utilService.findByNameAndType(usage, typeQualifiedName, Type.class))
+                .filter(librarySysMLElementType::isInstance);
+        if (optionalLibraryType.isPresent()) {
+            this.utilService.setFeatureTyping(usage, optionalLibraryType.get());
+        } else {
+            this.logger.atWarn()
+                    .setMessage("Cannot find type {}")
+                    .addArgument(typeQualifiedName)
+                    .log();
+        }
     }
 }
