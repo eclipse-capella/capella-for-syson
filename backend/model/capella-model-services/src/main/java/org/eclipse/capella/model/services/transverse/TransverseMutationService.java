@@ -308,10 +308,23 @@ public class TransverseMutationService {
         FeatureDirectionKind direction = FeatureDirectionKind.get(literalValue);
         if (direction != null) {
             feature.setDirection(direction);
+            this.updateConnectedPortsDirection(feature, direction);
         } else {
             feature.unsetDirection();
         }
         return feature;
+    }
+
+    private void updateConnectedPortsDirection(Feature feature, FeatureDirectionKind direction) {
+        FeatureDirectionKind oppositeDirection = switch (direction) {
+            case IN -> FeatureDirectionKind.OUT;
+            case OUT -> FeatureDirectionKind.IN;
+            default -> null;
+        };
+        if (oppositeDirection != null) {
+            this.transverseQueryService.getOppositeConnectedFeatures(feature)
+                    .forEach(connectedFeature -> connectedFeature.setDirection(oppositeDirection));
+        }
     }
 
     public Element delete(Element element) {

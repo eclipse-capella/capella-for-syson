@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import org.eclipse.capella.tests.fixtures.FunctionsPackage;
 import org.eclipse.syson.sysml.ActionUsage;
+import org.eclipse.syson.sysml.ConnectionUsage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
@@ -27,6 +28,7 @@ import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortUsage;
+import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -35,6 +37,8 @@ import org.junit.jupiter.api.Test;
  * @author gdaniel
  */
 public class ElementCreationTests extends AbstractSemanticTests {
+
+    private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
 
@@ -160,6 +164,82 @@ public class ElementCreationTests extends AbstractSemanticTests {
     }
 
     @Test
+    public void setFeatureDirectionShouldUpdateConnectedComponentExchangePortDirection() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage sourcePort = this.transverseMutationService.createComponentPort(sourceComponent, FeatureDirectionKind.OUT);
+        PartUsage targetComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage targetPort = this.transverseMutationService.createComponentPort(targetComponent, FeatureDirectionKind.IN);
+        this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
+
+        this.transverseMutationService.setFeatureDirection(sourcePort, FeatureDirectionKind.IN);
+
+        assertThat(sourcePort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+        assertThat(targetPort.getDirection()).isEqualTo(FeatureDirectionKind.OUT);
+    }
+
+    @Test
+    public void setFeatureDirectionToInOutShouldNotUpdateConnectedComponentExchangePortDirection() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage sourcePort = this.transverseMutationService.createComponentPort(sourceComponent, FeatureDirectionKind.OUT);
+        PartUsage targetComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage targetPort = this.transverseMutationService.createComponentPort(targetComponent, FeatureDirectionKind.IN);
+        this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
+
+        this.transverseMutationService.setFeatureDirection(sourcePort, FeatureDirectionKind.INOUT);
+
+        assertThat(sourcePort.getDirection()).isEqualTo(FeatureDirectionKind.INOUT);
+        assertThat(targetPort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+    }
+
+    @Test
+    public void setFeatureDirectionShouldUpdatePortConnectedThroughConnectionUsage() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage sourcePort = this.transverseMutationService.createComponentPort(sourceComponent, FeatureDirectionKind.OUT);
+        PartUsage targetComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage targetPort = this.transverseMutationService.createComponentPort(targetComponent, FeatureDirectionKind.IN);
+        ConnectionUsage connection = this.metamodelMutationElementService.createConnectionUsage(sourcePort, targetPort, sourceComponent, targetComponent, parent);
+
+        this.transverseMutationService.setFeatureDirection(sourcePort, FeatureDirectionKind.IN);
+
+        assertThat(connection).isNotNull();
+        assertThat(sourcePort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+        assertThat(targetPort.getDirection()).isEqualTo(FeatureDirectionKind.OUT);
+    }
+
+    @Test
+    public void setFeatureDirectionShouldNotUpdateUndirectedPortConnectedThroughConnectionUsage() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage sourceComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage sourcePort = this.transverseMutationService.createComponentPort(sourceComponent, FeatureDirectionKind.OUT);
+        PartUsage targetComponent = this.transverseMutationService.createComponent(parent);
+        PortUsage targetPort = this.transverseMutationService.createComponentPort(targetComponent, FeatureDirectionKind.IN);
+        targetPort.unsetDirection();
+        ConnectionUsage connection = this.metamodelMutationElementService.createConnectionUsage(sourcePort, targetPort, sourceComponent, targetComponent, parent);
+
+        this.transverseMutationService.setFeatureDirection(sourcePort, FeatureDirectionKind.IN);
+
+        assertThat(connection).isNotNull();
+        assertThat(sourcePort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+        assertThat(targetPort.isSetDirection()).isFalse();
+    }
+
+    @Test
+    public void setFeatureDirectionShouldNotInvertEditedPortOnConnectionUsageSelfLoop() {
+        Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        PartUsage component = this.transverseMutationService.createComponent(parent);
+        PortUsage port = this.transverseMutationService.createComponentPort(component, FeatureDirectionKind.OUT);
+        ConnectionUsage connection = this.metamodelMutationElementService.createConnectionUsage(port, port, component, component, parent);
+
+        this.transverseMutationService.setFeatureDirection(port, FeatureDirectionKind.IN);
+
+        assertThat(connection).isNotNull();
+        assertThat(port.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+    }
+
+    @Test
     public void createComponentExchangeWhenEndpointsAreTheSameComponentShouldNotCreateComponentExchangeAndPorts() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component1 = this.transverseMutationService.createComponent(parent);
@@ -228,6 +308,44 @@ public class ElementCreationTests extends AbstractSemanticTests {
         assertThat(this.transverseQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(port1);
         assertThat(this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(port2);
         assertThat(functionalExchange.getOwner()).isEqualTo(functionsPackage.getElement());
+    }
+
+    @Test
+    public void setFeatureDirectionOnFunctionalExchangeTargetShouldUpdateSourcePortDirection() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage port1 = this.transverseMutationService.createFunctionPort(function1, FeatureDirectionKind.OUT);
+        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage port2 = this.transverseMutationService.createFunctionPort(function2, FeatureDirectionKind.IN);
+        this.transverseMutationService.createFunctionalExchange(port1, port2);
+        ActionUsage function3 = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage unrelatedSourcePort = this.transverseMutationService.createFunctionPort(function2, FeatureDirectionKind.OUT);
+        ItemUsage unrelatedTargetPort = this.transverseMutationService.createFunctionPort(function3, FeatureDirectionKind.IN);
+        this.transverseMutationService.createFunctionalExchange(unrelatedSourcePort, unrelatedTargetPort);
+
+        this.transverseMutationService.setFeatureDirection(port2, FeatureDirectionKind.OUT);
+
+        assertThat(port1.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+        assertThat(port2.getDirection()).isEqualTo(FeatureDirectionKind.OUT);
+        assertThat(unrelatedSourcePort.getDirection()).isEqualTo(FeatureDirectionKind.OUT);
+        assertThat(unrelatedTargetPort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+    }
+
+    @Test
+    public void setFeatureDirectionToInOutShouldNotUpdateConnectedFunctionalExchangePortDirection() {
+        FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
+        ActionUsage sourceFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage sourcePort = this.transverseMutationService.createFunctionPort(sourceFunction, FeatureDirectionKind.OUT);
+        ActionUsage targetFunction = this.transverseMutationService.createFunction(rootFunction);
+        ItemUsage targetPort = this.transverseMutationService.createFunctionPort(targetFunction, FeatureDirectionKind.IN);
+        this.transverseMutationService.createFunctionalExchange(sourcePort, targetPort);
+
+        this.transverseMutationService.setFeatureDirection(sourcePort, FeatureDirectionKind.INOUT);
+
+        assertThat(sourcePort.getDirection()).isEqualTo(FeatureDirectionKind.INOUT);
+        assertThat(targetPort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
     }
 
     @Test
