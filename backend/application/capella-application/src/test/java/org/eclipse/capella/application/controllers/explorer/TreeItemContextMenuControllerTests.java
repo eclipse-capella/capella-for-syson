@@ -85,7 +85,7 @@ public class TreeItemContextMenuControllerTests extends AbstractIntegrationTests
 
         Runnable getDocumentContextMenuItems = () -> {
             this.treeItemPaletteExecutor.execute(CapellaIdentifiers.EDITING_CONTEXT_ID, treeId.get(), CapellaIdentifiers.CAPELLA_DOCUMENT_ID)
-                    .hasPaletteEntries(entries -> assertThat(entries)
+                    .hasPaletteEntriesIds(entries -> assertThat(entries)
                             .contains(
                                     ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT,
                                     ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT,
@@ -95,7 +95,7 @@ public class TreeItemContextMenuControllerTests extends AbstractIntegrationTests
 
         Runnable getRootContextMenuItems = () -> {
             this.treeItemPaletteExecutor.execute(CapellaIdentifiers.EDITING_CONTEXT_ID, treeId.get(), CapellaIdentifiers.ROOT_OCCURRENCE_DEFINITION_ID)
-                    .hasPaletteEntries(entries -> assertThat(entries)
+                    .hasPaletteEntriesIds(entries -> assertThat(entries)
                             .contains(
                                     ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT,
                                     ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION,
