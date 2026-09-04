@@ -19,6 +19,7 @@ import java.util.Optional;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.components.diagrams.ViewDeletionRequest;
@@ -56,14 +57,17 @@ public class SARepresentationDropServices {
 
     private final ISysMLMoveElementService moveService;
 
+    private final IObjectSearchService objectSearchService;
+
     public SARepresentationDropServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService,
-            DiagramMutationExposeService diagramMutationExposeService) {
+            DiagramMutationExposeService diagramMutationExposeService, IObjectSearchService objectSearchService) {
         this.saQueryService = new SAQueryService();
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
         this.diagramMutationExposeService = Objects.requireNonNull(diagramMutationExposeService);
         this.transverseQueryService = new TransverseQueryService();
         this.saMutationService = new SAMutationService();
         this.moveService = moveService;
+        this.objectSearchService = Objects.requireNonNull(objectSearchService);
     }
 
     public Element dropIntoDiagramFromExplorer(Element droppedElement, Object selectedNode, IEditingContext editingContext, DiagramContext diagramContext,
@@ -90,18 +94,29 @@ public class SARepresentationDropServices {
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
             diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
         } else if (droppedElement instanceof ActionUsage droppedFunction && targetElement instanceof PartUsage targetComponent && this.canAllocateFunction(droppedFunction, targetComponent)) {
-            this.saMutationService.moveFunctionToComponent(droppedFunction, targetComponent);
-            this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
-            diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
+            this.getPreviousParentContainer(droppedNode, editingContext, diagramContext)
+                    .ifPresent(previousParentContainer -> {
+                        this.saMutationService.moveFunctionToComponent(droppedFunction, previousParentContainer, targetComponent);
+                        this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
+                        diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
+                    });
         } else if (this.moveService != null && droppedElement instanceof ActionUsage droppedFunction && targetElement instanceof ActionUsage targetFunction
                 && this.canReparentFunction(droppedFunction, targetFunction)) {
             this.moveService.moveSemanticElement(droppedFunction, targetFunction);
             this.transverseQueryService.getAllocatingComponent(targetFunction)
-                    .ifPresent(component -> this.saMutationService.moveFunctionToComponent(droppedFunction, component));
+                    .ifPresent(component -> this.saMutationService.moveFunctionToComponent(droppedFunction, component, component));
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
             diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
         }
         return droppedElement;
+    }
+
+    private Optional<Object> getPreviousParentContainer(Node droppedNode, IEditingContext editingContext, DiagramContext diagramContext) {
+        var parent = new NodeFinder(diagramContext.diagram()).getParent(droppedNode);
+        if (parent instanceof Node parentNode) {
+            return this.objectSearchService.getObject(editingContext, parentNode.getTargetObjectId());
+        }
+        return Optional.empty();
     }
 
     private boolean canReparentComponent(PartUsage droppedComponent, PartUsage targetComponent) {
