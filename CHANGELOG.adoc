@@ -71,3 +71,5 @@ The parent is now the first common ancestor which is either a function or a pack
 - https://github.com/eclipse-capella/capella-for-syson/issues/109[#109] [releng] Publish docker image to dockerhub.
 - https://github.com/eclipse-capella/capella-for-syson/issues/87[#87] [services] Ensure component exchanges are created in the appropriate parent.
 The parent is now the first common ancestor which is either a component or a package.
+- https://github.com/eclipse-capella/capella-for-syson/issues/110[#110] [ci] Add script to verify that the PR size does not exceed 500 LOCs.
+
