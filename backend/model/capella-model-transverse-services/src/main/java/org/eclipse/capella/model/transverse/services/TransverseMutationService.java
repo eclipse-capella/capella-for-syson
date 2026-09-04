@@ -34,7 +34,6 @@ import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnumLiteral;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.AllocationUsage;
@@ -54,6 +53,7 @@ import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.OccurrenceUsage;
+import org.eclipse.syson.sysml.Namespace;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.ParameterMembership;
 import org.eclipse.syson.sysml.PartUsage;
@@ -461,14 +461,18 @@ public class TransverseMutationService {
                 Feature sourcePort = this.getOrCreateFunctionPort(source, FeatureDirectionKind.OUT);
                 Feature targetPort = this.getOrCreateFunctionPort(target, FeatureDirectionKind.IN);
 
-                // We can't use diagramMutationElementService#createFlowUsage here because the way SysON computes FlowUsage container doesn't work with Capella for SysON.
-                FlowUsage functionalExchange = this.metamodelMutationElementService.createFlowUsage(sourcePort, targetPort, source, target, optionalSourceFunctionsPackage.get());
+                Optional<Namespace> optionalFunctionalExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target, e -> this.transverseQueryService.isFunction(e) || this.transverseQueryService.isFunctionsPackage(e));
+                if (optionalFunctionalExchangeParent.isPresent()) {
 
-                this.elementInitializerSwitch.doSwitch(functionalExchange);
-                this.arcadiaLibraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
-                long existingElementsCount = this.transverseQueryService.existingElementsCount(functionalExchange);
-                functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
-                return functionalExchange;
+                    // We can't use diagramMutationElementService#createFlowUsage here because the way SysON computes FlowUsage container doesn't work with Capella for SysON.
+                    FlowUsage functionalExchange = this.metamodelMutationElementService.createFlowUsage(sourcePort, targetPort, source, target, optionalFunctionalExchangeParent.get());
+
+                    this.elementInitializerSwitch.doSwitch(functionalExchange);
+                    this.arcadiaLibraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
+                    long existingElementsCount = this.transverseQueryService.existingElementsCount(functionalExchange);
+                    functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
+                    return functionalExchange;
+                }
 
             }
         }
@@ -486,13 +490,16 @@ public class TransverseMutationService {
                 PortUsage sourcePort = this.getOrCreateComponentPort(source, FeatureDirectionKind.OUT);
                 PortUsage targetPort = this.getOrCreateComponentPort(target, FeatureDirectionKind.IN);
 
-                InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalSourceStructurePackage.get());
-                this.elementInitializerSwitch.doSwitch(componentExchange);
-                this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
-                long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
-                componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
-                return componentExchange;
+                Optional<Namespace> optionalComponentExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target, e -> this.transverseQueryService.isComponent(e) || this.transverseQueryService.isStructurePackage(e));
+                if (optionalComponentExchangeParent.isPresent()) {
 
+                    InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalComponentExchangeParent.get());
+                    this.elementInitializerSwitch.doSwitch(componentExchange);
+                    this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
+                    long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
+                    componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
+                    return componentExchange;
+                }
             }
         }
         return null;
@@ -537,10 +544,10 @@ public class TransverseMutationService {
 
     public ActionUsage createFunctionalChain(Element container, Object selectedObjects) {
         ActionUsage actionUsage = null;
-        Optional<Package> optionalFunctionsPackage = this.transverseQueryService.getFunctionsPackage(container);
-        if (optionalFunctionsPackage.isPresent()) {
+        Optional<ActionUsage> optionalRootFunction = this.transverseQueryService.getRootFunction(container);
+        if (optionalRootFunction.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
-            this.metamodelMutationElementService.addChildInParent(optionalFunctionsPackage.get(), actionUsage);
+            this.metamodelMutationElementService.addChildInParent(optionalRootFunction.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.elementInitializerSwitch.doSwitch(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
@@ -588,11 +595,22 @@ public class TransverseMutationService {
         return allocatingComponent;
     }
 
-    public Feature setStatusKind(Feature feature, Object newValue,
-            IEditingContext editingContext) {
+    /**
+     * Sets the status kind of the provided {@code feature} to {@code newValue}.
+     * <p>
+     * This method expects the provided {@code feature} to be part of a {@link org.eclipse.emf.ecore.resource.ResourceSet} containing the Arcadia library. If it is not the case then the status kind
+     * won't be set.
+     *
+     * @param feature
+     *         the feature to set
+     * @param newValue
+     *         the status kind value to set
+     * @return the updated feature
+     */
+    public Feature setStatusKind(Feature feature, String newValue) {
         this.unSetUsageStatusKind(feature);
         if (newValue != null) {
-            this.transverseQueryService.getStatusKindEnum(editingContext).stream()
+            this.transverseQueryService.getStatusKindEnum(feature).stream()
                     .filter(Objects::nonNull)
                     .filter(statusKind -> newValue.equals(statusKind.getDeclaredName()))
                     .findFirst()

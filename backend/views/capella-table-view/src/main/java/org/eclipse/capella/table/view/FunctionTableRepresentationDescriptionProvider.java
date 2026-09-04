@@ -144,7 +144,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
                 .columnDescriptions(this.getColumnDescriptions())
                 .targetObjectIdProvider(new TableTargetObjectIdProvider(this.identityService))
                 .targetObjectKindProvider(new TableTargetObjectKindProvider(this.identityService))
-                .cellDescriptions(this.getCellDescriptions(editingContext))
+                .cellDescriptions(this.getCellDescriptions())
                 .iconURLsProvider(variableManager -> List.of("/images/la-function-table-icon.svg"))
                 .isStripeRowPredicate(variableManager -> true)
                 .enableSubRows(true)
@@ -342,7 +342,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
         return List.of(columnDescription);
     }
 
-    private List<ICellDescription> getCellDescriptions(IEditingContext editingContext) {
+    private List<ICellDescription> getCellDescriptions() {
         List<ICellDescription> cellDescriptions = new ArrayList<>();
 
         cellDescriptions.add(TextareaCellDescription.newTextareaCellDescription("textareaCells")
@@ -360,7 +360,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
                 .cellValueProvider(new CellStringValueProvider())
                 .cellOptionsIdProvider(new CellOptionIdProvider())
                 .cellOptionsLabelProvider(new CellOptionLabelProvider())
-                .cellOptionsProvider(new CellOptionsProvider(editingContext))
+                .cellOptionsProvider(new CellOptionsProvider())
                 .cellTooltipValueProvider(new CellStringValueProvider())
                 .build());
 

@@ -27,6 +27,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementNodeDes
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDescriptionProvider;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
@@ -67,7 +68,7 @@ public class SABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .toolbar(toolbar)
                 .build();
 
-        var cache = new ViewDiagramElementFinder();
+        var cache = new DefaultViewDiagramElementFinder();
         List<IDiagramElementDescriptionProvider> diagramElementDescriptionProviders = List.of(
                 new ComponentExchangeEdgeDescriptionProvider(colorProvider),
                 new FunctionalExchangeEdgeDescriptionProvider(colorProvider),

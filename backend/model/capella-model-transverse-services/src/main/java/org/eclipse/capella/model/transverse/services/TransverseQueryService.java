@@ -30,9 +30,8 @@ import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.sirius.components.core.api.IEditingContext;
-import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.syson.model.services.aql.ModelQueryAQLService;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -54,6 +53,7 @@ import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.MetadataUsage;
+import org.eclipse.syson.sysml.Namespace;
 import org.eclipse.syson.sysml.OperatorExpression;
 import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
@@ -67,7 +67,7 @@ import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
 import org.eclipse.syson.sysml.VariantMembership;
-import org.eclipse.syson.sysml.helper.EMFUtils;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 
 /**
  * Transverse mutation service. It is important to note that this service must retain its empty constructor and should
@@ -298,8 +298,17 @@ public class TransverseQueryService {
         return Optional.ofNullable(element).map(Element::getDeclaredName).orElse("");
     }
 
-    public List<EnumerationUsage> getStatusKindEnum(IEditingContext editingContext) {
-        var resourceSet = ((EditingContext) editingContext).getDomain().getResourceSet();
+    /**
+     * Returns the status kind enumerations.
+     * <p>
+     * This method expects {@code element} to be any object in a {@link ResourceSet} containing the Arcadia library. The object itself is simply used to access the resource set.
+     *
+     * @param element
+     *         the contextual element
+     * @return the list of status kind enumerations.
+     */
+    public List<EnumerationUsage> getStatusKindEnum(Element element) {
+        ResourceSet resourceSet = element.eResource().getResourceSet();
         var statusKindEnum = resourceSet.getResources().stream()
                 .flatMap(res -> {
                     Iterable<EObject> iterable = () -> EcoreUtil.getAllContents(res, true);
@@ -320,9 +329,17 @@ public class TransverseQueryService {
                 .toList();
     }
 
-    public List<String> getStatusKindEnumLiterals(IEditingContext editingContext) {
-
-        return this.getStatusKindEnum(editingContext)
+    /**
+     * Returns the status kind enumeration literals.
+     * <p>
+     * This method expects {@code element} to be any object in a {@link ResourceSet} containing the Arcadia library. The object itself is simply used to access the resource set.
+     *
+     * @param element
+     *         the contextual element
+     * @return the list of status kind enumeration literals.
+     */
+    public List<String> getStatusKindEnumLiterals(Element element) {
+        return this.getStatusKindEnum(element)
                 .stream()
                 .map(EnumerationUsage::getDeclaredName)
                 .toList();
@@ -993,6 +1010,23 @@ public class TransverseQueryService {
                 .map(Redefinition.class::cast)
                 .map(Redefinition::getRedefinedFeature)
                 .toList();
+    }
+
+    /**
+     * Finds the closest common ancestor of {@code element1} and {@code element2} which matches {@code predicate}.
+     *
+     * @param element1
+     *         the first element
+     * @param element2
+     *         the second element
+     * @param predicate
+     *         the predicate the common ancestor should match
+     * @return the common ancestor if it exists
+     */
+    public Optional<Namespace> findClosestCommonAncestor(Element element1, Element element2, Predicate<EObject> predicate) {
+        List<Namespace> element1Ancestors = EMFUtils.getAncestors(Namespace.class, element1, predicate);
+        List<Namespace> element2CommonAncestors = EMFUtils.getAncestors(Namespace.class, element2, predicate.and(element1Ancestors::contains));
+        return element2CommonAncestors.stream().findFirst();
     }
 
 }
