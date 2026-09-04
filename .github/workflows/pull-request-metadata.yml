@@ -68,3 +68,7 @@ jobs:
         env:
           GITHUB_EVENT: ${{ toJSON(github.event) }}
         run: node scripts/check-labels.js
+
+      - name: Check pull request size
+        working-directory: scripts
+        run: java PullRequestSizeChecker.java ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }}
