@@ -24,7 +24,7 @@
 
 === Dependency update
 
-- [releng] Update Sirius Web and SysON to `2026.7.3`
+- [releng] Update Sirius Web and SysON to `2026.7.4`
 
 === Bug fixes
 
@@ -35,6 +35,7 @@
 - https://github.com/eclipse-capella/capella-for-syson/issues/80[#80] [fix] Forbid wrap overflow strategy for outside labels.
 - https://github.com/eclipse-capella/capella-for-syson/issues/29[#29] [fix] Hide perform action usages from the Capella explorer.
 They represent function allocations, which are already visible in the details view and shouldn't be visible in the explorer.
+- https://github.com/eclipse-capella/capella-for-syson/issues/10[#10] [fix] Restore expression widget in SysON's details view.
 
 === New Features
 
