@@ -114,7 +114,8 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
             return List.of(
                     new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()),
                     new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.NEW_REPRESENTATION, this.messageService.treeToolNewRepresentation(), List.of(), false, List.of()),
-                    new SingleClickTreeItemTool(NEW_OBJECTS_FROM_TEXT_MENU_ENTRY_CONTRIBUTION_ID, "", List.of(), false, List.of()));
+                    // We should uniformize the label with the one SysON chooses when syson#2507 is solved
+                    new SingleClickTreeItemTool(NEW_OBJECTS_FROM_TEXT_MENU_ENTRY_CONTRIBUTION_ID, "New objects from text", List.of(), false, List.of()));
         }
         return List.of();
     }

@@ -67,7 +67,6 @@ import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
-import org.eclipse.syson.sysml.metamodel.services.ElementInitializerSwitch;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,8 +88,6 @@ public class TransverseMutationService {
 
     private final UtilService utilService;
 
-    private final ElementInitializerSwitch elementInitializerSwitch;
-
     private final TransverseQueryService transverseQueryService;
 
     private final ArcadiaLibraryServices arcadiaLibraryServices;
@@ -101,7 +98,6 @@ public class TransverseMutationService {
 
     public TransverseMutationService() {
         this.utilService = new UtilService();
-        this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.transverseQueryService = new TransverseQueryService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
@@ -272,7 +268,7 @@ public class TransverseMutationService {
         ItemUsage itemUsage = SysmlFactory.eINSTANCE.createItemUsage();
         this.metamodelMutationElementService.addChildInParent(parent, itemUsage);
         this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
-        this.elementInitializerSwitch.doSwitch(itemUsage);
+        this.metamodelMutationElementService.initialize(itemUsage);
         itemUsage.setDeclaredName(ARCADIA_EXCHANGE_ITEM + this.transverseQueryService.existingElementsCount(itemUsage));
 
         return itemUsage;
@@ -326,7 +322,7 @@ public class TransverseMutationService {
             requirementUsage = SysmlFactory.eINSTANCE.createRequirementUsage();
 
             this.metamodelMutationElementService.addChildInParent(optionalRequirementsPackage.get(), requirementUsage);
-            this.elementInitializerSwitch.doSwitch(requirementUsage);
+            this.metamodelMutationElementService.initialize(requirementUsage);
             // Use native SysML v2 RequirementUsage without Arcadia typing
 
             long existingElementsCount = this.transverseQueryService.existingElementsCount(requirementUsage);
@@ -346,7 +342,7 @@ public class TransverseMutationService {
             Element targetContainer = optionalTargetContainer.get();
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
-            this.elementInitializerSwitch.doSwitch(partUsage);
+            this.metamodelMutationElementService.initialize(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
             long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName("C" + WHITE_SPACE + existingElementsCount);
@@ -369,7 +365,7 @@ public class TransverseMutationService {
         PortUsage portUsage = SysmlFactory.eINSTANCE.createPortUsage();
         portUsage.setDirection(direction);
         this.metamodelMutationElementService.addChildInParent(container, portUsage);
-        this.elementInitializerSwitch.doSwitch(portUsage);
+        this.metamodelMutationElementService.initialize(portUsage);
         this.arcadiaLibraryServices.typeWithArcadiaComponentPort(portUsage);
         portUsage.setDeclaredName("CP " + this.transverseQueryService.existingElementsCount(portUsage));
         return portUsage;
@@ -387,7 +383,7 @@ public class TransverseMutationService {
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
             this.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
-            this.elementInitializerSwitch.doSwitch(partUsage);
+            this.metamodelMutationElementService.initialize(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
             long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName("A" + WHITE_SPACE + existingElementsCount);
@@ -405,7 +401,7 @@ public class TransverseMutationService {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunction(actionUsage);
-            this.elementInitializerSwitch.doSwitch(actionUsage);
+            this.metamodelMutationElementService.initialize(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTION + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
 
             Optional<PartUsage> optionalAllocatingComponent = this.findAllocatingComponent(parent);
@@ -438,7 +434,7 @@ public class TransverseMutationService {
         ItemUsage itemUsage = SysmlFactory.eINSTANCE.createItemUsage();
         itemUsage.setDirection(direction);
         this.metamodelMutationElementService.addChildInParent(container, itemUsage);
-        this.elementInitializerSwitch.doSwitch(itemUsage);
+        this.metamodelMutationElementService.initialize(itemUsage);
         this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
         String defaultName = switch (direction) {
             case IN -> "FIP";
@@ -468,7 +464,7 @@ public class TransverseMutationService {
                     // We can't use diagramMutationElementService#createFlowUsage here because the way SysON computes FlowUsage container doesn't work with Capella for SysON.
                     FlowUsage functionalExchange = this.metamodelMutationElementService.createFlowUsage(sourcePort, targetPort, source, target, optionalFunctionalExchangeParent.get());
 
-                    this.elementInitializerSwitch.doSwitch(functionalExchange);
+                    this.metamodelMutationElementService.initialize(functionalExchange);
                     this.arcadiaLibraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
                     long existingElementsCount = this.transverseQueryService.existingElementsCount(functionalExchange);
                     functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
@@ -492,7 +488,7 @@ public class TransverseMutationService {
                 PortUsage targetPort = this.getOrCreateComponentPort(target, FeatureDirectionKind.IN);
 
                 InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalSourceStructurePackage.get());
-                this.elementInitializerSwitch.doSwitch(componentExchange);
+                this.metamodelMutationElementService.initialize(componentExchange);
                 this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
                 long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
                 componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
@@ -504,14 +500,8 @@ public class TransverseMutationService {
     }
 
     public AllocationUsage createDescribes(Element source, Element target) {
-        // This method should rely on MetamodelMutationElementService once syson#2441 is fixed.
-        var owner = source.getOwner();
-        var ownerMembership = SysmlFactory.eINSTANCE.createOwningMembership();
-        owner.getOwnedRelationship().add(ownerMembership);
-        var allocation = SysmlFactory.eINSTANCE.createAllocationUsage();
-        ownerMembership.getOwnedRelatedElement().add(allocation);
-        this.addEndToAllocateEdge(allocation, source);
-        this.addEndToAllocateEdge(allocation, target);
+        AllocationUsage allocation = this.metamodelMutationElementService.createAllocateEdge(source, target);
+        this.metamodelMutationElementService.initialize(allocation);
         return allocation;
     }
 
@@ -520,24 +510,11 @@ public class TransverseMutationService {
                 .map(capabilitiesPackage -> {
                     var capability = SysmlFactory.eINSTANCE.createOccurrenceUsage();
                     this.metamodelMutationElementService.addChildInParent(capabilitiesPackage, capability);
-                    this.elementInitializerSwitch.doSwitch(capability);
+                    this.metamodelMutationElementService.initialize(capability);
                     this.arcadiaLibraryServices.typeWithArcadiaCapability(capability);
                     return capability;
                 })
                 .orElse(null);
-    }
-
-    private void addEndToAllocateEdge(AllocationUsage edge, Element end) {
-        // This method should be removed once syson#2441 is fixed.
-        if (end instanceof Usage usage) {
-            var featureMembership = SysmlFactory.eINSTANCE.createEndFeatureMembership();
-            edge.getOwnedRelationship().add(featureMembership);
-            var feature = SysmlFactory.eINSTANCE.createFeature();
-            featureMembership.getOwnedRelatedElement().add(feature);
-            var reference = SysmlFactory.eINSTANCE.createReferenceSubsetting();
-            feature.getOwnedRelationship().add(reference);
-            reference.setReferencedFeature(usage);
-        }
     }
 
     public ActionUsage createFunctionalChain(Element container, Object selectedObjects) {
@@ -547,7 +524,7 @@ public class TransverseMutationService {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalFunctionsPackage.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
-            this.elementInitializerSwitch.doSwitch(actionUsage);
+            this.metamodelMutationElementService.initialize(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
             this.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
                     SysmlPackage.eINSTANCE.getFlowUsage().getName());
