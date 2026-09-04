@@ -19,6 +19,7 @@ import org.eclipse.capella.diagram.ddv.view.view.nodes.function.FunctionNodeDesc
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.RootFunctionNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
@@ -61,7 +62,7 @@ public class FunctionalContextViewDiagramDescriptionProvider implements IReprese
                 .minimapVisible(false)
                 .build();
 
-        var cache = new FunctionalContextViewDiagramElementFinder();
+        var cache = new DefaultViewDiagramElementFinder();
         var diagramElementDescriptionProviders = List.of(
                 new RootFunctionNodeDescriptionProvider(colorProvider),
                 new FunctionNodeDescriptionProvider(colorProvider),
