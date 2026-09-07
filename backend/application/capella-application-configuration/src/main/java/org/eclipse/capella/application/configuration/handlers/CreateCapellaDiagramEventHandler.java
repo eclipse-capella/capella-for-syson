@@ -14,6 +14,7 @@ package org.eclipse.capella.application.configuration.handlers;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+
 import org.eclipse.capella.application.configuration.dto.CreateCapellaRepresentationInput;
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
@@ -40,9 +41,13 @@ import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
 import org.eclipse.sirius.components.representations.VariableManager;
+import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
-import org.eclipse.syson.sysml.util.ElementUtil;
+import org.eclipse.syson.sysml.ActionUsage;
+import org.eclipse.syson.sysml.metamodel.util.ElementUtil;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.Nullable;
 import reactor.core.publisher.Sinks;
 
 import java.util.List;
@@ -59,6 +64,10 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
     private static final String OAB_REPRESENTATION_DESCRIPTION_ID = "OAB";
 
     private static final String OAB_REPRESENTATION_NAME = "OAB - Operational Analysis Blank";
+
+    private static final String OABD_REPRESENTATION_DESCRIPTION_ID = "OABD";
+
+    private static final String OABD_REPRESENTATION_NAME = "OABD - Operational Activity Break Down";
 
     private static final String OCB_REPRESENTATION_DESCRIPTION_ID = "OCB";
 
@@ -84,14 +93,14 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
     private final Counter counter;
 
-    public CreateCapellaDiagramEventHandler(IRepresentationDescriptionSearchService representationDescriptionSearchService, IRepresentationMetadataPersistenceService representationMetadataPersistenceService, IRepresentationPersistenceService representationPersistenceService,
+    public CreateCapellaDiagramEventHandler(IRepresentationDescriptionSearchService representationDescriptionSearchService,
+            IRepresentationMetadataPersistenceService representationMetadataPersistenceService, IRepresentationPersistenceService representationPersistenceService,
             IDiagramCreationService diagramCreationService, ICollaborativeDiagramMessageService messageService, MeterRegistry meterRegistry) {
         this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
         this.representationMetadataPersistenceService = Objects.requireNonNull(representationMetadataPersistenceService);
         this.representationPersistenceService = Objects.requireNonNull(representationPersistenceService);
         this.diagramCreationService = Objects.requireNonNull(diagramCreationService);
         this.messageService = Objects.requireNonNull(messageService);
-
         this.counter = Counter.builder(Monitoring.EVENT_HANDLER)
                 .tag(Monitoring.NAME, this.getClass().getSimpleName())
                 .register(meterRegistry);
@@ -112,19 +121,19 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
         if (input instanceof CreateCapellaRepresentationInput createRepresentationInput) {
             Optional<DiagramDescription> optionalDiagramDescription = this.findDiagramDescription(editingContext, createRepresentationInput.representationDescriptionId());
-            Optional<Package> optionalParentPackage = this.findParentPackage(editingContext, createRepresentationInput.representationDescriptionId());
+            var optionalTargetObject = this.findTargetObject(editingContext, createRepresentationInput);
 
-            if (optionalDiagramDescription.isPresent() && optionalParentPackage.isPresent()) {
+            if (optionalDiagramDescription.isPresent() && optionalTargetObject.isPresent()) {
                 DiagramDescription diagramDescription = optionalDiagramDescription.get();
-                Object parentPackage = optionalParentPackage.get();
+                EObject targetObject = optionalTargetObject.get();
                 var diagramName = this.getRepresentationName(createRepresentationInput.representationDescriptionId());
                 var variableManager = new VariableManager();
-                variableManager.put(VariableManager.SELF, parentPackage);
+                variableManager.put(VariableManager.SELF, targetObject);
                 variableManager.put(DiagramDescription.LABEL, diagramName);
                 String label = diagramDescription.getLabelProvider().apply(variableManager);
                 List<String> iconURLs = diagramDescription.getIconURLsProvider().apply(variableManager);
 
-                Diagram diagram = this.diagramCreationService.create(editingContext, diagramDescription, parentPackage);
+                Diagram diagram = this.diagramCreationService.create(editingContext, diagramDescription, targetObject);
                 var representationMetadata = RepresentationMetadata.newRepresentationMetadata(diagram.getId())
                         .kind(diagram.getKind())
                         .label(label)
@@ -138,7 +147,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
                 payload = new CreateRepresentationSuccessPayload(input.id(), representationMetadata);
                 changeDescription = new ChangeDescription(ChangeKind.REPRESENTATION_CREATION, editingContext.getId(), input);
             } else {
-                payload = new ErrorPayload(input.id(), this.getCreationErrorMessage(createRepresentationInput.representationDescriptionId(), optionalDiagramDescription, optionalParentPackage));
+                payload = new ErrorPayload(input.id(), this.getCreationErrorMessage(createRepresentationInput.representationDescriptionId(), optionalDiagramDescription, optionalTargetObject));
             }
         }
 
@@ -168,14 +177,24 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
         return Optional.ofNullable(targetPackage);
     }
 
-    private Optional<Package> findParentPackage(IEditingContext editingContext, String representationDescriptionId) {
-        return switch (representationDescriptionId) {
+    private Optional<? extends Element> findTargetObject(IEditingContext editingContext, CreateCapellaRepresentationInput createCapellaRepresentationInput) {
+        return switch (createCapellaRepresentationInput.representationDescriptionId()) {
             case OAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.STRUCTURE_PACKAGE);
+            case OABD_REPRESENTATION_DESCRIPTION_ID -> this.findOABDTargetObject(editingContext, createCapellaRepresentationInput.targetObjectId());
             case OCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.CAPABILITIES_PACKAGE);
             case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, TransverseQueryService.STRUCTURE_PACKAGE);
             case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture, TransverseQueryService.STRUCTURE_PACKAGE);
             default -> Optional.empty();
         };
+    }
+
+    private Optional<? extends Element> findOABDTargetObject(IEditingContext editingContext, @Nullable String targetObjectId) {
+        var functionsPackage = this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.FUNCTIONS_PACKAGE);
+        return functionsPackage.stream()
+                .flatMap(packageElement -> packageElement.getOwnedMember().stream())
+                .filter(ActionUsage.class::isInstance)
+                .filter(element -> TransverseQueryService.ROOT_FUNCTION.equals(element.getDeclaredName()))
+                .findFirst();
     }
 
     private Package findPackageByName(EList<EObject> eObjects, String packageName) {
@@ -211,6 +230,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
     private String getRepresentationName(String representationDescriptionId) {
         return switch (representationDescriptionId) {
             case OAB_REPRESENTATION_DESCRIPTION_ID -> OAB_REPRESENTATION_NAME;
+            case OABD_REPRESENTATION_DESCRIPTION_ID -> OABD_REPRESENTATION_NAME;
             case OCB_REPRESENTATION_DESCRIPTION_ID -> OCB_REPRESENTATION_NAME;
             case SAB_REPRESENTATION_DESCRIPTION_ID -> SAB_REPRESENTATION_NAME;
             case LAB_REPRESENTATION_DESCRIPTION_ID -> LAB_REPRESENTATION_NAME;
@@ -228,12 +248,12 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
         return packageName.equals(packageElt.getDeclaredName()) || packageName.equals(packageElt.getName());
     }
 
-    private String getCreationErrorMessage(String representationDescriptionId, Optional<DiagramDescription> optionalDiagramDescription, Optional<Package> optionalParentPackage) {
+    private String getCreationErrorMessage(String representationDescriptionId, Optional<DiagramDescription> optionalDiagramDescription, Optional<? extends Element> optionalTargetObject) {
         String errorMessage = "The Capella diagram cannot be created";
         if (optionalDiagramDescription.isEmpty()) {
             errorMessage = "No diagram description found for " + representationDescriptionId;
-        } else if (optionalParentPackage.isEmpty()) {
-            errorMessage = "No Structure package found for " + representationDescriptionId;
+        } else if (optionalTargetObject.isEmpty()) {
+            errorMessage = "No target element found for " + representationDescriptionId;
         }
         return errorMessage;
     }

@@ -39,7 +39,8 @@ They represent function allocations, which are already visible in the details vi
 === New Features
 
 - Initial open source publication of Capella for SysON under the Eclipse Public License v2.0.
-- https://github.com/eclipse-capella/capella-for-syson/issues/42[#42] [enh] Initialize OCB diagram
+- https://github.com/eclipse-capella/capella-for-syson/issues/42[#42] [enh] Initialize OCB diagram.
+- https://github.com/eclipse-capella/capella-for-syson/issues/108[#108] [enh] Initialize OABD diagram.
 
 === Improvements
 

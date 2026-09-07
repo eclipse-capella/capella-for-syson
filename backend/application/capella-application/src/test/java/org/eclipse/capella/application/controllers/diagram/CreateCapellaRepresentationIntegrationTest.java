@@ -55,6 +55,12 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
     }
 
     @Test
+    @DisplayName("Given a Capella project, when an OABD representation is created, then its metadata is returned")
+    public void createOABDRepresentation() {
+        this.assertRepresentationCreation("OABD", "OABD - Operational Activity Break Down");
+    }
+
+    @Test
     @DisplayName("Given a Capella project, when an OCB representation is created, then its metadata is returned")
     public void createOCBRepresentation() {
         this.assertRepresentationCreation("OCB", "OCB - Operational Capability Blank");
@@ -69,7 +75,7 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
     @Test
     @DisplayName("Given a Capella project, when an unknown representation is requested, then an error is returned")
     public void rejectUnknownRepresentation() {
-        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaIdentifiers.EDITING_CONTEXT_ID, "unknown");
+        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaIdentifiers.EDITING_CONTEXT_ID, "unknown", null);
         var result = this.createCapellaRepresentationMutationRunner.run(input).data();
 
         String typename = JsonPath.read(result, "$.data.createCapellaRepresentation.__typename");
@@ -79,7 +85,7 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
     }
 
     private void assertRepresentationCreation(String descriptionId, String expectedLabel) {
-        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaIdentifiers.EDITING_CONTEXT_ID, descriptionId);
+        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaIdentifiers.EDITING_CONTEXT_ID, descriptionId, null);
         var result = this.createCapellaRepresentationMutationRunner.run(input).data();
 
         String typename = JsonPath.read(result, "$.data.createCapellaRepresentation.__typename");
