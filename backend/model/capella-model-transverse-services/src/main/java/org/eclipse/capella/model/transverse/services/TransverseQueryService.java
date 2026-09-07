@@ -432,6 +432,12 @@ public class TransverseQueryService {
         return false;
     }
 
+    public boolean isOperationalActivity(EObject eObject) {
+        return eObject instanceof Element element
+                && this.isFunction(element)
+                && this.isOperationalAnalysisPerspective(element);
+    }
+
     public Boolean isFunctionalChain(EObject eObject) {
         if (eObject instanceof ActionUsage actionUsage) {
             return this.checkType(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN);
@@ -941,10 +947,8 @@ public class TransverseQueryService {
         return this.getArcadiaPerspectiveOwnedPackage(element, FUNCTIONS_PACKAGE);
     }
 
-    public Optional<ActionUsage> getRootFunction(Element element) {
-        return this.getFunctionsPackage(element)
-                .stream()
-                .flatMap(functionsPackage -> functionsPackage.getOwnedElement().stream())
+    public Optional<ActionUsage> getRootFunction(Package functionsPackage) {
+        return functionsPackage.getOwnedElement().stream()
                 .filter(this::isFunction)
                 .map(ActionUsage.class::cast)
                 .findFirst();
