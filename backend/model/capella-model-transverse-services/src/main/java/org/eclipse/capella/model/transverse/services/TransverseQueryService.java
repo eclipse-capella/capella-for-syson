@@ -55,8 +55,8 @@ import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.Namespace;
-import org.eclipse.syson.sysml.OperatorExpression;
 import org.eclipse.syson.sysml.OccurrenceUsage;
+import org.eclipse.syson.sysml.OperatorExpression;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PerformActionUsage;
@@ -921,18 +921,6 @@ public class TransverseQueryService {
                     .anyMatch(source -> Objects.equals(this.getArcadiaType(source).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(""), ARCADIA_REQUIREMENT));
         }
         return false;
-    }
-
-    public boolean canCreateFunctionalExchange(Feature source, Feature target) {
-        var sourceFunction = EMFUtils.getFirstAncestor(ActionUsage.class, source, this::isFunction);
-        var targetFunction = EMFUtils.getFirstAncestor(ActionUsage.class, target, this::isFunction);
-        return sourceFunction.isPresent() && targetFunction.isPresent() && !sourceFunction.equals(targetFunction);
-    }
-
-    public boolean canCreateComponentExchange(Feature source, Feature target) {
-        var sourceComponent = EMFUtils.getFirstAncestor(PartUsage.class, source, this::isComponent);
-        var targetComponent = EMFUtils.getFirstAncestor(PartUsage.class, target, this::isComponent);
-        return sourceComponent.isPresent() && targetComponent.isPresent() && !sourceComponent.equals(targetComponent);
     }
 
     public Optional<Package> getStructurePackage(Element element) {

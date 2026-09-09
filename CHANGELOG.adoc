@@ -77,3 +77,4 @@ These services do not rely on the editing context anymore.
 - https://github.com/eclipse-capella/capella-for-syson/issues/100[#100] [services] Prevent usage of `getAllContents` and its variations.
 Some usages are still accepted, such as view traversal to add `IDAdapter` during the view creation process, or element content traversal to find related elements on deletion.
 All other usages are forbidden and checked with an architecture test.
+- https://github.com/eclipse-capella/capella-for-syson/issues/130[#130] [services] Add a service to check semantic mutations.
