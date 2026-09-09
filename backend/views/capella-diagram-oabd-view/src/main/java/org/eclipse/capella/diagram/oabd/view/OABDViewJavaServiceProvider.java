@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oabd.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.oabd.view.services.OABDRepresentationDropService;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
@@ -39,6 +40,7 @@ public class OABDViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramMutationLabelService.class,
                     DiagramQueryLabelService.class,
                     OARepresentationDropServices.class,
+                    OABDRepresentationDropService.class,
                     TransverseMutationService.class,
                     TransverseQueryService.class);
         }

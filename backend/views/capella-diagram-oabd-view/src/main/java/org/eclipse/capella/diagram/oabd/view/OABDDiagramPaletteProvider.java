@@ -13,14 +13,20 @@
 package org.eclipse.capella.diagram.oabd.view;
 
 import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityToolProvider;
+import org.eclipse.capella.diagram.oabd.view.services.OABDRepresentationDropService;
+import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
+import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
 import org.eclipse.sirius.components.view.diagram.DropTool;
+import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 
 /**
- * Provides the OABD diagram palette.
+ * Provide the palette for the OABD diagram.
  *
  * @author tbezierslafosse
  */
@@ -42,9 +48,14 @@ public class OABDDiagramPaletteProvider {
                 .build();
     }
 
-    private DropTool createDropFromExplorerTool() {
+    public DropTool createDropFromExplorerTool() {
+        var dropElementFromExplorer = this.viewBuilderHelper.newChangeContext()
+                .expression(ServiceMethod.of4(OABDRepresentationDropService::dropIntoDiagramFromExplorer)
+                        .aqlSelf(Node.SELECTED_NODE, IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT, ViewDiagramDescriptionConverter.CONVERTED_NODES_VARIABLE));
+
         return this.diagramBuilderHelper.newDropTool()
                 .name("Drop from Explorer")
+                .body(dropElementFromExplorer.build())
                 .build();
     }
 }
