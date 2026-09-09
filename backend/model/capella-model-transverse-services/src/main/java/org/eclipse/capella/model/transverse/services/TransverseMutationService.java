@@ -509,6 +509,15 @@ public class TransverseMutationService {
 
     }
 
+    public ActionUsage createOperationalActivity(Element parent) {
+        ActionUsage activity = null;
+        if (this.transverseQueryService.isOperationalActivity(parent)) {
+            activity = this.createFunction(parent);
+            activity.setDeclaredName("OA " + this.transverseQueryService.existingElementsCount(activity));
+        }
+        return activity;
+    }
+
     public ActionUsage createFunction(Element parent) {
         ActionUsage actionUsage = null;
         Optional<Element> optionalParent = Optional.ofNullable(parent)
