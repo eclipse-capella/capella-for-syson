@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.oabd.view;
 
 import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityToolProvider;
+import org.eclipse.capella.diagram.oabd.view.nodes.requirement.RequirementToolProvider;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DropToolBuilder;
@@ -37,7 +38,8 @@ public class OABDDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
-                .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
+                .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),
+                        new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
                 .dropTool(new DropToolBuilder().build())
                 .build();
     }
