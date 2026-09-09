@@ -14,7 +14,10 @@ package org.eclipse.capella.diagram.oabd.view;
 
 import org.eclipse.capella.diagram.common.view.ColorProvider;
 import org.eclipse.capella.diagram.common.view.IViewDescriptionProvider;
+import org.eclipse.sirius.components.view.ColorPalette;
+import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.View;
+import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.springframework.stereotype.Service;
@@ -38,6 +41,23 @@ public class OABDViewDescriptionProvider implements IViewDescriptionProvider {
 
     @Override
     public IColorProvider getColorProvider(View view) {
-        return new ColorProvider(view);
+        IColorProvider colorProvider = new ColorProvider(view);
+        view.getColorPalettes().add(this.createColorPalette());
+        return colorProvider;
+    }
+
+    private ColorPalette createColorPalette() {
+        var colorPalette = ViewFactory.eINSTANCE.createColorPalette();
+        colorPalette.getColors().add(this.createFixedColor(OABDViewConstants.ACTIVITY_BACKGROUND_COLOR, "#F7DA74"));
+        colorPalette.getColors().add(this.createFixedColor(OABDViewConstants.ACTIVITY_BORDER_COLOR, "#5B4040"));
+        colorPalette.getColors().add(this.createFixedColor(OABDViewConstants.ACTIVITY_LABEL_COLOR, "#000000"));
+        return colorPalette;
+    }
+
+    private FixedColor createFixedColor(String name, String value) {
+        var fixedColor = ViewFactory.eINSTANCE.createFixedColor();
+        fixedColor.setName(name);
+        fixedColor.setValue(value);
+        return fixedColor;
     }
 }

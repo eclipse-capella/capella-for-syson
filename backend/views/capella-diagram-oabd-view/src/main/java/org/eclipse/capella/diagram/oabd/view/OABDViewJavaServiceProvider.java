@@ -14,9 +14,14 @@ package org.eclipse.capella.diagram.oabd.view;
 
 import java.util.List;
 
+import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
+import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
+import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
+import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
+import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,7 +34,13 @@ public class OABDViewJavaServiceProvider implements IJavaServiceProvider {
     @Override
     public List<Class<?>> getServiceClasses(View view) {
         if (view.getDescriptions().stream().anyMatch(description -> OABDViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(description.getName()))) {
-            return List.of(TransverseQueryService.class);
+            return List.of(
+                    DiagramMutationExposeService.class,
+                    DiagramMutationLabelService.class,
+                    DiagramQueryLabelService.class,
+                    OARepresentationDropServices.class,
+                    TransverseMutationService.class,
+                    TransverseQueryService.class);
         }
         return List.of();
     }

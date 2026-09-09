@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.eclipse.emf.common.util.BasicEList;
@@ -639,6 +640,42 @@ public class TransverseQueryService {
         }
 
         return result;
+    }
+
+    public List<ActionUsage> getOperationalActivities(EObject context) {
+        if (!(context instanceof ActionUsage activity)) {
+            return List.of();
+        }
+
+        List<ActionUsage> activities = this.getDescendants(activity, this::isOperationalActivity).stream()
+                .map(ActionUsage.class::cast)
+                .collect(Collectors.toList());
+
+        boolean isRootFunction = this.getFunctionsPackage(activity)
+                .flatMap(this::getRootFunction)
+                .map(rootFunction -> rootFunction == activity)
+                .orElse(false);
+
+        if (!isRootFunction) {
+            activities.addFirst(activity);
+        }
+
+        return activities;
+    }
+
+    public List<Element> getDescendants(Element element, Predicate<EObject> predicate) {
+        var descendants = new ArrayList<Element>();
+        this.collectDescendants(element, predicate, descendants);
+        return descendants;
+    }
+
+    private void collectDescendants(Element element, Predicate<EObject> predicate, List<Element> descendants) {
+        element.getOwnedElement().forEach(child -> {
+            if (predicate.test(child)) {
+                descendants.add(child);
+            }
+            this.collectDescendants(child, predicate, descendants);
+        });
     }
 
     public List<ActionUsage> getFunctions(EObject eObject) {
