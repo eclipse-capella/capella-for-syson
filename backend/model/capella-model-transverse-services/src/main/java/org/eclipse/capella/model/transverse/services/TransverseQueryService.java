@@ -818,9 +818,14 @@ public class TransverseQueryService {
 
     public List<RequirementUsage> getRequirements(EObject eObject) {
         var allRequirementUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getRequirementUsage());
+        var perspectivePackage = Optional.of(eObject)
+                .filter(Element.class::isInstance)
+                .map(Element.class::cast)
+                .flatMap(this::getArcadiaPerspectivePackage);
         return allRequirementUsage.stream()
                 .filter(RequirementUsage.class::isInstance)
                 .map(RequirementUsage.class::cast)
+                .filter(requirement -> perspectivePackage.equals(this.getArcadiaPerspectivePackage(requirement)))
                 .toList();
     }
 

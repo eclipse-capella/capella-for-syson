@@ -29,7 +29,10 @@ import org.eclipse.syson.services.api.ISysMLMoveElementService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
+import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.util.NodeFinder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Services related to the drop tools.
@@ -37,6 +40,8 @@ import org.eclipse.syson.util.NodeFinder;
  * @author fbarbin
  */
 public class OARepresentationDropServices {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(OARepresentationDropServices.class);
 
     private final DiagramMutationElementService diagramMutationElementService;
 
@@ -79,6 +84,10 @@ public class OARepresentationDropServices {
 
     public Element dropIntoDiagramFromExplorer(Element droppedElement, Object selectedNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
+        if (droppedElement instanceof RequirementUsage requirement && !this.transverseQueryService.isOperationalAnalysisPerspective(requirement)) {
+            LOGGER.atWarn().log("Ignoring drop of requirement {} outside Operational Analysis perspective", requirement.getElementId());
+            return droppedElement;
+        }
         var parentView = this.getDisplayedParentView(droppedElement, diagramContext).<Object>map(node -> node).orElse(selectedNode);
         ViewCreationRequest droppedView = this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, parentView, convertedNodes);
         if (droppedElement instanceof PartUsage component && droppedView != null) {
