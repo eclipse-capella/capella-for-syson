@@ -12,13 +12,26 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oabd.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityToolProvider;
+import org.eclipse.capella.diagram.oabd.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oabd.view.nodes.requirement.RequirementToolProvider;
+import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
+import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
-import org.eclipse.sirius.components.view.builder.generated.diagram.DropToolBuilder;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DropNodeTool;
+import org.eclipse.sirius.components.view.diagram.DropTool;
+import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provides the OABD diagram palette.
@@ -38,9 +51,39 @@ public class OABDDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .dropNodeTool(this.createDropFromDiagramTool(cache))
+                .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
-                .dropTool(new DropToolBuilder().build())
                 .build();
+    }
+
+    private DropTool createDropFromExplorerTool() {
+        var dropElementFromExplorer = this.viewBuilderHelper.newChangeContext()
+                .expression(ServiceMethod.of4(OARepresentationDropServices::dropIntoDiagramFromExplorer)
+                        .aqlSelf(Node.SELECTED_NODE, IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT,
+                                ViewDiagramDescriptionConverter.CONVERTED_NODES_VARIABLE));
+
+        return this.diagramBuilderHelper.newDropTool()
+                .name("Drop from Explorer")
+                .body(dropElementFromExplorer.build())
+                .build();
+    }
+
+    private DropNodeTool createDropFromDiagramTool(IViewDiagramElementFinder cache) {
+        return this.diagramBuilderHelper.newDropNodeTool()
+                .name("Drop from Diagram")
+                .acceptedNodeTypes(this.getDroppableNodes(cache).toArray(NodeDescription[]::new))
+                .body(this.viewBuilderHelper.newChangeContext()
+                        .expression("aql:droppedElement")
+                        .build())
+                .build();
+    }
+
+    private List<NodeDescription> getDroppableNodes(IViewDiagramElementFinder cache) {
+        var droppableNodes = new ArrayList<NodeDescription>();
+        cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(droppableNodes::add);
+        cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(droppableNodes::add);
+        return droppableNodes;
     }
 }

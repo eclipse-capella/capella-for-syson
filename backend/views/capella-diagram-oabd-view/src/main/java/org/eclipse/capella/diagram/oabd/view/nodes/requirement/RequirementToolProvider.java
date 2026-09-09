@@ -12,15 +12,16 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oabd.view.nodes.requirement;
 
-import java.util.Objects;
-
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
+import org.eclipse.sirius.components.view.builder.generated.view.ChangeContextBuilder;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.AQLConstants;
+import org.eclipse.syson.util.AQLUtils;
 import org.eclipse.syson.util.ServiceMethod;
 
 /**
@@ -30,13 +31,13 @@ import org.eclipse.syson.util.ServiceMethod;
  */
 public class RequirementToolProvider {
 
-    private final ViewBuilders viewBuilderHelper;
+    protected final ViewBuilders viewBuilderHelper;
 
     private final DiagramBuilders diagramBuilderHelper;
 
     public RequirementToolProvider(ViewBuilders viewBuilderHelper, DiagramBuilders diagramBuilderHelper) {
-        this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
-        this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
+        this.viewBuilderHelper = viewBuilderHelper;
+        this.diagramBuilderHelper = diagramBuilderHelper;
     }
 
     public NodeTool createNewRequirementNodeTool(IViewDiagramElementFinder cache) {
@@ -45,13 +46,13 @@ public class RequirementToolProvider {
                 .iconURLsExpression("/icons/full/obj16/Requirement.svg");
 
         cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
-            var changeContextBuilder = this.viewBuilderHelper.newChangeContext()
+            ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
                     .expression(ServiceMethod.of0(TransverseMutationService::createRequirement).aqlSelf())
                     .children(
                             this.diagramBuilderHelper.newCreateView()
                                     .containmentKind(NodeContainmentKind.CHILD_NODE)
                                     .elementDescription(nodeDescription)
-                                    .parentViewExpression("aql:diagram")
+                                    .parentViewExpression(AQLUtils.aqlString(Node.SELECTED_NODE))
                                     .semanticElementExpression(AQLConstants.AQL_SELF)
                                     .variableName("newInstanceView")
                                     .build());
