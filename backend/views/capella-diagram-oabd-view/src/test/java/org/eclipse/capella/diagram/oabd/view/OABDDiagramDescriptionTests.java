@@ -12,7 +12,6 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oabd.view;
 
-import org.eclipse.capella.diagram.common.view.ColorProvider;
 import org.eclipse.capella.tests.diagrams.AbstractEditableDiagramDescriptionTests;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -25,9 +24,10 @@ import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
  * @author tbezierslafosse
  */
 public class OABDDiagramDescriptionTests extends AbstractEditableDiagramDescriptionTests {
+
     @Override
     protected IColorProvider getColorProvider(View view) {
-        return new ColorProvider(view);
+        return new OABDViewDescriptionProvider().getColorProvider(view);
     }
 
     @Override
