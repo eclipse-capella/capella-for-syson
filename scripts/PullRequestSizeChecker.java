@@ -119,6 +119,9 @@ public class PullRequestSizeChecker {
                 "org.springframework.ide.eclipse.prefs",
                 ".checkstyle",
                 ".classpath",
-                ".project").stream().anyMatch(line::contains);
+                ".project",
+                "backend/application/capella-application/src/test",
+                "backend/model/capella-model-transverse-services/src/test"
+        ).stream().anyMatch(line::contains);
     }
 }
