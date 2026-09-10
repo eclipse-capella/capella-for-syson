@@ -46,7 +46,7 @@ public class RequirementLabelProvider {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
                 .labelExpression(ServiceMethod.of0(TransverseQueryService::getRequirementLabel).aqlSelf())
-                .position(InsideLabelPosition.MIDDLE_CENTER)
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
                 .build();
@@ -55,7 +55,7 @@ public class RequirementLabelProvider {
     private InsideLabelStyle createInsideLabelStyle() {
         return this.diagramBuilderHelper.newInsideLabelStyle()
                 .borderSize(0)
-                .headerSeparatorDisplayMode(HeaderSeparatorDisplayMode.NEVER)
+                .headerSeparatorDisplayMode(HeaderSeparatorDisplayMode.IF_CHILDREN)
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(OABDViewConstants.REQUIREMENT_LABEL_COLOR))
                 .showIconExpression("aql:true")
