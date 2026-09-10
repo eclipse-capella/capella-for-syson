@@ -17,4 +17,5 @@ input CreateCapellaRepresentationInput {
   id: ID!
   editingContextId: ID!
   representationDescriptionId: String!
+  targetObjectId: ID
 }

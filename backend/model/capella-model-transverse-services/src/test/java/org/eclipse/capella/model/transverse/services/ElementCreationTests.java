@@ -41,6 +41,48 @@ public class ElementCreationTests extends AbstractSemanticTests {
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
     @Test
+    public void createOperationalActivityShouldCreateTypedNamedActivitiesInTheirParent() {
+        ActionUsage root = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage activity = this.transverseMutationService.createOperationalActivity(root);
+        assertThat(activity.getOwner()).isSameAs(root);
+        assertThat(this.transverseQueryService.isFunction(activity)).isTrue();
+        assertThat(activity.getDeclaredName()).isEqualTo("OA " + this.transverseQueryService.existingElementsCount(activity));
+        ActionUsage child = this.transverseMutationService.createOperationalActivity(activity);
+        assertThat(child.getOwner()).isSameAs(activity);
+        assertThat(this.transverseQueryService.isFunction(child)).isTrue();
+        assertThat(child.getDeclaredName()).isEqualTo("OA " + this.transverseQueryService.existingElementsCount(child));
+    }
+
+    @Test
+    public void createOperationalActivityShouldRejectNonOperationalActivityParentsWithoutMutation() {
+        ActionUsage logicalRoot = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        Package structure = this.capellaModel.getOperationalAnalysisPerspective().getStructurePackage().getElement();
+        var previousChildren = List.copyOf(logicalRoot.getOwnedElement());
+        var previousStructure = List.copyOf(structure.getOwnedElement());
+        assertThat(this.transverseMutationService.createOperationalActivity(logicalRoot)).isNull();
+        assertThat(this.transverseMutationService.createOperationalActivity(structure)).isNull();
+        assertThat(logicalRoot.getOwnedElement()).containsExactlyElementsOf(previousChildren);
+        assertThat(structure.getOwnedElement()).containsExactlyElementsOf(previousStructure);
+    }
+
+    @Test
+    public void createOperationalActivityWhenNestedShouldRemainQueryableOnlyWithinItsOperationalScope() {
+        ActionUsage root = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage context = this.transverseMutationService.createOperationalActivity(root);
+        ActionUsage child = this.transverseMutationService.createOperationalActivity(context);
+        ActionUsage grandchild = this.transverseMutationService.createOperationalActivity(child);
+        ActionUsage sibling = this.transverseMutationService.createOperationalActivity(root);
+        ActionUsage logicalRoot = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage logicalFunction = this.transverseMutationService.createFunction(logicalRoot);
+        var previousChildren = List.copyOf(context.getOwnedElement());
+        assertThat(this.transverseQueryService.getOperationalActivities(context)).containsExactly(context, child, grandchild)
+                .doesNotContain(root, sibling, logicalFunction);
+        assertThat(this.transverseQueryService.getOperationalActivities(logicalRoot)).isEmpty();
+        assertThat(this.transverseQueryService.getOperationalActivities(root.getOwner())).isEmpty();
+        assertThat(context.getOwnedElement()).containsExactlyElementsOf(previousChildren);
+    }
+
+    @Test
     public void createComponentShouldCreateNonActorComponentInParent() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component = this.transverseMutationService.createComponent(parent);
