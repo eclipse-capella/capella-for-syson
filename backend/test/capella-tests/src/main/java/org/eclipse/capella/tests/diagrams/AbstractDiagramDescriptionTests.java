@@ -49,6 +49,7 @@ import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescr
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
+import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
@@ -69,6 +70,8 @@ import org.junit.jupiter.api.Test;
 public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEditableDiagramDescriptionTests, AbstractReadOnlyDiagramDescriptionTests {
 
     protected static final String AQL_PREFIX = "aql:";
+
+    private static final String REQUIREMENT_NODE_DESCRIPTION_NAME = "RequirementNodeDescription";
 
     protected IDefaultLabelFeatureProvider defaultLabelFeatureProvider = new DefaultLabelFeatureProvider();
 
@@ -177,6 +180,25 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
                     }
                 });
         softly.assertAll();
+    }
+
+    @Test
+    @DisplayName("Each Requirement node has a compartment and displays its header separator")
+    public void eachRequirementNodeHasACompartmentAndDisplaysItsHeaderSeparator() {
+        this.diagramDescription.getNodeDescriptions().stream()
+                .filter(nodeDescription -> REQUIREMENT_NODE_DESCRIPTION_NAME.equals(nodeDescription.getName()))
+                .forEach(this::assertRequirementCompartmentPresentation);
+    }
+
+    private void assertRequirementCompartmentPresentation(NodeDescription requirementNodeDescription) {
+        Assertions.assertThat(requirementNodeDescription.getChildrenDescriptions())
+                .as("Requirement node should have a compartment")
+                .isNotEmpty();
+        Assertions.assertThat(requirementNodeDescription.getInsideLabel())
+                .as("Requirement node should have an inside label")
+                .isNotNull();
+        Assertions.assertThat(requirementNodeDescription.getInsideLabel().getStyle().getHeaderSeparatorDisplayMode())
+                .isEqualTo(HeaderSeparatorDisplayMode.IF_CHILDREN);
     }
 
     private List<String> getInterpretedExpressions(EObject eObject) {
