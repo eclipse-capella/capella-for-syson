@@ -24,6 +24,8 @@ import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionNodeDescripti
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.functionalchain.FunctionalChainNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.sab.view.nodes.requirement.compartment.SABCompartmentItemNodeDescriptionProvider;
+import org.eclipse.capella.diagram.sab.view.nodes.requirement.compartment.SABCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDescriptionProvider;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
@@ -79,6 +81,10 @@ public class SABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 new FunctionNodeDescriptionProvider(colorProvider),
                 new FunctionPortNodeDescriptionProvider(colorProvider),
                 new FunctionalChainNodeDescriptionProvider(colorProvider),
+                new SABCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new SABCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new RequirementNodeDescriptionProvider(colorProvider),
                 new DescribesEdgeDescriptionProvider(colorProvider)
         );
