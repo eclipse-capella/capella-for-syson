@@ -21,6 +21,7 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.DescriptionNameGenerator;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
@@ -33,6 +34,8 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
 
     public static final String NODE_DESCRIPTION_NAME = "RequirementNodeDescription";
 
+    private final DescriptionNameGenerator nameGenerator = new DescriptionNameGenerator("OCB");
+
     public RequirementNodeDescriptionProvider(IColorProvider colorProvider) {
         super(colorProvider);
     }
@@ -43,7 +46,7 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
                 .collapsible(true)
                 .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getRequirementUsage()))
                 .insideLabel(new RequirementLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
-                .name(this.getNodeDescriptionName())
+                .name(NODE_DESCRIPTION_NAME)
                 .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getOperationalRequirements).aqlSelf())
                 .style(new RequirementNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createRequirementNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
@@ -51,16 +54,16 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
                 .build();
     }
 
-    private String getNodeDescriptionName() {
-        return NODE_DESCRIPTION_NAME;
-    }
-
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
-        cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
+        cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
             nodeDescription
                     .setPalette(new RequirementPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            String documentationCompartmentName = this.nameGenerator.getCompartmentName(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                    SysmlPackage.eINSTANCE.getElement_Documentation());
+            cache.getNodeDescription(documentationCompartmentName)
+                    .ifPresent(compartmentNode -> nodeDescription.getChildrenDescriptions().add(compartmentNode));
         });
     }
 }
