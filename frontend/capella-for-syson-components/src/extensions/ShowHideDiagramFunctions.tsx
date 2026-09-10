@@ -12,7 +12,6 @@
  *******************************************************************************/
 
 import { gql, useMutation } from '@apollo/client';
-import { DiagramToolbarActionProps } from '@eclipse-sirius/sirius-components-diagrams';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useState } from 'react';
@@ -25,6 +24,7 @@ import {
   GQLShowDiagramFunctionsMutationInput,
   GQLShowDiagramFunctionsMutationVariables,
   ShowDiagramFunctionsState,
+  ShowHideDiagramFunctionsProps,
 } from './ShowHideDiagramFunctions.types';
 import { useShowDiagramFunctions } from './useShowDiagramFunctions';
 
@@ -51,7 +51,7 @@ const isErrorPayload = (payload: GQLSetShowDiagramFunctionsPayload): payload is 
 const showTooltip: string = 'Hide Functions in Diagrams';
 const hideTooltip: string = 'Show Functions in Diagrams';
 
-export const ShowHideDiagramFunctions = ({ editingContextId, diagramId }: DiagramToolbarActionProps) => {
+export const ShowHideDiagramFunctions = ({ editingContextId, diagramId, disabled }: ShowHideDiagramFunctionsProps) => {
   const [state, setState] = useState<ShowDiagramFunctionsState>({
     checked: null,
     tooltip: 'Show/Hide Functions in Diagram',
@@ -128,7 +128,7 @@ export const ShowHideDiagramFunctions = ({ editingContextId, diagramId }: Diagra
 
   return (
     <Tooltip title={state.tooltip} placement="left">
-      <Checkbox checked={state.checked !== null ? state.checked : true} onChange={handleChange} />
+      <Checkbox disabled={disabled} checked={state.checked !== null ? state.checked : true} onChange={handleChange} />
     </Tooltip>
   );
 };

@@ -23,6 +23,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
 import { ShowHideDiagramFunctions } from './ShowHideDiagramFunctions';
+import { useRepresentationMetadata } from './useRepresentationMetadata';
 
 const useMenuStyles = makeStyles()((_) => ({
   menuEntry: {
@@ -33,6 +34,7 @@ export const CapellaDiagramPanelMenu = ({ editingContextId, diagramId }: Diagram
   const { classes } = useMenuStyles();
   const [open, setOpen] = useState<boolean>(false);
   const anchorRef = useRef<HTMLButtonElement | null>(null);
+  const { isShowFunctionsAvailable } = useRepresentationMetadata(editingContextId, diagramId);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -90,9 +92,16 @@ export const CapellaDiagramPanelMenu = ({ editingContextId, diagramId }: Diagram
               <ClickAwayListener onClickAway={handleClose}>
                 <FormGroup>
                   <FormControlLabel
+                    disabled={!isShowFunctionsAvailable}
                     key={'Show functions - Menu Entry'}
                     className={classes.menuEntry}
-                    control={<ShowHideDiagramFunctions editingContextId={editingContextId} diagramId={diagramId} />}
+                    control={
+                      <ShowHideDiagramFunctions
+                        disabled={!isShowFunctionsAvailable}
+                        editingContextId={editingContextId}
+                        diagramId={diagramId}
+                      />
+                    }
                     label={'Show Functions'}
                   />
                 </FormGroup>

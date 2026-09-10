@@ -12,6 +12,11 @@
  *******************************************************************************/
 
 import { GQLMessage } from '@eclipse-sirius/sirius-components-core';
+import { DiagramToolbarActionProps } from '@eclipse-sirius/sirius-components-diagrams';
+
+export interface ShowHideDiagramFunctionsProps extends DiagramToolbarActionProps {
+  disabled: boolean;
+}
 
 export interface ShowDiagramFunctionsState {
   checked: boolean | null;
