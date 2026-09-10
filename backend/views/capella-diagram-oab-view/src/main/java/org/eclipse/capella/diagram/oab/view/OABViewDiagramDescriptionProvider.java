@@ -18,6 +18,8 @@ import org.eclipse.capella.diagram.oab.view.edges.componentexchange.Communicatio
 import org.eclipse.capella.diagram.oab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oab.view.nodes.requirement.compartment.OABCompartmentItemNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oab.view.nodes.requirement.compartment.OABCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
@@ -63,6 +65,10 @@ public class OABViewDiagramDescriptionProvider implements IRepresentationDescrip
         var diagramElementDescriptionProviders = List.of(
                 new EntityComponentNodeDescriptionProvider(colorProvider),
                 new CommunicationMeanComponentExchangeEdgeDescriptionProvider(colorProvider),
+                new OABCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new OABCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new RequirementNodeDescriptionProvider(colorProvider),
                 new DescribesEdgeDescriptionProvider(colorProvider)
         );

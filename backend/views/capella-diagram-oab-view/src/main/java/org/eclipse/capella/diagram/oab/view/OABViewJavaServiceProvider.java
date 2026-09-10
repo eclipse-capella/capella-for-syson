@@ -25,6 +25,7 @@ import org.eclipse.capella.model.transverse.services.TransverseRepresentationMut
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
+import org.eclipse.syson.diagram.common.view.services.ViewLabelService;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryElementService;
@@ -71,7 +72,8 @@ public class OABViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramMutationLabelService.class,
                     DiagramQueryElementService.class,
                     DiagramQueryLabelService.class,
-                    DiagramMutationExposeService.class);
+                    DiagramMutationExposeService.class,
+                    ViewLabelService.class);
         }
         return List.of();
     }
