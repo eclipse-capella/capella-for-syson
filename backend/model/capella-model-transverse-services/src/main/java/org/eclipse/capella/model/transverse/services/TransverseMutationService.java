@@ -396,6 +396,20 @@ public class TransverseMutationService {
 
     }
 
+    /**
+     * Create an operational activity within an operational activity, returning null for other parents.
+     *
+     * @author tbezierslafosse
+     */
+    public ActionUsage createOperationalActivity(Element parent) {
+        ActionUsage activity = null;
+        if (this.transverseQueryService.isFunction(parent) && this.transverseQueryService.isOperationalAnalysisPerspective(parent)) {
+            activity = this.createFunction(parent);
+            activity.setDeclaredName("OA " + this.transverseQueryService.existingElementsCount(activity));
+        }
+        return activity;
+    }
+
     public ActionUsage createFunction(Element parent) {
         ActionUsage actionUsage = null;
         Optional<Element> optionalParent = Optional.ofNullable(parent)

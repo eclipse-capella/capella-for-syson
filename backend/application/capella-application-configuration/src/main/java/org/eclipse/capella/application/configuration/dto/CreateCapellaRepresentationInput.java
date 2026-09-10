@@ -21,6 +21,6 @@ import org.eclipse.sirius.components.core.api.IInput;
  *
  * @author frouene
  */
-public record CreateCapellaRepresentationInput(UUID id, String editingContextId, String representationDescriptionId) implements IInput {
+public record CreateCapellaRepresentationInput(UUID id, String editingContextId, String representationDescriptionId, String targetObjectId) implements IInput {
 
 }
