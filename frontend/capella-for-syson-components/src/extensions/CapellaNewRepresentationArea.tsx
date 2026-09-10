@@ -69,7 +69,7 @@ const isErrorPayload = (payload): payload is GQLErrorPayload => payload.__typena
 
 export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: CapellaNewRepresentationAreaProps) => {
   const { classes } = useNewRepresentationAreaStyles();
-  const { setSelection } = useSelection();
+  const { selection, setSelection } = useSelection();
 
   const { addMessages, addErrorMessage } = useMultiToast();
 
@@ -102,6 +102,7 @@ export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: Cap
       id: crypto.randomUUID(),
       editingContextId,
       representationDescriptionId,
+      targetObjectId: selection?.entries[0]?.id,
     };
     createRepresentation({ variables: { input } });
   };
@@ -127,6 +128,20 @@ export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: Cap
                     <Collections fontSize="small" />
                   </ListItemIcon>
                   <ListItemText primary={'LAB'} secondary={'Logical Architecture Blank'} />
+                </ListItemButton>
+                <ListItemButton
+                  className={classes.item}
+                  dense
+                  disableGutters
+                  key={'oabd-representation'}
+                  data-testid={'oabd-representation'}
+                  onClick={() => {
+                    onCreateRepresentation('OABD');
+                  }}>
+                  <ListItemIcon>
+                    <Collections fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={'OABD'} secondary={'Operational Activity Break Down'} />
                 </ListItemButton>
                 <ListItemButton
                   className={classes.item}

@@ -34,6 +34,7 @@ export interface GQLCreateRepresentationInput {
   id: string;
   editingContextId: string;
   representationDescriptionId: string;
+  targetObjectId?: string;
 }
 export interface GQLCreateRepresentationData {
   createCapellaRepresentation: GQLCreateRepresentationPayload;
