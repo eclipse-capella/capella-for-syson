@@ -40,7 +40,7 @@ public class SystemComponentToolProvider {
     public NodeTool createNewSystemComponentNodeTool(IViewDiagramElementFinder cache) {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Component")
-                .iconURLsExpression("/icons/full/obj16/LogicalComponent.svg");
+                .iconURLsExpression("/icons/full/obj16/SystemComponent.svg");
         cache.getNodeDescription(SystemComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> nodeToolBuilder.body(
                 this.viewBuilderHelper.newChangeContext()
                         .expression(ServiceMethod.of0(TransverseMutationService::createComponent).aqlSelf())
