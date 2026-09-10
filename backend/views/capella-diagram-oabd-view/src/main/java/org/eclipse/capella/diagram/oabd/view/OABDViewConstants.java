@@ -10,17 +10,16 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.application.configuration.dto;
-
-import java.util.UUID;
-
-import org.eclipse.sirius.components.core.api.IInput;
+package org.eclipse.capella.diagram.oabd.view;
 
 /**
- * The input object of the create capella representation mutation.
+ * Colors used by the Operational Activity Break Down diagram.
  *
- * @author frouene
+ * @author tbezierslafosse
  */
-public record CreateCapellaRepresentationInput(UUID id, String editingContextId, String representationDescriptionId, String targetObjectId) implements IInput {
+public class OABDViewConstants {
 
+    public static final String ACTIVITY_BACKGROUND_COLOR = "ACTIVITY_BACKGROUND_COLOR";
+    public static final String ACTIVITY_BORDER_COLOR = "ACTIVITY_BORDER_COLOR";
+    public static final String ACTIVITY_LABEL_COLOR = "ACTIVITY_LABEL_COLOR";
 }

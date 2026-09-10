@@ -39,7 +39,8 @@ They represent function allocations, which are already visible in the details vi
 === New Features
 
 - Initial open source publication of Capella for SysON under the Eclipse Public License v2.0.
-- https://github.com/eclipse-capella/capella-for-syson/issues/42[#42] [enh] Initialize OCB diagram
+- https://github.com/eclipse-capella/capella-for-syson/issues/42[#42] [enh] Initialize OCB diagram.
+- https://github.com/eclipse-capella/capella-for-syson/issues/108[#108] [enh] Initialize OABD diagram.
 
 === Improvements
 
@@ -74,3 +75,5 @@ The parent is now the first common ancestor which is either a component or a pac
 - https://github.com/eclipse-capella/capella-for-syson/issues/110[#110] [ci] Add script to verify that the PR size does not exceed 500 LOCs.
 - https://github.com/eclipse-capella/capella-for-syson/issues/88[#88] [services] Ensure functional chains are created in the appropriate parent.
 The parent is now the root function of the perspective's _Functions_ package.
+- https://github.com/eclipse-capella/capella-for-syson/issues/108[#108] [enh] Add activity node to OABD diagram.
+- https://github.com/eclipse-capella/capella-for-syson/issues/108[#108] [enh] Add activity node drop behaviour to OABD diagram.
