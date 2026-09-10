@@ -55,7 +55,7 @@ public class SABViewDescriptionProviderTests {
     @Test
     public void createShouldBuildSABDiagramDescriptionScopedToSystemAnalysisStructure() {
         var view = ViewFactory.eINSTANCE.createView();
-        var colorProvider = new SABViewDescriptionProvider().getColorProvider(view);
+        var colorProvider = new ColorProvider(view);
         var representationDescription = new SABViewDiagramDescriptionProvider().create(colorProvider);
 
         var diagramDescription = assertInstanceOf(DiagramDescription.class, representationDescription);
@@ -261,7 +261,7 @@ public class SABViewDescriptionProviderTests {
     @Test
     public void createShouldConfigureRequirementAndDescribesInteractions() {
         var view = ViewFactory.eINSTANCE.createView();
-        var colorProvider = new ColorProvider(view);
+        var colorProvider = new SABViewDescriptionProvider().getColorProvider(view);
         var diagramDescription = (DiagramDescription) new SABViewDiagramDescriptionProvider().create(colorProvider);
 
         var requirementDescription = this.getNodeDescription(diagramDescription, RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME);
