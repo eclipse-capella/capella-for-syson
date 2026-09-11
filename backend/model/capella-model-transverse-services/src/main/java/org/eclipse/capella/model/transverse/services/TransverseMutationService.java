@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.transverse.services;
 
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_DESCRIPTION;
@@ -19,6 +20,7 @@ import static org.eclipse.capella.model.transverse.services.TransverseQueryServi
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTION;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_COMPONENTS;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
@@ -64,6 +66,7 @@ import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.Redefinition;
 import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
+import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
@@ -119,6 +122,121 @@ public class TransverseMutationService {
         return element;
     }
 
+    public Feature addCapabilityGeneralisation(Usage sourceCapability, Usage targetCapability) {
+        if (this.transverseQueryService.getGeneralizationReferenceValue(sourceCapability).contains(targetCapability)) {
+            return sourceCapability;
+        }
+        var generalization = SysmlFactory.eINSTANCE.createSubsetting();
+        sourceCapability.getOwnedRelationship().add(generalization);
+        generalization.setSubsettingFeature(sourceCapability);
+        generalization.setSubsettedFeature(targetCapability);
+        this.metamodelMutationElementService.initialize(generalization);
+        return sourceCapability;
+    }
+
+    public Feature setCapabilityGeneralisationSource(Subsetting generalization, Usage oldCapability, Usage newCapability) {
+        Usage capability;
+        if (!this.transverseQueryService.isCapability(newCapability)) {
+            capability = oldCapability;
+        } else if (this.transverseQueryService.getGeneralizationReferenceValue(newCapability).contains(generalization.getSubsettedFeature())) {
+            this.logger.atWarn()
+                    .setMessage("Cannot reconnect capability generalization source because it would create a duplicate link")
+                    .addKeyValue("generalizationId", generalization.getElementId())
+                    .addKeyValue("oldCapabilityId", oldCapability.getElementId())
+                    .addKeyValue("newCapabilityId", newCapability.getElementId())
+                    .log();
+            capability = oldCapability;
+        } else {
+            capability = newCapability;
+            generalization.setSubsettingFeature(newCapability);
+            generalization.setSpecific(newCapability);
+            newCapability.getOwnedRelationship().add(generalization);
+        }
+
+        return capability;
+    }
+
+    public Feature setCapabilityGeneralisationTarget(Subsetting generalization, Usage oldCapability, Usage newCapability) {
+        Usage capability;
+        if (!this.transverseQueryService.isCapability(newCapability)) {
+            capability = oldCapability;
+        } else if (this.transverseQueryService.getGeneralizationReferenceValue(generalization.getSubsettingFeature()).contains(newCapability)) {
+            this.logger.atWarn()
+                    .setMessage("Cannot reconnect capability generalization target because it would create a duplicate link")
+                    .addKeyValue("generalizationId", generalization.getElementId())
+                    .addKeyValue("oldCapabilityId", oldCapability.getElementId())
+                    .addKeyValue("newCapabilityId", newCapability.getElementId())
+                    .log();
+            capability = oldCapability;
+        } else {
+            capability = newCapability;
+            generalization.setSubsettedFeature(newCapability);
+            generalization.setGeneral(newCapability);
+        }
+        return capability;
+    }
+
+    public Usage addCapabilityInvolvement(Usage capability, PartUsage component) {
+        if (this.transverseQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
+            return capability;
+        }
+        return this.setArcadiaReferenceFeature(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+                ARCADIA_INVOLVED_COMPONENTS, component, SysmlPackage.eINSTANCE.getPartUsage().getName());
+    }
+
+    public Usage deleteCapabilityInvolvement(Usage capability, PartUsage component) {
+        var involvedComponents = this.transverseQueryService.getInvolvedComponents(capability);
+        if (!involvedComponents.contains(component)) {
+            return null;
+        }
+        List<Feature> remainingComponents = new ArrayList<>(involvedComponents);
+        remainingComponents.remove(component);
+        if (remainingComponents.isEmpty()) {
+            this.deleteReference(capability, ARCADIA_INVOLVED_COMPONENTS);
+        } else {
+            this.setFeatureReferenceValues(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+                    ARCADIA_INVOLVED_COMPONENTS, remainingComponents, SysmlPackage.eINSTANCE.getPartUsage());
+        }
+        return capability;
+    }
+
+    public Usage setCapabilityInvolvementTarget(Usage capability, PartUsage oldComponent, PartUsage newComponent) {
+        if (this.transverseQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(newComponent)) {
+            this.logger.atWarn()
+                    .setMessage("Cannot reconnect capability involvement target because it would create a duplicate link")
+                    .addKeyValue("capabilityId", capability.getElementId())
+                    .addKeyValue("oldComponentId", oldComponent.getElementId())
+                    .addKeyValue("newComponentId", newComponent.getElementId())
+                    .log();
+            return capability;
+        }
+        this.deleteFeaturesFromReference(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+                ARCADIA_INVOLVED_COMPONENTS, SysmlPackage.eINSTANCE.getPartUsage(), List.of(oldComponent));
+        this.addFeatureReferenceValue(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+                ARCADIA_INVOLVED_COMPONENTS, newComponent, SysmlPackage.eINSTANCE.getPartUsage());
+        return capability;
+    }
+
+    public Usage setCapabilityInvolvementSource(Usage oldCapability, Usage newCapability, PartUsage component) {
+        if (this.transverseQueryService.getFeatureReferenceValue(newCapability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
+            this.logger.atWarn()
+                    .setMessage("Cannot reconnect capability involvement source because it would create a duplicate link")
+                    .addKeyValue("oldCapabilityId", oldCapability.getElementId())
+                    .addKeyValue("newCapabilityId", newCapability.getElementId())
+                    .addKeyValue("componentId", component.getElementId())
+                    .log();
+            return oldCapability;
+        }
+        this.deleteFeaturesFromReference(oldCapability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+                ARCADIA_INVOLVED_COMPONENTS, SysmlPackage.eINSTANCE.getPartUsage(), List.of(component));
+        if (this.transverseQueryService.getInvolvedComponents(oldCapability).isEmpty()) {
+            this.deleteReference(oldCapability, ARCADIA_INVOLVED_COMPONENTS);
+        }
+        this.addFeatureReferenceValue(newCapability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+                ARCADIA_INVOLVED_COMPONENTS, component, SysmlPackage.eINSTANCE.getPartUsage());
+        return newCapability;
+    }
+
     public Usage setBooleanAttribute(Usage usage, String prefix, String attributeName, boolean newValue) {
         Optional<LiteralBoolean> optionalExitingValue = this.transverseQueryService.getFeatureReferenceExpression(usage, attributeName)
                 .filter(LiteralBoolean.class::isInstance)
@@ -171,12 +289,12 @@ public class TransverseMutationService {
         features.forEach(newValues::remove);
         this.setFeatureReferenceValues(usage, prefix, attributeName, newValues, referencedFeatureType);
     }
+
     private Optional<Usage> retrieveUsageFromReferenceName(Usage usage, String referenceName) {
         return usage.getNestedUsage().stream()
                 .filter(nestedUsage -> referenceName.equals(nestedUsage.getName()))
                 .findFirst();
     }
-
 
     public void deleteReference(Usage usage, String referenceName) {
         this.retrieveUsageFromReferenceName(usage, referenceName)
@@ -200,6 +318,7 @@ public class TransverseMutationService {
         this.redefineFeature(usage, prefix, attributeName, List.of(literalBoolean), SysmlPackage.eINSTANCE.getAttributeUsage());
         return literalBoolean;
     }
+
     private void redefineFeature(Usage usage, String prefix, String attributeName, List<Expression> values, EClass referencedFeatureType) {
         String libraryFeatureAbsolutePath = prefix + PATH_SEPARATOR + attributeName;
 
@@ -220,8 +339,7 @@ public class TransverseMutationService {
                     var parameter = this.createParameter(value);
                     operatorExpression.getOwnedRelationship().add(parameter);
                 }
-            }
-            else if (!values.isEmpty()) {
+            } else if (!values.isEmpty()) {
                 var featureValue = SysmlFactory.eINSTANCE.createFeatureValue();
                 featureValue.getOwnedRelatedElement().add(values.get(0));
                 optionalReferenceUsage.get().getOwnedRelationship().add(featureValue);
@@ -458,7 +576,8 @@ public class TransverseMutationService {
                 Feature sourcePort = this.getOrCreateFunctionPort(source, FeatureDirectionKind.OUT);
                 Feature targetPort = this.getOrCreateFunctionPort(target, FeatureDirectionKind.IN);
 
-                Optional<Namespace> optionalFunctionalExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target, e -> this.transverseQueryService.isFunction(e) || this.transverseQueryService.isFunctionsPackage(e));
+                Optional<Namespace> optionalFunctionalExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target,
+                        e -> this.transverseQueryService.isFunction(e) || this.transverseQueryService.isFunctionsPackage(e));
                 if (optionalFunctionalExchangeParent.isPresent()) {
 
                     // We can't use diagramMutationElementService#createFlowUsage here because the way SysON computes FlowUsage container doesn't work with Capella for SysON.
@@ -487,7 +606,8 @@ public class TransverseMutationService {
                 PortUsage sourcePort = this.getOrCreateComponentPort(source, FeatureDirectionKind.OUT);
                 PortUsage targetPort = this.getOrCreateComponentPort(target, FeatureDirectionKind.IN);
 
-                Optional<Namespace> optionalComponentExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target, e -> this.transverseQueryService.isComponent(e) || this.transverseQueryService.isStructurePackage(e));
+                Optional<Namespace> optionalComponentExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target,
+                        e -> this.transverseQueryService.isComponent(e) || this.transverseQueryService.isStructurePackage(e));
                 if (optionalComponentExchangeParent.isPresent()) {
                     InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalComponentExchangeParent.get());
                     this.metamodelMutationElementService.initialize(componentExchange);
