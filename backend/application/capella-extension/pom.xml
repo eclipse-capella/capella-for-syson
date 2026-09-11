@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.eclipse.capella</groupId>
         <artifactId>capella-parent</artifactId>
-        <version>2026.7.0</version>
+        <version>2026.9.0</version>
         <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
     </parent>
 
@@ -31,52 +31,52 @@
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-frontend</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-application-configuration</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-diagram-lab-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-diagram-oab-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-diagram-ocb-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-diagram-sab-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-ddv-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-table-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-form-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-model-edit</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.syson</groupId>

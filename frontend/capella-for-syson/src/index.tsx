@@ -13,6 +13,12 @@
 
 import { loadDevMessages, loadErrorMessages } from '@apollo/client/dev';
 import {
+  CapellaDDVWorkbenchViewContribution,
+  CapellaDiagramPanelMenu,
+  CapellaExtensionRegistryMergeStrategy,
+  CapellaOnboardArea,
+} from '@eclipse-capella/capella-for-syson-components';
+import {
   ExtensionRegistry,
   workbenchMainAreaExtensionPoint,
   WorkbenchViewContribution,
@@ -67,12 +73,6 @@ import {
 } from '@eclipse-syson/syson-components';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined';
-import {
-  CapellaDDVWorkbenchViewContribution,
-  CapellaDiagramPanelMenu,
-  CapellaExtensionRegistryMergeStrategy,
-  CapellaOnboardArea,
-} from '@obeo/capella-for-syson-components';
 import { createRoot } from 'react-dom/client';
 import { httpOrigin, wsOrigin } from './core/URL';
 import { CapellaNavigationBarIcon } from './extensions/CapellaNavigationBarIcon';

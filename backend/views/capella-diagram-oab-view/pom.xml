@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.eclipse.capella</groupId>
         <artifactId>capella-parent</artifactId>
-        <version>2026.7.0</version>
+        <version>2026.9.0</version>
         <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
     </parent>
 
@@ -37,12 +37,12 @@
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-diagram-common-view</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-model-services</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.sirius</groupId>
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-tests</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

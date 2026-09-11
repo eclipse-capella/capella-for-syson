@@ -19,7 +19,7 @@
     <parent>
         <groupId>org.eclipse.capella</groupId>
         <artifactId>capella-parent</artifactId>
-        <version>2026.7.0</version>
+        <version>2026.9.0</version>
         <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-extension</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 			<!--
 			 We import the extension jar (as a regular installation via adding a classpath jar would do).
 			 The jar contains all the Capella for SysON modules, but maven still use the original
@@ -133,7 +133,7 @@
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-tests</artifactId>
-			<version>2026.7.0</version>
+			<version>2026.9.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -207,7 +207,7 @@
 				<dependency>
 					<groupId>org.eclipse.capella</groupId>
 					<artifactId>capella-extension</artifactId>
-					<version>2026.7.0</version>
+					<version>2026.9.0</version>
 					<!--
                      We import the extension jar (as a regular installation via adding a classpath jar would do).
                      The jar contains all the Capella for SysON modules, but maven still use the original
@@ -306,7 +306,7 @@
 				<dependency>
 					<groupId>org.eclipse.capella</groupId>
 					<artifactId>capella-extension</artifactId>
-					<version>2026.7.0</version>
+					<version>2026.9.0</version>
 				</dependency>
 			</dependencies>
 
