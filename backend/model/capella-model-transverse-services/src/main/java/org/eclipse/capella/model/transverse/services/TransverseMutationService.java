@@ -548,7 +548,6 @@ public class TransverseMutationService {
     }
 
     public ItemUsage createFunctionPort(ActionUsage container, FeatureDirectionKind direction) {
-
         ItemUsage itemUsage = SysmlFactory.eINSTANCE.createItemUsage();
         itemUsage.setDirection(direction);
         this.metamodelMutationElementService.addChildInParent(container, itemUsage);
@@ -562,7 +561,6 @@ public class TransverseMutationService {
         itemUsage.setDeclaredName(defaultName + WHITE_SPACE + this.transverseQueryService.existingElementsCount(itemUsage));
 
         return itemUsage;
-
     }
 
     public FlowUsage createFunctionalExchange(Feature source, Feature target) {

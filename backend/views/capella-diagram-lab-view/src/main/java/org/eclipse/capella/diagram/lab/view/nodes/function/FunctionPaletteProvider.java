@@ -74,10 +74,13 @@ public class FunctionPaletteProvider {
                         .expression(ServiceMethod.of1(DiagramMutationLabelService::directEditNode).aqlSelf("newLabel"))
                         .build());
 
+        var functionPortToolProvider = new FunctionPortToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper);
         return this.diagramBuilderHelper.newNodePalette()
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
-                .nodeTools(this.createNewFunctionNodeTool(cache))
+                .nodeTools(this.createNewFunctionNodeTool(cache),
+                        functionPortToolProvider.createNewInputFunctionPortNodeTool(cache),
+                        functionPortToolProvider.createNewOutputFunctionPortNodeTool(cache))
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .edgeTools(new FunctionalExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewFunctionalExchangeTool(cache))
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
@@ -125,4 +128,6 @@ public class FunctionPaletteProvider {
 
         return nodeToolBuilder.build();
     }
+
+
 }
