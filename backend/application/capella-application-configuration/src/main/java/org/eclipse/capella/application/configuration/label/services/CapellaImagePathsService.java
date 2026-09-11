@@ -191,7 +191,11 @@ public class CapellaImagePathsService {
         } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
             componentType = PHYSICAL + name;
         } else if (ArcadiaEngineeringPerspective.SystemAnalysis.equals(perspective)) {
-            componentType = SYSTEM + name;
+            if (this.transverseQueryService.isComponentActor(element)) {
+                componentType = SYSTEM + "Actor";
+            } else {
+                componentType = SYSTEM + name;
+            }
         }
         return Optional.ofNullable(componentType);
     }

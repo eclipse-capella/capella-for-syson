@@ -57,7 +57,7 @@ public class SystemOfInterestLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(SABViewConstants.COMPONENT_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/LogicalComponent.svg")
+                .labelIcon("/icons/full/obj16/SystemComponent.svg")
                 .withHeader(true)
                 .build();
     }

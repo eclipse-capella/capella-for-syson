@@ -39,7 +39,7 @@ public class SystemActorToolProvider {
     }
 
     public NodeTool createNewSystemActorNodeTool(IViewDiagramElementFinder cache) {
-        return this.createActorNodeTool(cache, "New Actor", "/icons/full/obj16/Actor.svg", ServiceMethod.of0(SAMutationService::createActorSA).aqlSelf());
+        return this.createActorNodeTool(cache, "New Actor", "/icons/full/obj16/SystemActor.svg", ServiceMethod.of0(SAMutationService::createActorSA).aqlSelf());
     }
 
     private NodeTool createActorNodeTool(IViewDiagramElementFinder cache, String name, String icon, String expression) {
