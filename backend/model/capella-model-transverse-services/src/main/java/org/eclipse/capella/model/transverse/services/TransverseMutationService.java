@@ -592,6 +592,13 @@ public class TransverseMutationService {
 
             }
         }
+        this.logger.atWarn()
+                .setMessage("Cannot create functional exchange between '{}' ({}) and '{}' ({}): incompatible endpoints.")
+                .addArgument(source.getDeclaredName())
+                .addArgument(source.getDirection())
+                .addArgument(target.getDeclaredName())
+                .addArgument(target.getDirection())
+                .log();
         return null;
     }
 
@@ -618,6 +625,13 @@ public class TransverseMutationService {
                 }
             }
         }
+        this.logger.atWarn()
+                .setMessage("Cannot create component exchange between '{}' ({}) and '{}' ({}): incompatible endpoints.")
+                .addArgument(source.getDeclaredName())
+                .addArgument(source.getDirection())
+                .addArgument(target.getDeclaredName())
+                .addArgument(target.getDirection())
+                .log();
         return null;
     }
 
