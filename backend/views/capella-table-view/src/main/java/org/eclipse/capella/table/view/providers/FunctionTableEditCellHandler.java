@@ -76,7 +76,7 @@ public class FunctionTableEditCellHandler implements IEditCellHandler {
                 status.set(this.setFunctionDescription(eObject, (String) newValue));
 
             } else if (EcoreUtil.getURI(SysmlPackage.eINSTANCE.getOwningMembership()).toString().equals(columnId)) {
-                status.set(this.setFunctionStatusKind(eObject, newValue, editingContext));
+                status.set(this.setFunctionStatusKind(eObject, (String) newValue));
             }
         });
 
@@ -89,8 +89,8 @@ public class FunctionTableEditCellHandler implements IEditCellHandler {
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
     }
 
-    private IStatus setFunctionStatusKind(ActionUsage function, Object newValue, IEditingContext editingContext) {
-        this.transverseMutationService.setStatusKind(function, newValue, editingContext);
+    private IStatus setFunctionStatusKind(ActionUsage function, String newValue) {
+        this.transverseMutationService.setStatusKind(function, newValue);
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
     }
 }

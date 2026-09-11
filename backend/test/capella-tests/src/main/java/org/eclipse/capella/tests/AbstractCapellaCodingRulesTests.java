@@ -14,6 +14,7 @@ package org.eclipse.capella.tests;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaCall;
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaMethodCall;
@@ -26,6 +27,7 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.annotations.Builder;
 import org.eclipse.sirius.components.annotations.Immutable;
+import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.tests.architecture.AbstractCodingRulesTests;
 import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -156,6 +159,33 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
         rule.check(this.getClasses());
     }
 
+    /**
+     * Checks that semantic query and mutation services do not access representation-level information, such as the editing context or diagram elements.
+     * <p>
+     * Services that require these arguments need to be declared in {@code XXXRepresentationQueryService} or {@code XXXRepresentationMutationService}. Note that representation services are harder to
+     * test, and should be thin wrappers that delegate to semantic services as soon as possible.
+     * </p>
+     */
+    @Test
+    public void noSemanticQueryOrMutationServiceShouldUseRepresentationLevelInformation() {
+        ArchRule rule = ArchRuleDefinition.noClasses()
+                .that(this.isSemanticQueryOrMutationService())
+                .should()
+                .dependOnClassesThat()
+                .haveFullyQualifiedName(IEditingContext.class.getName())
+                .orShould()
+                .dependOnClassesThat()
+                .resideInAnyPackage("org.eclipse.sirius.components.diagrams..",
+                        "org.eclipse.sirius.components.tables..",
+                        "org.eclipse.sirius.components.forms..",
+                        "org.eclipse.sirius.components.trees.."
+                        )
+                .because("semantic query and mutation services should only access semantic data; use a RepresentationQueryService or RepresentationMutationService when representation-level data is necessary")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
+    }
+
     @Test
     public void noClassShouldUseSysONDeleteService() {
         ArchRule rule = ArchRuleDefinition.noClasses()
@@ -170,6 +200,31 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 .orShould()
                 .callMethodWhere(this.isCallToEcoreDeleteMethod())
                 .because("semantic deletion should always be handled by TransverseMutationService#delete")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
+    }
+
+    /**
+     * Checks that no class use {@code getAllContents} or {@code eAllContents}.
+     * <p>
+     * These methods are performance bottlenecks and should be avoided.
+     */
+    @Test
+    public void noClassShouldUseAllContents() {
+        ArchRule rule = ArchRuleDefinition.noClasses()
+                .that()
+                // Properties configurers need to attach an IDAdapter to each view element: this is done once when the application starts.
+                .doNotHaveFullyQualifiedName("org.eclipse.capella.application.configuration.details.view.CapellaPropertiesConfigurer")
+                .and()
+                // CapellaDeleteService needs to iterate the content of an element to delete to collect related elements.
+                .doNotHaveFullyQualifiedName("org.eclipse.capella.model.transverse.services.CapellaDeleteService")
+                .and()
+                // View description providers need to attach an IDAdapter to each view element: this is done once when the application starts.
+                .areNotAssignableTo("org.eclipse.capella.diagram.common.view.IViewDescriptionProvider")
+                .should()
+                .callMethodWhere(this.isCallToEAllContentsMethod())
+                .because("all-contents traversal can cause performance issues")
                 .allowEmptyShould(true);
 
         rule.check(this.getClasses());
@@ -269,6 +324,42 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 String ownerPackageName = method.getOwner().getPackageName();
                 String ownerSimpleName = method.getOwner().getSimpleName();
                 return PERSPECTIVE_SERVICE_PACKAGES.contains(ownerPackageName) && ownerSimpleName.matches("(OA|SA|LA|PA).*Services?");
+            }
+        };
+    }
+
+    private DescribedPredicate<JavaMethodCall> isCallToEAllContentsMethod() {
+        return new DescribedPredicate<>("calls an EMF all-contents method") {
+            @Override
+            public boolean test(JavaMethodCall javaMethodCall) {
+                boolean result = false;
+                JavaClass targetOwner = javaMethodCall.getTargetOwner();
+                String targetMethodName = javaMethodCall.getName();
+                if (Objects.equals(targetMethodName, "getAllContents")) {
+                    result = Objects.equals(targetOwner.getName(), "org.eclipse.emf.ecore.util.EcoreUtil")
+                            || targetOwner.isAssignableTo("org.eclipse.emf.ecore.resource.ResourceSet")
+                            || targetOwner.isAssignableTo("org.eclipse.emf.ecore.resource.Resource");
+                } else if (Objects.equals(targetMethodName, "eAllContents")) {
+                    result = targetOwner.isAssignableTo("org.eclipse.emf.ecore.EObject");
+                }
+                return result;
+            }
+        };
+    }
+
+    /**
+     * Matches semantic query and mutation services while excluding their representation-level counterparts.
+     *
+     * @return A predicate used to identify semantic service classes
+     */
+    private DescribedPredicate<JavaClass> isSemanticQueryOrMutationService() {
+        return new DescribedPredicate<>("are semantic query or mutation services") {
+            @Override
+            public boolean test(JavaClass javaClass) {
+                String simpleName = javaClass.getSimpleName();
+                boolean isQueryOrMutationService = simpleName.contains("QueryService") || simpleName.contains("MutationService");
+                boolean isRepresentationService = simpleName.contains("RepresentationQueryService") || simpleName.contains("RepresentationMutationService");
+                return isQueryOrMutationService && !isRepresentationService;
             }
         };
     }

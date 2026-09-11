@@ -79,3 +79,8 @@ The parent is now the root function of the perspective's _Functions_ package.
 - [releng] Exclude integration and unit tests from pull request size check
 - https://github.com/eclipse-capella/capella-for-syson/issues/42[#42] [enh] Add edges to OCB diagram.
 - https://github.com/eclipse-capella/capella-for-syson/issues/52[#52] [enh] Add tools to create ports for functions and components in LAB and SAB diagrams.
+- https://github.com/eclipse-capella/capella-for-syson/issues/90[#90] [services] Refactor status kind services.
+These services do not rely on the editing context anymore.
+- https://github.com/eclipse-capella/capella-for-syson/issues/100[#100] [services] Prevent usage of `getAllContents` and its variations.
+Some usages are still accepted, such as view traversal to add `IDAdapter` during the view creation process, or element content traversal to find related elements on deletion.
+All other usages are forbidden and checked with an architecture test.
