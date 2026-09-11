@@ -20,6 +20,11 @@ import {
 } from '@eclipse-sirius/sirius-components-core';
 import { diagramToolbarActionExtensionPoint, NodeTypeContribution } from '@eclipse-sirius/sirius-components-diagrams';
 import {
+  GQLWidget,
+  PropertySectionComponent,
+  widgetContributionExtensionPoint,
+} from '@eclipse-sirius/sirius-components-forms';
+import {
   OmniboxCommand,
   OmniboxCommandOverrideContribution,
   omniboxCommandOverrideContributionExtensionPoint,
@@ -42,6 +47,7 @@ import {
   SiriusWebApplication,
 } from '@eclipse-sirius/sirius-web-application';
 import {
+  ExpressionPropertySection,
   InsertTextualSysMLv2ExplorerToolOverriddenContribution,
   PublishProjectSysMLContentsAsLibraryCommand,
   SysMLImportedPackageNode,
@@ -60,6 +66,7 @@ import {
   SysONNavigationBarMenuIcon,
 } from '@eclipse-syson/syson-components';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
+import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined';
 import {
   CapellaDDVWorkbenchViewContribution,
   CapellaDiagramPanelMenu,
@@ -153,6 +160,28 @@ extensionRegistry.putData<PaletteToolOverriddenContributionProps[]>(paletteToolO
 extensionRegistry.addComponent(workbenchMainAreaExtensionPoint, {
   identifier: `capella_${workbenchMainAreaExtensionPoint.identifier}`,
   Component: CapellaOnboardArea,
+});
+
+extensionRegistry.putData(widgetContributionExtensionPoint, {
+  identifier: `syson_${widgetContributionExtensionPoint.identifier}`,
+  data: [
+    {
+      name: 'ExpressionValuePropertySectionOverride',
+      icon: <QuestionMarkOutlinedIcon />,
+      previewComponent: () => null,
+      component: (widget: GQLWidget): PropertySectionComponent<GQLWidget> | null => {
+        let propertySectionComponent: PropertySectionComponent<GQLWidget> | null = null;
+        if (
+          widget.__typename == 'LabelWidget' &&
+          (widget.label.startsWith('syson:expression-value-widget') ||
+            widget.label.startsWith('syson:missing-expression-value-widget'))
+        ) {
+          propertySectionComponent = ExpressionPropertySection as PropertySectionComponent<GQLWidget>;
+        }
+        return propertySectionComponent;
+      },
+    },
+  ],
 });
 
 /*******************************************************************************
