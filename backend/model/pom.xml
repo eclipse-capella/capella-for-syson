@@ -17,7 +17,7 @@
 
 	<groupId>org.eclipse.capella</groupId>
     <artifactId>capella-model-root</artifactId>
-	<version>2026.7.0</version>
+	<version>2026.9.0</version>
 
     <name>capella-model-root</name>
     <description>Capella for SysON Model Root</description>

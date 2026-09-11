@@ -1,7 +1,7 @@
 {
-  "name": "@obeo/capella-for-syson-components",
+  "name": "@eclipse-capella/capella-for-syson-components",
   "author": "Obeo",
-  "version": "2026.7.0",
+  "version": "2026.9.0",
   "license": "EPL-2.0",
   "repository": {
     "type": "git",
