@@ -117,6 +117,8 @@ public class TransverseQueryService {
 
     public static final String FUNCTIONS_PACKAGE = "Functions";
 
+    public static final String ROOT_FUNCTION = "Root Function";
+
     public static final String REQUIREMENTS_PACKAGE = "Requirements";
 
     public static final String STATUS = "status";
