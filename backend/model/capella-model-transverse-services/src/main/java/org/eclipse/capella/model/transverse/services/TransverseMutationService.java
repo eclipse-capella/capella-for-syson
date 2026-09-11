@@ -130,7 +130,7 @@ public class TransverseMutationService {
         sourceCapability.getOwnedRelationship().add(generalization);
         generalization.setSubsettingFeature(sourceCapability);
         generalization.setSubsettedFeature(targetCapability);
-        this.elementInitializerSwitch.doSwitch(generalization);
+        this.metamodelMutationElementService.initialize(generalization);
         return sourceCapability;
     }
 
