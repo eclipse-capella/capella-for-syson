@@ -132,6 +132,20 @@ export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: Cap
                   className={classes.item}
                   dense
                   disableGutters
+                  key={'oabd-representation'}
+                  data-testid={'oabd-representation'}
+                  onClick={() => {
+                    onCreateRepresentation('OABD');
+                  }}>
+                  <ListItemIcon>
+                    <Collections fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={'OABD'} secondary={'Operational Activity Break Down'} />
+                </ListItemButton>
+                <ListItemButton
+                  className={classes.item}
+                  dense
+                  disableGutters
                   key={'sab-representation'}
                   data-testid={'sab-representation'}
                   onClick={() => {

@@ -1800,6 +1800,16 @@ INSERT INTO nature (
   'siriusWeb://nature?kind=capella'
 );
 
+INSERT INTO semantic_data_dependency (
+  semantic_data_id,
+  dependency_semantic_data_id,
+  index
+) VALUES (
+  'a8f1f85b-6e6d-4b35-9a9d-9c69ec1d4006',
+  '416929fe-88f3-44a3-9a7b-649ac2e260f9',
+  0
+);
+
 INSERT INTO project_semantic_data (
   id,
   project_id,

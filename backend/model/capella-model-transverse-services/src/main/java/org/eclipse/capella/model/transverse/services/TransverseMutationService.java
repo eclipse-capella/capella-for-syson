@@ -509,11 +509,26 @@ public class TransverseMutationService {
 
     }
 
+    /**
+     * Create an operational activity within an operational activity, returning null for other parents.
+     *
+     * @author tbezierslafosse
+     */
+    public ActionUsage createOperationalActivity(Element parent) {
+        ActionUsage activity = null;
+        if (this.transverseQueryService.isFunction(parent) && this.transverseQueryService.isOperationalAnalysisPerspective(parent)) {
+            activity = this.createFunction(parent);
+            activity.setDeclaredName("OA " + this.transverseQueryService.existingElementsCount(activity));
+        }
+        return activity;
+    }
+
     public ActionUsage createFunction(Element parent) {
         ActionUsage actionUsage = null;
         Optional<Element> optionalParent = Optional.ofNullable(parent)
                 .filter(this.transverseQueryService::isFunction)
-                .or(() -> this.transverseQueryService.getRootFunction(parent));
+                .or(() -> this.transverseQueryService.getFunctionsPackage(parent)
+                        .flatMap(this.transverseQueryService::getRootFunction));
         if (optionalParent.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);

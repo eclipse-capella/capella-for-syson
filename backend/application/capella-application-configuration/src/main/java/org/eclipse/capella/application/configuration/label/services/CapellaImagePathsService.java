@@ -181,7 +181,9 @@ public class CapellaImagePathsService {
                 componentType = LOGICAL + name;
             }
         } else if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-            if (this.transverseQueryService.isComponentHumanActor(element)) {
+            if (ARCADIA_FUNCTION.equals(name)) {
+                componentType = "OperationalActivity";
+            } else if (this.transverseQueryService.isComponentHumanActor(element)) {
                 componentType = LOGICAL + "ActorHuman";
             } else if (this.transverseQueryService.isComponentActor(element)) {
                 componentType = LOGICAL + "Actor";

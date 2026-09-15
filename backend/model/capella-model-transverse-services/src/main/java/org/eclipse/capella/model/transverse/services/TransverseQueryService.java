@@ -432,6 +432,12 @@ public class TransverseQueryService {
         return false;
     }
 
+    public boolean isOperationalActivity(EObject eObject) {
+        return eObject instanceof Element element
+                && this.isFunction(element)
+                && this.isOperationalAnalysisPerspective(element);
+    }
+
     public Boolean isFunctionalChain(EObject eObject) {
         if (eObject instanceof ActionUsage actionUsage) {
             return this.checkType(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN);
@@ -635,6 +641,24 @@ public class TransverseQueryService {
         return result;
     }
 
+    /**
+     * Retrieve the operational activity context and its descendant operational activities in containment order.
+     *
+     * @author tbezierslafosse
+     */
+    public List<ActionUsage> getOperationalActivities(EObject context) {
+        List<ActionUsage> activities = new ArrayList<>();
+        if (context instanceof ActionUsage activity && this.isFunction(activity) && this.isOperationalAnalysisPerspective(activity)) {
+            activities.add(activity);
+            activity.eAllContents().forEachRemaining(descendant -> {
+                if (descendant instanceof ActionUsage child && this.isFunction(child) && this.isOperationalAnalysisPerspective(child)) {
+                    activities.add(child);
+                }
+            });
+        }
+        return activities;
+    }
+
     public List<ActionUsage> getFunctions(EObject eObject) {
         var allActionUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getActionUsage());
         return allActionUsage.stream()
@@ -766,6 +790,20 @@ public class TransverseQueryService {
                     .toList();
         }
         return portUsages;
+    }
+
+    /**
+     * Retrieve native OA requirements across the resources reachable from an operational activity.
+     *
+     * @author tbezierslafosse
+     */
+    public List<RequirementUsage> getOperationalRequirements(EObject context) {
+        if (context instanceof ActionUsage activity && this.isFunction(activity) && this.isOperationalAnalysisPerspective(activity)) {
+            return this.utilService.getAllReachable(context, SysmlPackage.eINSTANCE.getRequirementUsage()).stream()
+                    .filter(RequirementUsage.class::isInstance).map(RequirementUsage.class::cast)
+                    .filter(this::isOperationalAnalysisPerspective).toList();
+        }
+        return List.of();
     }
 
     public List<RequirementUsage> getRequirements(EObject eObject) {
@@ -941,10 +979,8 @@ public class TransverseQueryService {
         return this.getArcadiaPerspectiveOwnedPackage(element, FUNCTIONS_PACKAGE);
     }
 
-    public Optional<ActionUsage> getRootFunction(Element element) {
-        return this.getFunctionsPackage(element)
-                .stream()
-                .flatMap(functionsPackage -> functionsPackage.getOwnedElement().stream())
+    public Optional<ActionUsage> getRootFunction(Package functionsPackage) {
+        return functionsPackage.getOwnedElement().stream()
                 .filter(this::isFunction)
                 .map(ActionUsage.class::cast)
                 .findFirst();
