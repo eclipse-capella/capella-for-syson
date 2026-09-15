@@ -27,7 +27,7 @@ services:
     volumes:
       - capella-for-syson-postgres-data:/var/lib/postgresql/data
   app:
-    image: '${IMAGE_TAG:-capella-for-syson:latest}'
+    image: '${IMAGE_TAG:-eclipsecapella/capella-for-syson:v2026.9.0}'
     ports:
       - "8080:8080"
     environment:
