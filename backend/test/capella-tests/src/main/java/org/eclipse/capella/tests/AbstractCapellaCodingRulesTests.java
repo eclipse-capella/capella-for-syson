@@ -27,6 +27,7 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -205,6 +206,31 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     }
 
     /**
+     * Checks that no class use {@code getAllContents} or {@code eAllContents}.
+     * <p>
+     * These methods are performance bottlenecks and should be avoided.
+     */
+    @Test
+    public void noClassShouldUseAllContents() {
+        ArchRule rule = ArchRuleDefinition.noClasses()
+                .that()
+                // Properties configurers need to attach an IDAdapter to each view element: this is done once when the application starts.
+                .doNotHaveFullyQualifiedName("org.eclipse.capella.application.configuration.details.view.CapellaPropertiesConfigurer")
+                .and()
+                // CapellaDeleteService needs to iterate the content of an element to delete to collect related elements.
+                .doNotHaveFullyQualifiedName("org.eclipse.capella.model.transverse.services.CapellaDeleteService")
+                .and()
+                // View description providers need to attach an IDAdapter to each view element: this is done once when the application starts.
+                .areNotAssignableTo("org.eclipse.capella.diagram.common.view.IViewDescriptionProvider")
+                .should()
+                .callMethodWhere(this.isCallToEAllContentsMethod())
+                .because("all-contents traversal can cause performance issues")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
+    }
+
+    /**
      * Checks that no class use Sirius Web {@link DefaultToolsFactory}.
      * <p>
      * {@link DefaultToolsFactory} was initially designed to provide default tools when creating a studio, but its scope has expanded beyond that purpose. In the future, Sirius Web may break this
@@ -298,6 +324,25 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 String ownerPackageName = method.getOwner().getPackageName();
                 String ownerSimpleName = method.getOwner().getSimpleName();
                 return PERSPECTIVE_SERVICE_PACKAGES.contains(ownerPackageName) && ownerSimpleName.matches("(OA|SA|LA|PA).*Services?");
+            }
+        };
+    }
+
+    private DescribedPredicate<JavaMethodCall> isCallToEAllContentsMethod() {
+        return new DescribedPredicate<>("calls an EMF all-contents method") {
+            @Override
+            public boolean test(JavaMethodCall javaMethodCall) {
+                boolean result = false;
+                JavaClass targetOwner = javaMethodCall.getTargetOwner();
+                String targetMethodName = javaMethodCall.getName();
+                if (Objects.equals(targetMethodName, "getAllContents")) {
+                    result = Objects.equals(targetOwner.getName(), "org.eclipse.emf.ecore.util.EcoreUtil")
+                            || targetOwner.isAssignableTo("org.eclipse.emf.ecore.resource.ResourceSet")
+                            || targetOwner.isAssignableTo("org.eclipse.emf.ecore.resource.Resource");
+                } else if (Objects.equals(targetMethodName, "eAllContents")) {
+                    result = targetOwner.isAssignableTo("org.eclipse.emf.ecore.EObject");
+                }
+                return result;
             }
         };
     }
