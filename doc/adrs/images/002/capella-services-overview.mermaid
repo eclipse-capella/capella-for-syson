@@ -1,0 +1,69 @@
+flowchart TB
+      ThirdParty(["Third-party clients<br/>(e.g. Capella bridge)"])
+
+      subgraph Diagrams["Diagram-specific representation services — backend/views"]
+          direction LR
+
+          subgraph OCB["OCB diagram"]
+              OCBCreation["OCBDiagramCreationService"]
+              OCBDrop["OCBDiagramDropService"]
+              OCBReconnect["OCBDiagramReconnectService"]
+              OCBDeletion["OCBDiagramDeletionService"]
+              OCBCandidates["OCBDiagramSemanticCandidateService"]
+          end
+
+          OABD["OABD diagram<br/>(service details omitted)"]
+          LAB["LAB diagram<br/>(service details omitted)"]
+      end
+
+      subgraph Perspectives["Perspective-level semantic APIs — backend/model"]
+          direction LR
+
+          subgraph OA["OA perspective"]
+              OACreation["OACreationService"]
+              OAMove["OAMoveService"]
+              OAUpdate["OAUpdateService"]
+              OAQuery["OAQueryService"]
+              OADeletion["OADeletionService"]
+          end
+
+          LA["LA perspective<br/>(service details omitted)"]
+      end
+
+      subgraph Common["Common semantic implementations — backend/model"]
+          direction LR
+          CommonCreation["CommonCreationService"]
+          CommonMove["CommonMoveService"]
+          CommonUpdate["CommonUpdateService"]
+          CommonQuery["CommonQueryService"]
+          CommonDeletion["CommonDeletionService"]
+      end
+
+      ThirdParty -->|"uses"| OA
+      ThirdParty -->|"uses"| LA
+
+      OABD -->|"depends on"| OA
+      LAB -->|"depends on"| LA
+
+      OCBCreation -->|"creates semantic element"| OACreation
+      OCBDrop -->|"moves semantic element"| OAMove
+      OCBReconnect -->|"updates semantic endpoints"| OAUpdate
+      OCBDeletion -->|"deletes semantic element"| OADeletion
+      OCBCandidates -->|"queries semantic candidates"| OAQuery
+
+      OACreation -->|"default/shared behavior"| CommonCreation
+      OAMove -->|"default/shared behavior"| CommonMove
+      OAUpdate -->|"default/shared behavior"| CommonUpdate
+      OAQuery -->|"default/shared behavior"| CommonQuery
+      OADeletion -->|"default/shared behavior"| CommonDeletion
+
+      LA -->|"uses common behavior"| Common
+
+      classDef diagram stroke:#2E7D32,stroke-width:3px
+      classDef perspective stroke:#1565C0,stroke-width:3px
+
+      class OCBCreation,OCBDrop,OCBReconnect,OCBDeletion,OCBCandidates,OABD,LAB diagram
+      class OACreation,OAMove,OAUpdate,OAQuery,OADeletion,LA perspective
+
+      style OCB stroke:#2E7D32,stroke-width:3px
+      style OA stroke:#1565C0,stroke-width:3px
