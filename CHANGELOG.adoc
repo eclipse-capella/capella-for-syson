@@ -6,6 +6,8 @@
 
 === Architectural decision records
 
+- [ADR-002] Define perspective and diagram service boundaries
+
 === Deprecation warning
 
 === Breaking changes
