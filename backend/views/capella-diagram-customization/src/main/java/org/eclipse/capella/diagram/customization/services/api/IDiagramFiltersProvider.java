@@ -10,17 +10,21 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.lab.view.services.dto;
 
-import java.util.UUID;
+package org.eclipse.capella.diagram.customization.services.api;
 
-import org.eclipse.sirius.components.collaborative.diagrams.api.IDiagramInput;
+import java.util.List;
+
+import org.eclipse.sirius.components.representations.IRepresentationDescription;
 
 /**
- * The input object of the show diagram functions mutation.
+ * Interface for providing diagram filter for a specific representation description.
  *
- * @author fbarbin
+ * @author Jerome Gout
  */
-public record ShowDiagramFunctionsInput(UUID id, String editingContextId, String representationId, boolean show) implements IDiagramInput {
+public interface IDiagramFiltersProvider {
 
+    boolean canHandle(IRepresentationDescription representationDescription);
+
+    List<IDiagramFilter> getDiagramFilters();
 }
