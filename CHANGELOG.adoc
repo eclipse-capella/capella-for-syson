@@ -1,30 +1,43 @@
 = Changelog
 
+== 2026.11.0
+
+=== Pitches
+
+=== Architectural decision records
+
+=== Deprecation warning
+
+=== Breaking changes
+
+=== Dependency update
+
+=== Bug fixes
+
+=== New Features
+
+- https://github.com/eclipse-capella/capella-for-syson/issues/108[#108] [enh] Initialize OABD diagram.
+
+=== Improvements
+
+- https://github.com/eclipse-capella/capella-for-syson/issues/90[#90] [services] Refactor status kind services.
+These services do not rely on the editing context anymore.
+
 == 2026.9.0
 
 === Pitches
 
-
-
-
 === Architectural decision records
 
-
-
+- [ADR-001] Contribute Capella for SysON as an extension of SysON
 
 === Deprecation warning
 
-
-
-
 === Breaking changes
-
-
-
 
 === Dependency update
 
-- [releng] Update Sirius Web and SysON to `2026.7.4`
+- [releng] Update Sirius Web and SysON to `2026.9.0`
 
 === Bug fixes
 
@@ -42,7 +55,6 @@ They represent function allocations, which are already visible in the details vi
 
 - Initial open source publication of Capella for SysON under the Eclipse Public License v2.0.
 - https://github.com/eclipse-capella/capella-for-syson/issues/42[#42] [enh] Initialize OCB diagram.
-- https://github.com/eclipse-capella/capella-for-syson/issues/108[#108] [enh] Initialize OABD diagram.
 
 === Improvements
 
@@ -80,5 +92,3 @@ The parent is now the root function of the perspective's _Functions_ package.
 - [releng] Exclude integration and unit tests from pull request size check
 - https://github.com/eclipse-capella/capella-for-syson/issues/42[#42] [enh] Add edges to OCB diagram.
 - https://github.com/eclipse-capella/capella-for-syson/issues/52[#52] [enh] Add tools to create ports for functions and components in LAB and SAB diagrams.
-- https://github.com/eclipse-capella/capella-for-syson/issues/90[#90] [services] Refactor status kind services.
-These services do not rely on the editing context anymore.
