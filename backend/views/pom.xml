@@ -33,6 +33,7 @@
 
 	<modules>
 		<module>capella-diagram-common-view</module>
+        <module>capella-diagram-customization</module>
 		<module>capella-diagram-lab-view</module>
         <module>capella-diagram-oab-view</module>
 		<module>capella-diagram-ocb-view</module>

@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.lab.view.services;
 
 import java.util.Objects;
 
+import org.eclipse.capella.diagram.customization.filters.ShowFunctionsDiagramFilter;
+import org.eclipse.capella.diagram.customization.services.api.IDiagramFilterService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
@@ -27,14 +29,14 @@ import org.eclipse.syson.sysml.SysmlPackage;
  */
 public class LABDiagramService {
 
-    private final ShowDiagramFunctionsService showDiagramFunctionsService;
+    private final IDiagramFilterService diagramFilterService;
 
-    public LABDiagramService(ShowDiagramFunctionsService diagramFunctionsService) {
-        this.showDiagramFunctionsService = Objects.requireNonNull(diagramFunctionsService);
+    public LABDiagramService(IDiagramFilterService diagramFilterService) {
+        this.diagramFilterService = Objects.requireNonNull(diagramFilterService);
     }
 
     public boolean isFunctionHidden(Object self) {
-        return !this.showDiagramFunctionsService.isShowFunctions();
+        return !this.diagramFilterService.isDiagramFilterActive(ShowFunctionsDiagramFilter.ID);
     }
 
     /**

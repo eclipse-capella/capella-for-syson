@@ -22,7 +22,8 @@ import Popper from '@mui/material/Popper';
 import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import { ShowHideDiagramFunctions } from './ShowHideDiagramFunctions';
+import { DiagramFilter } from './DiagramFilter';
+import { useRepresentationMetadataAvailableDiagramFilters } from './useRepresentationMetadataAvailableDiagramFilters';
 
 const useMenuStyles = makeStyles()((_) => ({
   menuEntry: {
@@ -33,6 +34,7 @@ export const CapellaDiagramPanelMenu = ({ editingContextId, diagramId }: Diagram
   const { classes } = useMenuStyles();
   const [open, setOpen] = useState<boolean>(false);
   const anchorRef = useRef<HTMLButtonElement | null>(null);
+  const availableFilters = useRepresentationMetadataAvailableDiagramFilters(editingContextId, diagramId);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -89,12 +91,16 @@ export const CapellaDiagramPanelMenu = ({ editingContextId, diagramId }: Diagram
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
                 <FormGroup>
-                  <FormControlLabel
-                    key={'Show functions - Menu Entry'}
-                    className={classes.menuEntry}
-                    control={<ShowHideDiagramFunctions editingContextId={editingContextId} diagramId={diagramId} />}
-                    label={'Show Functions'}
-                  />
+                  {availableFilters.map((filter) => (
+                    <FormControlLabel
+                      key={filter.id}
+                      className={classes.menuEntry}
+                      control={
+                        <DiagramFilter editingContextId={editingContextId} diagramId={diagramId} filter={filter} />
+                      }
+                      label={filter.label}
+                    />
+                  ))}
                 </FormGroup>
               </ClickAwayListener>
             </Paper>

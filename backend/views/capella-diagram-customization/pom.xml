@@ -23,9 +23,9 @@
         <relativePath>../../releng/capella-parent</relativePath> <!-- lookup parent from repository -->
     </parent>
 
-    <artifactId>capella-diagram-lab-view</artifactId>
-	<name>capella-diagram-lab-view</name>
-	<description>Capella diagram description of Logical Architecture Blank View</description>
+    <artifactId>capella-diagram-customization</artifactId>
+	<name>capella-diagram-customization</name>
+	<description>Capella diagram customization</description>
 
 	<dependencies>
 		<dependency>
@@ -35,9 +35,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.eclipse.capella</groupId>
-			<artifactId>capella-diagram-common-view</artifactId>
-			<version>2026.9.0</version>
+			<groupId>org.eclipse.syson</groupId>
+			<artifactId>syson-diagram-common-view</artifactId>
+			<version>${syson.version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
@@ -55,11 +56,6 @@
 			<artifactId>capella-tests</artifactId>
 			<version>2026.9.0</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.capella</groupId>
-			<artifactId>capella-diagram-customization</artifactId>
-			<version>2026.9.0</version>
 		</dependency>
 	</dependencies>
 

@@ -10,32 +10,36 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.lab.view.services.datafetchers;
+
+package org.eclipse.capella.diagram.customization.datafetchers;
 
 import java.util.Objects;
 
-import org.eclipse.capella.diagram.lab.view.services.ShowDiagramFunctionsService;
+import org.eclipse.capella.diagram.customization.services.api.IDiagramFilterService;
 import org.eclipse.sirius.components.annotations.spring.graphql.QueryDataFetcher;
 import org.eclipse.sirius.components.graphql.api.IDataFetcherWithFieldCoordinates;
 
 import graphql.schema.DataFetchingEnvironment;
 
 /**
- * Data fetcher for Viewer#showDiagramFunctions query.
+ * Data fetcher for Viewer#diagramFilterState query.
  *
- * @author fbarbin
+ * @author Jerome Gout
  */
-@QueryDataFetcher(type = "Viewer", field = "showDiagramFunctionsValue")
-public class ShowDiagramFunctionsDataFetcher implements IDataFetcherWithFieldCoordinates<Boolean> {
+@QueryDataFetcher(type = "Viewer", field = "diagramFilterState")
+public class ViewerDiagramFilterStateDataFetcher implements IDataFetcherWithFieldCoordinates<Boolean> {
 
-    private final ShowDiagramFunctionsService showDiagramFunctionsService;
+    public static final String INPUT_PARAMETER = "diagramFilterId";
 
-    public ShowDiagramFunctionsDataFetcher(ShowDiagramFunctionsService showDiagramFunctionsService) {
-        this.showDiagramFunctionsService = Objects.requireNonNull(showDiagramFunctionsService);
+    private final IDiagramFilterService diagramFilterService;
+
+    public ViewerDiagramFilterStateDataFetcher(IDiagramFilterService diagramFilterService) {
+        this.diagramFilterService = Objects.requireNonNull(diagramFilterService);
     }
 
     @Override
     public Boolean get(DataFetchingEnvironment environment) throws Exception {
-        return Boolean.valueOf(this.showDiagramFunctionsService.isShowFunctions());
+        String diagramFilterId = environment.getArgument(INPUT_PARAMETER);
+        return Boolean.valueOf(this.diagramFilterService.isDiagramFilterActive(diagramFilterId));
     }
 }

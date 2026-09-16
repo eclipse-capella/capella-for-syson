@@ -11,10 +11,16 @@
  *     Obeo - initial API and implementation
  *******************************************************************************/
 
-export interface GQLShowDiagramFunctionsQueryData {
-  viewer: GQLViewer;
-}
+package org.eclipse.capella.diagram.customization.dto;
 
-export interface GQLViewer {
-  showDiagramFunctionsValue: boolean;
-}
+import java.util.List;
+import java.util.UUID;
+
+import org.eclipse.sirius.components.core.api.IPayload;
+
+/**
+ * Payload for RepresentationMetadata#availableDiagramFilters query.
+ *
+ * @author Jerome Gout
+ */
+public record RepresentationMetadataAvailableDiagramFiltersSuccessPayload(UUID id, List<DiagramFilterDTO> availableDiagramFilters) implements IPayload { }

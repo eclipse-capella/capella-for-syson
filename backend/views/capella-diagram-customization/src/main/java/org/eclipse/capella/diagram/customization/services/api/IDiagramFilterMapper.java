@@ -10,21 +10,17 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.lab.view.services.dto;
 
-import java.util.Objects;
-import java.util.UUID;
+package org.eclipse.capella.diagram.customization.services.api;
 
-import org.eclipse.sirius.components.core.api.IPayload;
+import org.eclipse.capella.diagram.customization.dto.DiagramFilterDTO;
 
 /**
- * The payload of the show diagram functions mutation.
+ * Used to convert a Capella diagram filter to a DTO.
  *
- * @author fbarbin
+ * @author Jerome Gout
  */
-public record ShowDiagramFunctionsSuccessPayload(UUID id, boolean show) implements IPayload {
+public interface IDiagramFilterMapper {
 
-    public ShowDiagramFunctionsSuccessPayload {
-        Objects.requireNonNull(id);
-    }
+    DiagramFilterDTO toDTO(IDiagramFilter diagramFilter);
 }
