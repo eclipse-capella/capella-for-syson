@@ -6,6 +6,8 @@
 
 === Architectural decision records
 
+- [ADR-002] Use the Arcadia SysML v2 library and default structure
+
 === Deprecation warning
 
 === Breaking changes
