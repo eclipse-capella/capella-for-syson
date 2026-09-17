@@ -1,0 +1,146 @@
+:author: Mélanie Bats
+:date: 2026-09-17
+:status: accepted
+:consulted: Stéphane Lacrampe
+:informed: Thibault Béziers La Fosse, Arnaud Dieumegard
+:deciders: Mélanie Bats
+:pitch: doc/iterations/2026.9/make-capella-for-syson-a-syson-extension.adoc
+
+
+= ADR-002 - Use the Arcadia SysML v2 library and default structure
+
+== Context and Problem Statement
+
+Capella for SysON models Arcadia concepts as SysML v2 data. The definitions of
+these concepts and the default organization of an Arcadia project are maintained
+by the separate `arcadia-sysmlv2-lib` project.
+
+Capella for SysON must decide whether to define and evolve these artifacts
+locally, or consume the external library as its semantic foundation. It must
+also define how library and default-structure versions are associated with
+Capella releases and identify the questions raised for existing projects when
+these artifacts evolve.
+
+This ADR covers how Capella for SysON consumes and versions the library. The
+internal choices used by `arcadia-sysmlv2-lib` to map Arcadia concepts to SysML
+v2 are outside the scope of this ADR.
+
+
+== Decision Drivers
+
+- Keep one authoritative source for Arcadia concepts and the default project structure.
+- Make Capella for SysON releases reproducible and compatible with a known library version.
+- Preserve existing project data and user customizations when the library evolves.
+- Allow the same Arcadia definitions to be consumed by other SysML v2 tools.
+
+
+== Considered Options
+
+=== Use the external Arcadia SysML v2 library
+
+Capella for SysON consumes the `arcadia.sysml` definitions and the
+`ArcadiaDefaultStructure.sysml` structure from
+`eclipse-capella/arcadia-sysmlv2-lib`.
+
+The external project is the normative source. Capella for SysON does not define
+a second local semantic model for these concepts. Runtime resources bundled in
+Capella for SysON are derived artifacts of a specific library release.
+
+=== Maintain a copy in Capella for SysON
+
+Capella for SysON could maintain its own copy of the Arcadia definitions and
+default structure, independently of the external project.
+
+=== Define Capella concepts directly in the application
+
+Capella for SysON could define its concepts in application code or in a local
+metamodel, without depending on the Arcadia SysML v2 library.
+
+
+== Decision Outcome
+
+Capella for SysON uses the external Arcadia SysML v2 library and its default
+structure as the semantic foundation of Capella projects.
+
+The following files are normative for the corresponding release of the
+library:
+
+- `lib/arcadia.sysml` defines the Arcadia concepts.
+- `lib/ArcadiaDefaultStructure.sysml` defines the default project structure.
+
+Capella for SysON may bundle JSON representations of these files for runtime
+use, but those resources are derived artifacts and are not an independent
+source of truth. Changes to the Arcadia semantics or default structure are made
+in `arcadia-sysmlv2-lib` first and then consumed by Capella for SysON.
+
+Each Capella for SysON release uses one exact compatible version of the Arcadia
+library. The library version, the bundled runtime resources, and the version
+recorded in the project dependency must be consistent.
+
+New projects use the library and default structure associated with the current
+Capella for SysON release. The treatment of existing projects when the library
+or default structure evolves remains an open subject.
+
+
+== Consequences
+
+=== Advantages
+
+- Arcadia semantics have one source shared by Capella for SysON and other tools.
+- Capella for SysON releases can be reproduced from an exact library version.
+- The default project structure can evolve independently from Capella for SysON's application code.
+
+=== Drawbacks
+
+- Capella for SysON is coupled to the compatibility of the selected Arcadia library version.
+- Library and structure changes require coordination between two projects.
+- Incompatible library changes may require a project migration.
+- Runtime copies of the library and structure must be kept synchronized with their source release.
+
+
+== More Information
+
+=== Implementation
+
+The implementation must:
+
+1. Declare one exact Arcadia library version for each Capella for SysON release.
+2. Keep `arcadia.sysml`, `ArcadiaDefaultStructure.sysml`, and the bundled JSON resources traceable to that release.
+3. Verify automatically that the runtime resources and declared library version correspond to the selected release.
+4. Publish the selected library version before creating projects that depend on it.
+
+The current implementation publishes the Arcadia library through Sirius Web's
+library mechanism and bundles JSON resources in Capella for SysON. The version
+values must be aligned before this decision is fully implemented: the
+`capella-arcadia-loader` currently references `0.0.3-SNAPSHOT`, the external
+library release is `0.0.3`, and the runtime initializer publishes `0.0.1`.
+
+
+=== Decision Details
+
+The Arcadia library remains shared semantic data after it has been used by a
+project. Deactivating Capella for SysON must not remove a library that is still
+required by an existing project.
+
+The impact of library and default-structure changes on existing projects,
+including the preservation of user-created elements, relationships,
+representations, and customizations, remains to be decided.
+
+
+=== Open Questions
+
+- How should existing projects be associated with a new library version?
+- Should existing projects be updated automatically, manually, or not at all?
+- How should changes to the default structure be applied without overwriting user customizations?
+- Should old library versions coexist, and when may an unused version be removed?
+- What transaction and failure guarantees are required for any future migration?
+
+
+=== References
+
+- https://github.com/eclipse-capella/arcadia-sysmlv2-lib
+- link:../iterations/2026.9/make-capella-for-syson-a-syson-extension.adoc[Make Capella a SysON extension pitch]
+- `backend/application/capella-application-configuration/src/main/java/org/eclipse/capella/application/configuration/arcadia/services/ArcadiaLibraryInitializer.java`
+- `backend/application/capella-application-configuration/src/main/java/org/eclipse/capella/application/configuration/arcadia/services/ArcadiaLibraryPublisher.java`
+- `backend/application/capella-application-configuration/src/main/resources/arcadia/structure/arcadiaDefaultStructure.json`
+- `backend/model/capella-arcadia-loader/pom.xml`
