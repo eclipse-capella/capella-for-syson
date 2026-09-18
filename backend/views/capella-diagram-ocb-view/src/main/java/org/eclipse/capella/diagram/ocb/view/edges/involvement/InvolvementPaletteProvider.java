@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.ocb.view.edges.involvement;
 
 import java.util.Objects;
 
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -58,7 +59,7 @@ public class InvolvementPaletteProvider {
         var sourceTool = this.diagramBuilderHelper.newSourceEdgeEndReconnectionTool()
                 .name("InvolvementSourceReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of2(TransverseMutationService::setCapabilityInvolvementSource)
+                        .expression(ServiceMethod.of2(CommonUpdateService::setCapabilityInvolvementSource)
                                 .aql(AQLConstants.EDGE_SEMANTIC_ELEMENT, AQLConstants.SEMANTIC_RECONNECTION_TARGET, AQLConstants.SEMANTIC_OTHER_END))
                         .build())
                 .build();
@@ -66,7 +67,7 @@ public class InvolvementPaletteProvider {
         var targetTool = this.diagramBuilderHelper.newTargetEdgeEndReconnectionTool()
                 .name("InvolvementTargetReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of2(TransverseMutationService::setCapabilityInvolvementTarget)
+                        .expression(ServiceMethod.of2(CommonUpdateService::setCapabilityInvolvementTarget)
                                 .aql(AQLConstants.EDGE_SEMANTIC_ELEMENT, AQLConstants.SEMANTIC_RECONNECTION_SOURCE, AQLConstants.SEMANTIC_RECONNECTION_TARGET))
                         .build())
                 .build();

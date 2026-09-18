@@ -15,6 +15,7 @@ package org.eclipse.capella.model.services.system.analysis;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -34,12 +35,15 @@ public class SAMutationService {
 
     private final CommonCreationService commonCreationService;
 
+    private final CommonUpdateService commonUpdateService;
+
     private final TransverseMutationService transverseMutationService;
 
     public SAMutationService() {
         this.saQueryService = new SAQueryService();
         this.transverseQueryService = new TransverseQueryService();
         this.commonCreationService = new CommonCreationService();
+        this.commonUpdateService = new CommonUpdateService();
         this.transverseMutationService = new TransverseMutationService();
     }
 
@@ -75,7 +79,7 @@ public class SAMutationService {
     public void moveFunctionToComponent(ActionUsage function, Object previousParent, PartUsage targetComponent) {
         if (previousParent != targetComponent && previousParent instanceof PartUsage previousParentPartUsage && this.transverseQueryService.isComponent(previousParentPartUsage)) {
             this.transverseMutationService.deletePerformedActionUsage(previousParentPartUsage, function);
-            this.transverseMutationService.setPerformAction(targetComponent, function);
+            this.commonUpdateService.setPerformAction(targetComponent, function);
         }
     }
 }

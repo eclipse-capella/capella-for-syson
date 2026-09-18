@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -51,12 +51,12 @@ public class AllocatedExchangeItemsReferenceWidgetProvider implements ICapellaRe
 
     private static final String ERROR_MSG = "Something went wrong while deleting the allocated exchange item";
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonUpdateService commonUpdateService;
 
     private final TransverseQueryService transverseQueryService;
 
     public AllocatedExchangeItemsReferenceWidgetProvider() {
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonUpdateService = new CommonUpdateService();
         this.transverseQueryService = new TransverseQueryService();
     }
 
@@ -95,7 +95,7 @@ public class AllocatedExchangeItemsReferenceWidgetProvider implements ICapellaRe
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof InterfaceUsage interfaceUsage) {
             variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, Feature.class)
-                    .ifPresent(feature -> this.transverseMutationService.deleteFeaturesFromReference(interfaceUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE, FEATURE_NAME, SysmlPackage.eINSTANCE.getItemUsage(), List.of(feature)));
+                    .ifPresent(feature -> this.commonUpdateService.deleteFeaturesFromReference(interfaceUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE, FEATURE_NAME, SysmlPackage.eINSTANCE.getItemUsage(), List.of(feature)));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
@@ -110,7 +110,7 @@ public class AllocatedExchangeItemsReferenceWidgetProvider implements ICapellaRe
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof InterfaceUsage interfaceUsage) {
-            this.transverseMutationService.deleteReference(interfaceUsage, FEATURE_NAME);
+            this.commonUpdateService.deleteReference(interfaceUsage, FEATURE_NAME);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

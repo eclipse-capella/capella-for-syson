@@ -39,7 +39,7 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
@@ -376,7 +376,7 @@ public class ElementCreationTests extends AbstractSemanticTests {
                 .findFirst()
                 .orElseThrow();
 
-        var sourceResult = this.transverseMutationService.setCapabilityGeneralisationSource(generalization, sourceCapability, component);
+        var sourceResult = this.commonUpdateService.setCapabilityGeneralisationSource(generalization, sourceCapability, component);
 
         assertThat(sourceResult).isSameAs(sourceCapability);
         assertThat(generalization.getSubsettingFeature()).isSameAs(sourceCapability);
@@ -396,7 +396,7 @@ public class ElementCreationTests extends AbstractSemanticTests {
                 .findFirst()
                 .orElseThrow();
 
-        var targetResult = this.transverseMutationService.setCapabilityGeneralisationTarget(generalization, targetCapability, component);
+        var targetResult = this.commonUpdateService.setCapabilityGeneralisationTarget(generalization, targetCapability, component);
 
         assertThat(targetResult).isSameAs(targetCapability);
         assertThat(generalization.getSubsettingFeature()).isSameAs(sourceCapability);

@@ -61,7 +61,7 @@ public class CommonCreationService {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonUpdateService commonUpdateService;
 
     private final ArcadiaLibraryServices arcadiaLibraryServices;
 
@@ -71,7 +71,7 @@ public class CommonCreationService {
 
     public CommonCreationService() {
         this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonUpdateService = new CommonUpdateService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
     }
@@ -92,7 +92,7 @@ public class CommonCreationService {
         if (this.transverseQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
             return capability;
         }
-        return this.transverseMutationService.setArcadiaReferenceFeature(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+        return this.commonUpdateService.setArcadiaReferenceFeature(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
                 ARCADIA_INVOLVED_COMPONENTS, component, SysmlPackage.eINSTANCE.getPartUsage().getName());
     }
 
@@ -174,7 +174,7 @@ public class CommonCreationService {
             Element targetContainer = optionalTargetContainer.get();
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
-            this.transverseMutationService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
+            this.commonUpdateService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
             this.metamodelMutationElementService.initialize(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
             long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
@@ -199,7 +199,7 @@ public class CommonCreationService {
 
             Optional<PartUsage> optionalAllocatingComponent = this.findAllocatingComponent(parent);
             if (optionalAllocatingComponent.isPresent()) {
-                this.transverseMutationService.setPerformAction(optionalAllocatingComponent.get(), actionUsage);
+                this.commonUpdateService.setPerformAction(optionalAllocatingComponent.get(), actionUsage);
             } else {
                 this.logger.atWarn()
                         .setMessage("Cannot find allocating component for function {}")
@@ -335,7 +335,7 @@ public class CommonCreationService {
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.metamodelMutationElementService.initialize(actionUsage);
             actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
-            this.transverseMutationService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
+            this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
                     SysmlPackage.eINSTANCE.getFlowUsage().getName());
         }
         return actionUsage;

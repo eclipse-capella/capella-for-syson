@@ -19,7 +19,7 @@ import static org.eclipse.capella.model.transverse.services.TransverseQueryServi
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -53,11 +53,11 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
 
     private final TransverseQueryService transverseQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonUpdateService commonUpdateService;
 
     public InvolvedFunctionalExchangesReferenceWidgetProvider() {
         this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonUpdateService = new CommonUpdateService();
     }
 
     @Override
@@ -93,7 +93,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof ActionUsage actionUsage) {
             variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, Feature.class)
-                    .ifPresent(feature -> this.transverseMutationService.deleteFeaturesFromReference(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, FEATURE_NAME, SysmlPackage.eINSTANCE.getFlowUsage(), List.of(feature)));
+                    .ifPresent(feature -> this.commonUpdateService.deleteFeaturesFromReference(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, FEATURE_NAME, SysmlPackage.eINSTANCE.getFlowUsage(), List.of(feature)));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
@@ -108,7 +108,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof ActionUsage actionUsage) {
-            this.transverseMutationService.deleteReference(actionUsage, FEATURE_NAME);
+            this.commonUpdateService.deleteReference(actionUsage, FEATURE_NAME);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
