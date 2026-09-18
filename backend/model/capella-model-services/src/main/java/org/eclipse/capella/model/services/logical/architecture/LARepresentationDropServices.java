@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -63,6 +64,8 @@ public class LARepresentationDropServices {
 
     private final CommonCreationService commonCreationService;
 
+    private final CommonUpdateService commonUpdateService;
+
     private final LAViewCreationRequestSubtreeService viewCreationRequestSubtreeService;
 
     public LARepresentationDropServices(IObjectSearchService objectSearchService, IIdentityService identityService, ISysMLMoveElementService moveService,
@@ -75,6 +78,7 @@ public class LARepresentationDropServices {
         this.transverseQueryService = new TransverseQueryService();
         this.transverseMutationService = new TransverseMutationService();
         this.commonCreationService = new CommonCreationService();
+        this.commonUpdateService = new CommonUpdateService();
         this.viewCreationRequestSubtreeService = new LAViewCreationRequestSubtreeService();
     }
 
@@ -176,7 +180,7 @@ public class LARepresentationDropServices {
 
     private void droppedFunctionIntoComponentCase(Element droppedElement, Node droppedNode, Element targetElement, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        this.transverseMutationService.setPerformAction(targetElement, (ActionUsage) droppedElement);
+        this.commonUpdateService.setPerformAction(targetElement, (ActionUsage) droppedElement);
         this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
         // A Function dropped into a container needs to be moved in the functions package.
         Optional<Package> optionalFunctionsPackage = this.transverseQueryService.getFunctionsPackage(targetElement);

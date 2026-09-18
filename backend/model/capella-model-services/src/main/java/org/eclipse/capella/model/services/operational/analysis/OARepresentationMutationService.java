@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaLibraryServices;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.sysml.Element;
@@ -38,7 +38,7 @@ import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementServic
  */
 public class OARepresentationMutationService {
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonUpdateService commonUpdateService;
 
     private final ElementInitializerSwitch elementInitializerSwitch;
 
@@ -53,7 +53,7 @@ public class OARepresentationMutationService {
     private final TransverseRepresentationMutationService transverseRepresentationMutationService;
 
     public  OARepresentationMutationService(TransverseRepresentationMutationService transverseRepresentationMutationService) {
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonUpdateService = new CommonUpdateService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.transverseQueryService = new TransverseQueryService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
@@ -77,10 +77,10 @@ public class OARepresentationMutationService {
             Element targetContainer = optionalTargetContainer.get();
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
-            this.transverseMutationService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, isActor);
+            this.commonUpdateService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, isActor);
             if (isActor) {
                 name = "OA";
-                this.transverseMutationService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_HUMAN, true);
+                this.commonUpdateService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_HUMAN, true);
             }
             this.elementInitializerSwitch.doSwitch(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);

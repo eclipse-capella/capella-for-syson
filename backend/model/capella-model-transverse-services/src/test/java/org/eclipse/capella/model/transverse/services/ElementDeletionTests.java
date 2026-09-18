@@ -36,6 +36,8 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
+
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();

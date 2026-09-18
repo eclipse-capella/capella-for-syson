@@ -18,7 +18,7 @@ import static org.eclipse.capella.model.transverse.services.TransverseQueryServi
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STRUCTURE_PACKAGE;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  */
 public class LAQueryServiceTests {
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
@@ -92,8 +92,8 @@ public class LAQueryServiceTests {
         ActionUsage allocatedFunction2 = this.fixture.createArcadiaTypedFunction(root, "Allocated Function 2");
         ActionUsage unallocatedFunction = this.fixture.createArcadiaTypedFunction(root, "Unallocated Function");
 
-        this.transverseMutationService.setPerformAction(component1, allocatedFunction1);
-        this.transverseMutationService.setPerformAction(component2, allocatedFunction2);
+        this.commonUpdateService.setPerformAction(component1, allocatedFunction1);
+        this.commonUpdateService.setPerformAction(component2, allocatedFunction2);
 
         assertThat(this.transverseQueryService.getAllocatedFunctions(component1)).containsExactly(allocatedFunction1);
         assertThat(this.transverseQueryService.getAllocatedFunctions(component2)).containsExactly(allocatedFunction2);
