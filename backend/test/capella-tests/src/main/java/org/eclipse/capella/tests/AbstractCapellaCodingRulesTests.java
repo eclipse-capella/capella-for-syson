@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.annotations.Builder;
@@ -261,9 +262,10 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     public void semanticTestMethodsShouldFollowNamingConvention() {
         JavaClasses transverseServiceClasses = new ClassFileImporter().importPackages("org.eclipse.capella.model.transverse.services..");
 
-        Set<String> testableMethodNames = transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.TransverseMutationService")
-                .getMethods()
-                .stream()
+        Set<String> testableMethodNames = Stream.of(
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonCreationService"),
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.TransverseMutationService"))
+                .flatMap(serviceClass -> serviceClass.getMethods().stream())
                 .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
                 .map(JavaMethod::getName)
                 .collect(Collectors.toSet());
@@ -459,7 +461,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
         } else {
             boolean startsWithTestableMethodName = testableMethodNames.stream().anyMatch(testMethodName::startsWith);
             if (!startsWithTestableMethodName) {
-                result = Optional.of("does not start with a public TransverseMutationService method name");
+                result = Optional.of("does not start with a public transverse service method name");
             } else {
                 int whenIndex = testMethodName.indexOf(WHEN);
                 if (whenIndex > shouldIndex) {
