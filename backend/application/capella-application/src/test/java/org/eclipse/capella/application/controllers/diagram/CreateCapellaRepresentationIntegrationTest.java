@@ -19,9 +19,9 @@ import com.jayway.jsonpath.JsonPath;
 import java.util.UUID;
 
 import org.eclipse.capella.AbstractIntegrationTests;
-import org.eclipse.capella.CapellaIdentifiers;
 import org.eclipse.capella.GivenCapellaServer;
 import org.eclipse.capella.application.configuration.dto.CreateCapellaRepresentationInput;
+import org.eclipse.capella.CapellaProjectData;
 import org.eclipse.capella.tests.graphql.CreateCapellaRepresentationMutationRunner;
 import org.eclipse.sirius.components.collaborative.dto.CreateRepresentationSuccessPayload;
 import org.junit.jupiter.api.DisplayName;
@@ -75,7 +75,7 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
     @Test
     @DisplayName("Given a Capella project, when an unknown representation is requested, then an error is returned")
     public void rejectUnknownRepresentation() {
-        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaIdentifiers.EDITING_CONTEXT_ID, "unknown");
+        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, "unknown");
         var result = this.createCapellaRepresentationMutationRunner.run(input).data();
 
         String typename = JsonPath.read(result, "$.data.createCapellaRepresentation.__typename");
@@ -85,7 +85,7 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
     }
 
     private void assertRepresentationCreation(String descriptionId, String expectedLabel) {
-        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaIdentifiers.EDITING_CONTEXT_ID, descriptionId);
+        var input = new CreateCapellaRepresentationInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, descriptionId);
         var result = this.createCapellaRepresentationMutationRunner.run(input).data();
 
         String typename = JsonPath.read(result, "$.data.createCapellaRepresentation.__typename");

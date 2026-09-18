@@ -32,8 +32,7 @@ import org.springframework.test.context.jdbc.SqlGroup;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @SqlGroup({
     @Sql(scripts = {
-        "/scripts/arcadia-library.sql",
-        "/scripts/capella-empty-project.sql"
+        "/scripts/capella-project.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)),
     @Sql(scripts = { "/scripts/cleanup.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD, config = @SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED))
 })
