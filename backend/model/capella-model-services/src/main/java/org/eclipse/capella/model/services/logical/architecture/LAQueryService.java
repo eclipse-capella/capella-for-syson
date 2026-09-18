@@ -16,7 +16,7 @@ package org.eclipse.capella.model.services.logical.architecture;
 import java.util.List;
 import java.util.function.Predicate;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.Annotation;
 import org.eclipse.syson.sysml.Comment;
@@ -31,15 +31,15 @@ import org.eclipse.syson.sysml.SysmlPackage;
  */
 public class LAQueryService {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public LAQueryService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
 
     }
 
     public List<Comment> getComments(EObject eObject) {
-        var allComments = this.transverseQueryService.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getComment());
+        var allComments = this.commonQueryService.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getComment());
         return allComments.stream()
                 .filter(Comment.class::isInstance)
                 .map(Comment.class::cast)
@@ -60,7 +60,7 @@ public class LAQueryService {
      * Get all Annotations in the model (for displaying annotation edges).
      */
     public List<Annotation> getAllAnnotations(EObject eObject) {
-        var allAnnotations = this.transverseQueryService.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getAnnotation());
+        var allAnnotations = this.commonQueryService.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getAnnotation());
         return allAnnotations.stream()
                 .filter(Annotation.class::isInstance)
                 .map(Annotation.class::cast)

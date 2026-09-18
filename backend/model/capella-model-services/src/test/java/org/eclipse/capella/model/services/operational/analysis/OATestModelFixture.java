@@ -13,7 +13,7 @@
 package org.eclipse.capella.model.services.operational.analysis;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -55,8 +55,8 @@ class OATestModelFixture {
 
     OperationalAnalysisPackages createOperationalAnalysisPackages(Package root) {
         Package operationalAnalysisPackage = this.createPackage(root, ArcadiaEngineeringPerspective.OperationalAnalysis.getLabel());
-        Package structurePackage = this.createPackage(operationalAnalysisPackage, TransverseQueryService.STRUCTURE_PACKAGE);
-        Package requirementsPackage = this.createPackage(operationalAnalysisPackage, TransverseQueryService.REQUIREMENTS_PACKAGE);
+        Package structurePackage = this.createPackage(operationalAnalysisPackage, CommonQueryService.STRUCTURE_PACKAGE);
+        Package requirementsPackage = this.createPackage(operationalAnalysisPackage, CommonQueryService.REQUIREMENTS_PACKAGE);
         return new OperationalAnalysisPackages(operationalAnalysisPackage, structurePackage, requirementsPackage);
     }
 
@@ -74,25 +74,25 @@ class OATestModelFixture {
 
     PartUsage createArcadiaTypedComponent(Element owner, String name) {
         PartUsage component = this.createPartUsage(owner, name);
-        this.setType(component, this.getOrCreatePartDefinition(this.getRoot(owner), TransverseQueryService.ARCADIA_COMPONENT));
+        this.setType(component, this.getOrCreatePartDefinition(this.getRoot(owner), CommonQueryService.ARCADIA_COMPONENT));
         return component;
     }
 
     void createArcadiaComponentAttributes(Package root) {
-        PartDefinition componentDefinition = this.getOrCreatePartDefinition(root, TransverseQueryService.ARCADIA_COMPONENT);
+        PartDefinition componentDefinition = this.getOrCreatePartDefinition(root, CommonQueryService.ARCADIA_COMPONENT);
         AttributeUsage isActor = this.addOwnedElement(componentDefinition, SysmlFactory.eINSTANCE.createAttributeUsage());
-        isActor.setDeclaredName(TransverseQueryService.ARCADIA_IS_ACTOR);
+        isActor.setDeclaredName(CommonQueryService.ARCADIA_IS_ACTOR);
 
         AttributeUsage isHuman = this.addOwnedElement(componentDefinition, SysmlFactory.eINSTANCE.createAttributeUsage());
-        isHuman.setDeclaredName(TransverseQueryService.ARCADIA_IS_HUMAN);
+        isHuman.setDeclaredName(CommonQueryService.ARCADIA_IS_HUMAN);
     }
 
     void createArcadiaComponentExchangeDefinition(Package root) {
-        this.getOrCreateInterfaceDefinition(root, TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE);
+        this.getOrCreateInterfaceDefinition(root, CommonQueryService.ARCADIA_COMPONENT_EXCHANGE);
     }
 
     void createArcadiaRequirementDefinition(Package root) {
-        this.getOrCreateRequirementDefinition(root, TransverseQueryService.ARCADIA_REQUIREMENT);
+        this.getOrCreateRequirementDefinition(root, CommonQueryService.ARCADIA_REQUIREMENT);
     }
 
     private InterfaceDefinition getOrCreateInterfaceDefinition(Package parent, String name) {

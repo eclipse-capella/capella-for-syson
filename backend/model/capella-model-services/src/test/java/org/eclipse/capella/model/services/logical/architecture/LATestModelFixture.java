@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.common.command.BasicCommandStack;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
@@ -166,7 +166,7 @@ class LATestModelFixture {
 
     void createStatusKindEnumeration(Package root, List<String> literals) {
         EnumerationDefinition statusKindDefinition = this.addOwnedElement(root, SysmlFactory.eINSTANCE.createEnumerationDefinition());
-        statusKindDefinition.setDeclaredName(TransverseQueryService.STATUS_KIND);
+        statusKindDefinition.setDeclaredName(CommonQueryService.STATUS_KIND);
 
         for (String literal : literals) {
             EnumerationUsage enumerationUsage = SysmlFactory.eINSTANCE.createEnumerationUsage();
@@ -183,7 +183,7 @@ class LATestModelFixture {
         statusInfo.setDeclaredName("StatusInfo");
 
         AttributeUsage status = this.addOwnedElement(statusInfo, SysmlFactory.eINSTANCE.createAttributeUsage());
-        status.setDeclaredName(TransverseQueryService.STATUS);
+        status.setDeclaredName(CommonQueryService.STATUS);
     }
 
     void setInvolvedFunctionalExchanges(ActionUsage functionalChain, FlowUsage... functionalExchanges) {

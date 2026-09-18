@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
@@ -42,21 +42,21 @@ public class OARepresentationDropServices {
 
     private final ISysMLMoveElementService moveService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final IIdentityService identityService;
 
     public OARepresentationDropServices(IIdentityService identityService, ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService) {
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
         this.moveService = Objects.requireNonNull(moveService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.identityService = Objects.requireNonNull(identityService);
     }
 
     public Element dropIntoComponentFromDiagram(Element droppedElement, Node droppedNode, Element targetElement, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        if (this.transverseQueryService.isComponent(targetElement)) {
-            if (this.transverseQueryService.isComponent(droppedElement)) {
+        if (this.commonQueryService.isComponent(targetElement)) {
+            if (this.commonQueryService.isComponent(droppedElement)) {
                 this.droppedComponentIntoComponentCase(droppedElement, droppedNode, targetElement, targetNode, editingContext, diagramContext, convertedNodes);
             }
         }
@@ -65,8 +65,8 @@ public class OARepresentationDropServices {
 
     public Element dropIntoDiagram(Element droppedElement, Node droppedNode, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        if (this.transverseQueryService.isComponent(droppedElement)) {
-            Optional<Package> optionalStructurePackage = this.transverseQueryService.getStructurePackage(droppedElement);
+        if (this.commonQueryService.isComponent(droppedElement)) {
+            Optional<Package> optionalStructurePackage = this.commonQueryService.getStructurePackage(droppedElement);
             if (optionalStructurePackage.isPresent()) {
                 this.moveService.moveSemanticElement(droppedElement, optionalStructurePackage.get());
                 this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode,
@@ -95,7 +95,7 @@ public class OARepresentationDropServices {
     }
 
     private Optional<Node> getDisplayedParentView(Element droppedElement, DiagramContext diagramContext) {
-        return this.transverseQueryService.getParentComponent(droppedElement)
+        return this.commonQueryService.getParentComponent(droppedElement)
                 .flatMap(parentComponent -> new NodeFinder(diagramContext.diagram())
                         .getOneNodeMatching(node -> this.identityService.getId(parentComponent).equals(node.getTargetObjectId())));
     }
@@ -103,7 +103,7 @@ public class OARepresentationDropServices {
     private void moveDisplayedChildrenUnderParent(PartUsage parentComponent, ViewCreationRequest parentView, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
         var nodeFinder = new NodeFinder(diagramContext.diagram());
-        for (PartUsage childComponent : this.transverseQueryService.getSubComponents(parentComponent)) {
+        for (PartUsage childComponent : this.commonQueryService.getSubComponents(parentComponent)) {
             nodeFinder.getOneNodeMatching(node -> this.identityService.getId(childComponent).equals(node.getTargetObjectId()))
                     .filter(node -> !(nodeFinder.getParent(node) instanceof Node))
                     .ifPresent(node -> {

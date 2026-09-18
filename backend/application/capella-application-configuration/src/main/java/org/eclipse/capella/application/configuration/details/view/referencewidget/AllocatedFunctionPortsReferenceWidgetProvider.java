@@ -12,14 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -50,13 +50,13 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
 
     private static final String ERROR_MSG = "Something went wrong while deleting the allocated function port";
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonUpdateService commonUpdateService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public AllocatedFunctionPortsReferenceWidgetProvider() {
-        this.transverseMutationService = new TransverseMutationService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonUpdateService = new CommonUpdateService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.transverseQueryService.getFunctions(eObject).stream().map(this.transverseQueryService::getFunctionPorts).flatMap(List::stream).toList();
+            return this.commonQueryService.getFunctions(eObject).stream().map(this.commonQueryService::getFunctionPorts).flatMap(List::stream).toList();
         }
         return List.of();
     }
@@ -82,7 +82,7 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof PortUsage portUsage) {
-            return this.transverseQueryService.getFeatureReferenceValue(portUsage, FEATURE_NAME);
+            return this.commonQueryService.getFeatureReferenceValue(portUsage, FEATURE_NAME);
         }
         return List.of();
     }
@@ -92,7 +92,7 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof PortUsage portUsage) {
             variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, Feature.class)
-                    .ifPresent(feature -> this.transverseMutationService.deleteFeaturesFromReference(portUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT_PORT, FEATURE_NAME, SysmlPackage.eINSTANCE.getItemUsage(), List.of(feature)));
+                    .ifPresent(feature -> this.commonUpdateService.deleteFeaturesFromReference(portUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT_PORT, FEATURE_NAME, SysmlPackage.eINSTANCE.getItemUsage(), List.of(feature)));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
@@ -107,7 +107,7 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof PortUsage portUsage) {
-            this.transverseMutationService.deleteReference(portUsage, FEATURE_NAME);
+            this.commonUpdateService.deleteReference(portUsage, FEATURE_NAME);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

@@ -19,7 +19,7 @@ import java.util.Objects;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFragment;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerLabelService;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
 import org.eclipse.sirius.components.core.api.labels.StyledString;
@@ -42,13 +42,13 @@ public class CapellaExplorerLabelService implements IExplorerLabelServiceDelegat
 
     private final ILabelService labelService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CapellaExplorerLabelService(IReadOnlyObjectPredicate readOnlyObjectPredicate, ILabelService labelService, CapellaImagePathsService capellaImagePathsService) {
         this.readOnlyObjectPredicate = Objects.requireNonNull(readOnlyObjectPredicate);
         this.labelService = Objects.requireNonNull(labelService);
         this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -76,7 +76,7 @@ public class CapellaExplorerLabelService implements IExplorerLabelServiceDelegat
             label = fragment.getLabel();
         } else if (self instanceof RequirementUsage requirement) {
             // Use the same label format as LAB diagram for requirements
-            label = this.transverseQueryService.getRequirementLabel(requirement);
+            label = this.commonQueryService.getRequirementLabel(requirement);
         } else {
             StyledString styledLabel = this.labelService.getStyledLabel(self);
             if (styledLabel != null) {

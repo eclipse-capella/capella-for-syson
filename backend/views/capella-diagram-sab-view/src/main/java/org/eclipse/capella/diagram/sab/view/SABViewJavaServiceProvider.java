@@ -20,8 +20,9 @@ import org.eclipse.capella.model.services.system.analysis.SARepresentationDropSe
 import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationReconnectToolServices;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
@@ -52,8 +53,9 @@ public class SABViewJavaServiceProvider implements IJavaServiceProvider {
                     SARepresentationQueryService.class,
                     SARepresentationReconnectToolServices.class,
                     SAMutationService.class,
-                    TransverseMutationService.class,
-                    TransverseQueryService.class,
+                    CommonCreationService.class,
+                    CommonDeletionService.class,
+                    CommonQueryService.class,
                     TransverseRepresentationQueryService.class,
                     TransverseRepresentationMutationService.class,
                     TransverseRepresentationReconnectToolServices.class,

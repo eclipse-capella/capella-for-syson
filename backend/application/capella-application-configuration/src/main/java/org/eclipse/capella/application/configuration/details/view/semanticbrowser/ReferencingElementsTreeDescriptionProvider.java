@@ -18,7 +18,7 @@ import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.IReferencingElementsTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
 import org.eclipse.sirius.components.core.CoreImageConstants;
@@ -57,7 +57,7 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
 
     private final SemanticBrowserService semanticBrowserService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public ReferencingElementsTreeDescriptionProvider(IIdentityService identityService, ILabelService labelService,
             IRepresentationMetadataSearchService representationMetadataSearchService,
@@ -65,7 +65,7 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
         this.identityService = Objects.requireNonNull(identityService);
         this.labelService = Objects.requireNonNull(labelService);
         this.capellaImagePathsService = new CapellaImagePathsService(labelService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.semanticBrowserService = new SemanticBrowserService(representationMetadataSearchService, identityService, representationSearchService);
     }
 
@@ -126,7 +126,7 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
             result = List.of(FOLDER_ICON_URL);
         } else if (self != null) {
             if (self instanceof EObject eObject
-                    && this.transverseQueryService.isArcadiaElement(eObject)) {
+                    && this.commonQueryService.isArcadiaElement(eObject)) {
                 result = this.capellaImagePathsService.getImagePaths(self);
             } else {
                 result = this.labelService.getImagePaths(self);
@@ -168,7 +168,7 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
         } else if (self instanceof String category) {
             result.addAll(this.semanticBrowserService.getReferencingCategoryElements(root, category));
         } else {
-            if (this.transverseQueryService.isFunction(root)
+            if (this.commonQueryService.isFunction(root)
                     && self instanceof FlowUsage flowUsage) {
                 result.addAll(this.semanticBrowserService.getFunctionalExchangeCategoryReferencedBy(flowUsage));
             }

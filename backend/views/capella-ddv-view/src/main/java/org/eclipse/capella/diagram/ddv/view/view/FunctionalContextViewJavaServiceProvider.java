@@ -16,8 +16,8 @@ import java.util.List;
 
 import org.eclipse.capella.model.services.functional.context.DDVQueryService;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.diagram.services.DiagramQueryElementService;
@@ -44,8 +44,8 @@ public class FunctionalContextViewJavaServiceProvider implements IJavaServicePro
         if (optDescription.isPresent()) {
             return List.of(LabelService.class,
                     LAQueryService.class,
-                    TransverseQueryService.class,
-                    TransverseMutationService.class,
+                    CommonQueryService.class,
+                    CommonDeletionService.class,
                     DDVQueryService.class,
                     DiagramQueryElementService.class,
                     DiagramMutationAQLService.class,

@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.common.view.nodes.ImageNodeStyleDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -53,7 +53,7 @@ public class ComponentPortNodeDescriptionProvider extends AbstractNodeDescriptio
                 .defaultWidthExpression("10")
                 .domainType(domainType)
                 .name(NODE_DESCRIPTION_NAME)
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getComponentPorts).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getComponentPorts).aqlSelf())
                 .style(this.createPortUnsetNodeStyle())
                 .conditionalStyles(this.createPortUsageConditionalNodeStyles().toArray(ConditionalNodeStyle[]::new))
                 .userResizable(UserResizableDirection.NONE)
@@ -81,15 +81,15 @@ public class ComponentPortNodeDescriptionProvider extends AbstractNodeDescriptio
         var borderColor = this.colorProvider.getColor(SABViewConstants.COMPONENT_PORT_BORDER_COLOR);
         return List.of(
                 this.diagramBuilderHelper.newConditionalNodeStyle()
-                        .condition(ServiceMethod.of0(TransverseQueryService::isInFeature).aqlSelf())
+                        .condition(ServiceMethod.of0(CommonQueryService::isInFeature).aqlSelf())
                         .style(this.imageNodeStyleDescriptionProvider.createImageNodeStyleDescription("images/feature_in.svg", borderColor, 1))
                         .build(),
                 this.diagramBuilderHelper.newConditionalNodeStyle()
-                        .condition(ServiceMethod.of0(TransverseQueryService::isOutFeature).aqlSelf())
+                        .condition(ServiceMethod.of0(CommonQueryService::isOutFeature).aqlSelf())
                         .style(this.imageNodeStyleDescriptionProvider.createImageNodeStyleDescription("images/feature_out.svg", borderColor, 1))
                         .build(),
                 this.diagramBuilderHelper.newConditionalNodeStyle()
-                        .condition(ServiceMethod.of0(TransverseQueryService::isInOutFeature).aqlSelf())
+                        .condition(ServiceMethod.of0(CommonQueryService::isInOutFeature).aqlSelf())
                         .style(this.imageNodeStyleDescriptionProvider.createImageNodeStyleDescription("images/feature_inout.svg", borderColor, 1))
                         .build());
     }

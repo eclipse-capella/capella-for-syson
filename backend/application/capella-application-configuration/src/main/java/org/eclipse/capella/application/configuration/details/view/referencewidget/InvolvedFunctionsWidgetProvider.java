@@ -14,7 +14,7 @@ package org.eclipse.capella.application.configuration.details.view.referencewidg
 
 import java.util.List;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.Failure;
@@ -39,11 +39,11 @@ public class InvolvedFunctionsWidgetProvider implements ICapellaReferenceWidgetP
 
     private static final String ERROR_MSG = "The delete action on a this derived feature is not supported";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
 
     public InvolvedFunctionsWidgetProvider() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class InvolvedFunctionsWidgetProvider implements ICapellaReferenceWidgetP
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof ActionUsage actionUsage) {
-            return this.transverseQueryService.getInvolvedFunctions(actionUsage);
+            return this.commonQueryService.getInvolvedFunctions(actionUsage);
         }
         return List.of();
     }

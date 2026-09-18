@@ -15,8 +15,8 @@ package org.eclipse.capella.model.services.operational.analysis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;
@@ -37,11 +37,11 @@ public class OAQueryServiceTests {
 
     private final OAQueryService oaQueryService = new OAQueryService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final DiagramMutationElementService diagramMutationElementService = mock(DiagramMutationElementService.class);
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
@@ -57,11 +57,11 @@ public class OAQueryServiceTests {
         PartUsage nestedTypedComponent = this.fixture.createArcadiaTypedComponent(componentA, "Nested Entity");
         this.fixture.createPartUsage(componentA, "Untyped Nested Entity");
 
-        assertThat(this.transverseQueryService.getStructurePackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.structurePackage());
-        assertThat(this.transverseQueryService.getRequirementsPackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.requirementsPackage());
+        assertThat(this.commonQueryService.getStructurePackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.structurePackage());
+        assertThat(this.commonQueryService.getRequirementsPackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.requirementsPackage());
 
-        assertThat(this.transverseQueryService.getSubComponents(oaPackages.operationalAnalysisPackage())).containsExactly(componentA);
-        assertThat(this.transverseQueryService.getSubComponents(componentA)).containsExactly(nestedTypedComponent);
+        assertThat(this.commonQueryService.getSubComponents(oaPackages.operationalAnalysisPackage())).containsExactly(componentA);
+        assertThat(this.commonQueryService.getSubComponents(componentA)).containsExactly(nestedTypedComponent);
     }
 
     @Test
@@ -75,7 +75,7 @@ public class OAQueryServiceTests {
         PartUsage sourceEntity = this.fixture.createArcadiaTypedComponent(oaPackages.structurePackage(), "Source Entity");
         PartUsage targetEntity = this.fixture.createArcadiaTypedComponent(oaPackages.structurePackage(), "Target Entity");
 
-        InterfaceUsage communicationMean = this.transverseMutationService.createComponentExchange(sourceEntity, targetEntity);
+        InterfaceUsage communicationMean = this.commonCreationService.createComponentExchange(sourceEntity, targetEntity);
         assertThat(communicationMean).isNotNull();
         assertThat(this.oaQueryService.getComponentExchangeSourceOA(communicationMean)).isSameAs(sourceEntity);
         assertThat(this.oaQueryService.getComponentExchangeTargetOA(communicationMean)).isSameAs(targetEntity);

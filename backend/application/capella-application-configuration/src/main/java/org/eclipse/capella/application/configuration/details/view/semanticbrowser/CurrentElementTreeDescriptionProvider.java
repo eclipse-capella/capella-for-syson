@@ -14,7 +14,7 @@ package org.eclipse.capella.application.configuration.details.view.semanticbrows
 
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.ICurrentElementTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
@@ -67,7 +67,7 @@ public class CurrentElementTreeDescriptionProvider implements ICurrentElementTre
 
     private final CapellaImagePathsService capellaImagePathsService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final SemanticBrowserService semanticBrowserService;
 
@@ -78,7 +78,7 @@ public class CurrentElementTreeDescriptionProvider implements ICurrentElementTre
         this.identityService = Objects.requireNonNull(identityService);
         this.labelService = Objects.requireNonNull(labelService);
         this.capellaImagePathsService = new CapellaImagePathsService(labelService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.semanticBrowserService = new SemanticBrowserService(representationMetadataSearchService, identityService, representationSearchService);
     }
 
@@ -143,7 +143,7 @@ public class CurrentElementTreeDescriptionProvider implements ICurrentElementTre
             result = List.of(FOLDER_ICON_URL);
         } else if (self != null) {
             if (self instanceof EObject eObject
-                    && this.transverseQueryService.isArcadiaElement(eObject)) {
+                    && this.commonQueryService.isArcadiaElement(eObject)) {
                 result = this.capellaImagePathsService.getImagePaths(self);
             } else {
                 result = this.labelService.getImagePaths(self);

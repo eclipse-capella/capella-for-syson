@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -29,14 +29,14 @@ import org.eclipse.syson.sysml.SysmlPackage;
  */
 public class CellOptionsProvider implements BiFunction<VariableManager, Object, List<Object>> {
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Override
     public List<Object> apply(VariableManager variableManager, Object columnTargetObject) {
         EObject self = variableManager.get(VariableManager.SELF, EObject.class).orElse(null);
         if (self instanceof ActionUsage function
                 && columnTargetObject == SysmlPackage.eINSTANCE.getOwningMembership()) {
-            List<String> statusLiterals = this.transverseQueryService.getStatusKindEnumLiterals(function);
+            List<String> statusLiterals = this.commonQueryService.getStatusKindEnumLiterals(function);
 
             return new ArrayList<>(statusLiterals);
 
