@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -44,7 +44,7 @@ public class LARepresentationQueryServiceTests {
 
     private final LADiagramTestFixture diagramFixture = new LADiagramTestFixture();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
     @DisplayName("GIVEN a diagram context, WHEN querying functional chains in diagram, THEN only represented and non-deleted chains are returned")

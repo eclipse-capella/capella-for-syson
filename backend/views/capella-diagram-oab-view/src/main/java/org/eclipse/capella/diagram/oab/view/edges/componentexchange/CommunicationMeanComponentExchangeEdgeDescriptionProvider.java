@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.oab.view.edges.componentexchange;
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -45,7 +45,7 @@ public class CommunicationMeanComponentExchangeEdgeDescriptionProvider extends A
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchanges).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getComponentExchanges).aqlSelf())
                 .sourceExpression(ServiceMethod.of0(OAQueryService::getComponentExchangeSourceOA).aqlSelf())
                 .style(new CommunicationMeanComponentExchangeEdgeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)

@@ -19,7 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
@@ -72,10 +72,10 @@ public class CapellaViewFormService {
 
     public static final String COLOR_GREEN = "#50C878";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CapellaViewFormService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     public List<String> getConceptsRepartitionPieChartKeys(VariableManager variableManager) {
@@ -169,7 +169,7 @@ public class CapellaViewFormService {
     private Number countConceptsPerLayer(List<EObject> objects, String layerName) {
         return (int) objects.stream()
                 .map(Element.class::cast)
-                .filter(obj -> this.transverseQueryService
+                .filter(obj -> this.commonQueryService
                         .getArcadiaPerspectivePackage(obj).get()
                         .getDeclaredName()
                         .contains(layerName))
@@ -179,63 +179,63 @@ public class CapellaViewFormService {
     private List<EObject> filterByStatus(List<EObject> objects, String status) {
         return objects.stream()
                 .filter(obj -> {
-                    Element s = this.transverseQueryService.getStatus((Feature) obj);
+                    Element s = this.commonQueryService.getStatus((Feature) obj);
                     return s != null && status.equals(s.getDeclaredName());
                 })
                 .toList();
     }
 
     private List<EObject> getFunctions(EObject root) {
-        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getActionUsage())
+        return this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getActionUsage())
                 .stream()
-                .filter(this.transverseQueryService::isFunction)
+                .filter(this.commonQueryService::isFunction)
                 .toList();
     }
 
     private List<EObject> getComponents(EObject root) {
-        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
+        return this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
                 .stream()
-                .filter(this.transverseQueryService::isComponent)
+                .filter(this.commonQueryService::isComponent)
                 .toList();
     }
 
     private List<EObject> getActors(EObject root) {
-        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
+        return this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
                 .stream()
-                .filter(this.transverseQueryService::isComponentActor)
+                .filter(this.commonQueryService::isComponentActor)
                 .toList();
     }
 
     private List<EObject> getRequirements(EObject root) {
-        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getRequirementUsage())
+        return this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getRequirementUsage())
                 .stream()
-                .filter(this.transverseQueryService::isRequirement)
+                .filter(this.commonQueryService::isRequirement)
                 .toList();
     }
 
     private List<EObject> getInterfaces(EObject root) {
-        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getInterfaceUsage())
+        return this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getInterfaceUsage())
                 .stream()
-                .filter(this.transverseQueryService::isComponentExchange)
+                .filter(this.commonQueryService::isComponentExchange)
                 .toList();
     }
 
     private List<EObject> getExchanges(EObject root) {
-        return this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getFlowUsage())
+        return this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getFlowUsage())
                 .stream()
-                .filter(this.transverseQueryService::isFunctionalExchange)
+                .filter(this.commonQueryService::isFunctionalExchange)
                 .toList();
     }
 
     private List<EObject> getPorts(EObject root) {
         List<EObject> ports = new ArrayList<>();
-        ports.addAll(this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getItemUsage())
+        ports.addAll(this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getItemUsage())
                 .stream()
-                .filter(this.transverseQueryService::isFunctionPort)
+                .filter(this.commonQueryService::isFunctionPort)
                 .toList());
-        ports.addAll(this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPortUsage())
+        ports.addAll(this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPortUsage())
                 .stream()
-                .filter(this.transverseQueryService::isComponentPort)
+                .filter(this.commonQueryService::isComponentPort)
                 .toList());
         return ports;
     }
@@ -246,14 +246,14 @@ public class CapellaViewFormService {
                 .filter(EObject.class::isInstance)
                 .map(EObject.class::cast)
                 .map(root -> {
-                    List<ActionUsage> totalFunctions = this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getActionUsage())
+                    List<ActionUsage> totalFunctions = this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getActionUsage())
                             .stream()
                             .filter(eObject -> eObject instanceof ActionUsage)
                             .map(ActionUsage.class::cast)
                             .toList();
 
                     List<ActionUsage> nonAllocatedFunction = totalFunctions.stream()
-                            .filter(function -> this.transverseQueryService.getAllocatingComponent(function).isEmpty())
+                            .filter(function -> this.commonQueryService.getAllocatingComponent(function).isEmpty())
                             .toList();
 
                     return new ComponentProgress(nonAllocatedFunction.size(), totalFunctions.size());
@@ -267,17 +267,17 @@ public class CapellaViewFormService {
                 .filter(EObject.class::isInstance)
                 .map(EObject.class::cast)
                 .map(root -> {
-                    List<ItemUsage> totalFunctionPorts = this.transverseQueryService
+                    List<ItemUsage> totalFunctionPorts = this.commonQueryService
                             .getAllReachableInResource(root, SysmlPackage.eINSTANCE.getItemUsage())
                             .stream()
-                            .filter(this.transverseQueryService::isFunctionPort)
+                            .filter(this.commonQueryService::isFunctionPort)
                             .map(ItemUsage.class::cast)
                             .toList();
 
-                    List<PortUsage> totalComponentPorts = this.transverseQueryService
+                    List<PortUsage> totalComponentPorts = this.commonQueryService
                             .getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPortUsage())
                             .stream()
-                            .filter(this.transverseQueryService::isComponentPort)
+                            .filter(this.commonQueryService::isComponentPort)
                             .map(PortUsage.class::cast)
                             .toList();
 
@@ -294,8 +294,8 @@ public class CapellaViewFormService {
 
     private List<ItemUsage> getNonAssignedFunctionalExchangePorts(EObject root, List<ItemUsage> totalFunctionPorts) {
 
-        List<ItemUsage> assignedPorts = this.transverseQueryService.getFunctionalExchanges(root).stream()
-                .flatMap(fe -> this.transverseQueryService.getExchangePorts(fe).stream())
+        List<ItemUsage> assignedPorts = this.commonQueryService.getFunctionalExchanges(root).stream()
+                .flatMap(fe -> this.commonQueryService.getExchangePorts(fe).stream())
                 .filter(ItemUsage.class::isInstance)
                 .map(ItemUsage.class::cast)
                 .toList();
@@ -307,8 +307,8 @@ public class CapellaViewFormService {
 
     private List<PortUsage> getNonAssignedComponentExchangePorts(EObject root, List<PortUsage> totalComponentPorts) {
 
-        List<PortUsage> assignedPorts = this.transverseQueryService.getComponentExchanges(root).stream()
-                .flatMap(fe -> this.transverseQueryService.getExchangePorts(fe).stream())
+        List<PortUsage> assignedPorts = this.commonQueryService.getComponentExchanges(root).stream()
+                .flatMap(fe -> this.commonQueryService.getExchangePorts(fe).stream())
                 .filter(PortUsage.class::isInstance)
                 .map(PortUsage.class::cast)
                 .toList();
@@ -324,7 +324,7 @@ public class CapellaViewFormService {
                 .filter(EObject.class::isInstance)
                 .map(EObject.class::cast)
                 .map(root -> {
-                    List<FlowUsage> totalFunctionalExchanges = this.transverseQueryService.getFunctionalExchanges(root);
+                    List<FlowUsage> totalFunctionalExchanges = this.commonQueryService.getFunctionalExchanges(root);
                     List<FlowUsage> nonAllocatedFunctionalExchanges = totalFunctionalExchanges.stream()
                             .filter(functionalExchange -> this.getAllocatingComponentExchanges(functionalExchange).isEmpty())
                             .toList();
@@ -367,15 +367,15 @@ public class CapellaViewFormService {
                 .filter(EObject.class::isInstance)
                 .map(EObject.class::cast)
                 .map(root -> {
-                    List<PartUsage> totalComponents = this.transverseQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
+                    List<PartUsage> totalComponents = this.commonQueryService.getAllReachableInResource(root, SysmlPackage.eINSTANCE.getPartUsage())
                             .stream()
-                            .filter(this.transverseQueryService::isComponent)
+                            .filter(this.commonQueryService::isComponent)
                             .map(PartUsage.class::cast)
                             .toList();
 
                     List<PartUsage> doneComponents = totalComponents.stream()
                             .filter(component -> {
-                                Element componentStatus = this.transverseQueryService.getStatus(component);
+                                Element componentStatus = this.commonQueryService.getStatus(component);
                                 return Objects.nonNull(componentStatus) && componentStatus.getDeclaredName().equals("done");
                             })
                             .toList();

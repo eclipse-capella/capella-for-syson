@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -51,7 +51,7 @@ public class SARepresentationDropServices {
 
     private final DiagramMutationExposeService diagramMutationExposeService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final SAMutationService saMutationService;
 
@@ -64,7 +64,7 @@ public class SARepresentationDropServices {
         this.saQueryService = new SAQueryService();
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
         this.diagramMutationExposeService = Objects.requireNonNull(diagramMutationExposeService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.saMutationService = new SAMutationService();
         this.moveService = moveService;
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
@@ -78,7 +78,7 @@ public class SARepresentationDropServices {
             this.dropFunctionalExchange(flowUsage, editingContext, diagramContext, selectedNode, convertedNodes);
         } else if (droppedElement instanceof RequirementUsage) {
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, selectedNode, convertedNodes);
-        } else if (droppedElement instanceof ActionUsage actionUsage && this.transverseQueryService.isFunctionalChain(actionUsage)) {
+        } else if (droppedElement instanceof ActionUsage actionUsage && this.commonQueryService.isFunctionalChain(actionUsage)) {
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, selectedNode, convertedNodes);
         } else if (droppedElement instanceof ActionUsage actionUsage) {
             this.dropFunction(actionUsage, editingContext, diagramContext, convertedNodes);
@@ -103,7 +103,7 @@ public class SARepresentationDropServices {
         } else if (this.moveService != null && droppedElement instanceof ActionUsage droppedFunction && targetElement instanceof ActionUsage targetFunction
                 && this.canReparentFunction(droppedFunction, targetFunction)) {
             this.moveService.moveSemanticElement(droppedFunction, targetFunction);
-            this.transverseQueryService.getAllocatingComponent(targetFunction)
+            this.commonQueryService.getAllocatingComponent(targetFunction)
                     .ifPresent(component -> this.saMutationService.moveFunctionToComponent(droppedFunction, component, component));
             this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
             diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(droppedNode.getId()).build());
@@ -126,30 +126,30 @@ public class SARepresentationDropServices {
     }
 
     private boolean isReparentableComponent(PartUsage droppedComponent) {
-        return this.saQueryService.isSystemComponent(droppedComponent) || this.transverseQueryService.isComponentActor(droppedComponent);
+        return this.saQueryService.isSystemComponent(droppedComponent) || this.commonQueryService.isComponentActor(droppedComponent);
     }
 
     private boolean isValidComponentContainer(PartUsage droppedComponent, PartUsage targetComponent) {
         boolean validContainer = this.saQueryService.isSystemOfInterest(targetComponent) || this.saQueryService.isSystemComponent(targetComponent);
-        if (this.transverseQueryService.isComponentActor(droppedComponent)) {
-            validContainer = validContainer || this.transverseQueryService.isComponentActor(targetComponent);
+        if (this.commonQueryService.isComponentActor(droppedComponent)) {
+            validContainer = validContainer || this.commonQueryService.isComponentActor(targetComponent);
         }
         return validContainer;
     }
 
     private boolean canAllocateFunction(ActionUsage droppedFunction, PartUsage targetComponent) {
-        return !this.transverseQueryService.isFunctionalChain(droppedFunction)
+        return !this.commonQueryService.isFunctionalChain(droppedFunction)
                 && this.isFunctionAllocationTarget(targetComponent);
     }
 
     private boolean isFunctionAllocationTarget(PartUsage targetComponent) {
         return this.saQueryService.isSystemOfInterest(targetComponent)
                 || this.saQueryService.isSystemComponent(targetComponent)
-                || this.transverseQueryService.isComponentActor(targetComponent);
+                || this.commonQueryService.isComponentActor(targetComponent);
     }
 
     private boolean canReparentFunction(ActionUsage droppedFunction, ActionUsage targetFunction) {
-        return !this.transverseQueryService.isFunctionalChain(droppedFunction) && !this.transverseQueryService.isFunctionalChain(targetFunction)
+        return !this.commonQueryService.isFunctionalChain(droppedFunction) && !this.commonQueryService.isFunctionalChain(targetFunction)
                 && !this.isSameOrDescendant(targetFunction, droppedFunction);
     }
 
@@ -165,8 +165,8 @@ public class SARepresentationDropServices {
     }
 
     private boolean isDroppableComponent(PartUsage partUsage) {
-        return this.transverseQueryService.isComponent(partUsage)
-                && (this.transverseQueryService.isComponentActor(partUsage)
+        return this.commonQueryService.isComponent(partUsage)
+                && (this.commonQueryService.isComponentActor(partUsage)
                         || this.saQueryService.isSystemComponent(partUsage));
     }
 
@@ -194,25 +194,25 @@ public class SARepresentationDropServices {
 
     private void dropFunction(ActionUsage actionUsage, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        this.transverseQueryService.getAllocatingComponent(actionUsage)
+        this.commonQueryService.getAllocatingComponent(actionUsage)
                 .flatMap(component -> this.revealAllocatedComponent(component, diagramContext.getDiagram(), editingContext, diagramContext, convertedNodes))
                 .ifPresent(componentNode -> this.diagramMutationElementService.createView(actionUsage, editingContext, diagramContext, componentNode, convertedNodes));
     }
 
     private void dropFunctionalExchange(FlowUsage flowUsage, IEditingContext editingContext, DiagramContext diagramContext, Object selectedNode,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        var sourcePort = this.transverseQueryService.getFunctionalExchangeSource(flowUsage);
-        var targetPort = this.transverseQueryService.getFunctionalExchangeTarget(flowUsage);
+        var sourcePort = this.commonQueryService.getFunctionalExchangeSource(flowUsage);
+        var targetPort = this.commonQueryService.getFunctionalExchangeTarget(flowUsage);
         var sourceFunction = Optional.ofNullable(sourcePort)
                 .map(Element::getOwner)
-                .filter(this.transverseQueryService::isFunction)
+                .filter(this.commonQueryService::isFunction)
                 .map(ActionUsage.class::cast);
         var targetFunction = Optional.ofNullable(targetPort)
                 .map(Element::getOwner)
-                .filter(this.transverseQueryService::isFunction)
+                .filter(this.commonQueryService::isFunction)
                 .map(ActionUsage.class::cast);
-        var sourceComponent = sourceFunction.flatMap(this.transverseQueryService::getAllocatingComponent);
-        var targetComponent = targetFunction.flatMap(this.transverseQueryService::getAllocatingComponent);
+        var sourceComponent = sourceFunction.flatMap(this.commonQueryService::getAllocatingComponent);
+        var targetComponent = targetFunction.flatMap(this.commonQueryService::getAllocatingComponent);
         if (this.hasAllocatedEndpoints(sourceFunction, targetFunction, sourceComponent, targetComponent)
                 && this.canRevealBorderNode(sourcePort, sourceFunction, editingContext, diagramContext, convertedNodes)
                 && this.canRevealBorderNode(targetPort, targetFunction, editingContext, diagramContext, convertedNodes)) {

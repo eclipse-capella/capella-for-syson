@@ -23,7 +23,7 @@ import java.util.UUID;
 import org.eclipse.capella.application.configuration.explorer.CapellaExplorerTreeDescriptionProvider;
 import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.trees.api.ITreePathProvider;
 import org.eclipse.sirius.components.collaborative.trees.dto.TreePath;
@@ -55,7 +55,7 @@ public class CapellaExplorerTreePathProvider implements ITreePathProvider {
 
     private final LAQueryService laQueryService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CapellaExplorerTreePathProvider(ITreeNavigationService treeNavigationService, IURLParser urlParser,
             IRepresentationDescriptionSearchService representationDescriptionSearchService) {
@@ -63,7 +63,7 @@ public class CapellaExplorerTreePathProvider implements ITreePathProvider {
         this.urlParser = Objects.requireNonNull(urlParser);
         this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
         this.laQueryService = new LAQueryService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -135,7 +135,7 @@ public class CapellaExplorerTreePathProvider implements ITreePathProvider {
     private List<Object> applyFilters(List<Object> elements, List<String> activeFilterIds) {
         var alteredElements = new ArrayList<Object>(elements);
         if (activeFilterIds.contains(CapellaTreeFilterProvider.HIDE_PORTS_TREE_ITEM_FILTER_ID)) {
-            alteredElements.removeIf(element -> element instanceof EObject eObject && (this.transverseQueryService.isComponentPort(eObject) || this.transverseQueryService.isFunctionPort(eObject)));
+            alteredElements.removeIf(element -> element instanceof EObject eObject && (this.commonQueryService.isComponentPort(eObject) || this.commonQueryService.isFunctionPort(eObject)));
         }
         return alteredElements;
     }

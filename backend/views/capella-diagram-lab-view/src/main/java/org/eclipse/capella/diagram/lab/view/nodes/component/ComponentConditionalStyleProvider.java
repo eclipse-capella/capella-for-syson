@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -38,7 +38,7 @@ public class ComponentConditionalStyleProvider {
 
     public ConditionalNodeStyle createActorConditionalStyle() {
         return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.of0(TransverseQueryService::isComponentActor).aqlSelf())
+                .condition(ServiceMethod.of0(CommonQueryService::isComponentActor).aqlSelf())
                 .style(new ComponentNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createActorNodeStyle())
                 .build();
     }

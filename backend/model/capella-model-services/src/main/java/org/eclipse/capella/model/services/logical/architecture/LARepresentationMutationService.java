@@ -13,7 +13,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.logical.architecture;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.Annotation;
 import org.eclipse.syson.sysml.Comment;
 import org.eclipse.syson.sysml.Element;
@@ -35,12 +35,12 @@ public class LARepresentationMutationService {
 
     private final ElementInitializerSwitch elementInitializerSwitch;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
     public LARepresentationMutationService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
     }
@@ -59,7 +59,7 @@ public class LARepresentationMutationService {
         this.metamodelMutationElementService.addChildInParent(parent, requirementUsage);
         this.elementInitializerSwitch.doSwitch(requirementUsage);
 
-        long existingElementsCount = this.transverseQueryService.existingElementsCount(requirementUsage);
+        long existingElementsCount = this.commonQueryService.existingElementsCount(requirementUsage);
         requirementUsage.setDeclaredName(name + WHITE_SPACE + existingElementsCount);
         return requirementUsage;
     }
@@ -78,7 +78,7 @@ public class LARepresentationMutationService {
         this.metamodelMutationElementService.addChildInParent(parent, pkg);
         this.elementInitializerSwitch.doSwitch(pkg);
 
-        long existingElementsCount = this.transverseQueryService.existingElementsCount(pkg);
+        long existingElementsCount = this.commonQueryService.existingElementsCount(pkg);
         pkg.setDeclaredName(name + WHITE_SPACE + existingElementsCount);
         return pkg;
     }

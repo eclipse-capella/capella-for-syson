@@ -41,15 +41,15 @@ public class ElementCreationTests extends AbstractSemanticTests {
 
     private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
     public void createComponentShouldCreateNonActorComponentInParent() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component = this.commonCreationService.createComponent(parent);
         assertThat(parent.getOwnedElement()).contains(component);
-        assertThat(this.transverseQueryService.isComponent(component)).isTrue();
-        assertThat(this.transverseQueryService.isComponentActor(component)).isFalse();
+        assertThat(this.commonQueryService.isComponent(component)).isTrue();
+        assertThat(this.commonQueryService.isComponentActor(component)).isFalse();
     }
 
     @Test
@@ -57,8 +57,8 @@ public class ElementCreationTests extends AbstractSemanticTests {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage actor = this.commonCreationService.createActor(parent);
         assertThat(parent.getOwnedElement()).contains(actor);
-        assertThat(this.transverseQueryService.isComponent(actor)).isTrue();
-        assertThat(this.transverseQueryService.isComponentActor(actor)).isTrue();
+        assertThat(this.commonQueryService.isComponent(actor)).isTrue();
+        assertThat(this.commonQueryService.isComponentActor(actor)).isTrue();
     }
 
     @Test
@@ -90,11 +90,11 @@ public class ElementCreationTests extends AbstractSemanticTests {
         PartUsage component = this.commonCreationService.createComponent(structurePackage);
         ActionUsage function = this.commonCreationService.createFunction(component);
 
-        assertThat(this.transverseQueryService.getAllocatingComponent(function))
+        assertThat(this.commonQueryService.getAllocatingComponent(function))
                 .isPresent()
                 .get()
                 .isEqualTo(component);
-        assertThat(this.transverseQueryService.getAllocatedFunctions(component)).contains(function);
+        assertThat(this.commonQueryService.getAllocatedFunctions(component)).contains(function);
     }
 
     @Test
@@ -104,11 +104,11 @@ public class ElementCreationTests extends AbstractSemanticTests {
         ActionUsage function1 = this.commonCreationService.createFunction(component);
         ActionUsage function2 = this.commonCreationService.createFunction(function1);
 
-        assertThat(this.transverseQueryService.getAllocatingComponent(function2))
+        assertThat(this.commonQueryService.getAllocatingComponent(function2))
                 .isPresent()
                 .get()
                 .isEqualTo(component);
-        assertThat(this.transverseQueryService.getAllocatedFunctions(component)).contains(function1, function2);
+        assertThat(this.commonQueryService.getAllocatedFunctions(component)).contains(function1, function2);
     }
 
     @Test
@@ -135,13 +135,13 @@ public class ElementCreationTests extends AbstractSemanticTests {
         PartUsage component2 = this.commonCreationService.createComponent(parent);
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
 
-        assertThat(this.transverseQueryService.getComponentExchangeSource(componentExchange))
-                .matches(this.transverseQueryService::isComponentPort)
+        assertThat(this.commonQueryService.getComponentExchangeSource(componentExchange))
+                .matches(this.commonQueryService::isComponentPort)
                 .matches(sourcePort -> Objects.equals(sourcePort.getDirection(), FeatureDirectionKind.OUT))
                 .matches(sourcePort -> Objects.equals(sourcePort.getOwner(), component1));
 
-        assertThat(this.transverseQueryService.getComponentExchangeTarget(componentExchange))
-                .matches(this.transverseQueryService::isComponentPort)
+        assertThat(this.commonQueryService.getComponentExchangeTarget(componentExchange))
+                .matches(this.commonQueryService::isComponentPort)
                 .matches(targetPort -> Objects.equals(targetPort.getDirection(), FeatureDirectionKind.IN))
                 .matches(targetPort -> Objects.equals(targetPort.getOwner(), component2));
 
@@ -168,8 +168,8 @@ public class ElementCreationTests extends AbstractSemanticTests {
         PortUsage port2 = this.commonCreationService.createComponentPort(component2, FeatureDirectionKind.IN);
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(port1, port2);
 
-        assertThat(this.transverseQueryService.getComponentExchangeSource(componentExchange)).isEqualTo(port1);
-        assertThat(this.transverseQueryService.getComponentExchangeTarget(componentExchange)).isEqualTo(port2);
+        assertThat(this.commonQueryService.getComponentExchangeSource(componentExchange)).isEqualTo(port1);
+        assertThat(this.commonQueryService.getComponentExchangeTarget(componentExchange)).isEqualTo(port2);
         assertThat(componentExchange.getOwner()).isEqualTo(parent);
     }
 
@@ -228,13 +228,13 @@ public class ElementCreationTests extends AbstractSemanticTests {
         ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
 
-        assertThat(this.transverseQueryService.getFunctionalExchangeSource(functionalExchange))
-                .matches(this.transverseQueryService::isFunctionPort)
+        assertThat(this.commonQueryService.getFunctionalExchangeSource(functionalExchange))
+                .matches(this.commonQueryService::isFunctionPort)
                 .matches(sourcePort -> Objects.equals(((ItemUsage) sourcePort).getDirection(), FeatureDirectionKind.OUT))
                 .matches(sourcePort -> Objects.equals(sourcePort.getOwner(), function1));
 
-        assertThat(this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange))
-                .matches(this.transverseQueryService::isFunctionPort)
+        assertThat(this.commonQueryService.getFunctionalExchangeTarget(functionalExchange))
+                .matches(this.commonQueryService::isFunctionPort)
                 .matches(targetPort -> Objects.equals(((ItemUsage) targetPort).getDirection(), FeatureDirectionKind.IN))
                 .matches(targetPort -> Objects.equals(targetPort.getOwner(), function2));
 
@@ -266,8 +266,8 @@ public class ElementCreationTests extends AbstractSemanticTests {
         ItemUsage port2 = this.commonCreationService.createFunctionPort(function2, FeatureDirectionKind.IN);
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(port1, port2);
 
-        assertThat(this.transverseQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(port1);
-        assertThat(this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(port2);
+        assertThat(this.commonQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(port1);
+        assertThat(this.commonQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(port2);
         assertThat(functionalExchange.getOwner()).isEqualTo(rootFunction);
     }
 
@@ -324,15 +324,15 @@ public class ElementCreationTests extends AbstractSemanticTests {
         // Functional chains are usually created on the diagram background, so the first argument is the diagram's semantic element: the structure package.
         ActionUsage functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, List.of(functionalExchange1, functionalExchange2));
 
-        assertThat(this.transverseQueryService.isFunctionalChain(functionalChain)).isTrue();
+        assertThat(this.commonQueryService.isFunctionalChain(functionalChain)).isTrue();
         assertThat(rootFunction.getOwnedElement()).contains(functionalChain);
-        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange2)).containsExactly(functionalChain);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).contains(functionalChain);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).contains(functionalChain);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function3)).contains(functionalChain);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange3)).isEmpty();
+        assertThat(this.commonQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(functionalExchange2)).containsExactly(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function1)).contains(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function2)).contains(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function3)).contains(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(functionalExchange3)).isEmpty();
     }
 
     @Test

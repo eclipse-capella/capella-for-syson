@@ -21,7 +21,7 @@ import org.eclipse.capella.application.configuration.explorer.services.api.ICape
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFragment;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerLabelService;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -71,7 +71,7 @@ public class CapellaExplorerService implements ICapellaExplorerService {
 
     private final ICapellaExplorerLabelService capellaExplorerLabelService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CapellaExplorerService(IIdentityService identityService, IContentService contentService, IRepresentationMetadataSearchService representationMetadataSearchService,
             IExplorerServices explorerServices, ICapellaExplorerFilterService filterService,
@@ -83,7 +83,7 @@ public class CapellaExplorerService implements ICapellaExplorerService {
         this.filterService = Objects.requireNonNull(filterService);
         this.sysONResourceService = Objects.requireNonNull(sysONResourceService);
         this.capellaExplorerLabelService = Objects.requireNonNull(capellaExplorerLabelService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -116,9 +116,9 @@ public class CapellaExplorerService implements ICapellaExplorerService {
         final String result;
         if (self instanceof ICapellaExplorerFragment fragment) {
             result = fragment.getKind();
-        } else if (self instanceof Element element && this.transverseQueryService.isArcadiaElement(element)) {
+        } else if (self instanceof Element element && this.commonQueryService.isArcadiaElement(element)) {
             String kind = this.explorerServices.getKind(self);
-            result = kind + "&" + ARCADIA_TYPE_PARAMETER + "=" + this.transverseQueryService.getArcadiaType(element).get();
+            result = kind + "&" + ARCADIA_TYPE_PARAMETER + "=" + this.commonQueryService.getArcadiaType(element).get();
         } else if (self instanceof org.eclipse.syson.sysml.Package pkg) {
             String kind = this.explorerServices.getKind(self);
             result = kind + "&" + CAPELLA_PKG_PARAMETER + "=" + pkg.getDeclaredName();

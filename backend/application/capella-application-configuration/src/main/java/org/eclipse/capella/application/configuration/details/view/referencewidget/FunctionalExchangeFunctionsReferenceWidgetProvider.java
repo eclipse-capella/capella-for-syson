@@ -15,7 +15,7 @@ package org.eclipse.capella.application.configuration.details.view.referencewidg
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
@@ -45,10 +45,10 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
 
     private static final String ERROR_MSG = "Something went wrong while removing the function";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public FunctionalExchangeFunctionsReferenceWidgetProvider() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.transverseQueryService.getFunctions(eObject);
+            return this.commonQueryService.getFunctions(eObject);
         }
         return List.of();
     }

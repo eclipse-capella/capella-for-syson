@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.ocb.view.edges.involvement;
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -47,9 +47,9 @@ public class InvolvementEdgeDescriptionProvider extends AbstractEdgeDescriptionP
                 .isDomainBasedEdge(true)
                 .name(EDGE_DESCRIPTION_NAME)
                 .centerLabelExpression("")
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getCapabilities).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getCapabilities).aqlSelf())
                 .sourceExpression(AQLConstants.AQL_SELF)
-                .targetExpression(ServiceMethod.of0(TransverseQueryService::getInvolvedComponents).aqlSelf())
+                .targetExpression(ServiceMethod.of0(CommonQueryService::getInvolvedComponents).aqlSelf())
                 .style(new InvolvementEdgeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
                 .palette(new InvolvementPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())

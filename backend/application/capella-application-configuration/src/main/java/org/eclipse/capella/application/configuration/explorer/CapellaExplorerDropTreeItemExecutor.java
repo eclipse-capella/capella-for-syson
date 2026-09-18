@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -50,7 +50,7 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
 
     private final ISysMLMoveElementService moveService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CapellaExplorerDropTreeItemExecutor(IObjectSearchService objectSearchService,
                                                IMessageService messageService,
@@ -58,7 +58,7 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.messageService = Objects.requireNonNull(messageService);
         this.moveService = Objects.requireNonNull(moveService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -134,9 +134,9 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
     private IStatus functionTreeItemDrop(Element droppedElement,
                                          Element targetElement) {
 
-        if (this.transverseQueryService.isFunction(droppedElement)
-                && (this.transverseQueryService.isFunction(targetElement)
-                || this.transverseQueryService.isFunctionsPackage(targetElement))) {
+        if (this.commonQueryService.isFunction(droppedElement)
+                && (this.commonQueryService.isFunction(targetElement)
+                || this.commonQueryService.isFunctionsPackage(targetElement))) {
             this.moveService.moveSemanticElement(droppedElement, targetElement);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
@@ -146,13 +146,13 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
 
     private boolean isFunctionsTreeItemDrop(Element droppedElement,
                                             Element targetElement) {
-        return this.transverseQueryService.isFunction(droppedElement)
-                && (this.transverseQueryService.isFunction(targetElement)
-                || this.transverseQueryService.isFunctionsPackage(targetElement));
+        return this.commonQueryService.isFunction(droppedElement)
+                && (this.commonQueryService.isFunction(targetElement)
+                || this.commonQueryService.isFunctionsPackage(targetElement));
     }
 
     private IStatus componentTreeItemDrop(Element droppedElement, Element targetElement) {
-        if (this.transverseQueryService.isComponent(droppedElement)) {
+        if (this.commonQueryService.isComponent(droppedElement)) {
             this.moveService.moveSemanticElement(droppedElement, targetElement);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
@@ -162,23 +162,23 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
 
     private boolean isComponentTreeItemDrop(Element droppedElement,
                                             Element targetElement) {
-        return this.transverseQueryService.isComponent(droppedElement)
-                && (this.transverseQueryService.isComponent(targetElement)
-                || this.transverseQueryService.isStructurePackage(targetElement));
+        return this.commonQueryService.isComponent(droppedElement)
+                && (this.commonQueryService.isComponent(targetElement)
+                || this.commonQueryService.isStructurePackage(targetElement));
     }
 
     private boolean isComponentPortTreeItemDrop(Element droppedElement,
                                                 Element targetElement) {
-        return this.transverseQueryService.isComponentPort(droppedElement)
-                && !this.transverseQueryService.isStructurePackage(targetElement)
-                && this.transverseQueryService.isComponent(targetElement);
+        return this.commonQueryService.isComponentPort(droppedElement)
+                && !this.commonQueryService.isStructurePackage(targetElement)
+                && this.commonQueryService.isComponent(targetElement);
     }
 
     private boolean isFunctionPortTreeItemDrop(Element droppedElement,
                                                 Element targetElement) {
-        return this.transverseQueryService.isExchangeItem(droppedElement)
-                && !this.transverseQueryService.isFunctionsPackage(targetElement)
-                && this.transverseQueryService.isFunction(targetElement);
+        return this.commonQueryService.isExchangeItem(droppedElement)
+                && !this.commonQueryService.isFunctionsPackage(targetElement)
+                && this.commonQueryService.isFunction(targetElement);
     }
 
     /**
@@ -188,9 +188,9 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
      * - Another user Package (for nesting)
      */
     private boolean isPackageTreeItemDrop(Element droppedElement, Element targetElement) {
-        return this.transverseQueryService.isUserPackage(droppedElement)
-                && (this.transverseQueryService.isRequirementsPackage(targetElement)
-                    || this.transverseQueryService.isUserPackage(targetElement));
+        return this.commonQueryService.isUserPackage(droppedElement)
+                && (this.commonQueryService.isRequirementsPackage(targetElement)
+                    || this.commonQueryService.isUserPackage(targetElement));
     }
 
     /**
@@ -201,7 +201,7 @@ public class CapellaExplorerDropTreeItemExecutor implements IExplorerDropTreeIte
      */
     private boolean isRequirementTreeItemDrop(Element droppedElement, Element targetElement) {
         return droppedElement instanceof RequirementUsage
-                && (this.transverseQueryService.isRequirementsPackage(targetElement)
-                    || this.transverseQueryService.isUserPackage(targetElement));
+                && (this.commonQueryService.isRequirementsPackage(targetElement)
+                    || this.commonQueryService.isUserPackage(targetElement));
     }
 }

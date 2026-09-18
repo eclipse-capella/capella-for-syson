@@ -12,14 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -52,11 +52,11 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
 
     private final CommonUpdateService commonUpdateService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public AllocatedFunctionPortsReferenceWidgetProvider() {
         this.commonUpdateService = new CommonUpdateService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.transverseQueryService.getFunctions(eObject).stream().map(this.transverseQueryService::getFunctionPorts).flatMap(List::stream).toList();
+            return this.commonQueryService.getFunctions(eObject).stream().map(this.commonQueryService::getFunctionPorts).flatMap(List::stream).toList();
         }
         return List.of();
     }
@@ -82,7 +82,7 @@ public class AllocatedFunctionPortsReferenceWidgetProvider implements ICapellaRe
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof PortUsage portUsage) {
-            return this.transverseQueryService.getFeatureReferenceValue(portUsage, FEATURE_NAME);
+            return this.commonQueryService.getFeatureReferenceValue(portUsage, FEATURE_NAME);
         }
         return List.of();
     }

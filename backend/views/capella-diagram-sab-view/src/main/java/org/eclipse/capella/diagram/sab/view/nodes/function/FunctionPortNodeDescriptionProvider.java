@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.common.view.nodes.ImageNodeStyleDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ConditionalNodeStyle;
@@ -54,7 +54,7 @@ public class FunctionPortNodeDescriptionProvider extends AbstractNodeDescription
                 .defaultWidthExpression("10")
                 .domainType(domainType)
                 .name(NODE_DESCRIPTION_NAME)
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getFunctionPorts).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getFunctionPorts).aqlSelf())
                 .style(this.createPortUnsetNodeStyle())
                 .conditionalStyles(this.createPortUsageConditionalNodeStyles().toArray(ConditionalNodeStyle[]::new))
                 .userResizable(UserResizableDirection.NONE)
@@ -82,11 +82,11 @@ public class FunctionPortNodeDescriptionProvider extends AbstractNodeDescription
         var borderColor = this.colorProvider.getColor(ViewConstants.DEFAULT_BORDER_COLOR);
         return List.of(
                 this.diagramBuilderHelper.newConditionalNodeStyle()
-                        .condition(ServiceMethod.of0(TransverseQueryService::isInFeature).aqlSelf())
+                        .condition(ServiceMethod.of0(CommonQueryService::isInFeature).aqlSelf())
                         .style(this.imageNodeStyleDescriptionProvider.createImageNodeStyleDescription("icons/full/obj16/FunctionInputPort.svg", borderColor, 0))
                         .build(),
                 this.diagramBuilderHelper.newConditionalNodeStyle()
-                        .condition(ServiceMethod.of0(TransverseQueryService::isOutFeature).aqlSelf())
+                        .condition(ServiceMethod.of0(CommonQueryService::isOutFeature).aqlSelf())
                         .style(this.imageNodeStyleDescriptionProvider.createImageNodeStyleDescription("icons/full/obj16/FunctionOutputPort.svg", borderColor, 0))
                         .build());
     }

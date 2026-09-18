@@ -13,7 +13,7 @@
 package org.eclipse.capella.diagram.lab.view.nodes.functionalchain;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -70,7 +70,7 @@ public class FunctionalChainToolProvider {
 
     private SelectionDialogTreeDescription createDialogTreeDescription() {
         return this.diagramBuilderHelper.newSelectionDialogTreeDescription()
-                .elementsExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchanges).aqlSelf())
+                .elementsExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchanges).aqlSelf())
                 .isSelectableExpression(AQLConstants.AQL + "true")
                 .childrenExpression(null)
                 .build();

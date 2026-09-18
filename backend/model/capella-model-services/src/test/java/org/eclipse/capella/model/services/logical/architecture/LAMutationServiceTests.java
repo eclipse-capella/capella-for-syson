@@ -19,7 +19,7 @@ import java.util.List;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
@@ -45,7 +45,7 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
 
     private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final LAMutationService laMutationService = new LAMutationService();
 
@@ -154,14 +154,14 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         FlowUsage functionalExchange2 = this.fixture.createFlowUsage(root, "Functional Exchange 2");
         FlowUsage functionalExchange3 = this.fixture.createFlowUsage(root, "Functional Exchange 3");
 
-        TransverseQueryService transverseQueryService = new TransverseQueryService();
+        CommonQueryService commonQueryService = new CommonQueryService();
 
         this.commonUpdateService.setArcadiaReferenceFeature(functionalChain, referencePrefix, referenceName, functionalExchange1, SysmlPackage.eINSTANCE.getFlowUsage().getName());
-        assertThat(transverseQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactly(functionalExchange1);
+        assertThat(commonQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactly(functionalExchange1);
 
         this.commonUpdateService.setArcadiaReferenceFeature(functionalChain, referencePrefix, referenceName, List.of(functionalExchange2, functionalExchange3),
                 SysmlPackage.eINSTANCE.getFlowUsage().getName());
-        assertThat(transverseQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactlyInAnyOrder(functionalExchange2, functionalExchange3);
+        assertThat(commonQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactlyInAnyOrder(functionalExchange2, functionalExchange3);
     }
 
     private List<ActionUsage> getAllocatedFunctions(PartUsage component) {
@@ -181,7 +181,7 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
 
     private PartUsage getSystem(Package structurePackage) {
         return structurePackage.getOwnedElement().stream()
-                .filter(transverseQueryService::isComponent)
+                .filter(commonQueryService::isComponent)
                 .map(PartUsage.class::cast)
                 .findFirst()
                 .orElseThrow();

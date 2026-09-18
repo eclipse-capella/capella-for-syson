@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.InterfaceUsage;
@@ -38,7 +38,7 @@ public class OARepresentationMutationServiceTests {
 
     private final OAQueryService oaQueryService = new OAQueryService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
@@ -65,14 +65,14 @@ public class OARepresentationMutationServiceTests {
         assertThat(entity.getDeclaredName()).startsWith("OE ");
         assertThat(humanActorEntity.getDeclaredName()).startsWith("OA ");
 
-        assertThat(this.transverseQueryService.checkType(entity, TransverseQueryService.ARCADIA_PREFIX + TransverseQueryService.ARCADIA_COMPONENT)).isTrue();
-        assertThat(this.transverseQueryService.checkType(humanActorEntity, TransverseQueryService.ARCADIA_PREFIX + TransverseQueryService.ARCADIA_COMPONENT)).isTrue();
+        assertThat(this.commonQueryService.checkType(entity, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_COMPONENT)).isTrue();
+        assertThat(this.commonQueryService.checkType(humanActorEntity, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_COMPONENT)).isTrue();
 
-        assertThat(this.transverseQueryService.isComponentActor(entity)).isFalse();
-        assertThat(this.transverseQueryService.isComponentHumanActor(entity)).isFalse();
+        assertThat(this.commonQueryService.isComponentActor(entity)).isFalse();
+        assertThat(this.commonQueryService.isComponentHumanActor(entity)).isFalse();
 
-        assertThat(this.transverseQueryService.isComponentActor(humanActorEntity)).isTrue();
-        assertThat(this.transverseQueryService.isComponentHumanActor(humanActorEntity)).isTrue();
+        assertThat(this.commonQueryService.isComponentActor(humanActorEntity)).isTrue();
+        assertThat(this.commonQueryService.isComponentHumanActor(humanActorEntity)).isTrue();
     }
 
     @Test
@@ -89,7 +89,7 @@ public class OARepresentationMutationServiceTests {
         assertThat(oaPackages.requirementsPackage().getOwnedElement()).contains(requirementUsage);
         assertThat(requirementUsage.getDeclaredName()).startsWith("Requirement ");
         // Requirements aren't typed by Arcadia anymore, they are SysMLv2 RequirementUsages
-        assertThat(this.transverseQueryService.checkType(requirementUsage, TransverseQueryService.ARCADIA_PREFIX + TransverseQueryService.ARCADIA_REQUIREMENT)).isFalse();
+        assertThat(this.commonQueryService.checkType(requirementUsage, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_REQUIREMENT)).isFalse();
         assertThat(requirementUsage).isInstanceOf(RequirementUsage.class);
     }
 

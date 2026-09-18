@@ -43,34 +43,34 @@ public class CapellaRelatedElementsSwitch extends SysmlSwitch<Set<EObject>> {
 
     private final RelatedElementsSwitch relatedElementsSwitch;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CapellaRelatedElementsSwitch(EStructuralFeature eStructuralFeature) {
         this.eStructuralFeature = eStructuralFeature;
         this.relatedElementsSwitch = new RelatedElementsSwitch(eStructuralFeature);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
     public Set<EObject> caseFeatureChaining(FeatureChaining featureChaining) {
         Set<EObject> relatedElements = new HashSet<>(Objects.requireNonNullElseGet(super.caseFeatureChaining(featureChaining), Collections::emptySet));
-        if (this.transverseQueryService.isComponentPort(featureChaining.getChainingFeature())) {
+        if (this.commonQueryService.isComponentPort(featureChaining.getChainingFeature())) {
             // Delete the ComponentExchange connected to the port being deleted.
             Optional.ofNullable(featureChaining.getFeatureChained())
                     .map(Element::getOwner)
                     // The unnamed PortUsage directly contained in the ComponentExchange.
                     .filter(PortUsage.class::isInstance)
                     .map(Element::getOwner)
-                    .filter(this.transverseQueryService::isComponentExchange)
+                    .filter(this.commonQueryService::isComponentExchange)
                     .ifPresent(relatedElements::add);
-        } else if (this.transverseQueryService.isFunctionPort(featureChaining.getChainingFeature())) {
+        } else if (this.commonQueryService.isFunctionPort(featureChaining.getChainingFeature())) {
             // Delete the FunctionalExchange connected to the port being deleted.
             Optional.ofNullable(featureChaining.getFeatureChained())
                     .map(Element::getOwner)
                     // The unnamed FlowEnd directly contained in the FunctionalExchange.
                     .filter(FlowEnd.class::isInstance)
                     .map(Element::getOwner)
-                    .filter(this.transverseQueryService::isFunctionalExchange)
+                    .filter(this.commonQueryService::isFunctionalExchange)
                     .ifPresent(relatedElements::add);
         }
         return relatedElements;

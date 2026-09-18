@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.ocb.view;
 
 import java.util.Objects;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -29,7 +29,7 @@ public class OCBViewQueryService {
 
     private final IObjectSearchService objectSearchService;
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     public OCBViewQueryService(IObjectSearchService objectSearchService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
@@ -37,13 +37,13 @@ public class OCBViewQueryService {
 
     public boolean canCreateInvolvement(Object receiver, IEditingContext editingContext) {
         if (receiver instanceof EObject semanticSource) {
-            return this.transverseQueryService.isCapability(semanticSource);
+            return this.commonQueryService.isCapability(semanticSource);
         }
-        return this.transverseQueryService.isComponent(this.getSemanticElement(receiver, editingContext));
+        return this.commonQueryService.isComponent(this.getSemanticElement(receiver, editingContext));
     }
 
     public boolean canCreateGeneralization(Object receiver, IEditingContext editingContext) {
-        return this.transverseQueryService.isCapability(this.getSemanticElement(receiver, editingContext));
+        return this.commonQueryService.isCapability(this.getSemanticElement(receiver, editingContext));
     }
 
     private EObject getSemanticElement(Object receiver, IEditingContext editingContext) {

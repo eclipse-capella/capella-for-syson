@@ -15,7 +15,7 @@ package org.eclipse.capella.table.view;
 import java.util.List;
 
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.core.services.ObjectService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
@@ -41,7 +41,7 @@ public class FunctionTableViewJavaServiceProvider implements IJavaServiceProvide
         if (optDescription.isPresent()) {
             return List.of(DeleteService.class,
                     LabelService.class,
-                    TransverseQueryService.class,
+                    CommonQueryService.class,
                     CommonUpdateService.class,
                     ObjectService.class);
         }

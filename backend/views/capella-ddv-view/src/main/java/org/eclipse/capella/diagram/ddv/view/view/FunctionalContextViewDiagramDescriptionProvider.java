@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.capella.diagram.ddv.view.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.RootFunctionNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -55,7 +55,7 @@ public class FunctionalContextViewDiagramDescriptionProvider implements IReprese
                 .domainType(domainType)
                 .name(DESCRIPTION_NAME)
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(TransverseQueryService::isFunction).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(CommonQueryService::isFunction).aqlSelf())
                 .nodeDescriptions()
                 .toolbar(toolBar)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())

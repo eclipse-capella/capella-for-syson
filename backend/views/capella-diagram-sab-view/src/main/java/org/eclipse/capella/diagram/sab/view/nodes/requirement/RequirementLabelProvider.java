@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.sab.view.nodes.requirement;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
@@ -45,7 +45,7 @@ public class RequirementLabelProvider {
     public InsideLabelDescription createInsideLabelDescription() {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
-                .labelExpression(ServiceMethod.of0(TransverseQueryService::getRequirementLabel).aqlSelf())
+                .labelExpression(ServiceMethod.of0(CommonQueryService::getRequirementLabel).aqlSelf())
                 .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)

@@ -74,12 +74,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Transverse mutation service. It is important to note that this service must retain its empty constructor and should
- * not have constructors with parameters.
+ * Common semantic element query service.
  *
  * @author frouene
  */
-public class TransverseQueryService {
+public class CommonQueryService {
 
     public static final String PATH_SEPARATOR = "::";
 
@@ -131,13 +130,13 @@ public class TransverseQueryService {
 
     public static final String STATUS_KIND = "StatusKind";
 
-    private final Logger logger = LoggerFactory.getLogger(TransverseQueryService.class);
+    private final Logger logger = LoggerFactory.getLogger(CommonQueryService.class);
 
     private final ModelQueryAQLService modelQueryAQLService;
 
     private final UtilService utilService;
 
-    public TransverseQueryService() {
+    public CommonQueryService() {
         this.modelQueryAQLService = new ModelQueryAQLService();
         this.utilService = new UtilService();
     }

@@ -12,17 +12,17 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_HUMAN;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaLibraryServices;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
@@ -42,7 +42,7 @@ public class OARepresentationMutationService {
 
     private final ElementInitializerSwitch elementInitializerSwitch;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final ArcadiaLibraryServices arcadiaLibraryServices;
 
@@ -55,7 +55,7 @@ public class OARepresentationMutationService {
     public  OARepresentationMutationService(TransverseRepresentationMutationService transverseRepresentationMutationService) {
         this.commonUpdateService = new CommonUpdateService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.oaQueryService = new OAQueryService();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
@@ -64,12 +64,12 @@ public class OARepresentationMutationService {
 
     public PartUsage createEntityComponent(Element parent, boolean isActor) {
         PartUsage partUsage = null;
-        if (parent instanceof PartUsage parentComponent && this.transverseQueryService.isComponentHumanActor(parentComponent)) {
+        if (parent instanceof PartUsage parentComponent && this.commonQueryService.isComponentHumanActor(parentComponent)) {
             return null;
         }
         Optional<Element> optionalTargetContainer = Optional.of(parent);
         if (!(parent instanceof PartUsage)) {
-            optionalTargetContainer = this.transverseQueryService.getStructurePackage(parent)
+            optionalTargetContainer = this.commonQueryService.getStructurePackage(parent)
                     .map(Element.class::cast);
         }
         if (optionalTargetContainer.isPresent()) {
@@ -84,7 +84,7 @@ public class OARepresentationMutationService {
             }
             this.elementInitializerSwitch.doSwitch(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
+            long existingElementsCount = this.commonQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName(name + " " + existingElementsCount);
         }
         return partUsage;

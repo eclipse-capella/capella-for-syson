@@ -13,7 +13,7 @@
 package org.eclipse.capella.diagram.ocb.view.nodes.capability;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -51,7 +51,7 @@ public class CapabilityNodeDescriptionProvider extends AbstractNodeDescriptionPr
                 .name(NODE_DESCRIPTION_NAME)
                 .defaultHeightExpression(DEFAULT_HEIGHT)
                 .defaultWidthExpression(DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getCapabilities).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getCapabilities).aqlSelf())
                 .style(new CapabilityNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createNodeStyle())
                 .userResizable(UserResizableDirection.NONE)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
