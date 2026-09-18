@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.logical.architecture;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
@@ -28,11 +28,11 @@ public class LAMutationService {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
 
     public LAMutationService() {
         this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonCreationService = new CommonCreationService();
     }
 
     /**
@@ -54,7 +54,7 @@ public class LAMutationService {
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("The logical system is missing from the Structure package"));
         }
-        return this.transverseMutationService.createComponent(targetContainer);
+        return this.commonCreationService.createComponent(targetContainer);
     }
 
 }

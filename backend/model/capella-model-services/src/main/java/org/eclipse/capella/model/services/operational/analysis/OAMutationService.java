@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
@@ -27,17 +27,17 @@ import org.eclipse.syson.sysml.OccurrenceUsage;
  */
 public class OAMutationService {
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
 
     private final TransverseQueryService transverseQueryService;
 
     public OAMutationService() {
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonCreationService = new CommonCreationService();
         this.transverseQueryService = new TransverseQueryService();
     }
 
     public InterfaceUsage createCommunicationMeanComponentExchangeOA(Feature source, Feature target) {
-        var componentExchange = this.transverseMutationService.createComponentExchange(source, target);
+        var componentExchange = this.commonCreationService.createComponentExchange(source, target);
         if (componentExchange != null) {
             long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
             componentExchange.setDeclaredName("CommunicationMean " + existingElementsCount);
@@ -46,7 +46,7 @@ public class OAMutationService {
     }
 
     public OccurrenceUsage createOperationalCapabilityOA(Element parent) {
-        var capability = this.transverseMutationService.createOperationalCapability(parent);
+        var capability = this.commonCreationService.createOperationalCapability(parent);
         if (capability != null) {
             long existingElementsCount = this.transverseQueryService.existingElementsCount(capability);
             capability.setDeclaredName("OC " + existingElementsCount);

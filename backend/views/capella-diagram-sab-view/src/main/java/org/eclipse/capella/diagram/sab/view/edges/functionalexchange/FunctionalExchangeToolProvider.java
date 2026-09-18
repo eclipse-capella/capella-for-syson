@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.sab.view.edges.functionalexchange;
 
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionPortNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -47,7 +47,7 @@ public class FunctionalExchangeToolProvider {
                 .targetElementDescriptions(targetPortDescription, targetFunctionDescription)
                 .iconURLsExpression("/icons/full/obj16/FunctionalExchange.svg")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of1(TransverseMutationService::createFunctionalExchange)
+                        .expression(ServiceMethod.of1(CommonCreationService::createFunctionalExchange)
                                 .aql(
                                         EdgeDescription.SEMANTIC_EDGE_SOURCE,
                                         EdgeDescription.SEMANTIC_EDGE_TARGET))
