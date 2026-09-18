@@ -23,8 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -50,18 +51,20 @@ import org.junit.jupiter.api.Test;
  */
 public class SARepresentationDropServicesTests extends AbstractSemanticTests {
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
+
+    private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
     @Test
     public void createFunctionalExchangeWhenDroppedShouldRevealDependenciesInSpecificationOrder() {
         var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
+        var sourceFunction = this.commonCreationService.createFunction(system);
+        var targetFunction = this.commonCreationService.createFunction(system);
 
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
-        var sourcePort = new TransverseQueryService().getFunctionalExchangeSource(functionalExchange);
-        var targetPort = new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange);
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourceFunction, targetFunction);
+        var sourcePort = new CommonQueryService().getFunctionalExchangeSource(functionalExchange);
+        var targetPort = new CommonQueryService().getFunctionalExchangeTarget(functionalExchange);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
@@ -77,11 +80,11 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
     public void createFunctionalExchangeWhenDroppedWithAnUnallocatedEndpointShouldNotCreatePartialViews() {
         var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
-        this.transverseMutationService.deletePerformedActionUsage(system, targetFunction);
+        var sourceFunction = this.commonCreationService.createFunction(system);
+        var targetFunction = this.commonCreationService.createFunction(system);
+        this.commonDeletionService.deletePerformedActionUsage(system, targetFunction);
 
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourceFunction, targetFunction);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
@@ -96,10 +99,10 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
     public void createFunctionalExchangeWhenDroppedTwiceShouldReuseAlreadyRequestedDependencies() {
         var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceFunction = this.transverseMutationService.createFunction(system);
-        var targetFunction = this.transverseMutationService.createFunction(system);
+        var sourceFunction = this.commonCreationService.createFunction(system);
+        var targetFunction = this.commonCreationService.createFunction(system);
 
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(sourceFunction, targetFunction);
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourceFunction, targetFunction);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
         new SARepresentationDropServices(null, diagramServices.elementService, diagramServices.exposeService, new IObjectSearchService.NoOp())
@@ -116,7 +119,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
     @Test
     public void createRequirementWhenDroppedShouldCreateOnlyRequirementView() {
         var structurePackage = this.getSystemAnalysisStructurePackage();
-        RequirementUsage requirement = this.transverseMutationService.createRequirement(structurePackage);
+        RequirementUsage requirement = this.commonCreationService.createRequirement(structurePackage);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 
@@ -131,7 +134,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
     public void createComponentWhenDroppedWithoutSemanticParentViewShouldRevealItInTheDropTarget() {
         var structurePackage = this.getSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var component = this.transverseMutationService.createComponent(system);
+        var component = this.commonCreationService.createComponent(system);
         component.setDeclaredName("C 1");
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);

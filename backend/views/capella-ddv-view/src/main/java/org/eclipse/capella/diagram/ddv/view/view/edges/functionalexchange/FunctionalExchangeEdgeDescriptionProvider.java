@@ -16,7 +16,7 @@ import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProv
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.RootFunctionNodeDescriptionProvider;
 import org.eclipse.capella.model.services.functional.context.DDVQueryService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -48,10 +48,10 @@ public class FunctionalExchangeEdgeDescriptionProvider extends AbstractEdgeDescr
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
                 .semanticCandidatesExpression(ServiceMethod.of0(DDVQueryService::getRelatedFunctionalExchanges).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeSourceFunction).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeSourceFunction).aqlSelf())
                 .style(functionalExchangeEdgeStyleProvider.createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeTargetFunction).aqlSelf())
+                .targetExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeTargetFunction).aqlSelf())
                 .build();
     }
 

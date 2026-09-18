@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.table.view.FunctionTableRepresentationDescriptionProvider;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -44,11 +44,11 @@ public class FunctionTableEditCellHandler implements IEditCellHandler {
 
     private final IObjectSearchService objectSearchService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonUpdateService commonUpdateService;
 
     public FunctionTableEditCellHandler(IObjectSearchService objectSearchService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonUpdateService = new CommonUpdateService();
     }
 
     @Override
@@ -84,13 +84,13 @@ public class FunctionTableEditCellHandler implements IEditCellHandler {
     }
 
     private IStatus setFunctionDescription(Usage eObject, String newValue) {
-        this.transverseMutationService.setElementDescription(eObject, newValue);
+        this.commonUpdateService.setElementDescription(eObject, newValue);
 
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
     }
 
     private IStatus setFunctionStatusKind(ActionUsage function, String newValue) {
-        this.transverseMutationService.setStatusKind(function, newValue);
+        this.commonUpdateService.setStatusKind(function, newValue);
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
     }
 }

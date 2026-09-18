@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -50,13 +50,13 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
 
     private static final String ERROR_MSG = "Something went wrong while deleting the exchange item payload";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonDeletionService commonDeletionService;
 
     public ExchangedItemPayloadReferenceWidgetProvider() {
-        this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonQueryService = new CommonQueryService();
+        this.commonDeletionService = new CommonDeletionService();
     }
 
     @Override
@@ -73,8 +73,8 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            var allExchangeItems = new ArrayList<>(this.transverseQueryService.getExchangeItems(eObject));
-            allExchangeItems.removeIf(this.transverseQueryService::isFunctionPort);
+            var allExchangeItems = new ArrayList<>(this.commonQueryService.getExchangeItems(eObject));
+            allExchangeItems.removeIf(this.commonQueryService::isFunctionPort);
             return allExchangeItems;
         }
         return List.of();
@@ -84,7 +84,7 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof FlowUsage flowUsage) {
-            return Optional.ofNullable(flowUsage.getPayloadFeature()).stream().map(PayloadFeature::getType).flatMap(List::stream).filter(this.transverseQueryService::isExchangeItem).toList();
+            return Optional.ofNullable(flowUsage.getPayloadFeature()).stream().map(PayloadFeature::getType).flatMap(List::stream).filter(this.commonQueryService::isExchangeItem).toList();
         }
         return List.of();
     }
@@ -99,7 +99,7 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
                                 .filter(FeatureTyping.class::isInstance)
                                 .map(FeatureTyping.class::cast)
                                 .filter(typing -> itemUsage.equals(typing.getType()))
-                                .forEach(this.transverseMutationService::delete);
+                                .forEach(this.commonDeletionService::delete);
                     });
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
@@ -115,7 +115,7 @@ public class ExchangedItemPayloadReferenceWidgetProvider implements ICapellaRefe
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof FlowUsage flowUsage) {
-            Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.transverseMutationService::delete);
+            Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.commonDeletionService::delete);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

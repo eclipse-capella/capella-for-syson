@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -31,10 +31,10 @@ import org.eclipse.syson.sysml.SysmlPackage;
  */
 public class CellStringValueProvider implements BiFunction<VariableManager, Object, String> {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CellStringValueProvider() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -47,19 +47,19 @@ public class CellStringValueProvider implements BiFunction<VariableManager, Obje
         String cellValue = "";
 
         if (columnTargetObject == SysmlPackage.eINSTANCE.getPartUsage()) {
-            var optComponent = this.transverseQueryService.getAllocatingComponent((ActionUsage) self);
+            var optComponent = this.commonQueryService.getAllocatingComponent((ActionUsage) self);
             cellValue = optComponent
                     .map(Element::getDeclaredName)
                     .orElse("");
 
         } else if (columnTargetObject == SysmlPackage.eINSTANCE.getReferenceUsage()) {
-            cellValue = this.formatSysmlElements(this.transverseQueryService.getFunctionPorts(self));
+            cellValue = this.formatSysmlElements(this.commonQueryService.getFunctionPorts(self));
 
         } else if (columnTargetObject == SysmlPackage.eINSTANCE.getLiteralString()) {
-            cellValue = this.transverseQueryService.getArcadiaElementDescription(self);
+            cellValue = this.commonQueryService.getArcadiaElementDescription(self);
 
         } else if (columnTargetObject == SysmlPackage.eINSTANCE.getOwningMembership()) {
-            var optionalFunctionStatus = Optional.ofNullable(this.transverseQueryService.getStatus((ActionUsage) self));
+            var optionalFunctionStatus = Optional.ofNullable(this.commonQueryService.getStatus((ActionUsage) self));
             cellValue = optionalFunctionStatus.map(Element::getDeclaredName).orElse("");
         }
 

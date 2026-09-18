@@ -59,9 +59,9 @@ public class TransverseRepresentationReconnectToolServicesTests {
 
     private final DiagramMutationElementService diagramMutationElementService = mock(DiagramMutationElementService.class);
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final TransverseRepresentationReconnectToolServices reconnectToolServices = new TransverseRepresentationReconnectToolServices((element, newParent) -> null,
             this.diagramMutationElementService);
@@ -80,14 +80,14 @@ public class TransverseRepresentationReconnectToolServicesTests {
         var newSourcePort = this.createComponentPort(sourceComponent, "CP 3", componentPortType);
         var newTargetPort = this.createComponentPort(targetComponent, "CP 4", componentPortType);
         var invalidTargetPort = this.createComponentPort(sourceComponent, "CP 5", componentPortType);
-        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(sourcePort, targetPort);
 
         this.reconnectToolServices.reconnectComponentExchange(componentExchange, newSourcePort, sourcePort);
         this.reconnectToolServices.reconnectComponentExchange(componentExchange, newTargetPort, targetPort);
         this.reconnectToolServices.reconnectComponentExchange(componentExchange, invalidTargetPort, newTargetPort);
 
-        assertEquals(newSourcePort, this.transverseQueryService.getComponentExchangeSource(componentExchange));
-        assertEquals(newTargetPort, this.transverseQueryService.getComponentExchangeTarget(componentExchange));
+        assertEquals(newSourcePort, this.commonQueryService.getComponentExchangeSource(componentExchange));
+        assertEquals(newTargetPort, this.commonQueryService.getComponentExchangeTarget(componentExchange));
     }
 
     @Disabled("This test will be re-enabled once we use the actual arcadia library for the unit tests")
@@ -152,8 +152,8 @@ public class TransverseRepresentationReconnectToolServicesTests {
         this.reconnectToolServices.reconnectFunctionalExchangeTarget(functionalExchange, invalidTargetPort, targetPort, mock(Node.class), mock(Node.class), new IEditingContext.NoOp(),
                 mock(Diagram.class));
 
-        assertEquals(newSourcePort, new TransverseQueryService().getFunctionalExchangeSource(functionalExchange));
-        assertEquals(newTargetPort, new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange));
+        assertEquals(newSourcePort, new CommonQueryService().getFunctionalExchangeSource(functionalExchange));
+        assertEquals(newTargetPort, new CommonQueryService().getFunctionalExchangeTarget(functionalExchange));
     }
 
     private PortDefinition createArcadiaComponentPortType() {

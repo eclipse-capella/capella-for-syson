@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.AllocationUsage;
 import org.eclipse.syson.sysml.Element;
@@ -47,7 +47,7 @@ public class SAQueryServiceTests {
 
     private final SAQueryService saQueryService = new SAQueryService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
@@ -114,7 +114,7 @@ public class SAQueryServiceTests {
 
         assertEquals("Arcadia::Component", componentType.getQualifiedName());
         assertEquals("'System Analysis'::Structure::system", firstSystem.getQualifiedName());
-        assertTrue(new TransverseQueryService().isComponent(firstSystem));
+        assertTrue(new CommonQueryService().isComponent(firstSystem));
         assertEquals(1, systems.size());
         assertTrue(systems.contains(firstSystem));
         assertTrue(this.saQueryService.getSystemOfInterest(logicalArchitectureStructure).isEmpty());
@@ -185,9 +185,9 @@ public class SAQueryServiceTests {
         this.addOwnedMember(actor, actorPort);
         var systemAnalysisExchange = this.createComponentExchange("CE 1", componentExchangeType, systemPort, actorPort);
         this.addOwnedMember(systemAnalysisStructure, systemAnalysisExchange);
-        assertTrue(new TransverseQueryService().isComponentExchange(systemAnalysisExchange));
-        assertEquals(system, this.transverseQueryService.getComponentExchangeSource(systemAnalysisExchange).getOwner());
-        assertEquals(actor, this.transverseQueryService.getComponentExchangeTarget(systemAnalysisExchange).getOwner());
+        assertTrue(new CommonQueryService().isComponentExchange(systemAnalysisExchange));
+        assertEquals(system, this.commonQueryService.getComponentExchangeSource(systemAnalysisExchange).getOwner());
+        assertEquals(actor, this.commonQueryService.getComponentExchangeTarget(systemAnalysisExchange).getOwner());
 
         var logicalArchitecture = this.createPackage("Logical Architecture");
         var logicalArchitectureStructure = this.createPackage("Structure");
@@ -203,7 +203,7 @@ public class SAQueryServiceTests {
         this.addOwnedMember(logicalTarget, logicalTargetPort);
         this.addOwnedMember(logicalArchitectureStructure, this.createComponentExchange("CE 2", componentExchangeType, logicalSourcePort, logicalTargetPort));
 
-        assertEquals(List.of(systemAnalysisExchange), this.transverseQueryService.getComponentExchanges(root));
+        assertEquals(List.of(systemAnalysisExchange), this.commonQueryService.getComponentExchanges(root));
     }
 
     @Test
@@ -222,7 +222,7 @@ public class SAQueryServiceTests {
         unrelatedParameter.setDeclaredName("unrelated");
         this.addOwnedMember(function, unrelatedParameter);
 
-        assertEquals(List.of(functionPort), this.transverseQueryService.getFunctionPorts(function));
+        assertEquals(List.of(functionPort), this.commonQueryService.getFunctionPorts(function));
     }
 
     @Test
@@ -238,9 +238,9 @@ public class SAQueryServiceTests {
         this.addOwnedMember(root, describes);
         this.addOwnedMember(root, unrelatedAllocation);
 
-        assertEquals(List.of(describes), this.transverseQueryService.getDescribes(root));
-        assertEquals(requirement, this.transverseQueryService.getDescribesSource(describes));
-        assertEquals(target, this.transverseQueryService.getDescribesTarget(describes));
+        assertEquals(List.of(describes), this.commonQueryService.getDescribes(root));
+        assertEquals(requirement, this.commonQueryService.getDescribesSource(describes));
+        assertEquals(target, this.commonQueryService.getDescribesTarget(describes));
     }
 
     private PartDefinition createArcadiaComponentType() {

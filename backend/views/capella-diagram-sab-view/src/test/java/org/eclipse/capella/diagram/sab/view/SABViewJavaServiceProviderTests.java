@@ -20,8 +20,9 @@ import org.eclipse.capella.model.services.system.analysis.SARepresentationDropSe
 import org.eclipse.capella.model.services.system.analysis.SARepresentationMutationService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationReconnectToolServices;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
@@ -56,8 +57,9 @@ public class SABViewJavaServiceProviderTests {
         assertTrue(services.contains(SARepresentationQueryService.class));
         assertTrue(services.contains(SARepresentationReconnectToolServices.class));
         assertTrue(services.contains(SAMutationService.class));
-        assertTrue(services.contains(TransverseMutationService.class));
-        assertTrue(services.contains(TransverseQueryService.class));
+        assertTrue(services.contains(CommonCreationService.class));
+        assertTrue(services.contains(CommonDeletionService.class));
+        assertTrue(services.contains(CommonQueryService.class));
         assertTrue(services.contains(TransverseRepresentationReconnectToolServices.class));
         assertTrue(services.contains(DiagramMutationExposeService.class));
         assertTrue(services.contains(DiagramMutationLabelService.class));

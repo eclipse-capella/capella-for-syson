@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer.services;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.ChildCreationDescription;
 import org.eclipse.sirius.components.core.api.IEditServiceDelegate;
@@ -46,27 +46,27 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     private static final String DATA = "Data";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final SysMLv2EditService sysMLv2EditService;
 
     private final CapellaImagePathsService capellaImagePathsService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
 
     private final IObjectSearchService objectSearchService;
 
     public CapellaEditService(SysMLv2EditService sysMLv2EditService, CapellaImagePathsService capellaImagePathsService, IObjectSearchService objectSearchService) {
         this.sysMLv2EditService = Objects.requireNonNull(sysMLv2EditService);
         this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonCreationService = new CommonCreationService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
     public boolean canHandle(Object object) {
-        if (object instanceof Element element && this.transverseQueryService.isArcadiaElement(element)) {
+        if (object instanceof Element element && this.commonQueryService.isArcadiaElement(element)) {
             return true;
         }
         return this.sysMLv2EditService.canHandle(object);
@@ -81,7 +81,7 @@ public class CapellaEditService implements IEditServiceDelegate {
         List<ChildCreationDescription> childCreationDescriptions = new ArrayList<>();
         if (optionalContainer.isPresent()) {
             EObject container = optionalContainer.get();
-            if (this.transverseQueryService.isArcadiaElement(container)) {
+            if (this.commonQueryService.isArcadiaElement(container)) {
                 // To implement specific children creation description for Arcadia elements.
 
             } else if (container instanceof org.eclipse.syson.sysml.Package pkg) {
@@ -117,7 +117,7 @@ public class CapellaEditService implements IEditServiceDelegate {
         if (childCreationDescriptionId.startsWith(ID_PREFIX) && object instanceof Element container) {
             String arcadiaType = childCreationDescriptionId.substring(ID_PREFIX.length());
             if (ARCADIA_EXCHANGE_ITEM.equals(arcadiaType)) {
-                value = Optional.ofNullable(this.transverseMutationService.createNewExchangeItem(container));
+                value = Optional.ofNullable(this.commonCreationService.createNewExchangeItem(container));
             }
         } else {
             value = this.sysMLv2EditService.createChild(editingContext, object, childCreationDescriptionId);

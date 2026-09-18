@@ -46,19 +46,19 @@ public class TransverseRepresentationReconnectToolServices {
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public TransverseRepresentationReconnectToolServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService) {
         this.moveService = Objects.requireNonNull(moveService);
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
         this.metamodelMutationElementService = new MetamodelMutationElementService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     public Feature reconnectFunctionalExchangeSource(FlowUsage functionalExchange, Feature newSource, Feature oldSource, Node sourceNode, Node targetNode, IEditingContext editingContext,
             Diagram diagram) {
         Feature reconnectTarget = newSource;
-        if (this.transverseQueryService.isFunction(newSource) && this.transverseQueryService.isExchangeItem(oldSource)) {
+        if (this.commonQueryService.isFunction(newSource) && this.commonQueryService.isExchangeItem(oldSource)) {
             this.moveService.moveSemanticElement(oldSource, newSource);
             reconnectTarget = oldSource;
         }
@@ -73,7 +73,7 @@ public class TransverseRepresentationReconnectToolServices {
     public Feature reconnectFunctionalExchangeTarget(FlowUsage functionalExchange, Feature newTarget, Feature oldTarget, Node sourceNode, Node targetNode, IEditingContext editingContext,
             Diagram diagram) {
         Feature reconnectTarget = newTarget;
-        if (this.transverseQueryService.isFunction(newTarget) && this.transverseQueryService.isExchangeItem(oldTarget)) {
+        if (this.commonQueryService.isFunction(newTarget) && this.commonQueryService.isExchangeItem(oldTarget)) {
             this.moveService.moveSemanticElement(oldTarget, newTarget);
             reconnectTarget = oldTarget;
         }
@@ -93,11 +93,11 @@ public class TransverseRepresentationReconnectToolServices {
         var otherPort = this.getOtherFunctionalExchangePort(functionalExchange, isSource);
         var owningFunction = Optional.ofNullable(feature)
                 .map(Element::getOwner)
-                .filter(this.transverseQueryService::isFunction)
+                .filter(this.commonQueryService::isFunction)
                 .map(ActionUsage.class::cast);
         var otherOwningFunction = Optional.ofNullable(otherPort)
                 .map(Element::getOwner)
-                .filter(this.transverseQueryService::isFunction)
+                .filter(this.commonQueryService::isFunction)
                 .map(ActionUsage.class::cast);
         return expectedDirection == feature.getDirection()
                 && owningFunction.isPresent()
@@ -107,24 +107,24 @@ public class TransverseRepresentationReconnectToolServices {
 
     private Element getOtherFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
         if (isSource) {
-            return this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange);
+            return this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
         }
-        return this.transverseQueryService.getFunctionalExchangeSource(functionalExchange);
+        return this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
     }
 
     public Element reconnectComponentExchange(InterfaceUsage componentExchange, Element newTarget, Element oldTarget) {
-        if (this.transverseQueryService.isComponent(newTarget) && this.transverseQueryService.isComponentPort(oldTarget)) {
+        if (this.commonQueryService.isComponent(newTarget) && this.commonQueryService.isComponentPort(oldTarget)) {
             this.moveService.moveSemanticElement(oldTarget, newTarget);
-        } else if (this.transverseQueryService.isComponentPort(newTarget) && this.transverseQueryService.isComponentPort(oldTarget)) {
+        } else if (this.commonQueryService.isComponentPort(newTarget) && this.commonQueryService.isComponentPort(oldTarget)) {
             PortUsage sourcePort = null;
             PortUsage targetPort = null;
-            if (Objects.equals(this.transverseQueryService.getComponentExchangeSource(componentExchange), oldTarget)) {
+            if (Objects.equals(this.commonQueryService.getComponentExchangeSource(componentExchange), oldTarget)) {
                 // We are reconnecting the source
                 sourcePort = (PortUsage) newTarget;
-                targetPort = this.transverseQueryService.getComponentExchangeTarget(componentExchange);
-            } else if (Objects.equals(this.transverseQueryService.getComponentExchangeTarget(componentExchange), oldTarget)) {
+                targetPort = this.commonQueryService.getComponentExchangeTarget(componentExchange);
+            } else if (Objects.equals(this.commonQueryService.getComponentExchangeTarget(componentExchange), oldTarget)) {
                 // We are reconnecting the target
-                sourcePort = this.transverseQueryService.getComponentExchangeSource(componentExchange);
+                sourcePort = this.commonQueryService.getComponentExchangeSource(componentExchange);
                 targetPort = (PortUsage) newTarget;
             }
             if (sourcePort != null && targetPort != null && !Objects.equals(sourcePort.getOwner(), targetPort.getOwner())) {
@@ -150,7 +150,7 @@ public class TransverseRepresentationReconnectToolServices {
 
     public Element reconnectDescribes(AllocationUsage edgeSemanticElement, Element newReconnectionTarget, boolean isSource) {
         if (isSource) {
-            if (newReconnectionTarget instanceof RequirementUsage || this.transverseQueryService.isRequirement(newReconnectionTarget)) {
+            if (newReconnectionTarget instanceof RequirementUsage || this.commonQueryService.isRequirement(newReconnectionTarget)) {
                 this.diagramMutationElementService.reconnectSourceAllocateEdge(edgeSemanticElement, newReconnectionTarget);
             }
         } else {

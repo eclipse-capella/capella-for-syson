@@ -15,7 +15,7 @@ package org.eclipse.capella.table.view.providers;
 import java.util.Map;
 import java.util.Objects;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.collaborative.tables.api.IRowContextMenuEntryExecutor;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -39,11 +39,11 @@ public class AddSubFunctionContextMenuEntryExecutor implements IRowContextMenuEn
 
     private final IObjectSearchService objectSearchService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
 
     public AddSubFunctionContextMenuEntryExecutor(IObjectSearchService objectSearchService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonCreationService = new CommonCreationService();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class AddSubFunctionContextMenuEntryExecutor implements IRowContextMenuEn
         this.objectSearchService.getObject(editingContext, row.getTargetObjectId())
                 .filter(ActionUsage.class::isInstance)
                 .map(ActionUsage.class::cast)
-                .ifPresent(this.transverseMutationService::createFunction);
+                .ifPresent(this.commonCreationService::createFunction);
 
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
     }

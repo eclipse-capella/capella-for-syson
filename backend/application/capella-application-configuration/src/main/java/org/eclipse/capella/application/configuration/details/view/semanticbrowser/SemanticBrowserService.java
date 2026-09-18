@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -69,14 +69,14 @@ public class SemanticBrowserService {
 
     private final IRepresentationSearchService representationSearchService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public SemanticBrowserService(IRepresentationMetadataSearchService representationMetadataSearchService, IIdentityService identityService,
             IRepresentationSearchService representationSearchService) {
         this.identityService = Objects.requireNonNull(identityService);
         this.representationMetadataSearchService = Objects.requireNonNull(representationMetadataSearchService);
         this.representationSearchService = Objects.requireNonNull(representationSearchService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     public List<String> collectExpandedNodeIndexes(VariableManager variableManager) {
@@ -109,7 +109,7 @@ public class SemanticBrowserService {
     }
 
     public List<?> getCurrentCategories(EObject eObject) {
-        if (eObject instanceof ActionUsage function && !this.transverseQueryService.getSubFunctions(function).isEmpty()) {
+        if (eObject instanceof ActionUsage function && !this.commonQueryService.getSubFunctions(function).isEmpty()) {
             return List.of(FUNCTION_CATEGORY_BREAKDOWN);
         }
         return List.of();
@@ -149,12 +149,12 @@ public class SemanticBrowserService {
     public List<?> getParentCategoryElement(EObject element) {
         List<?> result = new ArrayList<>();
 
-        if (element instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(actionUsage)) {
-            var optParentFunction = this.transverseQueryService.getParentFunction(actionUsage);
+        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
+            var optParentFunction = this.commonQueryService.getParentFunction(actionUsage);
             if (optParentFunction.isPresent()) {
                 result = List.of(optParentFunction.get());
             } else {
-                result = this.transverseQueryService.getFunctionsPackage(actionUsage)
+                result = this.commonQueryService.getFunctionsPackage(actionUsage)
                         .map(List::of)
                         .orElse(List.of());
             }
@@ -165,9 +165,9 @@ public class SemanticBrowserService {
 
     public List<?> getCurrentCategoryElements(EObject element, String category) {
         List<?> result = List.of();
-        if (element instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(actionUsage)) {
+        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
             if (category.equals(FUNCTION_CATEGORY_BREAKDOWN)) {
-                result = this.transverseQueryService.getSubFunctions(actionUsage);
+                result = this.commonQueryService.getSubFunctions(actionUsage);
             }
         }
 
@@ -176,13 +176,13 @@ public class SemanticBrowserService {
 
     public List<?> getReferencingElementsCategories(EObject element) {
         List<String> result = new ArrayList<>();
-        if (element instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(actionUsage)) {
-            var functionComponent = this.transverseQueryService.getAllocatingComponent(actionUsage);
-            var referencingFunctionalExchanges = this.transverseQueryService.getIncomingFunctionalExchanges(actionUsage);
-            var functionalChains = this.transverseQueryService.getFunctionalChainsImpliedIn(actionUsage);
+        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
+            var functionComponent = this.commonQueryService.getAllocatingComponent(actionUsage);
+            var referencingFunctionalExchanges = this.commonQueryService.getIncomingFunctionalExchanges(actionUsage);
+            var functionalChains = this.commonQueryService.getFunctionalChainsImpliedIn(actionUsage);
 
             if (functionComponent.isPresent()) {
-                if (this.transverseQueryService.isComponentActor(functionComponent.get())) {
+                if (this.commonQueryService.isComponentActor(functionComponent.get())) {
                     result.add(FUNCTION_CATEGORY_ALLOCATING_LOGICAL_ACTOR);
                 } else {
                     result.add(FUNCTION_CATEGORY_ALLOCATING_LOGICAL_COMPONENT);
@@ -203,7 +203,7 @@ public class SemanticBrowserService {
 
     public List<?> getReferencingCategoryElements(EObject element, String category) {
         List<?> result = List.of();
-        if (element instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(element)) {
+        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(element)) {
             result = this.getFunctionReferencingCategoryElements(actionUsage, category);
         }
         return result;
@@ -212,10 +212,10 @@ public class SemanticBrowserService {
     private List<?> getFunctionReferencingCategoryElements(ActionUsage function, String category) {
         return switch (category) {
             case FUNCTION_CATEGORY_ALLOCATING_LOGICAL_ACTOR, FUNCTION_CATEGORY_ALLOCATING_LOGICAL_COMPONENT ->
-                this.transverseQueryService.getAllocatingComponent(function).map(List::of).orElse(List.of());
-            case FUNCTION_CATEGORY_FUNCTIONAL_CHAINS -> this.transverseQueryService.getFunctionalChainsImpliedIn(function);
-            case FUNCTION_CATEGORY_INCOMING_FUNC_EXCHANGES -> this.transverseQueryService.getIncomingFunctionalExchanges(function);
-            case FUNCTION_CATEGORY_IN_FLOW -> this.transverseQueryService.getFunctionPorts(function).stream().filter(this.transverseQueryService::isInFeature).toList();
+                this.commonQueryService.getAllocatingComponent(function).map(List::of).orElse(List.of());
+            case FUNCTION_CATEGORY_FUNCTIONAL_CHAINS -> this.commonQueryService.getFunctionalChainsImpliedIn(function);
+            case FUNCTION_CATEGORY_INCOMING_FUNC_EXCHANGES -> this.commonQueryService.getIncomingFunctionalExchanges(function);
+            case FUNCTION_CATEGORY_IN_FLOW -> this.commonQueryService.getFunctionPorts(function).stream().filter(this.commonQueryService::isInFeature).toList();
             default -> List.of();
         };
     }
@@ -226,8 +226,8 @@ public class SemanticBrowserService {
 
     public List<?> getReferencedElementsCategories(EObject element) {
         List<String> result = new ArrayList<>();
-        if (element instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(actionUsage)) {
-            var referencingFunctionalExchanges = this.transverseQueryService.getOutgoingFunctionalExchanges(actionUsage);
+        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
+            var referencingFunctionalExchanges = this.commonQueryService.getOutgoingFunctionalExchanges(actionUsage);
 
             if (!referencingFunctionalExchanges.isEmpty()) {
                 result.addAll(List.of(FUNCTION_CATEGORY_OUTGOING_FUNC_EXCHANGES, FUNCTION_CATEGORY_OUT_FLOW));
@@ -239,7 +239,7 @@ public class SemanticBrowserService {
 
     public List<?> getReferencedCategoryElements(EObject element, String category) {
         List<?> result = List.of();
-        if (element instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(element)) {
+        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(element)) {
             result = this.getFunctionReferencedCategoryElements(actionUsage, category);
         }
         return result;
@@ -247,8 +247,8 @@ public class SemanticBrowserService {
 
     private List<?> getFunctionReferencedCategoryElements(ActionUsage function, String category) {
         return switch (category) {
-            case FUNCTION_CATEGORY_OUTGOING_FUNC_EXCHANGES -> this.transverseQueryService.getOutgoingFunctionalExchanges(function);
-            case FUNCTION_CATEGORY_OUT_FLOW -> this.transverseQueryService.getFunctionPorts(function).stream().filter(this.transverseQueryService::isOutFeature).toList();
+            case FUNCTION_CATEGORY_OUTGOING_FUNC_EXCHANGES -> this.commonQueryService.getOutgoingFunctionalExchanges(function);
+            case FUNCTION_CATEGORY_OUT_FLOW -> this.commonQueryService.getFunctionPorts(function).stream().filter(this.commonQueryService::isOutFeature).toList();
             default -> List.of();
         };
     }

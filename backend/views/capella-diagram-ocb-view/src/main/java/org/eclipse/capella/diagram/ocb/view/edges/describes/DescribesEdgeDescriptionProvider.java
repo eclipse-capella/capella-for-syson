@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -49,9 +49,9 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
                 .isDomainBasedEdge(true)
                 .name(EDGE_DESCRIPTION_NAME)
                 .centerLabelExpression("")
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getDescribes).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getDescribesSource).aqlSelf())
-                .targetExpression(ServiceMethod.of0(TransverseQueryService::getDescribesTarget).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getDescribes).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(CommonQueryService::getDescribesSource).aqlSelf())
+                .targetExpression(ServiceMethod.of0(CommonQueryService::getDescribesTarget).aqlSelf())
                 .style(describesEdgeStyleProvider.createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
                 .palette(new DescribesPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())

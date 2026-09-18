@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.lab.view.edges.functionalexchange;
 
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionPortNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -45,12 +45,12 @@ public class FunctionalExchangeEdgeDescriptionProvider extends AbstractEdgeDescr
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchanges).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeSource).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchanges).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeSource).aqlSelf())
                 .style(functionalExchangeEdgeStyleProvider.createEdgeStyle())
                 .conditionalStyles(functionalExchangeEdgeStyleProvider.createConditionalEdgeStyles())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(ServiceMethod.of0(TransverseQueryService::getFunctionalExchangeTarget).aqlSelf())
+                .targetExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeTarget).aqlSelf())
                 .palette(new FunctionalExchangePaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }

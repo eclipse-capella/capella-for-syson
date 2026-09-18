@@ -22,7 +22,7 @@ import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescrip
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -58,7 +58,7 @@ public class OCBViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .domainType(domainType)
                 .name(DESCRIPTION_NAME)
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(TransverseQueryService::isOperationalAnalysisCapabilitiesPackage).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(CommonQueryService::isOperationalAnalysisCapabilitiesPackage).aqlSelf())
                 .toolbar(toolbar)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();

@@ -19,7 +19,7 @@ import org.eclipse.capella.model.services.logical.architecture.LAMutationService
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.core.services.ObjectService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
@@ -60,7 +60,7 @@ public class CapellaFormViewJavaServiceProvider implements IJavaServiceProvider 
                     LAMutationService.class,
                     LARepresentationQueryService.class,
                     LARepresentationMutationService.class,
-                    TransverseQueryService.class,
+                    CommonQueryService.class,
                     DiagramMutationAQLService.class,
                     DiagramQueryAQLService.class,
                     TreeQueryAQLService.class,

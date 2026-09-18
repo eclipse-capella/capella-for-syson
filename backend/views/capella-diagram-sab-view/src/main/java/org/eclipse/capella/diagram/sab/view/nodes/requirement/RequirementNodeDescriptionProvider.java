@@ -13,7 +13,7 @@
 package org.eclipse.capella.diagram.sab.view.nodes.requirement;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -46,7 +46,7 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
                 .domainType(domainType)
                 .insideLabel(new RequirementLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .name(NODE_DESCRIPTION_NAME)
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getRequirements).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getRequirements).aqlSelf())
                 .style(requirementNodeStyleProvider.createRequirementNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)

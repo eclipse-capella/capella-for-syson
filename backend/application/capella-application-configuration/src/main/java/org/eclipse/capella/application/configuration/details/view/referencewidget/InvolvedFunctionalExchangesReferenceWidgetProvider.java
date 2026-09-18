@@ -12,15 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -51,13 +51,13 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
 
     private static final String ERROR_MSG = "Something went wrong while deleting the involved functional chain";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonUpdateService commonUpdateService;
 
     public InvolvedFunctionalExchangesReferenceWidgetProvider() {
-        this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonQueryService = new CommonQueryService();
+        this.commonUpdateService = new CommonUpdateService();
     }
 
     @Override
@@ -74,7 +74,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.transverseQueryService.getFunctionalExchanges(eObject);
+            return this.commonQueryService.getFunctionalExchanges(eObject);
         }
         return List.of();
     }
@@ -83,7 +83,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof ActionUsage actionUsage) {
-            return this.transverseQueryService.getInvolvedFunctionalExchanges(actionUsage);
+            return this.commonQueryService.getInvolvedFunctionalExchanges(actionUsage);
         }
         return List.of();
     }
@@ -93,7 +93,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof ActionUsage actionUsage) {
             variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, Feature.class)
-                    .ifPresent(feature -> this.transverseMutationService.deleteFeaturesFromReference(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, FEATURE_NAME, SysmlPackage.eINSTANCE.getFlowUsage(), List.of(feature)));
+                    .ifPresent(feature -> this.commonUpdateService.deleteFeaturesFromReference(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, FEATURE_NAME, SysmlPackage.eINSTANCE.getFlowUsage(), List.of(feature)));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
@@ -108,7 +108,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof ActionUsage actionUsage) {
-            this.transverseMutationService.deleteReference(actionUsage, FEATURE_NAME);
+            this.commonUpdateService.deleteReference(actionUsage, FEATURE_NAME);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

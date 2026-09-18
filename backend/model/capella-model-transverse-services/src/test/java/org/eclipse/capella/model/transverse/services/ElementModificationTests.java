@@ -29,22 +29,22 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class ElementModificationTests extends AbstractSemanticTests {
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
     public void setStatusKindShouldSetTheStatusKindOfTheElement() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "open");
+        this.commonUpdateService.setStatusKind(rootFunction, "open");
 
-        assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
+        assertThat(this.commonQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
         assertThat(rootFunction.getOwnedElement())
                 .filteredOn(MetadataUsage.class::isInstance)
                 .map(MetadataUsage.class::cast)
-                .filteredOn(this.transverseQueryService::isStatusInfo)
+                .filteredOn(this.commonQueryService::isStatusInfo)
                 .hasSize(1);
-        assertThat(this.transverseQueryService.getStatus(rootFunction))
+        assertThat(this.commonQueryService.getStatus(rootFunction))
                 .extracting(Element::getDeclaredName)
                 .isEqualTo("open");
 
@@ -53,33 +53,33 @@ public class ElementModificationTests extends AbstractSemanticTests {
     @Test
     public void setStatusKindThenUnsetStatusShouldSetTheStatusThenUnsetIt() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "open");
-        assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
+        this.commonUpdateService.setStatusKind(rootFunction, "open");
+        assertThat(this.commonQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
 
-        this.transverseMutationService.unSetUsageStatusKind(rootFunction);
-        assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEmpty();
+        this.commonUpdateService.unSetUsageStatusKind(rootFunction);
+        assertThat(this.commonQueryService.getStatusStringValue(rootFunction)).isEmpty();
         assertThat(rootFunction.getOwnedElement())
                 .filteredOn(MetadataUsage.class::isInstance)
                 .map(MetadataUsage.class::cast)
-                .filteredOn(this.transverseQueryService::isStatusInfo)
+                .filteredOn(this.commonQueryService::isStatusInfo)
                 .isEmpty();
-        assertThat(this.transverseQueryService.getStatus(rootFunction)).isNull();
+        assertThat(this.commonQueryService.getStatus(rootFunction)).isNull();
     }
 
     @Test
     public void setStatusKindTwiceShouldSetTheLatestStatus() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "open");
-        assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
-        this.transverseMutationService.setStatusKind(rootFunction, "tbd");
+        this.commonUpdateService.setStatusKind(rootFunction, "open");
+        assertThat(this.commonQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
+        this.commonUpdateService.setStatusKind(rootFunction, "tbd");
 
-        assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("tbd");
+        assertThat(this.commonQueryService.getStatusStringValue(rootFunction)).isEqualTo("tbd");
         assertThat(rootFunction.getOwnedElement())
                 .filteredOn(MetadataUsage.class::isInstance)
                 .map(MetadataUsage.class::cast)
-                .filteredOn(this.transverseQueryService::isStatusInfo)
+                .filteredOn(this.commonQueryService::isStatusInfo)
                 .hasSize(1);
-        assertThat(this.transverseQueryService.getStatus(rootFunction))
+        assertThat(this.commonQueryService.getStatus(rootFunction))
                 .extracting(Element::getDeclaredName)
                 .isEqualTo("tbd");
     }
@@ -87,13 +87,13 @@ public class ElementModificationTests extends AbstractSemanticTests {
     @Test
     public void setStatusKindWithInvalidStatusShouldNotSetTheStatus() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "test");
-        assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEmpty();
+        this.commonUpdateService.setStatusKind(rootFunction, "test");
+        assertThat(this.commonQueryService.getStatusStringValue(rootFunction)).isEmpty();
         assertThat(rootFunction.getOwnedElement())
                 .filteredOn(MetadataUsage.class::isInstance)
                 .map(MetadataUsage.class::cast)
-                .filteredOn(this.transverseQueryService::isStatusInfo)
+                .filteredOn(this.commonQueryService::isStatusInfo)
                 .isEmpty();
-        assertThat(this.transverseQueryService.getStatus(rootFunction)).isNull();
+        assertThat(this.commonQueryService.getStatus(rootFunction)).isNull();
     }
 }

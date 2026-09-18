@@ -13,12 +13,13 @@
 package org.eclipse.capella.model.services.logical.architecture;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.FUNCTIONS_PACKAGE;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.REQUIREMENTS_PACKAGE;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STRUCTURE_PACKAGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.FUNCTIONS_PACKAGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.REQUIREMENTS_PACKAGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.STRUCTURE_PACKAGE;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.ItemUsage;
@@ -35,11 +36,11 @@ import org.junit.jupiter.api.Test;
  */
 public class LAQueryServiceTests {
 
-    private final LAQueryService laQueryService = new LAQueryService();
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final LATestModelFixture fixture = new LATestModelFixture();
 
@@ -54,17 +55,17 @@ public class LAQueryServiceTests {
         ItemUsage exchangeItem = this.fixture.createArcadiaTypedExchangeItem(root, "Exchange Item");
         ItemUsage untypedItemUsage = this.fixture.createItemUsage(root, "Untyped Exchange Item");
 
-        assertThat(this.transverseQueryService.isFunction(function)).isTrue();
-        assertThat(this.transverseQueryService.isFunction(functionalChain)).isFalse();
+        assertThat(this.commonQueryService.isFunction(function)).isTrue();
+        assertThat(this.commonQueryService.isFunction(functionalChain)).isFalse();
 
-        assertThat(this.transverseQueryService.isFunctionalChain(functionalChain)).isTrue();
-        assertThat(this.transverseQueryService.isFunctionalChain(function)).isFalse();
+        assertThat(this.commonQueryService.isFunctionalChain(functionalChain)).isTrue();
+        assertThat(this.commonQueryService.isFunctionalChain(function)).isFalse();
 
-        assertThat(this.transverseQueryService.isFunctionalExchange(functionalExchange)).isTrue();
-        assertThat(this.transverseQueryService.isFunctionalExchange(function)).isFalse();
+        assertThat(this.commonQueryService.isFunctionalExchange(functionalExchange)).isTrue();
+        assertThat(this.commonQueryService.isFunctionalExchange(function)).isFalse();
 
-        assertThat(this.transverseQueryService.isExchangeItem(exchangeItem)).isTrue();
-        assertThat(this.transverseQueryService.isExchangeItem(untypedItemUsage)).isFalse();
+        assertThat(this.commonQueryService.isExchangeItem(exchangeItem)).isTrue();
+        assertThat(this.commonQueryService.isExchangeItem(untypedItemUsage)).isFalse();
     }
 
     @Test
@@ -76,9 +77,9 @@ public class LAQueryServiceTests {
         ActionUsage subFunction2 = this.fixture.createArcadiaTypedFunction(parentFunction, "Sub Function 2");
         this.fixture.createArcadiaTypedFunctionalChain(parentFunction, "Nested Chain");
 
-        assertThat(this.transverseQueryService.getSubFunctions(parentFunction)).containsExactlyInAnyOrder(subFunction1, subFunction2);
-        assertThat(this.transverseQueryService.getParentFunction(subFunction1)).contains(parentFunction);
-        assertThat(this.transverseQueryService.getParentFunction(parentFunction)).isEmpty();
+        assertThat(this.commonQueryService.getSubFunctions(parentFunction)).containsExactlyInAnyOrder(subFunction1, subFunction2);
+        assertThat(this.commonQueryService.getParentFunction(subFunction1)).contains(parentFunction);
+        assertThat(this.commonQueryService.getParentFunction(parentFunction)).isEmpty();
     }
 
     @Test
@@ -91,13 +92,13 @@ public class LAQueryServiceTests {
         ActionUsage allocatedFunction2 = this.fixture.createArcadiaTypedFunction(root, "Allocated Function 2");
         ActionUsage unallocatedFunction = this.fixture.createArcadiaTypedFunction(root, "Unallocated Function");
 
-        this.transverseMutationService.setPerformAction(component1, allocatedFunction1);
-        this.transverseMutationService.setPerformAction(component2, allocatedFunction2);
+        this.commonUpdateService.setPerformAction(component1, allocatedFunction1);
+        this.commonUpdateService.setPerformAction(component2, allocatedFunction2);
 
-        assertThat(this.transverseQueryService.getAllocatedFunctions(component1)).containsExactly(allocatedFunction1);
-        assertThat(this.transverseQueryService.getAllocatedFunctions(component2)).containsExactly(allocatedFunction2);
-        assertThat(this.transverseQueryService.getAllocatingComponent(allocatedFunction1)).contains(component1);
-        assertThat(this.transverseQueryService.getAllocatingComponent(unallocatedFunction)).isEmpty();
+        assertThat(this.commonQueryService.getAllocatedFunctions(component1)).containsExactly(allocatedFunction1);
+        assertThat(this.commonQueryService.getAllocatedFunctions(component2)).containsExactly(allocatedFunction2);
+        assertThat(this.commonQueryService.getAllocatingComponent(allocatedFunction1)).contains(component1);
+        assertThat(this.commonQueryService.getAllocatingComponent(unallocatedFunction)).isEmpty();
     }
 
     @Test
@@ -108,13 +109,13 @@ public class LAQueryServiceTests {
         ActionUsage function1 = this.fixture.createArcadiaTypedFunction(root, "Function 1");
         ActionUsage function2 = this.fixture.createArcadiaTypedFunction(root, "Function 2");
         ActionUsage function3 = this.fixture.createArcadiaTypedFunction(root, "Function 3");
-        FlowUsage outgoingFlow = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        FlowUsage outgoingFlow = this.commonCreationService.createFunctionalExchange(function1, function2);
         outgoingFlow.setDeclaredName("Flow 1");
-        FlowUsage incomingFlow = this.transverseMutationService.createFunctionalExchange(function3, function1);
+        FlowUsage incomingFlow = this.commonCreationService.createFunctionalExchange(function3, function1);
         incomingFlow.setDeclaredName("Flow 2");
 
-        assertThat(this.transverseQueryService.getOutgoingFunctionalExchanges(function1)).containsExactly(outgoingFlow);
-        assertThat(this.transverseQueryService.getIncomingFunctionalExchanges(function1)).containsExactly(incomingFlow);
+        assertThat(this.commonQueryService.getOutgoingFunctionalExchanges(function1)).containsExactly(outgoingFlow);
+        assertThat(this.commonQueryService.getIncomingFunctionalExchanges(function1)).containsExactly(incomingFlow);
     }
 
     @Test
@@ -136,8 +137,8 @@ public class LAQueryServiceTests {
         this.fixture.setInvolvedFunctionalExchanges(chainB, flow12);
         this.fixture.setInvolvedFunctionalExchanges(chainC, flow23);
 
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(flow12)).containsExactlyInAnyOrder(chainA, chainB);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).containsExactlyInAnyOrder(chainA, chainB, chainC);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(flow12)).containsExactlyInAnyOrder(chainA, chainB);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function2)).containsExactlyInAnyOrder(chainA, chainB, chainC);
     }
 
     @Test
@@ -150,8 +151,8 @@ public class LAQueryServiceTests {
         Package requirementsPackage = this.fixture.createPackage(logicalArchitecturePackage, REQUIREMENTS_PACKAGE);
         ActionUsage function = this.fixture.createArcadiaTypedFunction(functionsPackage, "Function");
 
-        assertThat(this.transverseQueryService.getStructurePackage(function)).isPresent().get().isSameAs(structurePackage);
-        assertThat(this.transverseQueryService.getFunctionsPackage(function)).isPresent().get().isSameAs(functionsPackage);
-        assertThat(this.transverseQueryService.getRequirementsPackage(function)).isPresent().get().isSameAs(requirementsPackage);
+        assertThat(this.commonQueryService.getStructurePackage(function)).isPresent().get().isSameAs(structurePackage);
+        assertThat(this.commonQueryService.getFunctionsPackage(function)).isPresent().get().isSameAs(functionsPackage);
+        assertThat(this.commonQueryService.getRequirementsPackage(function)).isPresent().get().isSameAs(requirementsPackage);
     }
 }

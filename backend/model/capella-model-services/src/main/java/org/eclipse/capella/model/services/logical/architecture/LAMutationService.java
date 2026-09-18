@@ -12,8 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.logical.architecture;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
@@ -26,13 +26,13 @@ import org.eclipse.syson.sysml.PartUsage;
  */
 public class LAMutationService {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
 
     public LAMutationService() {
-        this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonQueryService = new CommonQueryService();
+        this.commonCreationService = new CommonCreationService();
     }
 
     /**
@@ -46,15 +46,15 @@ public class LAMutationService {
      */
     public PartUsage createComponentLA(Element parent) {
         Element targetContainer = parent;
-        if (!this.transverseQueryService.isComponent(parent)) {
-            Package structurePackage = this.transverseQueryService.getStructurePackage(parent)
+        if (!this.commonQueryService.isComponent(parent)) {
+            Package structurePackage = this.commonQueryService.getStructurePackage(parent)
                     .orElseThrow(() -> new IllegalStateException("The logical architecture Structure package is missing"));
             targetContainer = structurePackage.getOwnedElement().stream()
-                    .filter(this.transverseQueryService::isComponent)
+                    .filter(this.commonQueryService::isComponent)
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("The logical system is missing from the Structure package"));
         }
-        return this.transverseMutationService.createComponent(targetContainer);
+        return this.commonCreationService.createComponent(targetContainer);
     }
 
 }

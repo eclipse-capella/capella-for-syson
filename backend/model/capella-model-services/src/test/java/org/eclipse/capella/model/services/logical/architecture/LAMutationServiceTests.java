@@ -16,8 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
@@ -37,9 +39,13 @@ import org.junit.jupiter.api.Test;
  */
 public class LAMutationServiceTests extends AbstractSemanticTests {
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
+
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
+
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final LAMutationService laMutationService = new LAMutationService();
 
@@ -74,7 +80,7 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         PartUsage component = this.fixture.createArcadiaTypedComponent(root, "Component");
         ActionUsage function = this.fixture.createArcadiaTypedFunction(root, "Function 1");
 
-        this.transverseMutationService.setPerformAction(component, function);
+        this.commonUpdateService.setPerformAction(component, function);
 
         List<ActionUsage> allocatedFunctions = this.getAllocatedFunctions(component);
         assertThat(allocatedFunctions).containsExactly(function);
@@ -88,9 +94,9 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         ActionUsage function1 = this.fixture.createArcadiaTypedFunction(root, "Function 1");
         ActionUsage function2 = this.fixture.createArcadiaTypedFunction(root, "Function 2");
 
-        this.transverseMutationService.setPerformAction(component, function1);
-        this.transverseMutationService.setPerformAction(component, function2);
-        this.transverseMutationService.deletePerformedActionUsage(component, function1);
+        this.commonUpdateService.setPerformAction(component, function1);
+        this.commonUpdateService.setPerformAction(component, function2);
+        this.commonDeletionService.deletePerformedActionUsage(component, function1);
 
         List<ActionUsage> allocatedFunctions = this.getAllocatedFunctions(component);
         assertThat(allocatedFunctions).containsExactly(function2);
@@ -104,10 +110,10 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         PartUsage component = this.fixture.createArcadiaTypedComponent(root, "Component");
         ActionUsage functionToDelete = this.fixture.createArcadiaTypedFunction(root, "Function To Delete");
         ActionUsage functionToKeep = this.fixture.createArcadiaTypedFunction(root, "Function To Keep");
-        this.transverseMutationService.setPerformAction(component, functionToDelete);
-        this.transverseMutationService.setPerformAction(component, functionToKeep);
+        this.commonUpdateService.setPerformAction(component, functionToDelete);
+        this.commonUpdateService.setPerformAction(component, functionToKeep);
 
-        this.transverseMutationService.delete(functionToDelete);
+        this.commonDeletionService.delete(functionToDelete);
 
         assertThat(root.getOwnedElement()).doesNotContain(functionToDelete);
         assertThat(root.getOwnedElement()).contains(functionToKeep);
@@ -122,12 +128,12 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         ItemUsage exchangeItem2 = this.fixture.createArcadiaTypedExchangeItem(root, "Exchange Item 2");
         ItemUsage exchangeItem3 = this.fixture.createArcadiaTypedExchangeItem(root, "Exchange Item 3");
 
-        this.transverseMutationService.setFunctionalExchangePayload(functionalExchange, exchangeItem1);
+        this.commonUpdateService.setFunctionalExchangePayload(functionalExchange, exchangeItem1);
         PayloadFeature firstPayloadFeature = functionalExchange.getPayloadFeature();
         assertThat(firstPayloadFeature).isNotNull();
         assertThat(this.fixture.getPayloadFeatureTypedItems(functionalExchange)).containsExactly(exchangeItem1);
 
-        this.transverseMutationService.setFunctionalExchangePayload(functionalExchange, List.of(exchangeItem2, exchangeItem3));
+        this.commonUpdateService.setFunctionalExchangePayload(functionalExchange, List.of(exchangeItem2, exchangeItem3));
 
         assertThat(functionalExchange.getPayloadFeature()).isNotNull();
         assertThat(functionalExchange.getPayloadFeature()).isNotSameAs(firstPayloadFeature);
@@ -148,14 +154,14 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         FlowUsage functionalExchange2 = this.fixture.createFlowUsage(root, "Functional Exchange 2");
         FlowUsage functionalExchange3 = this.fixture.createFlowUsage(root, "Functional Exchange 3");
 
-        TransverseQueryService transverseQueryService = new TransverseQueryService();
+        CommonQueryService commonQueryService = new CommonQueryService();
 
-        this.transverseMutationService.setArcadiaReferenceFeature(functionalChain, referencePrefix, referenceName, functionalExchange1, SysmlPackage.eINSTANCE.getFlowUsage().getName());
-        assertThat(transverseQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactly(functionalExchange1);
+        this.commonUpdateService.setArcadiaReferenceFeature(functionalChain, referencePrefix, referenceName, functionalExchange1, SysmlPackage.eINSTANCE.getFlowUsage().getName());
+        assertThat(commonQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactly(functionalExchange1);
 
-        this.transverseMutationService.setArcadiaReferenceFeature(functionalChain, referencePrefix, referenceName, List.of(functionalExchange2, functionalExchange3),
+        this.commonUpdateService.setArcadiaReferenceFeature(functionalChain, referencePrefix, referenceName, List.of(functionalExchange2, functionalExchange3),
                 SysmlPackage.eINSTANCE.getFlowUsage().getName());
-        assertThat(transverseQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactlyInAnyOrder(functionalExchange2, functionalExchange3);
+        assertThat(commonQueryService.getFeatureReferenceValue(functionalChain, referenceName)).containsExactlyInAnyOrder(functionalExchange2, functionalExchange3);
     }
 
     private List<ActionUsage> getAllocatedFunctions(PartUsage component) {
@@ -175,7 +181,7 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
 
     private PartUsage getSystem(Package structurePackage) {
         return structurePackage.getOwnedElement().stream()
-                .filter(transverseQueryService::isComponent)
+                .filter(commonQueryService::isComponent)
                 .map(PartUsage.class::cast)
                 .findFirst()
                 .orElseThrow();

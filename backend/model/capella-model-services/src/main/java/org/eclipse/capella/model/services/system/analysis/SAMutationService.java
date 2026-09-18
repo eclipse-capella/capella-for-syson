@@ -14,8 +14,10 @@ package org.eclipse.capella.model.services.system.analysis;
 
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
@@ -29,14 +31,20 @@ public class SAMutationService {
 
     private final SAQueryService saQueryService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
+
+    private final CommonUpdateService commonUpdateService;
+
+    private final CommonDeletionService commonDeletionService;
 
     public SAMutationService() {
         this.saQueryService = new SAQueryService();
-        this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonQueryService = new CommonQueryService();
+        this.commonCreationService = new CommonCreationService();
+        this.commonUpdateService = new CommonUpdateService();
+        this.commonDeletionService = new CommonDeletionService();
     }
 
     public PartUsage createActorSA(Element parent) {
@@ -45,11 +53,11 @@ public class SAMutationService {
         if (parent instanceof PartUsage partUsage && !this.saQueryService.isSystemOfInterest(partUsage)) {
             targetContainer = Optional.of(parent);
         } else {
-            targetContainer = this.transverseQueryService.getStructurePackage(parent)
+            targetContainer = this.commonQueryService.getStructurePackage(parent)
                     .map(Element.class::cast);
         }
         if (targetContainer.isPresent()) {
-            result = this.transverseMutationService.createActor(targetContainer.get());
+            result = this.commonCreationService.createActor(targetContainer.get());
         }
         return result;
     }
@@ -63,15 +71,15 @@ public class SAMutationService {
             targetContainer = parent;
         }
         if (targetContainer != null) {
-            result = this.transverseMutationService.createComponent(targetContainer);
+            result = this.commonCreationService.createComponent(targetContainer);
         }
         return result;
     }
 
     public void moveFunctionToComponent(ActionUsage function, Object previousParent, PartUsage targetComponent) {
-        if (previousParent != targetComponent && previousParent instanceof PartUsage previousParentPartUsage && this.transverseQueryService.isComponent(previousParentPartUsage)) {
-            this.transverseMutationService.deletePerformedActionUsage(previousParentPartUsage, function);
-            this.transverseMutationService.setPerformAction(targetComponent, function);
+        if (previousParent != targetComponent && previousParent instanceof PartUsage previousParentPartUsage && this.commonQueryService.isComponent(previousParentPartUsage)) {
+            this.commonDeletionService.deletePerformedActionUsage(previousParentPartUsage, function);
+            this.commonUpdateService.setPerformAction(targetComponent, function);
         }
     }
 }

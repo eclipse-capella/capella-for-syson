@@ -24,7 +24,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.table.view.providers.CellIconURLsProvider;
 import org.eclipse.capella.table.view.providers.CellOptionIdProvider;
 import org.eclipse.capella.table.view.providers.CellOptionLabelProvider;
@@ -101,13 +101,13 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
 
     private final ILabelService labelService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public FunctionTableRepresentationDescriptionProvider(IIdentityService identityService,
             ILabelService labelService) {
         this.identityService = Objects.requireNonNull(identityService);
         this.labelService = Objects.requireNonNull(labelService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
 
@@ -166,7 +166,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
         List<String> activeRowFilterIds = variableManager.get(TableRenderer.ACTIVE_ROW_FILTER_IDS, List.class).orElse(List.of());
         boolean expandAll = variableManager.get(TableRenderer.EXPAND_ALL, Boolean.class).orElse(false);
 
-        List<ActionUsage> actionUsages = this.transverseQueryService.getFunctions(self);
+        List<ActionUsage> actionUsages = this.commonQueryService.getFunctions(self);
 
         Predicate<EObject> predicate = eObject -> {
             if (this.isFunction(eObject, actionUsages)) {
@@ -194,7 +194,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
     private boolean isAllAncestorsExpanded(EObject predicate,
             List<String> expandedIds, boolean expandAll) {
 
-        Optional<ActionUsage> functionParent = this.transverseQueryService.getParentFunction(predicate);
+        Optional<ActionUsage> functionParent = this.commonQueryService.getParentFunction(predicate);
 
         if (functionParent.isEmpty()) {
             return true;
@@ -221,7 +221,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
             return true;
         }
 
-        var status = this.transverseQueryService.getStatus(function);
+        var status = this.commonQueryService.getStatus(function);
         return activeRowFilterIds.stream().anyMatch(rowFilterId ->
                 (status != null && rowFilterId.contains(status.getDeclaredName())) ||
                         (status == null && rowFilterId.equals("none-filter"))
@@ -245,24 +245,24 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
         String filterValue = filter.value().replace("\"", "").trim();
 
         if (filter.id().equals(COLUMN_URIS.get(SysmlPackage.eINSTANCE.getOwningMembership()))) {
-            var optionalStatus = Optional.ofNullable(this.transverseQueryService.getStatus(function));
+            var optionalStatus = Optional.ofNullable(this.commonQueryService.getStatus(function));
             var statusKind = optionalStatus.map(Element::getDeclaredName)
                     .orElse("");
 
             result = this.contains(statusKind, filterValue);
 
         } else if (filter.id().equals(COLUMN_URIS.get(SysmlPackage.eINSTANCE.getLiteralString()))) {
-            var description = this.transverseQueryService.getArcadiaElementDescription(function);
+            var description = this.commonQueryService.getArcadiaElementDescription(function);
             result = description != null && !description.isBlank() && this.contains(description, filterValue);
 
         } else if (filter.id().equals(COLUMN_URIS.get(SysmlPackage.eINSTANCE.getPartUsage()))) {
-            Optional<PartUsage> allocatingComponent = this.transverseQueryService.getAllocatingComponent(function);
+            Optional<PartUsage> allocatingComponent = this.commonQueryService.getAllocatingComponent(function);
 
             result = allocatingComponent.isPresent()
                     && this.contains(allocatingComponent.get().getDeclaredName(), filterValue);
 
         } else if (filter.id().equals(COLUMN_URIS.get(SysmlPackage.eINSTANCE.getReferenceUsage()))) {
-            List<Feature> functionPorts = this.transverseQueryService.getFunctionPorts(function);
+            List<Feature> functionPorts = this.commonQueryService.getFunctionPorts(function);
 
             result = functionPorts != null
                     && !functionPorts.isEmpty()
@@ -296,16 +296,16 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
 
     private boolean hasChildren(VariableManager variableManager) {
         return variableManager.get(VariableManager.SELF, EObject.class)
-                .map(function -> !this.transverseQueryService.getSubFunctions(function).isEmpty())
+                .map(function -> !this.commonQueryService.getSubFunctions(function).isEmpty())
                 .orElse(false);
     }
 
     public int getFunctionLevel(EObject function) {
         int level = -1;
-        var parent = this.transverseQueryService.getParentFunction(function);
+        var parent = this.commonQueryService.getParentFunction(function);
         while (parent.isPresent()) {
             level++;
-            parent = this.transverseQueryService.getParentFunction(parent.get());
+            parent = this.commonQueryService.getParentFunction(parent.get());
         }
         return level;
     }

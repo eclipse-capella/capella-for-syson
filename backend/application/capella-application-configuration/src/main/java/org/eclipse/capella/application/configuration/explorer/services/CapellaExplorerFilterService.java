@@ -20,7 +20,7 @@ import java.util.Objects;
 import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFilterService;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -46,14 +46,14 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
 
     private final ISysONResourceService sysONResourceService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final LAQueryService laQueryService;
 
     public CapellaExplorerFilterService(final ISysONResourceService sysONResourceService) {
         this.sysONResourceService = Objects.requireNonNull(sysONResourceService);
         this.laQueryService = new LAQueryService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -137,7 +137,7 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
     private List<Object> hidePorts(List<Object> elements, List<String> activeFilterIds) {
         var alteredElements = new ArrayList<>(elements);
         if (activeFilterIds.contains(CapellaTreeFilterProvider.HIDE_PORTS_TREE_ITEM_FILTER_ID)) {
-            alteredElements.removeIf(object -> object instanceof EObject eObject && (this.transverseQueryService.isComponentPort(eObject) || this.transverseQueryService.isFunctionPort(eObject)));
+            alteredElements.removeIf(object -> object instanceof EObject eObject && (this.commonQueryService.isComponentPort(eObject) || this.commonQueryService.isFunctionPort(eObject)));
         }
         return alteredElements;
     }
@@ -153,9 +153,9 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
                     || element instanceof org.eclipse.syson.sysml.RequirementUsage;
             return isSupportedSysMLElement
                     // Describes is represented as an AllocationUsage, which isn't an Arcadia element.
-                    || this.transverseQueryService.isDescribes(element)
+                    || this.commonQueryService.isDescribes(element)
                     // PerformActionUsage are Arcadia elements (allocations) but should not be displayed in the explorer.
-                    || (this.transverseQueryService.isArcadiaElement(element) && !(element instanceof PerformActionUsage));
+                    || (this.commonQueryService.isArcadiaElement(element) && !(element instanceof PerformActionUsage));
         }
         return object instanceof RepresentationMetadata;
     }
