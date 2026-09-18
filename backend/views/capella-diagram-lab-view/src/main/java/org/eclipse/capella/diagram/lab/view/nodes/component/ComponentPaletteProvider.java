@@ -20,6 +20,7 @@ import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolPr
 import org.eclipse.capella.diagram.lab.view.edges.componentexchange.ComponentExchangeToolProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationDropServices;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -121,7 +122,7 @@ public class ComponentPaletteProvider {
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(TransverseMutationService::createFunction).aqlSelf())
+                    .expression(ServiceMethod.of0(CommonCreationService::createFunction).aqlSelf())
                     .children(this.diagramBuilderHelper.newCreateView()
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .elementDescription(nodeDescription)
@@ -140,7 +141,7 @@ public class ComponentPaletteProvider {
                 .iconURLsExpression(icon);
 
         nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                .expression(ServiceMethod.of1(TransverseMutationService::createComponentPort)
+                .expression(ServiceMethod.of1(CommonCreationService::createComponentPort)
                         .aqlSelf(direction))
                 .build());
 

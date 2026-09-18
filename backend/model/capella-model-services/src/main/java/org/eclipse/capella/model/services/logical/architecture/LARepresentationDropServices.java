@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -60,6 +61,8 @@ public class LARepresentationDropServices {
 
     private final TransverseMutationService transverseMutationService;
 
+    private final CommonCreationService commonCreationService;
+
     private final LAViewCreationRequestSubtreeService viewCreationRequestSubtreeService;
 
     public LARepresentationDropServices(IObjectSearchService objectSearchService, IIdentityService identityService, ISysMLMoveElementService moveService,
@@ -71,6 +74,7 @@ public class LARepresentationDropServices {
         this.moveService = Objects.requireNonNull(moveService);
         this.transverseQueryService = new TransverseQueryService();
         this.transverseMutationService = new TransverseMutationService();
+        this.commonCreationService = new CommonCreationService();
         this.viewCreationRequestSubtreeService = new LAViewCreationRequestSubtreeService();
     }
 

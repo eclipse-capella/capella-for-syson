@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.componentport;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -41,17 +41,17 @@ public class ComponentPortToolProvider {
 
     public NodeTool createNewInputComponentPortNodeTool(IViewDiagramElementFinder cache) {
         return this.createComponentPortTool(cache, "New Input Port", "/icons/full/obj16/InFlowPort.svg",
-                ServiceMethod.of1(TransverseMutationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::_in"));
+                ServiceMethod.of1(CommonCreationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::_in"));
     }
 
     public NodeTool createNewOutputComponentPortNodeTool(IViewDiagramElementFinder cache) {
         return this.createComponentPortTool(cache, "New Output Port", "/icons/full/obj16/OutFlowPort.svg",
-                ServiceMethod.of1(TransverseMutationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::out"));
+                ServiceMethod.of1(CommonCreationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::out"));
     }
 
     public NodeTool createNewInOutComponentPortNodeTool(IViewDiagramElementFinder cache) {
         return this.createComponentPortTool(cache, "New InOut Port", "/icons/full/obj16/InOutFlowPort.svg",
-                ServiceMethod.of1(TransverseMutationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::inout"));
+                ServiceMethod.of1(CommonCreationService::createComponentPort).aqlSelf("sysml::FeatureDirectionKind::inout"));
     }
 
     private NodeTool createComponentPortTool(IViewDiagramElementFinder cache, String name, String icon, String expression) {

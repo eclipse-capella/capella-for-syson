@@ -21,6 +21,7 @@ import org.eclipse.capella.model.services.logical.architecture.LARepresentationD
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationQueryService;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationReconnectToolServices;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
@@ -63,6 +64,7 @@ public class LABViewJavaServiceProvider implements IJavaServiceProvider {
                     LAMutationService.class,
                     LARepresentationQueryService.class,
                     LARepresentationMutationService.class,
+                    CommonCreationService.class,
                     TransverseMutationService.class,
                     TransverseQueryService.class,
                     TransverseRepresentationReconnectToolServices.class,
