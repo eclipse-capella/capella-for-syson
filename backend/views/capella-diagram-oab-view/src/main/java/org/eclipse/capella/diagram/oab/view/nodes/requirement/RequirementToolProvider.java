@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oab.view.nodes.requirement;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -49,7 +49,7 @@ public class RequirementToolProvider {
         cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(TransverseMutationService::createRequirement).aqlSelf())
+                    .expression(ServiceMethod.of0(CommonCreationService::createRequirement).aqlSelf())
                     .children(
                             this.diagramBuilderHelper.newCreateView()
                                     .containmentKind(NodeContainmentKind.CHILD_NODE)

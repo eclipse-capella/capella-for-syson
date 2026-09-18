@@ -14,6 +14,7 @@ package org.eclipse.capella.model.services.system.analysis;
 
 import java.util.Optional;
 
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -31,11 +32,14 @@ public class SAMutationService {
 
     private final TransverseQueryService transverseQueryService;
 
+    private final CommonCreationService commonCreationService;
+
     private final TransverseMutationService transverseMutationService;
 
     public SAMutationService() {
         this.saQueryService = new SAQueryService();
         this.transverseQueryService = new TransverseQueryService();
+        this.commonCreationService = new CommonCreationService();
         this.transverseMutationService = new TransverseMutationService();
     }
 
@@ -49,7 +53,7 @@ public class SAMutationService {
                     .map(Element.class::cast);
         }
         if (targetContainer.isPresent()) {
-            result = this.transverseMutationService.createActor(targetContainer.get());
+            result = this.commonCreationService.createActor(targetContainer.get());
         }
         return result;
     }
@@ -63,7 +67,7 @@ public class SAMutationService {
             targetContainer = parent;
         }
         if (targetContainer != null) {
-            result = this.transverseMutationService.createComponent(targetContainer);
+            result = this.commonCreationService.createComponent(targetContainer);
         }
         return result;
     }

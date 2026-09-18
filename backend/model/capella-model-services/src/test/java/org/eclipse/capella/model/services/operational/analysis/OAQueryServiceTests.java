@@ -15,7 +15,7 @@ package org.eclipse.capella.model.services.operational.analysis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.InterfaceUsage;
@@ -41,7 +41,7 @@ public class OAQueryServiceTests {
 
     private final DiagramMutationElementService diagramMutationElementService = mock(DiagramMutationElementService.class);
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
@@ -75,7 +75,7 @@ public class OAQueryServiceTests {
         PartUsage sourceEntity = this.fixture.createArcadiaTypedComponent(oaPackages.structurePackage(), "Source Entity");
         PartUsage targetEntity = this.fixture.createArcadiaTypedComponent(oaPackages.structurePackage(), "Target Entity");
 
-        InterfaceUsage communicationMean = this.transverseMutationService.createComponentExchange(sourceEntity, targetEntity);
+        InterfaceUsage communicationMean = this.commonCreationService.createComponentExchange(sourceEntity, targetEntity);
         assertThat(communicationMean).isNotNull();
         assertThat(this.oaQueryService.getComponentExchangeSourceOA(communicationMean)).isSameAs(sourceEntity);
         assertThat(this.oaQueryService.getComponentExchangeTargetOA(communicationMean)).isSameAs(targetEntity);

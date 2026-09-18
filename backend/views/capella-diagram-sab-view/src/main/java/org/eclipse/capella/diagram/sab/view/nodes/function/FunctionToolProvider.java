@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.function;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -46,7 +46,7 @@ public class FunctionToolProvider {
 
         cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(TransverseMutationService::createFunction).aqlSelf())
+                    .expression(ServiceMethod.of0(CommonCreationService::createFunction).aqlSelf())
                     .children(this.diagramBuilderHelper.newCreateView()
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .elementDescription(nodeDescription)
