@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -57,7 +57,7 @@ public class SARepresentationMutationServiceTests {
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
     private final SAMutationService semanticMutationService = new SAMutationService();
 
@@ -318,7 +318,7 @@ public class SARepresentationMutationServiceTests {
         var functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
         var systemAnalysisPackage = structurePackage.getOwner();
 
-        this.transverseMutationService.delete(deletedComponent);
+        this.commonDeletionService.delete(deletedComponent);
 
         assertFalse(system.getOwnedElement().contains(deletedComponent));
         assertTrue(system.getOwnedElement().contains(retainedComponent));
@@ -342,7 +342,7 @@ public class SARepresentationMutationServiceTests {
         var functionalExchange = this.commonCreationService.createFunctionalExchange(deletedFunction, retainedFunction);
         var functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
 
-        this.transverseMutationService.delete(deletedFunction);
+        this.commonDeletionService.delete(deletedFunction);
 
         var queryService = new TransverseQueryService();
         assertFalse(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(deletedFunction));
@@ -373,7 +373,7 @@ public class SARepresentationMutationServiceTests {
         var requirement = this.commonCreationService.createRequirement(structurePackage);
         var describes = this.commonCreationService.createDescribes(requirement, system);
 
-        this.transverseMutationService.delete(requirement);
+        this.commonDeletionService.delete(requirement);
 
         assertFalse(this.getRequirementsPackage(structurePackage).getOwnedElement().contains(requirement));
         assertFalse(this.transverseQueryService.getDescribes(structurePackage.getOwner()).contains(describes));
@@ -385,7 +385,7 @@ public class SARepresentationMutationServiceTests {
         var system = this.getSystem(structurePackage);
         var actor = this.commonCreationService.createActor(structurePackage);
 
-        this.transverseMutationService.delete(actor);
+        this.commonDeletionService.delete(actor);
 
         assertFalse(structurePackage.getOwnedElement().contains(actor));
         assertTrue(structurePackage.getOwnedElement().contains(system));

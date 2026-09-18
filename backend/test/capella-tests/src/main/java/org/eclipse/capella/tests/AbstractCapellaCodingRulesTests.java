@@ -191,16 +191,16 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     public void noClassShouldUseSysONDeleteService() {
         ArchRule rule = ArchRuleDefinition.noClasses()
                 .that()
-                .doNotHaveFullyQualifiedName("org.eclipse.capella.model.services.transverse.TransverseMutationService")
+                .doNotHaveFullyQualifiedName("org.eclipse.capella.model.transverse.services.CommonDeletionService")
                 .should()
                 .dependOnClassesThat()
                 .haveFullyQualifiedName("org.eclipse.syson.services.DeleteService")
                 .orShould()
                 .dependOnClassesThat()
-                .haveFullyQualifiedName("org.eclipse.capella.model.services.CapellaDeleteService")
+                .haveFullyQualifiedName("org.eclipse.capella.model.transverse.services.CapellaDeleteService")
                 .orShould()
                 .callMethodWhere(this.isCallToEcoreDeleteMethod())
-                .because("semantic deletion should always be handled by TransverseMutationService#delete")
+                .because("semantic deletion should always be handled by CommonDeletionService#delete")
                 .allowEmptyShould(true);
 
         rule.check(this.getClasses());
@@ -265,7 +265,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
         Set<String> testableMethodNames = Stream.of(
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonCreationService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonUpdateService"),
-                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.TransverseMutationService"))
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonDeletionService"))
                 .flatMap(serviceClass -> serviceClass.getMethods().stream())
                 .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
                 .map(JavaMethod::getName)

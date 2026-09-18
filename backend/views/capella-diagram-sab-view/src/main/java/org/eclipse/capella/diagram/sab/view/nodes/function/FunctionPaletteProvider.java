@@ -18,7 +18,7 @@ import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolPr
 import org.eclipse.capella.diagram.sab.view.edges.functionalexchange.FunctionalExchangeToolProvider;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -61,7 +61,7 @@ public class FunctionPaletteProvider {
     public NodePalette createNodePalette(NodeDescription nodeDescription, IViewDiagramElementFinder cache) {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
-                .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf()).build());
+                .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of0(CommonDeletionService::delete).aqlSelf()).build());
 
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
                 .name("Edit")

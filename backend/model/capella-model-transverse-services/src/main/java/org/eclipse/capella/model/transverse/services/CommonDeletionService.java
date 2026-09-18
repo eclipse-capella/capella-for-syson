@@ -29,17 +29,17 @@ import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
 
 /**
- * Transverse mutation service. It is important to note that this service must retain its empty constructor and should not have constructors with parameters.
+ * Common semantic element deletion service.
  *
- * @author frouene
+ * @author gdaniel
  */
-public class TransverseMutationService {
+public class CommonDeletionService {
 
     private final TransverseQueryService transverseQueryService;
 
     private final CapellaDeleteService capellaDeleteService;
 
-    public TransverseMutationService() {
+    public CommonDeletionService() {
         this.transverseQueryService = new TransverseQueryService();
         this.capellaDeleteService = new CapellaDeleteService();
     }
