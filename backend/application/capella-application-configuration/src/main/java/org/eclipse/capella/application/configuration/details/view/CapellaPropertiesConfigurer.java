@@ -36,6 +36,7 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.ICapellaReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionalExchangesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionsWidgetProvider;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.common.util.URI;
@@ -127,7 +128,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         view.getDescriptions().add(viewFormDescription);
 
         // Convert the View-based FormDescription and register the result into the system
-        AQLInterpreter interpreter = new AQLInterpreter(List.of(TransverseQueryService.class, TransverseMutationService.class),
+        AQLInterpreter interpreter = new AQLInterpreter(List.of(TransverseQueryService.class, TransverseMutationService.class, CommonCreationService.class),
                 List.of(new DetailsViewService(this.composedAdapterFactoryDescriptors, this.feedbackMessageService, this.readOnlyObjectPredicate, new MetamodelQueryElementService(), this.detailsViewHelpTextProviders)),
                 List.of(SysmlPackage.eINSTANCE));
         ViewConverterResult viewConverterResult = this.converter.convert(viewFormDescription, List.of(), interpreter);

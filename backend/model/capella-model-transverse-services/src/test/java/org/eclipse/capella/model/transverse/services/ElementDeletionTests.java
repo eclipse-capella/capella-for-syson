@@ -34,6 +34,8 @@ import org.junit.jupiter.api.Test;
  */
 public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.AbstractSemanticTests {
 
+    private final CommonCreationService commonCreationService = new CommonCreationService();
+
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
@@ -41,9 +43,9 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteComponentExchangeSourcePortShouldDeleteComponentExchange() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
-        PartUsage component1 = this.transverseMutationService.createComponent(parent);
-        PartUsage component2 = this.transverseMutationService.createComponent(parent);
-        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(component1, component2);
+        PartUsage component1 = this.commonCreationService.createComponent(parent);
+        PartUsage component2 = this.commonCreationService.createComponent(parent);
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
         PortUsage sourcePort = this.transverseQueryService.getComponentExchangeSource(componentExchange);
         assertThat(this.transverseQueryService.isComponentPort(sourcePort)).isTrue();
         assertThat(parent.getOwnedElement()).contains(componentExchange);
@@ -55,9 +57,9 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteComponentExchangeTargetPortShouldDeleteComponentExchange() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
-        PartUsage component1 = this.transverseMutationService.createComponent(parent);
-        PartUsage component2 = this.transverseMutationService.createComponent(parent);
-        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(component1, component2);
+        PartUsage component1 = this.commonCreationService.createComponent(parent);
+        PartUsage component2 = this.commonCreationService.createComponent(parent);
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
         PortUsage targetPort = this.transverseQueryService.getComponentExchangeTarget(componentExchange);
         assertThat(this.transverseQueryService.isComponentPort(targetPort)).isTrue();
         assertThat(parent.getOwnedElement()).contains(componentExchange);
@@ -69,9 +71,9 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteComponentExchangeShouldNotDeleteConnectedComponents() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
-        PartUsage component1 = this.transverseMutationService.createComponent(parent);
-        PartUsage component2 = this.transverseMutationService.createComponent(parent);
-        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(component1, component2);
+        PartUsage component1 = this.commonCreationService.createComponent(parent);
+        PartUsage component2 = this.commonCreationService.createComponent(parent);
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
 
         this.transverseMutationService.delete(componentExchange);
         assertThat(this.transverseQueryService.getComponents(parent)).contains(component1, component2);
@@ -83,9 +85,9 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteCapabilityInvolvementShouldRemoveTheLastInvolvedComponentReference() {
         var perspective = this.capellaModel.getOperationalAnalysisPerspective();
-        var capability = this.transverseMutationService.createOperationalCapability(perspective.getElement());
-        var component = this.transverseMutationService.createComponent(perspective.getStructurePackage().getElement());
-        this.transverseMutationService.addCapabilityInvolvement(capability, component);
+        var capability = this.commonCreationService.createOperationalCapability(perspective.getElement());
+        var component = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
+        this.commonCreationService.createCapabilityInvolvement(capability, component);
 
         var result = this.transverseMutationService.deleteCapabilityInvolvement(capability, component);
 
@@ -96,10 +98,10 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteComponentExchangeBetweenSubComponentsShouldRemoveTheComponentExchangeFromTheParentComponent() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
-        PartUsage parentComponent = this.transverseMutationService.createComponent(parent);
-        PartUsage component1 = this.transverseMutationService.createComponent(parentComponent);
-        PartUsage component2 = this.transverseMutationService.createComponent(parentComponent);
-        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(component1, component2);
+        PartUsage parentComponent = this.commonCreationService.createComponent(parent);
+        PartUsage component1 = this.commonCreationService.createComponent(parentComponent);
+        PartUsage component2 = this.commonCreationService.createComponent(parentComponent);
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
         assertThat(parentComponent.getOwnedElement()).contains(componentExchange);
 
         this.transverseMutationService.delete(componentExchange);
@@ -109,9 +111,9 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteFunctionalExchangeSourcePortShouldDeleteFunctionalExchange() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
-        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
+        ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
         Element sourcePort = this.transverseQueryService.getFunctionalExchangeSource(functionalExchange);
         assertThat(this.transverseQueryService.isFunctionPort(sourcePort)).isTrue();
         assertThat(rootFunction.getOwnedElement()).contains(functionalExchange);
@@ -123,9 +125,9 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteFunctionalExchangeTargetPortShouldDeleteFunctionalExchange() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
-        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
+        ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
         Element targetPort = this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange);
         assertThat(this.transverseQueryService.isFunctionPort(targetPort)).isTrue();
         assertThat(rootFunction.getOwnedElement()).contains(functionalExchange);
@@ -137,9 +139,9 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteFunctionalExchangeShouldNotDeleteConnectedFunctions() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
-        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
-        FlowUsage functionalExchange = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
+        ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
+        FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
 
         this.transverseMutationService.delete(functionalExchange);
         assertThat(this.transverseQueryService.getFunctions(rootFunction)).contains(function1, function2);
@@ -152,17 +154,17 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         FunctionsPackage functionsPackage = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
         ActionUsage rootFunction = functionsPackage.getRootFunction().getElement();
 
-        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
-        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
-        FlowUsage functionalExchange1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
+        ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
+        FlowUsage functionalExchange1 = this.commonCreationService.createFunctionalExchange(function1, function2);
 
-        ActionUsage function3 = this.transverseMutationService.createFunction(rootFunction);
-        FlowUsage functionalExchange2 = this.transverseMutationService.createFunctionalExchange(function2, function3);
+        ActionUsage function3 = this.commonCreationService.createFunction(rootFunction);
+        FlowUsage functionalExchange2 = this.commonCreationService.createFunctionalExchange(function2, function3);
 
         // functional exchange not involved in the chain.
-        FlowUsage functionalExchange3 = this.transverseMutationService.createFunctionalExchange(function3, function2);
+        FlowUsage functionalExchange3 = this.commonCreationService.createFunctionalExchange(function3, function2);
 
-        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1, functionalExchange2));
+        ActionUsage functionalChain = this.commonCreationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1, functionalExchange2));
         assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
 
         // Deleting an unrelated functional exchange doesn't change the functional chain.
@@ -181,11 +183,11 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
 
-        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
-        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
-        FlowUsage functionalExchange1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
+        ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
+        FlowUsage functionalExchange1 = this.commonCreationService.createFunctionalExchange(function1, function2);
 
-        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, List.of(functionalExchange1));
+        ActionUsage functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, List.of(functionalExchange1));
 
         this.transverseMutationService.delete(functionalChain);
 
@@ -197,11 +199,11 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         Package structurePackage = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
 
-        ActionUsage function1 = this.transverseMutationService.createFunction(rootFunction);
-        ActionUsage function2 = this.transverseMutationService.createFunction(rootFunction);
-        FlowUsage functionalExchange1 = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
+        ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
+        FlowUsage functionalExchange1 = this.commonCreationService.createFunctionalExchange(function1, function2);
 
-        ActionUsage functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, List.of(functionalExchange1));
+        ActionUsage functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, List.of(functionalExchange1));
 
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).containsExactly(functionalChain);

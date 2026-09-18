@@ -19,6 +19,7 @@ import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
@@ -59,9 +60,9 @@ public class OABViewJavaServiceProvider implements IJavaServiceProvider {
                     OAMutationService.class,
                     OARepresentationQueryService.class,
                     OARepresentationMutationService.class,
+                    CommonCreationService.class,
                     TransverseMutationService.class,
                     TransverseQueryService.class,
-                    TransverseMutationService.class,
                     TransverseRepresentationMutationService.class,
                     DiagramMutationAQLService.class,
                     DiagramQueryAQLService.class,

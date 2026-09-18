@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
@@ -38,6 +39,8 @@ import org.junit.jupiter.api.Test;
 public class LAMutationServiceTests extends AbstractSemanticTests {
 
     private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
