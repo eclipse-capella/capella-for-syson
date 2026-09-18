@@ -51,6 +51,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-customization</artifactId>
+			<version>2026.9.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-diagram-lab-view</artifactId>
 			<version>2026.9.2</version>
 		</dependency>
