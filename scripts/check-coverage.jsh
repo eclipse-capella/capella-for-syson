@@ -32,6 +32,7 @@ var moduleCoverageData = List.of(
   new ModuleCoverage("capella-application-configuration", 32.0),
   new ModuleCoverage("capella-model-services", 15.0),
   new ModuleCoverage("capella-diagram-common-view", 100.0),
+  new ModuleCoverage("capella-diagram-customization", 68),
   new ModuleCoverage("capella-diagram-lab-view", 94.0),
   new ModuleCoverage("capella-diagram-oab-view", 98.0),
   new ModuleCoverage("capella-diagram-sab-view", 91.0),
