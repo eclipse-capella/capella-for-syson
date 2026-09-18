@@ -14,6 +14,8 @@
 
 - https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] Extract `CommonCreationService` from transverse services
 Methods to create elements (like `createComponent`, `createFunctionalExchange`, etc) have been moved from `TransverseMutationService` to `CommonCreationService`.
+- https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] Extract `CommonUpdateService` from transverse services
+Methods that update elements (like `setElementDescription`, `setFeatureDirection`, etc) have been moved from `TransverseMutationService` to `CommonUpdateService`.
 
 === Dependency update
 
@@ -32,6 +34,7 @@ These services do not rely on the editing context anymore.
 Some usages are still accepted, such as view traversal to add `IDAdapter` during the view creation process, or element content traversal to find related elements on deletion.
 All other usages are forbidden and checked with an architecture test.
 - https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] [services] Extract `CommonCreationService` from transverse services.
+- https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] [services] Extract `CommonUpdateService` from transverse services.
 
 == 2026.9.0
 

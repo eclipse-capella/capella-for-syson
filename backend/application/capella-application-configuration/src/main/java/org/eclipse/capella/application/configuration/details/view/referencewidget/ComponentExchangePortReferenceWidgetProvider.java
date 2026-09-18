@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
@@ -52,10 +53,13 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
 
     private final TransverseQueryService transverseQueryService;
 
+    private final CommonUpdateService commonUpdateService;
+
     private final TransverseMutationService transverseMutationService;
 
     public ComponentExchangePortReferenceWidgetProvider() {
         this.transverseQueryService = new TransverseQueryService();
+        this.commonUpdateService = new CommonUpdateService();
         this.transverseMutationService = new TransverseMutationService();
 
     }
@@ -98,7 +102,7 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof InterfaceUsage interfaceUsage) {
             variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, Feature.class)
-                    .ifPresent(feature -> this.transverseMutationService.deleteFeaturesFromReference(interfaceUsage, "", referenceDescription.getReferenceNameExpression(), null, List.of(feature)));
+                    .ifPresent(feature -> this.commonUpdateService.deleteFeaturesFromReference(interfaceUsage, "", referenceDescription.getReferenceNameExpression(), null, List.of(feature)));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

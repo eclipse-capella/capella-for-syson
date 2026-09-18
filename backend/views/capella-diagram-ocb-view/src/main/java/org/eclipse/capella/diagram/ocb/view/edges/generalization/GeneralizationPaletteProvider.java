@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.ocb.view.edges.generalization;
 
 import java.util.Objects;
 
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -59,7 +60,7 @@ public class GeneralizationPaletteProvider {
         var sourceTool = this.diagramBuilderHelper.newSourceEdgeEndReconnectionTool()
                 .name("GeneralizationSourceReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of2(TransverseMutationService::setCapabilityGeneralisationSource)
+                        .expression(ServiceMethod.of2(CommonUpdateService::setCapabilityGeneralisationSource)
                                 .aql(AQLConstants.EDGE_SEMANTIC_ELEMENT, AQLConstants.SEMANTIC_RECONNECTION_SOURCE,
                                         AQLConstants.SEMANTIC_RECONNECTION_TARGET))
                         .build())
@@ -68,7 +69,7 @@ public class GeneralizationPaletteProvider {
         var targetTool = this.diagramBuilderHelper.newTargetEdgeEndReconnectionTool()
                 .name("GeneralizationTargetReconnectionTool")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of2(TransverseMutationService::setCapabilityGeneralisationTarget)
+                        .expression(ServiceMethod.of2(CommonUpdateService::setCapabilityGeneralisationTarget)
                                 .aql(AQLConstants.EDGE_SEMANTIC_ELEMENT, AQLConstants.SEMANTIC_RECONNECTION_SOURCE,
                                         AQLConstants.SEMANTIC_RECONNECTION_TARGET))
                         .build())

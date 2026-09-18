@@ -29,14 +29,14 @@ import org.junit.jupiter.api.Test;
 @SuppressWarnings("checkstyle:MultipleStringLiterals")
 public class ElementModificationTests extends AbstractSemanticTests {
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
     @Test
     public void setStatusKindShouldSetTheStatusKindOfTheElement() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "open");
+        this.commonUpdateService.setStatusKind(rootFunction, "open");
 
         assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
         assertThat(rootFunction.getOwnedElement())
@@ -53,10 +53,10 @@ public class ElementModificationTests extends AbstractSemanticTests {
     @Test
     public void setStatusKindThenUnsetStatusShouldSetTheStatusThenUnsetIt() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "open");
+        this.commonUpdateService.setStatusKind(rootFunction, "open");
         assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
 
-        this.transverseMutationService.unSetUsageStatusKind(rootFunction);
+        this.commonUpdateService.unSetUsageStatusKind(rootFunction);
         assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEmpty();
         assertThat(rootFunction.getOwnedElement())
                 .filteredOn(MetadataUsage.class::isInstance)
@@ -69,9 +69,9 @@ public class ElementModificationTests extends AbstractSemanticTests {
     @Test
     public void setStatusKindTwiceShouldSetTheLatestStatus() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "open");
+        this.commonUpdateService.setStatusKind(rootFunction, "open");
         assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("open");
-        this.transverseMutationService.setStatusKind(rootFunction, "tbd");
+        this.commonUpdateService.setStatusKind(rootFunction, "tbd");
 
         assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEqualTo("tbd");
         assertThat(rootFunction.getOwnedElement())
@@ -87,7 +87,7 @@ public class ElementModificationTests extends AbstractSemanticTests {
     @Test
     public void setStatusKindWithInvalidStatusShouldNotSetTheStatus() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.transverseMutationService.setStatusKind(rootFunction, "test");
+        this.commonUpdateService.setStatusKind(rootFunction, "test");
         assertThat(this.transverseQueryService.getStatusStringValue(rootFunction)).isEmpty();
         assertThat(rootFunction.getOwnedElement())
                 .filteredOn(MetadataUsage.class::isInstance)
