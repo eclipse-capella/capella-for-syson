@@ -15,6 +15,9 @@ package org.eclipse.capella.diagram.oabd.view;
 import java.util.List;
 
 import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oabd.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oabd.view.nodes.requirement.compartment.OABDCompartmentItemNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oabd.view.nodes.requirement.compartment.OABDCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
@@ -55,7 +58,12 @@ public class OABDViewDiagramDescriptionProvider implements IRepresentationDescri
                 .build();
         var cache = new DefaultViewDiagramElementFinder();
         var diagramElementDescriptionProviders = List.of(
-                new OperationalActivityNodeDescriptionProvider(colorProvider)
+                new OperationalActivityNodeDescriptionProvider(colorProvider),
+                new OABDCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new OABDCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new RequirementNodeDescriptionProvider(colorProvider)
         );
 
         diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
