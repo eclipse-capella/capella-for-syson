@@ -264,6 +264,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
 
         Set<String> testableMethodNames = Stream.of(
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonCreationService"),
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonMoveService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonUpdateService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonDeletionService"))
                 .flatMap(serviceClass -> serviceClass.getMethods().stream())
