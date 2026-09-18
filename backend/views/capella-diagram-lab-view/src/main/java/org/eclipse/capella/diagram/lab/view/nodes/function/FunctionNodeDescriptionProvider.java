@@ -20,6 +20,7 @@ import java.util.Optional;
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.services.LABDiagramService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -57,7 +58,7 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .conditionalStyles(functionNodeStyleProvider.createFunctionConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
-                .isHiddenByDefaultExpression(ServiceMethod.of0(LABDiagramService::isFunctionHidden).aqlSelf())
+                .isHiddenByDefaultExpression(ServiceMethod.of1(LABDiagramService::isFunctionHidden).aqlSelf(DiagramContext.DIAGRAM_CONTEXT))
                 .build();
     }
 

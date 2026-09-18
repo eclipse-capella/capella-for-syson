@@ -23,10 +23,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.eclipse.capella.AbstractIntegrationTests;
-import org.eclipse.capella.CapellaIdentifiers;
 import org.eclipse.capella.GivenCapellaServer;
 import org.eclipse.capella.application.configuration.explorer.CapellaExplorerTreeItemContextMenuEntryProvider;
 import org.eclipse.capella.application.configuration.explorer.CapellaTreeViewDescriptionProvider;
+import org.eclipse.capella.CapellaProjectData;
 import org.eclipse.sirius.components.trees.tests.graphql.TreeItemPaletteExecutor;
 import org.eclipse.sirius.web.application.views.explorer.ExplorerEventInput;
 import org.eclipse.sirius.web.application.views.explorer.services.ExplorerTreeItemContextMenuEntryProvider;
@@ -75,16 +75,16 @@ public class TreeItemContextMenuControllerTests extends AbstractIntegrationTests
     @GivenCapellaServer
     @DisplayName("Given a Capella project, when the context menu is requested on an object, then the correct items are returned")
     public void givenCapellaProjectWhenContextMenuIsRequestedOnObjectThenCorrectItemsAreReturned()  {
-        List<String> expandedIds = List.of(CapellaIdentifiers.CAPELLA_DOCUMENT_ID);
+        List<String> expandedIds = List.of(CapellaProjectData.CAPELLA_DOCUMENT_ID);
         var explorerRepresentationId = this.representationIdBuilder.buildExplorerRepresentationId(this.capellaTreeViewDescriptionProvider.getDescriptionId(), expandedIds, List.of());
-        var input = new ExplorerEventInput(UUID.randomUUID(), CapellaIdentifiers.EDITING_CONTEXT_ID, explorerRepresentationId);
+        var input = new ExplorerEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, explorerRepresentationId);
         var flux = this.explorerEventSubscriptionRunner.run(input).flux();
 
         var treeId = new AtomicReference<String>();
         Consumer<Object> initialTreeContentConsumer = assertRefreshedTreeThat(tree -> treeId.set(tree.getId()));
 
         Runnable getDocumentContextMenuItems = () -> {
-            this.treeItemPaletteExecutor.execute(CapellaIdentifiers.EDITING_CONTEXT_ID, treeId.get(), CapellaIdentifiers.CAPELLA_DOCUMENT_ID)
+            this.treeItemPaletteExecutor.execute(CapellaProjectData.EDITING_CONTEXT_ID, treeId.get(), CapellaProjectData.CAPELLA_DOCUMENT_ID)
                     .hasPaletteEntriesIds(entries -> assertThat(entries)
                             .contains(
                                     ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT,
@@ -94,7 +94,7 @@ public class TreeItemContextMenuControllerTests extends AbstractIntegrationTests
         };
 
         Runnable getRootContextMenuItems = () -> {
-            this.treeItemPaletteExecutor.execute(CapellaIdentifiers.EDITING_CONTEXT_ID, treeId.get(), CapellaIdentifiers.ROOT_OCCURRENCE_DEFINITION_ID)
+            this.treeItemPaletteExecutor.execute(CapellaProjectData.EDITING_CONTEXT_ID, treeId.get(), CapellaProjectData.SemanticIds.CAPELLA_MODEL_OCC_ID)
                     .hasPaletteEntriesIds(entries -> assertThat(entries)
                             .contains(
                                     ExplorerTreeItemContextMenuEntryProvider.NEW_OBJECT,
