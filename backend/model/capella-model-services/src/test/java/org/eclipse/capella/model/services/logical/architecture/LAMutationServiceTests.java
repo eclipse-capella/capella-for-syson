@@ -17,8 +17,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
  */
 public class LAMutationServiceTests extends AbstractSemanticTests {
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
@@ -96,7 +96,7 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
 
         this.commonUpdateService.setPerformAction(component, function1);
         this.commonUpdateService.setPerformAction(component, function2);
-        this.transverseMutationService.deletePerformedActionUsage(component, function1);
+        this.commonDeletionService.deletePerformedActionUsage(component, function1);
 
         List<ActionUsage> allocatedFunctions = this.getAllocatedFunctions(component);
         assertThat(allocatedFunctions).containsExactly(function2);
@@ -113,7 +113,7 @@ public class LAMutationServiceTests extends AbstractSemanticTests {
         this.commonUpdateService.setPerformAction(component, functionToDelete);
         this.commonUpdateService.setPerformAction(component, functionToKeep);
 
-        this.transverseMutationService.delete(functionToDelete);
+        this.commonDeletionService.delete(functionToDelete);
 
         assertThat(root.getOwnedElement()).doesNotContain(functionToDelete);
         assertThat(root.getOwnedElement()).contains(functionToKeep);

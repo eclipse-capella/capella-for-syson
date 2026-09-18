@@ -74,7 +74,7 @@ public class CommonUpdateService {
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonDeletionService commonDeletionService;
 
     private final Logger logger = LoggerFactory.getLogger(CommonUpdateService.class);
 
@@ -83,7 +83,7 @@ public class CommonUpdateService {
         this.transverseQueryService = new TransverseQueryService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonDeletionService = new CommonDeletionService();
     }
 
     public Element setElementDescription(Element element, String newDescription) {
@@ -240,7 +240,7 @@ public class CommonUpdateService {
 
     public void deleteReference(Usage usage, String referenceName) {
         this.retrieveUsageFromReferenceName(usage, referenceName)
-                .ifPresent(this.transverseMutationService::delete);
+                .ifPresent(this.commonDeletionService::delete);
     }
 
     public void setFeatureReferenceValues(Usage usage, String libraryPrefix, String attributeName, List<Feature> newValues, EClass referencedFeatureType) {
@@ -423,7 +423,7 @@ public class CommonUpdateService {
                 .map(MetadataUsage.class::cast)
                 .filter(this.transverseQueryService::isStatusInfo)
                 .findFirst()
-                .ifPresent(this.transverseMutationService::delete);
+                .ifPresent(this.commonDeletionService::delete);
     }
 
     public FlowUsage setFunctionalExchangePayload(FlowUsage flowUsage, Object newValue) {
@@ -448,7 +448,7 @@ public class CommonUpdateService {
     }
 
     private void setExchangeItem(FlowUsage flowUsage, List<ItemUsage> exchangeItems) {
-        Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.transverseMutationService::delete);
+        Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.commonDeletionService::delete);
         exchangeItems.forEach(exchangeItem -> this.addNewExchangeItem(flowUsage, exchangeItem));
     }
 

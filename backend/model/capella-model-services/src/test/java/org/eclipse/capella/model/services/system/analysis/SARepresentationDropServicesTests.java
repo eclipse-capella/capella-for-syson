@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -53,7 +53,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
     @Test
     public void createFunctionalExchangeWhenDroppedShouldRevealDependenciesInSpecificationOrder() {
@@ -82,7 +82,7 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
         var system = this.getSystem(structurePackage);
         var sourceFunction = this.commonCreationService.createFunction(system);
         var targetFunction = this.commonCreationService.createFunction(system);
-        this.transverseMutationService.deletePerformedActionUsage(system, targetFunction);
+        this.commonDeletionService.deletePerformedActionUsage(system, targetFunction);
 
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourceFunction, targetFunction);
         var diagramServices = new RecordingDiagramServices();

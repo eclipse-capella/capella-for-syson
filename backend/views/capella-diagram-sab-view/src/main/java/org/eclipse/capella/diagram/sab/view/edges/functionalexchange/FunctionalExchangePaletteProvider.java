@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.sab.view.edges.functionalexchange;
 
 import java.util.Objects;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -53,7 +53,7 @@ public class FunctionalExchangePaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
+                        .expression(ServiceMethod.of0(CommonDeletionService::delete).aqlSelf())
                         .build());
         var labelEditTool = this.diagramBuilderHelper.newLabelEditTool()
                 .name("Edit")

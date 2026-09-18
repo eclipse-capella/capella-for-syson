@@ -22,8 +22,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -60,7 +60,7 @@ public class LARepresentationDropServices {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonDeletionService commonDeletionService;
 
     private final CommonCreationService commonCreationService;
 
@@ -76,7 +76,7 @@ public class LARepresentationDropServices {
         this.identityService = Objects.requireNonNull(identityService);
         this.moveService = Objects.requireNonNull(moveService);
         this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonDeletionService = new CommonDeletionService();
         this.commonCreationService = new CommonCreationService();
         this.commonUpdateService = new CommonUpdateService();
         this.viewCreationRequestSubtreeService = new LAViewCreationRequestSubtreeService();
@@ -203,7 +203,7 @@ public class LARepresentationDropServices {
     private void handlePreviousFunctionContainer(Object formerContainer, Element droppedElement) {
         if (formerContainer instanceof PartUsage partUsage) {
             if (this.transverseQueryService.isComponent(partUsage)) {
-                this.transverseMutationService.deletePerformedActionUsage(partUsage, (ActionUsage) droppedElement);
+                this.commonDeletionService.deletePerformedActionUsage(partUsage, (ActionUsage) droppedElement);
             }
         }
     }

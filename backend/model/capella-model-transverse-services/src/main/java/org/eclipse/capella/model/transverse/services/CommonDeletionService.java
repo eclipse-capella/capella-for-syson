@@ -29,21 +29,18 @@ import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
 
 /**
- * Transverse mutation service. It is important to note that this service must retain its empty constructor and should not have constructors with parameters.
+ * Common semantic element deletion service.
  *
- * @author frouene
+ * @author gdaniel
  */
-public class TransverseMutationService {
+public class CommonDeletionService {
 
     private final TransverseQueryService transverseQueryService;
 
-    private final CommonUpdateService commonUpdateService;
-
     private final CapellaDeleteService capellaDeleteService;
 
-    public TransverseMutationService() {
+    public CommonDeletionService() {
         this.transverseQueryService = new TransverseQueryService();
-        this.commonUpdateService = new CommonUpdateService();
         this.capellaDeleteService = new CapellaDeleteService();
     }
 
@@ -56,12 +53,13 @@ public class TransverseMutationService {
         if (!involvedComponents.contains(component)) {
             return null;
         }
+        var commonUpdateService = new CommonUpdateService();
         List<Feature> remainingComponents = new ArrayList<>(involvedComponents);
         remainingComponents.remove(component);
         if (remainingComponents.isEmpty()) {
-            this.commonUpdateService.deleteReference(capability, ARCADIA_INVOLVED_COMPONENTS);
+            commonUpdateService.deleteReference(capability, ARCADIA_INVOLVED_COMPONENTS);
         } else {
-            this.commonUpdateService.setFeatureReferenceValues(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+            commonUpdateService.setFeatureReferenceValues(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
                     ARCADIA_INVOLVED_COMPONENTS, remainingComponents, SysmlPackage.eINSTANCE.getPartUsage());
         }
         return capability;

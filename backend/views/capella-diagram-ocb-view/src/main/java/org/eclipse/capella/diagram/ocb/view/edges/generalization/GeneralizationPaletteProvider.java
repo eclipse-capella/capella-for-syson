@@ -14,8 +14,8 @@ package org.eclipse.capella.diagram.ocb.view.edges.generalization;
 
 import java.util.Objects;
 
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
@@ -46,7 +46,7 @@ public class GeneralizationPaletteProvider {
         var deleteTool = this.diagramBuilderHelper.newDeleteTool()
                 .name("Delete from Model")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf())
+                        .expression(ServiceMethod.of0(CommonDeletionService::delete).aqlSelf())
                         .build());
 
         return this.diagramBuilderHelper.newEdgePalette()
