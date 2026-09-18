@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.oab.view.nodes.requirement.compartment;
 
 import java.util.Objects;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -106,7 +106,7 @@ public class OABCompartmentItemNodeDescriptionProvider extends AbstractNodeDescr
 
     private NodePalette createPalette() {
         var deleteBody = this.viewBuilderHelper.newChangeContext()
-                .expression(ServiceMethod.of0(TransverseMutationService::delete).aqlSelf());
+                .expression(ServiceMethod.of0(CommonDeletionService::delete).aqlSelf());
         var deleteTool = this.diagramBuilderHelper.newDeleteTool().name("Delete from Model").body(deleteBody.build());
         var editBody = this.viewBuilderHelper.newChangeContext()
                 .expression(ServiceMethod.of1(DiagramMutationAQLService::directEditListItem).aqlSelf("newLabel"));

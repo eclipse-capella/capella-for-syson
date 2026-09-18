@@ -38,7 +38,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
 
     private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
@@ -52,7 +52,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         assertThat(this.transverseQueryService.isComponentPort(sourcePort)).isTrue();
         assertThat(parent.getOwnedElement()).contains(componentExchange);
 
-        this.transverseMutationService.delete(sourcePort);
+        this.commonDeletionService.delete(sourcePort);
         assertThat(parent.getOwnedElement()).doesNotContain(componentExchange);
     }
 
@@ -66,7 +66,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         assertThat(this.transverseQueryService.isComponentPort(targetPort)).isTrue();
         assertThat(parent.getOwnedElement()).contains(componentExchange);
 
-        this.transverseMutationService.delete(targetPort);
+        this.commonDeletionService.delete(targetPort);
         assertThat(parent.getOwnedElement()).doesNotContain(componentExchange);
     }
 
@@ -77,7 +77,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         PartUsage component2 = this.commonCreationService.createComponent(parent);
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
 
-        this.transverseMutationService.delete(componentExchange);
+        this.commonDeletionService.delete(componentExchange);
         assertThat(this.transverseQueryService.getComponents(parent)).contains(component1, component2);
         assertThat(parent.getOwnedElement())
                 .contains(component1, component2)
@@ -91,7 +91,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         var component = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
         this.commonCreationService.createCapabilityInvolvement(capability, component);
 
-        var result = this.transverseMutationService.deleteCapabilityInvolvement(capability, component);
+        var result = this.commonDeletionService.deleteCapabilityInvolvement(capability, component);
 
         assertThat(result).isSameAs(capability);
         assertThat(this.transverseQueryService.getInvolvedComponents(capability)).isEmpty();
@@ -106,7 +106,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
         assertThat(parentComponent.getOwnedElement()).contains(componentExchange);
 
-        this.transverseMutationService.delete(componentExchange);
+        this.commonDeletionService.delete(componentExchange);
         assertThat(parentComponent.getOwnedElement()).doesNotContain(componentExchange);
     }
 
@@ -120,7 +120,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         assertThat(this.transverseQueryService.isFunctionPort(sourcePort)).isTrue();
         assertThat(rootFunction.getOwnedElement()).contains(functionalExchange);
 
-        this.transverseMutationService.delete(sourcePort);
+        this.commonDeletionService.delete(sourcePort);
         assertThat(rootFunction.getOwnedElement()).doesNotContain(functionalExchange);
     }
 
@@ -134,7 +134,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         assertThat(this.transverseQueryService.isFunctionPort(targetPort)).isTrue();
         assertThat(rootFunction.getOwnedElement()).contains(functionalExchange);
 
-        this.transverseMutationService.delete(targetPort);
+        this.commonDeletionService.delete(targetPort);
         assertThat(rootFunction.getOwnedElement()).doesNotContain(functionalExchange);
     }
 
@@ -145,7 +145,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
 
-        this.transverseMutationService.delete(functionalExchange);
+        this.commonDeletionService.delete(functionalExchange);
         assertThat(this.transverseQueryService.getFunctions(rootFunction)).contains(function1, function2);
         assertThat(rootFunction.getOwnedElement()).contains(function1, function2);
         assertThat(rootFunction.getOwnedElement()).doesNotContain(functionalExchange);
@@ -170,13 +170,13 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
 
         // Deleting an unrelated functional exchange doesn't change the functional chain.
-        this.transverseMutationService.delete(functionalExchange3);
+        this.commonDeletionService.delete(functionalExchange3);
         assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
 
-        this.transverseMutationService.delete(functionalExchange1);
+        this.commonDeletionService.delete(functionalExchange1);
         assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange2);
 
-        this.transverseMutationService.delete(functionalExchange2);
+        this.commonDeletionService.delete(functionalExchange2);
         assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).isEmpty();
     }
 
@@ -191,7 +191,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
 
         ActionUsage functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, List.of(functionalExchange1));
 
-        this.transverseMutationService.delete(functionalChain);
+        this.commonDeletionService.delete(functionalChain);
 
         assertThat(rootFunction.getOwnedElement()).contains(function1, function2, functionalExchange1);
     }
@@ -211,7 +211,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).containsExactly(functionalChain);
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).containsExactly(functionalChain);
 
-        this.transverseMutationService.delete(functionalChain);
+        this.commonDeletionService.delete(functionalChain);
 
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).isEmpty();
         assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).isEmpty();

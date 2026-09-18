@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -55,12 +55,12 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
 
     private final CommonUpdateService commonUpdateService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonDeletionService commonDeletionService;
 
     public ComponentExchangePortReferenceWidgetProvider() {
         this.transverseQueryService = new TransverseQueryService();
         this.commonUpdateService = new CommonUpdateService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonDeletionService = new CommonDeletionService();
 
     }
 
@@ -117,7 +117,7 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof FlowUsage flowUsage) {
-            Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.transverseMutationService::delete);
+            Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.commonDeletionService::delete);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

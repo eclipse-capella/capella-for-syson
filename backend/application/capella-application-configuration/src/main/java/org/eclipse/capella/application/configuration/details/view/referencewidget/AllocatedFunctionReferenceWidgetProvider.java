@@ -18,7 +18,7 @@ import static org.eclipse.capella.model.transverse.services.TransverseQueryServi
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -50,11 +50,11 @@ public class AllocatedFunctionReferenceWidgetProvider implements ICapellaReferen
 
     private final TransverseQueryService transverseQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonDeletionService commonDeletionService;
 
     public AllocatedFunctionReferenceWidgetProvider() {
         this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonDeletionService = new CommonDeletionService();
     }
 
     @Override
@@ -90,7 +90,7 @@ public class AllocatedFunctionReferenceWidgetProvider implements ICapellaReferen
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof PartUsage partUsage) {
             variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, ActionUsage.class)
-                    .ifPresent(actionUsage -> this.transverseMutationService.deletePerformedActionUsage(partUsage, actionUsage));
+                    .ifPresent(actionUsage -> this.commonDeletionService.deletePerformedActionUsage(partUsage, actionUsage));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
@@ -106,7 +106,7 @@ public class AllocatedFunctionReferenceWidgetProvider implements ICapellaReferen
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof PartUsage partUsage) {
             this.transverseQueryService.getPerformedActions(partUsage, performAction -> this.transverseQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_FUNCTION).test(performAction))
-                    .forEach(actionUsage -> this.transverseMutationService.deletePerformedActionUsage(partUsage, actionUsage));
+                    .forEach(actionUsage -> this.commonDeletionService.deletePerformedActionUsage(partUsage, actionUsage));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
