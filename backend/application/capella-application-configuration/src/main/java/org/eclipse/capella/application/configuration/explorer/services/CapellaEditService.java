@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer.services;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.ChildCreationDescription;
 import org.eclipse.sirius.components.core.api.IEditServiceDelegate;
@@ -46,7 +46,7 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     private static final String DATA = "Data";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final SysMLv2EditService sysMLv2EditService;
 
@@ -61,12 +61,12 @@ public class CapellaEditService implements IEditServiceDelegate {
         this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
         this.commonCreationService = new CommonCreationService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
     public boolean canHandle(Object object) {
-        if (object instanceof Element element && this.transverseQueryService.isArcadiaElement(element)) {
+        if (object instanceof Element element && this.commonQueryService.isArcadiaElement(element)) {
             return true;
         }
         return this.sysMLv2EditService.canHandle(object);
@@ -81,7 +81,7 @@ public class CapellaEditService implements IEditServiceDelegate {
         List<ChildCreationDescription> childCreationDescriptions = new ArrayList<>();
         if (optionalContainer.isPresent()) {
             EObject container = optionalContainer.get();
-            if (this.transverseQueryService.isArcadiaElement(container)) {
+            if (this.commonQueryService.isArcadiaElement(container)) {
                 // To implement specific children creation description for Arcadia elements.
 
             } else if (container instanceof org.eclipse.syson.sysml.Package pkg) {

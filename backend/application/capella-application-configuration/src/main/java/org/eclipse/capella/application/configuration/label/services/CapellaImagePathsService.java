@@ -13,23 +13,23 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.label.services;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_CAPABILITY;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTION;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_REQUIREMENT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTION;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REQUIREMENT;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
@@ -66,12 +66,12 @@ public class CapellaImagePathsService {
 
     private static final String ICONS_FULL_PATH = "/icons/full/obj16/%s.svg";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final ILabelService labelService;
 
     public CapellaImagePathsService(ILabelService labelService) {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.labelService = Objects.requireNonNull(labelService);
     }
 
@@ -79,10 +79,10 @@ public class CapellaImagePathsService {
         String imageName = null;
         if (object instanceof org.eclipse.syson.sysml.Package pkg) {
             imageName = this.computePackageImage(pkg);
-        } else if (this.transverseQueryService.isDescribes(object)) {
+        } else if (this.commonQueryService.isDescribes(object)) {
             imageName = String.format(ICONS_FULL_PATH, "Describes");
         } else if (object instanceof Element element) {
-            String arcadiaType = this.transverseQueryService.getArcadiaType(element).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(null);
+            String arcadiaType = this.commonQueryService.getArcadiaType(element).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(null);
             if (arcadiaType != null) {
                 imageName = this.computeArcadiaElementImage(element, arcadiaType).orElse(null);
             }
@@ -125,7 +125,7 @@ public class CapellaImagePathsService {
     private String computeExchangeItemIcon(Element element, String arcadiaType) {
         boolean hasParentFunction = Optional.ofNullable(element)
                 .map(Element::getOwner)
-                .filter(this.transverseQueryService::isFunction)
+                .filter(this.commonQueryService::isFunction)
                 .isPresent();
         if (hasParentFunction && element instanceof Feature feature) {
             FeatureDirectionKind direction = feature.getDirection();
@@ -139,7 +139,7 @@ public class CapellaImagePathsService {
     }
 
     private Optional<String> computeArcadiaElementImage(Element element, String arcadiaType) {
-        ArcadiaEngineeringPerspective perspective = this.transverseQueryService.getArcadiaPerspective(element).orElse(null);
+        ArcadiaEngineeringPerspective perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
         return this.getImageFromArcadiaType(perspective, element, arcadiaType);
 
     }
@@ -173,9 +173,9 @@ public class CapellaImagePathsService {
     private Optional<String> computeElementNameWithArchitecture(ArcadiaEngineeringPerspective perspective, String name, Element element) {
         String componentType = null;
         if (ArcadiaEngineeringPerspective.LogicalArchitecture.equals(perspective)) {
-            if (this.transverseQueryService.isComponentHumanActor(element)) {
+            if (this.commonQueryService.isComponentHumanActor(element)) {
                 componentType = LOGICAL + name + "Human";
-            } else if (this.transverseQueryService.isComponentActor(element)) {
+            } else if (this.commonQueryService.isComponentActor(element)) {
                 componentType = LOGICAL + "Actor";
             } else {
                 componentType = LOGICAL + name;
@@ -183,9 +183,9 @@ public class CapellaImagePathsService {
         } else if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
             if (ARCADIA_FUNCTION.equals(name)) {
                 componentType = "OperationalActivity";
-            } else if (this.transverseQueryService.isComponentHumanActor(element)) {
+            } else if (this.commonQueryService.isComponentHumanActor(element)) {
                 componentType = LOGICAL + "ActorHuman";
-            } else if (this.transverseQueryService.isComponentActor(element)) {
+            } else if (this.commonQueryService.isComponentActor(element)) {
                 componentType = LOGICAL + "Actor";
             } else {
                 componentType = LOGICAL + name;
@@ -193,7 +193,7 @@ public class CapellaImagePathsService {
         } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
             componentType = PHYSICAL + name;
         } else if (ArcadiaEngineeringPerspective.SystemAnalysis.equals(perspective)) {
-            if (this.transverseQueryService.isComponentActor(element)) {
+            if (this.commonQueryService.isComponentActor(element)) {
                 componentType = SYSTEM + "Actor";
             } else {
                 componentType = SYSTEM + name;

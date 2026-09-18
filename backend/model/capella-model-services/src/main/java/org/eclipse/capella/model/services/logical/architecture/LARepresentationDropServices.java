@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
@@ -58,7 +58,7 @@ public class LARepresentationDropServices {
 
     private final ISysMLMoveElementService moveService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final CommonDeletionService commonDeletionService;
 
@@ -75,7 +75,7 @@ public class LARepresentationDropServices {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.identityService = Objects.requireNonNull(identityService);
         this.moveService = Objects.requireNonNull(moveService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.commonDeletionService = new CommonDeletionService();
         this.commonCreationService = new CommonCreationService();
         this.commonUpdateService = new CommonUpdateService();
@@ -84,10 +84,10 @@ public class LARepresentationDropServices {
 
     public Element dropIntoComponentFromDiagram(Element droppedElement, Node droppedNode, Element targetElement, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        if (this.transverseQueryService.isComponent(targetElement)) {
-            if (this.transverseQueryService.isFunction(droppedElement)) {
+        if (this.commonQueryService.isComponent(targetElement)) {
+            if (this.commonQueryService.isFunction(droppedElement)) {
                 this.droppedFunctionIntoComponentCase(droppedElement, droppedNode, targetElement, targetNode, editingContext, diagramContext, convertedNodes);
-            } else if (this.transverseQueryService.isComponent(droppedElement)) {
+            } else if (this.commonQueryService.isComponent(droppedElement)) {
                 this.droppedComponentIntoComponentCase(droppedElement, droppedNode, targetElement, targetNode, editingContext, diagramContext, convertedNodes);
             }
         }
@@ -96,8 +96,8 @@ public class LARepresentationDropServices {
 
     public Element dropIntoDiagram(Element droppedElement, Node droppedNode, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        if (this.transverseQueryService.isComponent(droppedElement)) {
-            Optional<Package> optionalStructurePackage = this.transverseQueryService.getStructurePackage(droppedElement);
+        if (this.commonQueryService.isComponent(droppedElement)) {
+            Optional<Package> optionalStructurePackage = this.commonQueryService.getStructurePackage(droppedElement);
             if (optionalStructurePackage.isPresent()) {
                 this.moveService.moveSemanticElement(droppedElement, optionalStructurePackage.get());
                 this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode,
@@ -127,8 +127,8 @@ public class LARepresentationDropServices {
 
     public Element dropIntoFunctionFromDiagram(Element droppedElement, Node droppedNode, Element targetElement, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        if (this.transverseQueryService.isFunction(targetElement)) {
-            if (this.transverseQueryService.isFunction(droppedElement)) {
+        if (this.commonQueryService.isFunction(targetElement)) {
+            if (this.commonQueryService.isFunction(droppedElement)) {
                 this.droppedFunctionIntoFunctionCase(droppedElement, droppedNode, targetElement, targetNode, editingContext, diagramContext, convertedNodes);
             }
         }
@@ -138,17 +138,17 @@ public class LARepresentationDropServices {
     public Element dropIntoDiagramFromExplorer(Element droppedElement, Object selectedNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
         // Handle Package drop from explorer - move to Structure package if needed
-        if (droppedElement instanceof Package droppedPackage && this.transverseQueryService.isUserPackage(droppedPackage)) {
+        if (droppedElement instanceof Package droppedPackage && this.commonQueryService.isUserPackage(droppedPackage)) {
             // Move the package to the Structure package so it becomes visible on the LAB diagram
             // toComponentsPackage returns the Structure package ('Logical Architecture'::Structure)
-            Optional<Package> optionalStructurePackage = this.transverseQueryService.getStructurePackage(droppedElement);
+            Optional<Package> optionalStructurePackage = this.commonQueryService.getStructurePackage(droppedElement);
             if (optionalStructurePackage.isPresent() && !optionalStructurePackage.get().equals(droppedPackage.getOwningNamespace())) {
                 this.moveService.moveSemanticElement(droppedPackage, optionalStructurePackage.get());
             }
         }
 
         boolean droppedInsideContainer = this.isDroppedInsideContainer(droppedElement, selectedNode);
-        boolean preventedCreation = this.transverseQueryService.isComponent(droppedElement)
+        boolean preventedCreation = this.commonQueryService.isComponent(droppedElement)
                 && (this.isAlreadyContainedInParentNode(droppedElement, diagramContext)
                         || (this.isContainerRepresentedInDiagram(droppedElement, diagramContext) && !droppedInsideContainer));
         if (!preventedCreation) {
@@ -183,7 +183,7 @@ public class LARepresentationDropServices {
         this.commonUpdateService.setPerformAction(targetElement, (ActionUsage) droppedElement);
         this.diagramMutationElementService.createView(droppedElement, editingContext, diagramContext, targetNode, convertedNodes);
         // A Function dropped into a container needs to be moved in the functions package.
-        Optional<Package> optionalFunctionsPackage = this.transverseQueryService.getFunctionsPackage(targetElement);
+        Optional<Package> optionalFunctionsPackage = this.commonQueryService.getFunctionsPackage(targetElement);
         if (optionalFunctionsPackage.isPresent()) {
             this.moveService.moveSemanticElement(droppedElement, optionalFunctionsPackage.get());
             this.getPreviousParentContainer(droppedNode, editingContext, diagramContext)
@@ -202,7 +202,7 @@ public class LARepresentationDropServices {
 
     private void handlePreviousFunctionContainer(Object formerContainer, Element droppedElement) {
         if (formerContainer instanceof PartUsage partUsage) {
-            if (this.transverseQueryService.isComponent(partUsage)) {
+            if (this.commonQueryService.isComponent(partUsage)) {
                 this.commonDeletionService.deletePerformedActionUsage(partUsage, (ActionUsage) droppedElement);
             }
         }
@@ -225,7 +225,7 @@ public class LARepresentationDropServices {
     private void moveExistingSubComponentViewsUnderParent(PartUsage droppedComponent, ViewCreationRequest parentViewCreationRequest, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
         // Resolve semantic sub-components of the dropped parent: only those can be moved under it.
-        var subComponents = this.transverseQueryService.getSubComponents(droppedComponent);
+        var subComponents = this.commonQueryService.getSubComponents(droppedComponent);
         if (subComponents.isEmpty()) {
             return;
         }
@@ -301,10 +301,10 @@ public class LARepresentationDropServices {
     private Optional<PartUsage> getContainerComponent(Element droppedElement) {
         Optional<PartUsage> containerComponent = Optional.empty();
         if (droppedElement instanceof PartUsage partUsage) {
-            if (partUsage.getOwningUsage() instanceof PartUsage owningContainer && this.transverseQueryService.isComponent(owningContainer)) {
+            if (partUsage.getOwningUsage() instanceof PartUsage owningContainer && this.commonQueryService.isComponent(owningContainer)) {
                 containerComponent = Optional.of(owningContainer);
             } else if (partUsage.getOwner() instanceof PartUsage ownerContainer) {
-                containerComponent = Optional.of(ownerContainer).filter(this.transverseQueryService::isComponent);
+                containerComponent = Optional.of(ownerContainer).filter(this.commonQueryService::isComponent);
             }
         }
         return containerComponent;

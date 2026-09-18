@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.sab.view.nodes.actor;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -69,7 +69,7 @@ public class SystemActorLabelProvider {
     private ConditionalInsideLabelStyle createHumanActorConditionalInsideLabelStyle() {
         return this.diagramBuilderHelper.newConditionalInsideLabelStyle()
                 .style(this.createHumanActorInsideLabelStyle())
-                .condition(ServiceMethod.of0(TransverseQueryService::isComponentHumanActor).aqlSelf())
+                .condition(ServiceMethod.of0(CommonQueryService::isComponentHumanActor).aqlSelf())
                 .build();
     }
 

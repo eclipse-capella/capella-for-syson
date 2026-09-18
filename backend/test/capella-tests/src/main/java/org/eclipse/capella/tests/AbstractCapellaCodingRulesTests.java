@@ -369,7 +369,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
 
     /**
      * Matches method and constructor calls to the Capella model services module. ArchUnit represents method references
-     * separately, so calls such as {@code ServiceMethod.of0(TransverseQueryService::getComponentExchanges)} are not
+     * separately, so calls such as {@code ServiceMethod.of0(CommonQueryService::getComponentExchanges)} are not
      * matched by this predicate.
      *
      * @return A predicate used to reject direct service calls

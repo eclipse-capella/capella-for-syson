@@ -12,13 +12,13 @@
  *******************************************************************************/
 package org.eclipse.capella.model.transverse.services;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_CAPABILITY;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_DESCRIPTION;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_COMPONENTS;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.MODELING_METADATA_STATUS_INFO;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.PATH_SEPARATOR;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STATUS;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_DESCRIPTION;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.MODELING_METADATA_STATUS_INFO;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.PATH_SEPARATOR;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.STATUS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class CommonUpdateService {
     // @technical-debt
     private final UtilService utilService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final ArcadiaLibraryServices arcadiaLibraryServices;
 
@@ -80,7 +80,7 @@ public class CommonUpdateService {
 
     public CommonUpdateService() {
         this.utilService = new UtilService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
         this.commonDeletionService = new CommonDeletionService();
@@ -102,9 +102,9 @@ public class CommonUpdateService {
 
     public Feature setCapabilityGeneralisationSource(Subsetting generalization, Usage oldCapability, Usage newCapability) {
         Usage capability;
-        if (!this.transverseQueryService.isCapability(newCapability)) {
+        if (!this.commonQueryService.isCapability(newCapability)) {
             capability = oldCapability;
-        } else if (this.transverseQueryService.getGeneralizationReferenceValue(newCapability).contains(generalization.getSubsettedFeature())) {
+        } else if (this.commonQueryService.getGeneralizationReferenceValue(newCapability).contains(generalization.getSubsettedFeature())) {
             this.logger.atWarn()
                     .setMessage("Cannot reconnect capability generalization source because it would create a duplicate link")
                     .addKeyValue("generalizationId", generalization.getElementId())
@@ -124,9 +124,9 @@ public class CommonUpdateService {
 
     public Feature setCapabilityGeneralisationTarget(Subsetting generalization, Usage oldCapability, Usage newCapability) {
         Usage capability;
-        if (!this.transverseQueryService.isCapability(newCapability)) {
+        if (!this.commonQueryService.isCapability(newCapability)) {
             capability = oldCapability;
-        } else if (this.transverseQueryService.getGeneralizationReferenceValue(generalization.getSubsettingFeature()).contains(newCapability)) {
+        } else if (this.commonQueryService.getGeneralizationReferenceValue(generalization.getSubsettingFeature()).contains(newCapability)) {
             this.logger.atWarn()
                     .setMessage("Cannot reconnect capability generalization target because it would create a duplicate link")
                     .addKeyValue("generalizationId", generalization.getElementId())
@@ -143,7 +143,7 @@ public class CommonUpdateService {
     }
 
     public Usage setCapabilityInvolvementTarget(Usage capability, PartUsage oldComponent, PartUsage newComponent) {
-        if (this.transverseQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(newComponent)) {
+        if (this.commonQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(newComponent)) {
             this.logger.atWarn()
                     .setMessage("Cannot reconnect capability involvement target because it would create a duplicate link")
                     .addKeyValue("capabilityId", capability.getElementId())
@@ -160,7 +160,7 @@ public class CommonUpdateService {
     }
 
     public Usage setCapabilityInvolvementSource(Usage oldCapability, Usage newCapability, PartUsage component) {
-        if (this.transverseQueryService.getFeatureReferenceValue(newCapability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
+        if (this.commonQueryService.getFeatureReferenceValue(newCapability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
             this.logger.atWarn()
                     .setMessage("Cannot reconnect capability involvement source because it would create a duplicate link")
                     .addKeyValue("oldCapabilityId", oldCapability.getElementId())
@@ -171,7 +171,7 @@ public class CommonUpdateService {
         }
         this.deleteFeaturesFromReference(oldCapability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
                 ARCADIA_INVOLVED_COMPONENTS, SysmlPackage.eINSTANCE.getPartUsage(), List.of(component));
-        if (this.transverseQueryService.getInvolvedComponents(oldCapability).isEmpty()) {
+        if (this.commonQueryService.getInvolvedComponents(oldCapability).isEmpty()) {
             this.deleteReference(oldCapability, ARCADIA_INVOLVED_COMPONENTS);
         }
         this.addFeatureReferenceValue(newCapability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
@@ -180,7 +180,7 @@ public class CommonUpdateService {
     }
 
     public Usage setBooleanAttribute(Usage usage, String prefix, String attributeName, boolean newValue) {
-        Optional<LiteralBoolean> optionalExitingValue = this.transverseQueryService.getFeatureReferenceExpression(usage, attributeName)
+        Optional<LiteralBoolean> optionalExitingValue = this.commonQueryService.getFeatureReferenceExpression(usage, attributeName)
                 .filter(LiteralBoolean.class::isInstance)
                 .map(LiteralBoolean.class::cast);
 
@@ -227,7 +227,7 @@ public class CommonUpdateService {
     }
 
     public void deleteFeaturesFromReference(Usage usage, String prefix, String attributeName, EClass referencedFeatureType, List<Feature> features) {
-        var newValues = new ArrayList<>(this.transverseQueryService.getFeatureReferenceValue(usage, attributeName));
+        var newValues = new ArrayList<>(this.commonQueryService.getFeatureReferenceValue(usage, attributeName));
         features.forEach(newValues::remove);
         this.setFeatureReferenceValues(usage, prefix, attributeName, newValues, referencedFeatureType);
     }
@@ -249,7 +249,7 @@ public class CommonUpdateService {
     }
 
     public void addFeatureReferenceValue(Usage usage, String libraryPrefix, String attributeName, Feature newValue, EClass referencedFeatureType) {
-        List<Feature> newValues = new ArrayList<>(this.transverseQueryService.getFeatureReferenceValue(usage, attributeName));
+        List<Feature> newValues = new ArrayList<>(this.commonQueryService.getFeatureReferenceValue(usage, attributeName));
         newValues.add(newValue);
         this.deleteReference(usage, attributeName);
         this.createFeatureReference(usage, libraryPrefix, attributeName, newValues, referencedFeatureType);
@@ -402,7 +402,7 @@ public class CommonUpdateService {
     public Feature setStatusKind(Feature feature, String newValue) {
         this.unSetUsageStatusKind(feature);
         if (newValue != null) {
-            this.transverseQueryService.getStatusKindEnum(feature).stream()
+            this.commonQueryService.getStatusKindEnum(feature).stream()
                     .filter(Objects::nonNull)
                     .filter(statusKind -> newValue.equals(statusKind.getDeclaredName()))
                     .findFirst()
@@ -421,7 +421,7 @@ public class CommonUpdateService {
         feature.getOwnedElement().stream()
                 .filter(MetadataUsage.class::isInstance)
                 .map(MetadataUsage.class::cast)
-                .filter(this.transverseQueryService::isStatusInfo)
+                .filter(this.commonQueryService::isStatusInfo)
                 .findFirst()
                 .ifPresent(this.commonDeletionService::delete);
     }

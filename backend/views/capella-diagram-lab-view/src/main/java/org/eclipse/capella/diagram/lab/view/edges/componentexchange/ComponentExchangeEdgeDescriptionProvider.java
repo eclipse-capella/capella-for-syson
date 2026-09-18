@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.lab.view.edges.componentexchange;
 
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentPortNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -44,11 +44,11 @@ public class ComponentExchangeEdgeDescriptionProvider extends AbstractEdgeDescri
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchanges).aqlSelf())
-                .sourceExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchangeSource).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getComponentExchanges).aqlSelf())
+                .sourceExpression(ServiceMethod.of0(CommonQueryService::getComponentExchangeSource).aqlSelf())
                 .style(new ComponentExchangeEdgeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createEdgeStyle())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
-                .targetExpression(ServiceMethod.of0(TransverseQueryService::getComponentExchangeTarget).aqlSelf())
+                .targetExpression(ServiceMethod.of0(CommonQueryService::getComponentExchangeTarget).aqlSelf())
                 .palette(new ComponentExchangePaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())
                 .build();
     }

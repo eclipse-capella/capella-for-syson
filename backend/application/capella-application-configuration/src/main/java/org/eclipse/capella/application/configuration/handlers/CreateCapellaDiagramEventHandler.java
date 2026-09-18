@@ -17,7 +17,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.eclipse.capella.application.configuration.dto.CreateCapellaRepresentationInput;
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -89,7 +89,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
     private final ICollaborativeDiagramMessageService messageService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final Counter counter;
 
@@ -101,7 +101,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
         this.representationPersistenceService = Objects.requireNonNull(representationPersistenceService);
         this.diagramCreationService = Objects.requireNonNull(diagramCreationService);
         this.messageService = Objects.requireNonNull(messageService);
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.counter = Counter.builder(Monitoring.EVENT_HANDLER)
                 .tag(Monitoring.NAME, this.getClass().getSimpleName())
                 .register(meterRegistry);
@@ -180,12 +180,12 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
     private Optional<? extends Element> findTargetObject(IEditingContext editingContext, String representationDescriptionId) {
         return switch (representationDescriptionId) {
-            case OAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.STRUCTURE_PACKAGE);
-            case OABD_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.FUNCTIONS_PACKAGE)
-                    .flatMap(this.transverseQueryService::getRootFunction);
-            case OCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, TransverseQueryService.CAPABILITIES_PACKAGE);
-            case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, TransverseQueryService.STRUCTURE_PACKAGE);
-            case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture, TransverseQueryService.STRUCTURE_PACKAGE);
+            case OAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.STRUCTURE_PACKAGE);
+            case OABD_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.FUNCTIONS_PACKAGE)
+                    .flatMap(this.commonQueryService::getRootFunction);
+            case OCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.CAPABILITIES_PACKAGE);
+            case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, CommonQueryService.STRUCTURE_PACKAGE);
+            case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture, CommonQueryService.STRUCTURE_PACKAGE);
             default -> Optional.empty();
         };
     }

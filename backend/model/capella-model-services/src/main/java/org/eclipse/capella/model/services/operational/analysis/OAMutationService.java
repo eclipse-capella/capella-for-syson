@@ -13,7 +13,7 @@
 package org.eclipse.capella.model.services.operational.analysis;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.InterfaceUsage;
@@ -29,17 +29,17 @@ public class OAMutationService {
 
     private final CommonCreationService commonCreationService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public OAMutationService() {
         this.commonCreationService = new CommonCreationService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     public InterfaceUsage createCommunicationMeanComponentExchangeOA(Feature source, Feature target) {
         var componentExchange = this.commonCreationService.createComponentExchange(source, target);
         if (componentExchange != null) {
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
+            long existingElementsCount = this.commonQueryService.existingElementsCount(componentExchange);
             componentExchange.setDeclaredName("CommunicationMean " + existingElementsCount);
         }
         return componentExchange;
@@ -48,7 +48,7 @@ public class OAMutationService {
     public OccurrenceUsage createOperationalCapabilityOA(Element parent) {
         var capability = this.commonCreationService.createOperationalCapability(parent);
         if (capability != null) {
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(capability);
+            long existingElementsCount = this.commonQueryService.existingElementsCount(capability);
             capability.setDeclaredName("OC " + existingElementsCount);
         }
         return capability;

@@ -40,7 +40,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
 
     private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
     public void deleteComponentExchangeSourcePortShouldDeleteComponentExchange() {
@@ -48,8 +48,8 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         PartUsage component1 = this.commonCreationService.createComponent(parent);
         PartUsage component2 = this.commonCreationService.createComponent(parent);
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
-        PortUsage sourcePort = this.transverseQueryService.getComponentExchangeSource(componentExchange);
-        assertThat(this.transverseQueryService.isComponentPort(sourcePort)).isTrue();
+        PortUsage sourcePort = this.commonQueryService.getComponentExchangeSource(componentExchange);
+        assertThat(this.commonQueryService.isComponentPort(sourcePort)).isTrue();
         assertThat(parent.getOwnedElement()).contains(componentExchange);
 
         this.commonDeletionService.delete(sourcePort);
@@ -62,8 +62,8 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         PartUsage component1 = this.commonCreationService.createComponent(parent);
         PartUsage component2 = this.commonCreationService.createComponent(parent);
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
-        PortUsage targetPort = this.transverseQueryService.getComponentExchangeTarget(componentExchange);
-        assertThat(this.transverseQueryService.isComponentPort(targetPort)).isTrue();
+        PortUsage targetPort = this.commonQueryService.getComponentExchangeTarget(componentExchange);
+        assertThat(this.commonQueryService.isComponentPort(targetPort)).isTrue();
         assertThat(parent.getOwnedElement()).contains(componentExchange);
 
         this.commonDeletionService.delete(targetPort);
@@ -78,7 +78,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component2);
 
         this.commonDeletionService.delete(componentExchange);
-        assertThat(this.transverseQueryService.getComponents(parent)).contains(component1, component2);
+        assertThat(this.commonQueryService.getComponents(parent)).contains(component1, component2);
         assertThat(parent.getOwnedElement())
                 .contains(component1, component2)
                 .doesNotContain(componentExchange);
@@ -94,7 +94,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         var result = this.commonDeletionService.deleteCapabilityInvolvement(capability, component);
 
         assertThat(result).isSameAs(capability);
-        assertThat(this.transverseQueryService.getInvolvedComponents(capability)).isEmpty();
+        assertThat(this.commonQueryService.getInvolvedComponents(capability)).isEmpty();
     }
 
     @Test
@@ -116,8 +116,8 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
         ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
-        Element sourcePort = this.transverseQueryService.getFunctionalExchangeSource(functionalExchange);
-        assertThat(this.transverseQueryService.isFunctionPort(sourcePort)).isTrue();
+        Element sourcePort = this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
+        assertThat(this.commonQueryService.isFunctionPort(sourcePort)).isTrue();
         assertThat(rootFunction.getOwnedElement()).contains(functionalExchange);
 
         this.commonDeletionService.delete(sourcePort);
@@ -130,8 +130,8 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
         ActionUsage function2 = this.commonCreationService.createFunction(rootFunction);
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
-        Element targetPort = this.transverseQueryService.getFunctionalExchangeTarget(functionalExchange);
-        assertThat(this.transverseQueryService.isFunctionPort(targetPort)).isTrue();
+        Element targetPort = this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
+        assertThat(this.commonQueryService.isFunctionPort(targetPort)).isTrue();
         assertThat(rootFunction.getOwnedElement()).contains(functionalExchange);
 
         this.commonDeletionService.delete(targetPort);
@@ -146,7 +146,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function2);
 
         this.commonDeletionService.delete(functionalExchange);
-        assertThat(this.transverseQueryService.getFunctions(rootFunction)).contains(function1, function2);
+        assertThat(this.commonQueryService.getFunctions(rootFunction)).contains(function1, function2);
         assertThat(rootFunction.getOwnedElement()).contains(function1, function2);
         assertThat(rootFunction.getOwnedElement()).doesNotContain(functionalExchange);
     }
@@ -167,17 +167,17 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         FlowUsage functionalExchange3 = this.commonCreationService.createFunctionalExchange(function3, function2);
 
         ActionUsage functionalChain = this.commonCreationService.createFunctionalChain(functionsPackage.getElement(), List.of(functionalExchange1, functionalExchange2));
-        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
+        assertThat(this.commonQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
 
         // Deleting an unrelated functional exchange doesn't change the functional chain.
         this.commonDeletionService.delete(functionalExchange3);
-        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
+        assertThat(this.commonQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange1, functionalExchange2);
 
         this.commonDeletionService.delete(functionalExchange1);
-        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange2);
+        assertThat(this.commonQueryService.getInvolvedFunctionalExchanges(functionalChain)).containsExactly(functionalExchange2);
 
         this.commonDeletionService.delete(functionalExchange2);
-        assertThat(this.transverseQueryService.getInvolvedFunctionalExchanges(functionalChain)).isEmpty();
+        assertThat(this.commonQueryService.getInvolvedFunctionalExchanges(functionalChain)).isEmpty();
     }
 
     @Test
@@ -207,14 +207,14 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
 
         ActionUsage functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, List.of(functionalExchange1));
 
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).containsExactly(functionalChain);
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).containsExactly(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).containsExactly(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function1)).containsExactly(functionalChain);
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function2)).containsExactly(functionalChain);
 
         this.commonDeletionService.delete(functionalChain);
 
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).isEmpty();
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function1)).isEmpty();
-        assertThat(this.transverseQueryService.getFunctionalChainsImpliedIn(function2)).isEmpty();
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(functionalExchange1)).isEmpty();
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function1)).isEmpty();
+        assertThat(this.commonQueryService.getFunctionalChainsImpliedIn(function2)).isEmpty();
     }
 }

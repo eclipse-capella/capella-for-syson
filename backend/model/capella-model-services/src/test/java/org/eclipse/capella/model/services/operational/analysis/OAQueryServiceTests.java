@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;
@@ -37,7 +37,7 @@ public class OAQueryServiceTests {
 
     private final OAQueryService oaQueryService = new OAQueryService();
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final DiagramMutationElementService diagramMutationElementService = mock(DiagramMutationElementService.class);
 
@@ -57,11 +57,11 @@ public class OAQueryServiceTests {
         PartUsage nestedTypedComponent = this.fixture.createArcadiaTypedComponent(componentA, "Nested Entity");
         this.fixture.createPartUsage(componentA, "Untyped Nested Entity");
 
-        assertThat(this.transverseQueryService.getStructurePackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.structurePackage());
-        assertThat(this.transverseQueryService.getRequirementsPackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.requirementsPackage());
+        assertThat(this.commonQueryService.getStructurePackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.structurePackage());
+        assertThat(this.commonQueryService.getRequirementsPackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.requirementsPackage());
 
-        assertThat(this.transverseQueryService.getSubComponents(oaPackages.operationalAnalysisPackage())).containsExactly(componentA);
-        assertThat(this.transverseQueryService.getSubComponents(componentA)).containsExactly(nestedTypedComponent);
+        assertThat(this.commonQueryService.getSubComponents(oaPackages.operationalAnalysisPackage())).containsExactly(componentA);
+        assertThat(this.commonQueryService.getSubComponents(componentA)).containsExactly(nestedTypedComponent);
     }
 
     @Test

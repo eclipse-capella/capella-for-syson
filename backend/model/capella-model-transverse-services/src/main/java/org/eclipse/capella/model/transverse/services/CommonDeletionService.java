@@ -12,9 +12,9 @@
  *******************************************************************************/
 package org.eclipse.capella.model.transverse.services;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_CAPABILITY;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_COMPONENTS;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,12 +35,12 @@ import org.eclipse.syson.sysml.Usage;
  */
 public class CommonDeletionService {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final CapellaDeleteService capellaDeleteService;
 
     public CommonDeletionService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.capellaDeleteService = new CapellaDeleteService();
     }
 
@@ -49,7 +49,7 @@ public class CommonDeletionService {
     }
 
     public Usage deleteCapabilityInvolvement(Usage capability, PartUsage component) {
-        var involvedComponents = this.transverseQueryService.getInvolvedComponents(capability);
+        var involvedComponents = this.commonQueryService.getInvolvedComponents(capability);
         if (!involvedComponents.contains(component)) {
             return null;
         }
@@ -74,7 +74,7 @@ public class CommonDeletionService {
         return partUsage.getNestedUsage().stream()
                 .filter(PerformActionUsage.class::isInstance)
                 .map(PerformActionUsage.class::cast)
-                .filter(performActionUsage -> predicate.test(this.transverseQueryService.getPerformedAction(performActionUsage).orElse(null)))
+                .filter(performActionUsage -> predicate.test(this.commonQueryService.getPerformedAction(performActionUsage).orElse(null)))
                 .toList();
     }
 }

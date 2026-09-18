@@ -18,7 +18,7 @@ import java.util.List;
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.LABDescriptionNameGenerator;
 import org.eclipse.capella.diagram.lab.view.LABViewDiagramDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -55,7 +55,7 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
                 .domainType(domainType)
                 .insideLabel(new RequirementLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .name(this.getNodeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getRequirements).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getRequirements).aqlSelf())
                 .style(requirementNodeStyleProvider.createRequirementNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)

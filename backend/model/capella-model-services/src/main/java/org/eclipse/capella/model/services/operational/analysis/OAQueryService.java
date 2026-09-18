@@ -14,7 +14,7 @@ package org.eclipse.capella.model.services.operational.analysis;
 
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.PartUsage;
@@ -26,10 +26,10 @@ import org.eclipse.syson.sysml.PartUsage;
  */
 public class OAQueryService {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public OAQueryService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     /**
@@ -43,9 +43,9 @@ public class OAQueryService {
      * @return the component source of the provided component exchange
      */
     public PartUsage getComponentExchangeSourceOA(InterfaceUsage interfaceUsage) {
-        return Optional.ofNullable(this.transverseQueryService.getComponentExchangeSource(interfaceUsage))
+        return Optional.ofNullable(this.commonQueryService.getComponentExchangeSource(interfaceUsage))
                 .map(Element::getOwner)
-                .filter(this.transverseQueryService::isComponent)
+                .filter(this.commonQueryService::isComponent)
                 .map(PartUsage.class::cast)
                 .orElse(null);
     }
@@ -61,9 +61,9 @@ public class OAQueryService {
      * @return the component target of the provided component exchange
      */
     public PartUsage getComponentExchangeTargetOA(InterfaceUsage interfaceUsage) {
-        return Optional.ofNullable(this.transverseQueryService.getComponentExchangeTarget(interfaceUsage))
+        return Optional.ofNullable(this.commonQueryService.getComponentExchangeTarget(interfaceUsage))
                 .map(Element::getOwner)
-                .filter(this.transverseQueryService::isComponent)
+                .filter(this.commonQueryService::isComponent)
                 .map(PartUsage.class::cast)
                 .orElse(null);
     }
