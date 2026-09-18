@@ -12,14 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTION;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTION;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -48,12 +48,12 @@ public class AllocatedFunctionReferenceWidgetProvider implements ICapellaReferen
 
     private static final String ERROR_MSG = "Something went wrong while deleting the allocated function";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final CommonDeletionService commonDeletionService;
 
     public AllocatedFunctionReferenceWidgetProvider() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.commonDeletionService = new CommonDeletionService();
     }
 
@@ -71,7 +71,7 @@ public class AllocatedFunctionReferenceWidgetProvider implements ICapellaReferen
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.transverseQueryService.getFunctions(eObject);
+            return this.commonQueryService.getFunctions(eObject);
         }
         return List.of();
     }
@@ -80,7 +80,7 @@ public class AllocatedFunctionReferenceWidgetProvider implements ICapellaReferen
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof PartUsage partUsage) {
-            return this.transverseQueryService.getAllocatedFunctions(partUsage);
+            return this.commonQueryService.getAllocatedFunctions(partUsage);
         }
         return List.of();
     }
@@ -105,7 +105,7 @@ public class AllocatedFunctionReferenceWidgetProvider implements ICapellaReferen
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object owner = variableManager.getVariables().get(VariableManager.SELF);
         if (owner instanceof PartUsage partUsage) {
-            this.transverseQueryService.getPerformedActions(partUsage, performAction -> this.transverseQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_FUNCTION).test(performAction))
+            this.commonQueryService.getPerformedActions(partUsage, performAction -> this.commonQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_FUNCTION).test(performAction))
                     .forEach(actionUsage -> this.commonDeletionService.deletePerformedActionUsage(partUsage, actionUsage));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }

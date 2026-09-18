@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
@@ -51,14 +51,14 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
 
     private static final String ERROR_MSG = "Something went wrong while deleting the exchange item payload";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final CommonUpdateService commonUpdateService;
 
     private final CommonDeletionService commonDeletionService;
 
     public ComponentExchangePortReferenceWidgetProvider() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.commonUpdateService = new CommonUpdateService();
         this.commonDeletionService = new CommonDeletionService();
 
@@ -78,7 +78,7 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof EObject eObject) {
-            return this.transverseQueryService.getComponentPorts(eObject);
+            return this.commonQueryService.getComponentPorts(eObject);
         }
         return List.of();
     }
@@ -89,9 +89,9 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof InterfaceUsage interfaceUsage) {
             if (SOURCE_PORT_FEATURE.equals(referenceDescription.getReferenceNameExpression())) {
-                values = List.of(this.transverseQueryService.getSource(interfaceUsage));
+                values = List.of(this.commonQueryService.getSource(interfaceUsage));
             } else if (TARGET_PORT_FEATURE.equals(referenceDescription.getReferenceNameExpression())) {
-                values = this.transverseQueryService.getTarget(interfaceUsage);
+                values = this.commonQueryService.getTarget(interfaceUsage);
             }
         }
         return values;

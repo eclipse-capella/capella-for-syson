@@ -12,17 +12,17 @@
  *******************************************************************************/
 package org.eclipse.capella.model.transverse.services;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_CAPABILITY;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTION;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_COMPONENTS;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTION;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.List;
 import java.util.Optional;
@@ -59,7 +59,7 @@ public class CommonCreationService {
 
     private static final String WHITE_SPACE = " ";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final CommonUpdateService commonUpdateService;
 
@@ -70,14 +70,14 @@ public class CommonCreationService {
     private final Logger logger = LoggerFactory.getLogger(CommonCreationService.class);
 
     public CommonCreationService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.commonUpdateService = new CommonUpdateService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
     }
 
     public Feature createCapabilityGeneralization(Usage sourceCapability, Usage targetCapability) {
-        if (this.transverseQueryService.getGeneralizationReferenceValue(sourceCapability).contains(targetCapability)) {
+        if (this.commonQueryService.getGeneralizationReferenceValue(sourceCapability).contains(targetCapability)) {
             return sourceCapability;
         }
         var generalization = SysmlFactory.eINSTANCE.createSubsetting();
@@ -89,7 +89,7 @@ public class CommonCreationService {
     }
 
     public Usage createCapabilityInvolvement(Usage capability, PartUsage component) {
-        if (this.transverseQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
+        if (this.commonQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
             return capability;
         }
         return this.commonUpdateService.setArcadiaReferenceFeature(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
@@ -101,14 +101,14 @@ public class CommonCreationService {
         this.metamodelMutationElementService.addChildInParent(parent, itemUsage);
         this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
         this.metamodelMutationElementService.initialize(itemUsage);
-        itemUsage.setDeclaredName(ARCADIA_EXCHANGE_ITEM + this.transverseQueryService.existingElementsCount(itemUsage));
+        itemUsage.setDeclaredName(ARCADIA_EXCHANGE_ITEM + this.commonQueryService.existingElementsCount(itemUsage));
 
         return itemUsage;
     }
 
     public RequirementUsage createRequirement(Element parent) {
         RequirementUsage requirementUsage = null;
-        Optional<Package> optionalRequirementsPackage = this.transverseQueryService.getRequirementsPackage(parent);
+        Optional<Package> optionalRequirementsPackage = this.commonQueryService.getRequirementsPackage(parent);
         if (optionalRequirementsPackage.isPresent()) {
             String name = "Requirement";
             requirementUsage = SysmlFactory.eINSTANCE.createRequirementUsage();
@@ -117,7 +117,7 @@ public class CommonCreationService {
             this.metamodelMutationElementService.initialize(requirementUsage);
             // Use native SysML v2 RequirementUsage without Arcadia typing
 
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(requirementUsage);
+            long existingElementsCount = this.commonQueryService.existingElementsCount(requirementUsage);
             requirementUsage.setDeclaredName(name + WHITE_SPACE + existingElementsCount);
         }
         return requirementUsage;
@@ -126,8 +126,8 @@ public class CommonCreationService {
     public PartUsage createComponent(Element parent) {
         PartUsage partUsage = null;
         Optional<Element> optionalTargetContainer = Optional.of(parent);
-        if (!this.transverseQueryService.isComponent(parent)) {
-            optionalTargetContainer = this.transverseQueryService.getStructurePackage(parent)
+        if (!this.commonQueryService.isComponent(parent)) {
+            optionalTargetContainer = this.commonQueryService.getStructurePackage(parent)
                     .map(Element.class::cast);
         }
         if (optionalTargetContainer.isPresent()) {
@@ -136,7 +136,7 @@ public class CommonCreationService {
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
             this.metamodelMutationElementService.initialize(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
+            long existingElementsCount = this.commonQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName("C" + WHITE_SPACE + existingElementsCount);
         }
         return partUsage;
@@ -144,9 +144,9 @@ public class CommonCreationService {
 
     private PortUsage getOrCreateComponentPort(Feature feature, FeatureDirectionKind direction) {
         PortUsage result = null;
-        if (this.transverseQueryService.isComponent(feature)) {
+        if (this.commonQueryService.isComponent(feature)) {
             result = this.createComponentPort((PartUsage) feature, direction);
-        } else if (this.transverseQueryService.isComponentPort(feature)) {
+        } else if (this.commonQueryService.isComponentPort(feature)) {
             result = (PortUsage) feature;
         }
         return result;
@@ -159,15 +159,15 @@ public class CommonCreationService {
         this.metamodelMutationElementService.addChildInParent(container, portUsage);
         this.metamodelMutationElementService.initialize(portUsage);
         this.arcadiaLibraryServices.typeWithArcadiaComponentPort(portUsage);
-        portUsage.setDeclaredName("CP " + this.transverseQueryService.existingElementsCount(portUsage));
+        portUsage.setDeclaredName("CP " + this.commonQueryService.existingElementsCount(portUsage));
         return portUsage;
     }
 
     public PartUsage createActor(Element parent) {
         PartUsage partUsage = null;
         Optional<Element> optionalTargetContainer = Optional.of(parent);
-        if (!this.transverseQueryService.isComponent(parent)) {
-            optionalTargetContainer = this.transverseQueryService.getStructurePackage(parent)
+        if (!this.commonQueryService.isComponent(parent)) {
+            optionalTargetContainer = this.commonQueryService.getStructurePackage(parent)
                     .map(Element.class::cast);
         }
         if (optionalTargetContainer.isPresent()) {
@@ -177,7 +177,7 @@ public class CommonCreationService {
             this.commonUpdateService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
             this.metamodelMutationElementService.initialize(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
+            long existingElementsCount = this.commonQueryService.existingElementsCount(partUsage);
             partUsage.setDeclaredName("A" + WHITE_SPACE + existingElementsCount);
         }
         return partUsage;
@@ -187,15 +187,15 @@ public class CommonCreationService {
     public ActionUsage createFunction(Element parent) {
         ActionUsage actionUsage = null;
         Optional<Element> optionalParent = Optional.ofNullable(parent)
-                .filter(this.transverseQueryService::isFunction)
-                .or(() -> this.transverseQueryService.getFunctionsPackage(parent)
-                        .flatMap(this.transverseQueryService::getRootFunction));
+                .filter(this.commonQueryService::isFunction)
+                .or(() -> this.commonQueryService.getFunctionsPackage(parent)
+                        .flatMap(this.commonQueryService::getRootFunction));
         if (optionalParent.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunction(actionUsage);
             this.metamodelMutationElementService.initialize(actionUsage);
-            actionUsage.setDeclaredName(ARCADIA_FUNCTION + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
+            actionUsage.setDeclaredName(ARCADIA_FUNCTION + WHITE_SPACE + this.commonQueryService.existingElementsCount(actionUsage));
 
             Optional<PartUsage> optionalAllocatingComponent = this.findAllocatingComponent(parent);
             if (optionalAllocatingComponent.isPresent()) {
@@ -214,9 +214,9 @@ public class CommonCreationService {
 
     public ItemUsage getOrCreateFunctionPort(Feature feature, FeatureDirectionKind direction) {
         ItemUsage result = null;
-        if (this.transverseQueryService.isFunction(feature)) {
+        if (this.commonQueryService.isFunction(feature)) {
             result = this.createFunctionPort((ActionUsage) feature, direction);
-        } else if (this.transverseQueryService.isFunctionPort(feature)) {
+        } else if (this.commonQueryService.isFunctionPort(feature)) {
             result = (ItemUsage) feature;
         }
         return result;
@@ -233,24 +233,24 @@ public class CommonCreationService {
             case OUT -> "FOP";
             default -> "FP";
         };
-        itemUsage.setDeclaredName(defaultName + WHITE_SPACE + this.transverseQueryService.existingElementsCount(itemUsage));
+        itemUsage.setDeclaredName(defaultName + WHITE_SPACE + this.commonQueryService.existingElementsCount(itemUsage));
 
         return itemUsage;
     }
 
     public FlowUsage createFunctionalExchange(Feature source, Feature target) {
-        Optional<Package> optionalSourceFunctionsPackage = this.transverseQueryService.getFunctionsPackage(source);
-        Optional<Package> optionalTargetFunctionsPackage = this.transverseQueryService.getFunctionsPackage(target);
+        Optional<Package> optionalSourceFunctionsPackage = this.commonQueryService.getFunctionsPackage(source);
+        Optional<Package> optionalTargetFunctionsPackage = this.commonQueryService.getFunctionsPackage(target);
 
         if (optionalSourceFunctionsPackage.isPresent() && optionalSourceFunctionsPackage.equals(optionalTargetFunctionsPackage)) {
 
-            if (this.transverseQueryService.canCreateFunctionalExchange(source, target)) {
+            if (this.commonQueryService.canCreateFunctionalExchange(source, target)) {
 
                 Feature sourcePort = this.getOrCreateFunctionPort(source, FeatureDirectionKind.OUT);
                 Feature targetPort = this.getOrCreateFunctionPort(target, FeatureDirectionKind.IN);
 
-                Optional<Namespace> optionalFunctionalExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target,
-                        e -> this.transverseQueryService.isFunction(e) || this.transverseQueryService.isFunctionsPackage(e));
+                Optional<Namespace> optionalFunctionalExchangeParent = this.commonQueryService.findClosestCommonAncestor(source, target,
+                        e -> this.commonQueryService.isFunction(e) || this.commonQueryService.isFunctionsPackage(e));
                 if (optionalFunctionalExchangeParent.isPresent()) {
 
                     // We can't use diagramMutationElementService#createFlowUsage here because the way SysON computes FlowUsage container doesn't work with Capella for SysON.
@@ -258,7 +258,7 @@ public class CommonCreationService {
 
                     this.metamodelMutationElementService.initialize(functionalExchange);
                     this.arcadiaLibraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
-                    long existingElementsCount = this.transverseQueryService.existingElementsCount(functionalExchange);
+                    long existingElementsCount = this.commonQueryService.existingElementsCount(functionalExchange);
                     functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
                     return functionalExchange;
                 }
@@ -269,23 +269,23 @@ public class CommonCreationService {
     }
 
     public InterfaceUsage createComponentExchange(Feature source, Feature target) {
-        Optional<Package> optionalSourceStructurePackage = this.transverseQueryService.getStructurePackage(source);
-        Optional<Package> optionalTargetStructurePackage = this.transverseQueryService.getStructurePackage(target);
+        Optional<Package> optionalSourceStructurePackage = this.commonQueryService.getStructurePackage(source);
+        Optional<Package> optionalTargetStructurePackage = this.commonQueryService.getStructurePackage(target);
 
         if (optionalSourceStructurePackage.isPresent() && optionalSourceStructurePackage.equals(optionalTargetStructurePackage)) {
 
-            if (this.transverseQueryService.canCreateComponentExchange(source, target)) {
+            if (this.commonQueryService.canCreateComponentExchange(source, target)) {
 
                 PortUsage sourcePort = this.getOrCreateComponentPort(source, FeatureDirectionKind.OUT);
                 PortUsage targetPort = this.getOrCreateComponentPort(target, FeatureDirectionKind.IN);
 
-                Optional<Namespace> optionalComponentExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target,
-                        e -> this.transverseQueryService.isComponent(e) || this.transverseQueryService.isStructurePackage(e));
+                Optional<Namespace> optionalComponentExchangeParent = this.commonQueryService.findClosestCommonAncestor(source, target,
+                        e -> this.commonQueryService.isComponent(e) || this.commonQueryService.isStructurePackage(e));
                 if (optionalComponentExchangeParent.isPresent()) {
                     InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalComponentExchangeParent.get());
                     this.metamodelMutationElementService.initialize(componentExchange);
                     this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
-                    long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
+                    long existingElementsCount = this.commonQueryService.existingElementsCount(componentExchange);
                     componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
                     return componentExchange;
                 }
@@ -302,15 +302,15 @@ public class CommonCreationService {
 
     public ActionUsage createOperationalActivity(Element parent) {
         ActionUsage activity = null;
-        if (this.transverseQueryService.isOperationalActivity(parent)) {
+        if (this.commonQueryService.isOperationalActivity(parent)) {
             activity = this.createFunction(parent);
-            activity.setDeclaredName("OA " + this.transverseQueryService.existingElementsCount(activity));
+            activity.setDeclaredName("OA " + this.commonQueryService.existingElementsCount(activity));
         }
         return activity;
     }
 
     public OccurrenceUsage createOperationalCapability(Element parent) {
-        return this.transverseQueryService.getCapabilitiesPackage(parent)
+        return this.commonQueryService.getCapabilitiesPackage(parent)
                 .map(capabilitiesPackage -> {
                     var capability = SysmlFactory.eINSTANCE.createOccurrenceUsage();
                     this.metamodelMutationElementService.addChildInParent(capabilitiesPackage, capability);
@@ -327,14 +327,14 @@ public class CommonCreationService {
                 .filter(Element.class::isInstance)
                 .map(Element.class::cast)
                 .toList();
-        Optional<Namespace> optionalCommonAncestor = this.transverseQueryService.findClosestCommonAncestor(selectedElements,
-                candidate -> this.transverseQueryService.isFunction(candidate) || this.transverseQueryService.isFunctionsPackage(candidate));
+        Optional<Namespace> optionalCommonAncestor = this.commonQueryService.findClosestCommonAncestor(selectedElements,
+                candidate -> this.commonQueryService.isFunction(candidate) || this.commonQueryService.isFunctionsPackage(candidate));
         if (optionalCommonAncestor.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalCommonAncestor.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.metamodelMutationElementService.initialize(actionUsage);
-            actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
+            actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.commonQueryService.existingElementsCount(actionUsage));
             this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
                     SysmlPackage.eINSTANCE.getFlowUsage().getName());
         }
@@ -349,10 +349,10 @@ public class CommonCreationService {
 
     private Optional<PartUsage> findAllocatingComponent(Element parent) {
         Optional<PartUsage> allocatingComponent = Optional.empty();
-        if (this.transverseQueryService.isComponent(parent)) {
+        if (this.commonQueryService.isComponent(parent)) {
             allocatingComponent = Optional.of((PartUsage) parent);
-        } else if (this.transverseQueryService.isFunction(parent)) {
-            allocatingComponent = this.transverseQueryService.getAllocatingComponent((ActionUsage) parent);
+        } else if (this.commonQueryService.isFunction(parent)) {
+            allocatingComponent = this.commonQueryService.getAllocatingComponent((ActionUsage) parent);
         }
         return allocatingComponent;
     }

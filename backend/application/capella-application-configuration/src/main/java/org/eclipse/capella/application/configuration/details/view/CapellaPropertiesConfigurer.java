@@ -12,14 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_HUMAN;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_EXCHANGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_PORT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +38,7 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionsWidgetProvider;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -128,7 +128,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         view.getDescriptions().add(viewFormDescription);
 
         // Convert the View-based FormDescription and register the result into the system
-        AQLInterpreter interpreter = new AQLInterpreter(List.of(TransverseQueryService.class, CommonCreationService.class, CommonUpdateService.class),
+        AQLInterpreter interpreter = new AQLInterpreter(List.of(CommonQueryService.class, CommonCreationService.class, CommonUpdateService.class),
                 List.of(new DetailsViewService(this.composedAdapterFactoryDescriptors, this.feedbackMessageService, this.readOnlyObjectPredicate, new MetamodelQueryElementService(), this.detailsViewHelpTextProviders)),
                 List.of(SysmlPackage.eINSTANCE));
         ViewConverterResult viewConverterResult = this.converter.convert(viewFormDescription, List.of(), interpreter);
@@ -147,7 +147,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         PageDescription pageCore = FormFactory.eINSTANCE.createPageDescription();
         pageCore.setName("Capella-DetailsView-Core");
         pageCore.setDomainType(domainType);
-        pageCore.setPreconditionExpression(ServiceMethod.of0(TransverseQueryService::isArcadiaElement).aqlSelf());
+        pageCore.setPreconditionExpression(ServiceMethod.of0(CommonQueryService::isArcadiaElement).aqlSelf());
         pageCore.setLabelExpression("Capella");
         pageCore.getGroups().add(this.createCorePropertiesGroup());
 
@@ -176,7 +176,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementDescription createComponentPortWidget() {
         FormElementIf componentPortWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         componentPortWidgetIf.setName("ComponentPortWidgetIf");
-        componentPortWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isComponentPort).aqlSelf());
+        componentPortWidgetIf.setPredicateExpression(ServiceMethod.of0(CommonQueryService::isComponentPort).aqlSelf());
 
         componentPortWidgetIf.getChildren().addAll(this.createComponentPortWidgets());
         return componentPortWidgetIf;
@@ -215,8 +215,8 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         TextfieldDescription textfieldName = FormFactory.eINSTANCE.createTextfieldDescription();
         textfieldName.setName("ArcadiaElementNameWidget");
         textfieldName.setLabelExpression("Name");
-        textfieldName.setValueExpression(ServiceMethod.of0(TransverseQueryService::getArcadiaElementName).aqlSelf());
-        textfieldName.setValueExpression(ServiceMethod.of0(TransverseQueryService::getArcadiaElementName).aqlSelf());
+        textfieldName.setValueExpression(ServiceMethod.of0(CommonQueryService::getArcadiaElementName).aqlSelf());
+        textfieldName.setValueExpression(ServiceMethod.of0(CommonQueryService::getArcadiaElementName).aqlSelf());
 
         ChangeContext setNewValueOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewValueOperation.setExpression(
@@ -227,7 +227,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         richTextDescription.setName("ArcadiaElementDescriptionWidget");
         richTextDescription.setLabelExpression("Description");
         richTextDescription.setIsEnabledExpression("true");
-        richTextDescription.setValueExpression(ServiceMethod.of0(TransverseQueryService::getArcadiaElementDescription).aqlSelf());
+        richTextDescription.setValueExpression(ServiceMethod.of0(CommonQueryService::getArcadiaElementDescription).aqlSelf());
         ChangeContext setNewDescriptionOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewDescriptionOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setElementDescription).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE));
         richTextDescription.getBody().add(setNewDescriptionOperation);
@@ -235,9 +235,9 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         var statusSelectDescription = FormFactory.eINSTANCE.createSelectDescription();
         statusSelectDescription.setName("ArcadiaElementStatusWidget");
         statusSelectDescription.setLabelExpression("Status");
-        statusSelectDescription.setValueExpression(ServiceMethod.of0(TransverseQueryService::getStatusStringValue).aqlSelf());
+        statusSelectDescription.setValueExpression(ServiceMethod.of0(CommonQueryService::getStatusStringValue).aqlSelf());
         statusSelectDescription.setCandidateLabelExpression(AQLConstants.AQL + SelectComponent.CANDIDATE_VARIABLE);
-        statusSelectDescription.setCandidatesExpression(ServiceMethod.of0(TransverseQueryService::getStatusKindEnumLiterals).aqlSelf());
+        statusSelectDescription.setCandidatesExpression(ServiceMethod.of0(CommonQueryService::getStatusKindEnumLiterals).aqlSelf());
         var setNewStatusOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewStatusOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE));
         statusSelectDescription.getBody().add(setNewStatusOperation);
@@ -247,7 +247,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementIf createComponentWidget() {
         FormElementIf componentWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         componentWidgetIf.setName("ComponentWidgetIf");
-        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isComponent).aqlSelf());
+        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(CommonQueryService::isComponent).aqlSelf());
         componentWidgetIf.getChildren().addAll(this.createComponentWidgets());
         return componentWidgetIf;
     }
@@ -255,7 +255,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementIf createFunctionalChainWidget() {
         FormElementIf componentWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         componentWidgetIf.setName("FunctionalChainWidgetIf");
-        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isFunctionalChain).aqlSelf());
+        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(CommonQueryService::isFunctionalChain).aqlSelf());
         componentWidgetIf.getChildren().addAll(this.createFunctionalChainWidgets());
         return componentWidgetIf;
     }
@@ -263,7 +263,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementIf createFunctionalExchangeWidget() {
         FormElementIf componentWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         componentWidgetIf.setName("FunctionalExchangeWidgetIf");
-        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isFunctionalExchange).aqlSelf());
+        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(CommonQueryService::isFunctionalExchange).aqlSelf());
         componentWidgetIf.getChildren().addAll(this.createFunctionalExchangeWidgets());
         return componentWidgetIf;
     }
@@ -271,7 +271,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementIf createComponentExchangeWidget() {
         FormElementIf componentWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         componentWidgetIf.setName("ComponentExchangeWidgetIf");
-        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isComponentExchange).aqlSelf());
+        componentWidgetIf.setPredicateExpression(ServiceMethod.of0(CommonQueryService::isComponentExchange).aqlSelf());
         componentWidgetIf.getChildren().addAll(this.createComponentExchangeWidgets());
         return componentWidgetIf;
     }
@@ -416,7 +416,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         CheckboxDescription checkboxIsActor = FormFactory.eINSTANCE.createCheckboxDescription();
         checkboxIsActor.setName("CheckboxIsActorWidget");
         checkboxIsActor.setLabelExpression("Is Actor");
-        checkboxIsActor.setValueExpression(ServiceMethod.of0(TransverseQueryService::isComponentActor).aqlSelf());
+        checkboxIsActor.setValueExpression(ServiceMethod.of0(CommonQueryService::isComponentActor).aqlSelf());
         ChangeContext setIsActorChangeContext = ViewFactory.eINSTANCE.createChangeContext();
         setIsActorChangeContext.setExpression(ServiceMethod.of3(CommonUpdateService::setBooleanAttribute)
                 .aqlSelf(
@@ -430,7 +430,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         CheckboxDescription checkboxIsHuman = FormFactory.eINSTANCE.createCheckboxDescription();
         checkboxIsHuman.setName("CheckboxIsHumanWidget");
         checkboxIsHuman.setLabelExpression("Is Human");
-        checkboxIsHuman.setValueExpression(ServiceMethod.of0(TransverseQueryService::getHumanCheckboxValue).aqlSelf());
+        checkboxIsHuman.setValueExpression(ServiceMethod.of0(CommonQueryService::getHumanCheckboxValue).aqlSelf());
         ChangeContext setIsHumanChangeContext = ViewFactory.eINSTANCE.createChangeContext();
 
         setIsHumanChangeContext.setExpression(ServiceMethod.of3(CommonUpdateService::setBooleanAttribute)
@@ -464,7 +464,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     private FormElementDescription createExchangeItemWidget() {
         FormElementIf exchangeItemWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
         exchangeItemWidgetIf.setName("ExchangeItemWidgetIf");
-        exchangeItemWidgetIf.setPredicateExpression(ServiceMethod.of0(TransverseQueryService::isExchangeItem).aqlSelf());
+        exchangeItemWidgetIf.setPredicateExpression(ServiceMethod.of0(CommonQueryService::isExchangeItem).aqlSelf());
 
         exchangeItemWidgetIf.getChildren().addAll(this.createExchangeItemWidgets());
         return exchangeItemWidgetIf;
@@ -477,7 +477,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         radioDescription.setLabelExpression("Direction");
         radioDescription.setValueExpression(ServiceMethod.<DetailsViewService, Element, String> of1(DetailsViewService::getEnumValue).aqlSelf("'direction'"));
 
-        radioDescription.setCandidatesExpression(ServiceMethod.of1(TransverseQueryService::getExchangeItemEnumLiterals).aqlSelf("'direction'"));
+        radioDescription.setCandidatesExpression(ServiceMethod.of1(CommonQueryService::getExchangeItemEnumLiterals).aqlSelf("'direction'"));
         radioDescription.setCandidateLabelExpression(AQLConstants.AQL + SelectComponent.CANDIDATE_VARIABLE);
 
         ChangeContext setNewDirectionValueChangeContext = ViewFactory.eINSTANCE.createChangeContext();

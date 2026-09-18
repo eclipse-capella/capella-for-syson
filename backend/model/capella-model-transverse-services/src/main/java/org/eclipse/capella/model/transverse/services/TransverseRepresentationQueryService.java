@@ -34,12 +34,12 @@ import org.eclipse.syson.sysml.FlowUsage;
  */
 public class TransverseRepresentationQueryService {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final IObjectSearchService objectSearchService;
 
     public TransverseRepresentationQueryService(IObjectSearchService objectSearchService) {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
     }
 
@@ -72,7 +72,7 @@ public class TransverseRepresentationQueryService {
                 .flatMap(objectId -> this.objectSearchService.getObject(editingContext, objectId))
                 .filter(ActionUsage.class::isInstance)
                 .map(ActionUsage.class::cast)
-                .filter(this.transverseQueryService::isFunctionalChain);
+                .filter(this.commonQueryService::isFunctionalChain);
 
     }
 
@@ -89,7 +89,7 @@ public class TransverseRepresentationQueryService {
      */
     public int getImpliedInFunctionalChainIndex(FlowUsage functionalExchange, IEditingContext editingContext, DiagramContext diagramContext) {
         List<ActionUsage> functionalChainsInDiagram = this.getFunctionalChainInDiagram(diagramContext, editingContext);
-        List<ActionUsage> functionalChainsImpliedIn = this.transverseQueryService.getFunctionalChainsImpliedIn(functionalExchange);
+        List<ActionUsage> functionalChainsImpliedIn = this.commonQueryService.getFunctionalChainsImpliedIn(functionalExchange);
         return this.computeIndex(functionalChainsInDiagram, functionalChainsImpliedIn);
     }
 
@@ -106,7 +106,7 @@ public class TransverseRepresentationQueryService {
      */
     public int getImpliedInFunctionalChainIndex(ActionUsage actionUsage, IEditingContext editingContext, DiagramContext diagramContext) {
         List<ActionUsage> functionalChainsInDiagram = this.getFunctionalChainInDiagram(diagramContext, editingContext);
-        List<ActionUsage> functionalChainsImpliedIn = this.transverseQueryService.getFunctionalChainsImpliedIn(actionUsage);
+        List<ActionUsage> functionalChainsImpliedIn = this.commonQueryService.getFunctionalChainsImpliedIn(actionUsage);
         return this.computeIndex(functionalChainsInDiagram, functionalChainsImpliedIn);
     }
 

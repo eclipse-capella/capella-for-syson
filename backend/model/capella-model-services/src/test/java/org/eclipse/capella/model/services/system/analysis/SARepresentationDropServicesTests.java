@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -63,8 +63,8 @@ public class SARepresentationDropServicesTests extends AbstractSemanticTests {
         var targetFunction = this.commonCreationService.createFunction(system);
 
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(sourceFunction, targetFunction);
-        var sourcePort = new TransverseQueryService().getFunctionalExchangeSource(functionalExchange);
-        var targetPort = new TransverseQueryService().getFunctionalExchangeTarget(functionalExchange);
+        var sourcePort = new CommonQueryService().getFunctionalExchangeSource(functionalExchange);
+        var targetPort = new CommonQueryService().getFunctionalExchangeTarget(functionalExchange);
         var diagramServices = new RecordingDiagramServices();
         var diagramContext = this.createDiagramContext(structurePackage);
 

@@ -16,7 +16,7 @@ package org.eclipse.capella.model.services.functional.context;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
@@ -29,18 +29,18 @@ import org.eclipse.syson.sysml.FlowUsage;
  */
 public class DDVQueryService {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public DDVQueryService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     public List<FlowUsage> getRelatedFunctionalExchanges(EObject self) {
-        if (self instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(actionUsage)) {
-            var referencingFunctionalExchanges = this.transverseQueryService.getIncomingFunctionalExchanges(actionUsage)
+        if (self instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
+            var referencingFunctionalExchanges = this.commonQueryService.getIncomingFunctionalExchanges(actionUsage)
                     .stream();
 
-            var referencedFunctionalExchanges = this.transverseQueryService.getOutgoingFunctionalExchanges(actionUsage)
+            var referencedFunctionalExchanges = this.commonQueryService.getOutgoingFunctionalExchanges(actionUsage)
                     .stream();
 
             return Stream.concat(referencingFunctionalExchanges, referencedFunctionalExchanges)
@@ -51,14 +51,14 @@ public class DDVQueryService {
     }
 
     public List<ActionUsage> getReferencedAndReferencingFunctions(EObject self) {
-        if (self instanceof ActionUsage actionUsage && this.transverseQueryService.isFunction(actionUsage)) {
-            var referencingFunctions = this.transverseQueryService.getIncomingFunctionalExchanges(actionUsage)
+        if (self instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
+            var referencingFunctions = this.commonQueryService.getIncomingFunctionalExchanges(actionUsage)
                     .stream()
-                    .map(this.transverseQueryService::getFunctionalExchangeSourceFunction);
+                    .map(this.commonQueryService::getFunctionalExchangeSourceFunction);
 
-            var referencedFunctions = this.transverseQueryService.getOutgoingFunctionalExchanges(actionUsage)
+            var referencedFunctions = this.commonQueryService.getOutgoingFunctionalExchanges(actionUsage)
                     .stream()
-                    .map(this.transverseQueryService::getFunctionalExchangeTargetFunction);
+                    .map(this.commonQueryService::getFunctionalExchangeTargetFunction);
 
             return Stream.concat(referencedFunctions, referencingFunctions)
                     .distinct()

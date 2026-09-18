@@ -22,7 +22,7 @@ import org.eclipse.capella.model.services.operational.analysis.OARepresentationQ
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
@@ -67,7 +67,7 @@ public class OCBViewJavaServiceProvider implements IJavaServiceProvider {
                     CommonCreationService.class,
                     CommonDeletionService.class,
                     CommonUpdateService.class,
-                    TransverseQueryService.class,
+                    CommonQueryService.class,
                     TransverseRepresentationMutationService.class,
                     OCBViewQueryService.class,
                     DiagramMutationAQLService.class,

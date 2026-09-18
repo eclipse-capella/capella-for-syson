@@ -17,7 +17,7 @@ import java.util.Optional;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
@@ -31,7 +31,7 @@ public class SAMutationService {
 
     private final SAQueryService saQueryService;
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     private final CommonCreationService commonCreationService;
 
@@ -41,7 +41,7 @@ public class SAMutationService {
 
     public SAMutationService() {
         this.saQueryService = new SAQueryService();
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
         this.commonCreationService = new CommonCreationService();
         this.commonUpdateService = new CommonUpdateService();
         this.commonDeletionService = new CommonDeletionService();
@@ -53,7 +53,7 @@ public class SAMutationService {
         if (parent instanceof PartUsage partUsage && !this.saQueryService.isSystemOfInterest(partUsage)) {
             targetContainer = Optional.of(parent);
         } else {
-            targetContainer = this.transverseQueryService.getStructurePackage(parent)
+            targetContainer = this.commonQueryService.getStructurePackage(parent)
                     .map(Element.class::cast);
         }
         if (targetContainer.isPresent()) {
@@ -77,7 +77,7 @@ public class SAMutationService {
     }
 
     public void moveFunctionToComponent(ActionUsage function, Object previousParent, PartUsage targetComponent) {
-        if (previousParent != targetComponent && previousParent instanceof PartUsage previousParentPartUsage && this.transverseQueryService.isComponent(previousParentPartUsage)) {
+        if (previousParent != targetComponent && previousParent instanceof PartUsage previousParentPartUsage && this.commonQueryService.isComponent(previousParentPartUsage)) {
             this.commonDeletionService.deletePerformedActionUsage(previousParentPartUsage, function);
             this.commonUpdateService.setPerformAction(targetComponent, function);
         }

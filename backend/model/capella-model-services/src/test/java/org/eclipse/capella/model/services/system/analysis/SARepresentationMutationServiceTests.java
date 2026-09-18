@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
  */
 public class SARepresentationMutationServiceTests {
 
-    private final TransverseQueryService transverseQueryService = new TransverseQueryService();
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
@@ -179,8 +179,8 @@ public class SARepresentationMutationServiceTests {
         assertNotNull(componentExchange);
         assertEquals(structurePackage, componentExchange.getOwner());
         assertEquals("Arcadia::ComponentExchange", componentExchange.getType().get(0).getQualifiedName());
-        assertEquals(system, this.transverseQueryService.getComponentExchangeSource(componentExchange).getOwner());
-        assertEquals(actor, this.transverseQueryService.getComponentExchangeTarget(componentExchange).getOwner());
+        assertEquals(system, this.commonQueryService.getComponentExchangeSource(componentExchange).getOwner());
+        assertEquals(actor, this.commonQueryService.getComponentExchangeTarget(componentExchange).getOwner());
     }
 
     @Test
@@ -322,8 +322,8 @@ public class SARepresentationMutationServiceTests {
 
         assertFalse(system.getOwnedElement().contains(deletedComponent));
         assertTrue(system.getOwnedElement().contains(retainedComponent));
-        assertFalse(this.transverseQueryService.getFunctionalExchanges(systemAnalysisPackage).isEmpty());
-        assertTrue(this.transverseQueryService.getFunctionalChains(systemAnalysisPackage).contains(functionalChain));
+        assertFalse(this.commonQueryService.getFunctionalExchanges(systemAnalysisPackage).isEmpty());
+        assertTrue(this.commonQueryService.getFunctionalChains(systemAnalysisPackage).contains(functionalChain));
         assertTrue(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(deletedFunction));
         assertTrue(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(retainedFunction));
     }
@@ -344,11 +344,11 @@ public class SARepresentationMutationServiceTests {
 
         this.commonDeletionService.delete(deletedFunction);
 
-        var queryService = new TransverseQueryService();
+        var queryService = new CommonQueryService();
         assertFalse(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(deletedFunction));
         assertTrue(queryService.getAllocatedFunctions(sourceComponent).isEmpty());
         assertEquals(java.util.List.of(retainedFunction), queryService.getAllocatedFunctions(targetComponent));
-        assertTrue(new TransverseQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
+        assertTrue(new CommonQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
     }
 
     @Test
@@ -361,7 +361,7 @@ public class SARepresentationMutationServiceTests {
 
         this.semanticMutationService.moveFunctionToComponent(function, sourceComponent, targetComponent);
 
-        var queryService = new TransverseQueryService();
+        var queryService = new CommonQueryService();
         assertTrue(queryService.getAllocatedFunctions(sourceComponent).isEmpty());
         assertEquals(java.util.List.of(function), queryService.getAllocatedFunctions(targetComponent));
     }
@@ -376,7 +376,7 @@ public class SARepresentationMutationServiceTests {
         this.commonDeletionService.delete(requirement);
 
         assertFalse(this.getRequirementsPackage(structurePackage).getOwnedElement().contains(requirement));
-        assertFalse(this.transverseQueryService.getDescribes(structurePackage.getOwner()).contains(describes));
+        assertFalse(this.commonQueryService.getDescribes(structurePackage.getOwner()).contains(describes));
     }
 
     @Test
@@ -483,7 +483,7 @@ public class SARepresentationMutationServiceTests {
         return functionsPackage.getOwnedElement().stream()
                 .filter(ActionUsage.class::isInstance)
                 .map(ActionUsage.class::cast)
-                .filter(this.transverseQueryService::isFunction)
+                .filter(this.commonQueryService::isFunction)
                 .findFirst()
                 .orElseThrow();
     }

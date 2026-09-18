@@ -13,7 +13,7 @@
 package org.eclipse.capella.diagram.oab.view.nodes.component;
 
 import org.eclipse.capella.diagram.oab.view.OABViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -69,7 +69,7 @@ public class EntityComponentLabelProvider {
     public ConditionalInsideLabelStyle createActorConditionalInsideLabelStyle() {
         return this.diagramBuilderHelper.newConditionalInsideLabelStyle()
                 .style(this.createActorInsideLabelStyle())
-                .condition(ServiceMethod.of0(TransverseQueryService::isComponentHumanActor).aqlSelf())
+                .condition(ServiceMethod.of0(CommonQueryService::isComponentHumanActor).aqlSelf())
                 .build();
     }
 

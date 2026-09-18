@@ -12,15 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.PATH_SEPARATOR;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STRUCTURE_PACKAGE;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.PATH_SEPARATOR;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.STRUCTURE_PACKAGE;
 
 import java.util.List;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
@@ -36,10 +36,10 @@ public class SAQueryService {
 
     private static final String SYSTEM_ANALYSIS_PACKAGE_NAME = "'System Analysis'";
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public SAQueryService() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     public List<PartUsage> getSystemOfInterest(EObject eObject) {
@@ -50,21 +50,21 @@ public class SAQueryService {
     }
 
     public List<PartUsage> getSystemActors(EObject eObject) {
-        return this.transverseQueryService.getSubComponents(eObject).stream()
-                .filter(this.transverseQueryService::isComponentActor)
+        return this.commonQueryService.getSubComponents(eObject).stream()
+                .filter(this.commonQueryService::isComponentActor)
                 .toList();
     }
 
     public List<PartUsage> getSystemComponents(EObject eObject) {
-        return this.transverseQueryService.getSubComponents(eObject).stream()
-                .filter(partUsage -> !this.transverseQueryService.isComponentActor(partUsage))
+        return this.commonQueryService.getSubComponents(eObject).stream()
+                .filter(partUsage -> !this.commonQueryService.isComponentActor(partUsage))
                 .filter(partUsage -> !this.isSystemOfInterest(partUsage))
                 .toList();
     }
 
     public boolean isSystemComponent(PartUsage partUsage) {
-        return this.transverseQueryService.isComponent(partUsage)
-                && !this.transverseQueryService.isComponentActor(partUsage)
+        return this.commonQueryService.isComponent(partUsage)
+                && !this.commonQueryService.isComponentActor(partUsage)
                 && !this.isSystemOfInterest(partUsage)
                 && this.isInSystemAnalysisStructure(partUsage);
     }
@@ -76,7 +76,7 @@ public class SAQueryService {
     }
 
     private boolean isSystemAnalysisPerspectivePackage(Package packageElt) {
-        return this.transverseQueryService.getArcadiaPerspectivePackage(packageElt)
+        return this.commonQueryService.getArcadiaPerspectivePackage(packageElt)
                 .map(Package::getDeclaredName)
                 .flatMap(ArcadiaEngineeringPerspective::fromLabel)
                 .filter(ArcadiaEngineeringPerspective.SystemAnalysis::equals)
@@ -85,7 +85,7 @@ public class SAQueryService {
 
     private List<PartUsage> getSystemOfInterestCandidates(EObject eObject) {
         return this.getDirectOwnedPartUsages(eObject).stream()
-                .filter(this.transverseQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_COMPONENT))
+                .filter(this.commonQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_COMPONENT))
                 .filter(this::isInSystemAnalysisStructure)
                 .filter(this::isSystemOfInterest)
                 .toList();
@@ -109,7 +109,7 @@ public class SAQueryService {
     }
 
     private boolean isSystemOfInterestCandidate(PartUsage partUsage) {
-        return this.transverseQueryService.isComponent(partUsage) && !this.transverseQueryService.isComponentActor(partUsage);
+        return this.commonQueryService.isComponent(partUsage) && !this.commonQueryService.isComponentActor(partUsage);
     }
 
     private boolean isDirectlyOwnedBySystemAnalysisStructure(PartUsage partUsage) {
@@ -122,8 +122,8 @@ public class SAQueryService {
             result = packageElement.getOwnedElement().stream()
                     .filter(PartUsage.class::isInstance)
                     .map(PartUsage.class::cast)
-                    .filter(this.transverseQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_COMPONENT))
-                    .filter(candidate -> !this.transverseQueryService.isComponentActor(candidate))
+                    .filter(this.commonQueryService.isTypedWith(ARCADIA_PREFIX + ARCADIA_COMPONENT))
+                    .filter(candidate -> !this.commonQueryService.isComponentActor(candidate))
                     .findFirst()
                     .filter(partUsage::equals)
                     .isPresent();

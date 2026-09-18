@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -31,10 +31,10 @@ import org.eclipse.syson.sysml.SysmlPackage;
  */
 public class CellIconURLsProvider implements BiFunction<VariableManager, Object, List<String>> {
 
-    private final TransverseQueryService transverseQueryService;
+    private final CommonQueryService commonQueryService;
 
     public CellIconURLsProvider() {
-        this.transverseQueryService = new TransverseQueryService();
+        this.commonQueryService = new CommonQueryService();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class CellIconURLsProvider implements BiFunction<VariableManager, Object,
 
     private List<String> resolveComponentIcon(EObject self) {
         List<String> iconPath = List.of();
-        Optional<PartUsage> component = this.transverseQueryService.getAllocatingComponent((ActionUsage) self);
+        Optional<PartUsage> component = this.commonQueryService.getAllocatingComponent((ActionUsage) self);
         if (component.isPresent()) {
             iconPath = this.getAllocatingComponentIcon(component.get());
         }
@@ -67,7 +67,7 @@ public class CellIconURLsProvider implements BiFunction<VariableManager, Object,
 
     private List<String> resolvePortIcon(EObject self) {
         List<String> iconPath = List.of();
-        List<Feature> ports = this.transverseQueryService.getFunctionPorts(self);
+        List<Feature> ports = this.commonQueryService.getFunctionPorts(self);
 
         if (ports.size() == 1) {
             iconPath = this.getFunctionPortIcon(ports.get(0));
@@ -81,11 +81,11 @@ public class CellIconURLsProvider implements BiFunction<VariableManager, Object,
     private List<String> getAllocatingComponentIcon(PartUsage component) {
         List<String> iconPath = List.of();
 
-        if (this.transverseQueryService.isComponentHumanActor(component)) {
+        if (this.commonQueryService.isComponentHumanActor(component)) {
             iconPath = List.of("/icons/full/obj16/LogicalComponentHuman.svg");
-        } else if (this.transverseQueryService.isComponentActor(component)) {
+        } else if (this.commonQueryService.isComponentActor(component)) {
             iconPath = List.of("/icons/full/obj16/LogicalActor.svg");
-        } else if (this.transverseQueryService.isComponent(component)) {
+        } else if (this.commonQueryService.isComponent(component)) {
             iconPath = List.of("/icons/full/obj16/LogicalComponent.svg");
         }
 
@@ -95,9 +95,9 @@ public class CellIconURLsProvider implements BiFunction<VariableManager, Object,
     private List<String> getFunctionPortIcon(Feature port) {
         List<String> iconPath = List.of();
 
-        if (this.transverseQueryService.isInFeature(port)) {
+        if (this.commonQueryService.isInFeature(port)) {
             iconPath = List.of("/icons/full/obj16/FunctionInputPort.svg");
-        } else if (this.transverseQueryService.isOutFeature(port)) {
+        } else if (this.commonQueryService.isOutFeature(port)) {
             iconPath = List.of("/icons/full/obj16/FunctionOutputPort.svg");
         }
 

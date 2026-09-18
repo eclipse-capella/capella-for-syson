@@ -18,6 +18,7 @@ Methods to create elements (like `createComponent`, `createFunctionalExchange`, 
 Methods that update elements (like `setElementDescription`, `setFeatureDirection`, etc) have been moved from `TransverseMutationService` to `CommonUpdateService`.
 - https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] Extract `CommonDeletionService` from transverse services
 Methods that delete elements (like `delete`, `deleteCapabilityInvolvement`, etc) have been moved from `TransverseMutationService` to `CommonDeletionService`.
+- https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] Rename `TransverseQueryService` to `CommonQueryService`.
 
 === Dependency update
 
@@ -41,6 +42,7 @@ All other usages are forbidden and checked with an architecture test.
 - https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] [services] Extract `CommonCreationService` from transverse services.
 - https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] [services] Extract `CommonUpdateService` from transverse services.
 - https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] [services] Extract `CommonDeletionService` from transverse services.
+- https://github.com/eclipse-capella/capella-for-syson/issues/174[#174] [services] Rename `TransverseQueryService` to `CommonQueryService`.
 
 == 2026.9.0
 

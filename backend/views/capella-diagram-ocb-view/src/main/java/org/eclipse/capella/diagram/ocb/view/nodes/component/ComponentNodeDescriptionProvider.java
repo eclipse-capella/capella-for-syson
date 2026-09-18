@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -54,7 +54,7 @@ public class ComponentNodeDescriptionProvider extends AbstractNodeDescriptionPro
                 .name(this.getNodeDescriptionName())
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(TransverseQueryService::allNestedComponents).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::allNestedComponents).aqlSelf())
                 .style(new ComponentNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createComponentEntityNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)

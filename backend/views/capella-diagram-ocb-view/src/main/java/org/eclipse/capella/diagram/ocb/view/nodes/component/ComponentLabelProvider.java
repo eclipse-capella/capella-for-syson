@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.ocb.view.nodes.component;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.ocb.view.OCBViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ConditionalInsideLabelStyle;
@@ -69,7 +69,7 @@ public class ComponentLabelProvider {
     public ConditionalInsideLabelStyle createActorConditionalInsideLabelStyle() {
         return this.diagramBuilderHelper.newConditionalInsideLabelStyle()
                 .style(this.createActorInsideLabelStyle())
-                .condition(ServiceMethod.of0(TransverseQueryService::isComponentHumanActor).aqlSelf())
+                .condition(ServiceMethod.of0(CommonQueryService::isComponentHumanActor).aqlSelf())
                 .build();
     }
 
