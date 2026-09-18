@@ -15,7 +15,7 @@ package org.eclipse.capella.model.services.operational.analysis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
@@ -40,7 +40,7 @@ public class OARepresentationMutationServiceTests {
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final DiagramMutationElementService diagramMutationElementService = mock(DiagramMutationElementService.class);
 
@@ -83,7 +83,7 @@ public class OARepresentationMutationServiceTests {
 
         OATestModelFixture.OperationalAnalysisPackages oaPackages = this.fixture.createOperationalAnalysisPackages(root);
 
-        RequirementUsage requirementUsage = this.transverseMutationService.createRequirement(oaPackages.structurePackage());
+        RequirementUsage requirementUsage = this.commonCreationService.createRequirement(oaPackages.structurePackage());
 
         assertThat(requirementUsage).isNotNull();
         assertThat(oaPackages.requirementsPackage().getOwnedElement()).contains(requirementUsage);

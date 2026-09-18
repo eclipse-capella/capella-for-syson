@@ -13,16 +13,8 @@
 package org.eclipse.capella.model.transverse.services;
 
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_CAPABILITY;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_COMPONENT_EXCHANGE;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_DESCRIPTION;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_EXCHANGE_ITEM;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTION;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_COMPONENTS;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.ARCADIA_PREFIX;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.MODELING_METADATA_STATUS_INFO;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.PATH_SEPARATOR;
@@ -32,13 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
-import org.eclipse.syson.sysml.AllocationUsage;
 import org.eclipse.syson.sysml.Documentation;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Expression;
@@ -47,24 +37,17 @@ import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FeatureReferenceExpression;
 import org.eclipse.syson.sysml.FeatureTyping;
 import org.eclipse.syson.sysml.FeatureValue;
-import org.eclipse.syson.sysml.Flow;
 import org.eclipse.syson.sysml.FlowUsage;
-import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
-import org.eclipse.syson.sysml.Namespace;
-import org.eclipse.syson.sysml.OccurrenceUsage;
-import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.ParameterMembership;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PayloadFeature;
 import org.eclipse.syson.sysml.PerformActionUsage;
-import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.Redefinition;
 import org.eclipse.syson.sysml.ReferenceUsage;
-import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
@@ -74,20 +57,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Transverse mutation service. It is important to note that this service must retain its empty constructor and should not have constructors with parameters.
+ * Common semantic element update service.
  *
- * @author frouene
+ * @author gdaniel
  */
-public class TransverseMutationService {
+public class CommonUpdateService {
 
-    private static final String WHITE_SPACE = " ";
-
-    private final Logger logger = LoggerFactory.getLogger(TransverseMutationService.class);
-
-    // We depends on this service only for some SysML business usage. It should be located in another syson common
-    // services since it does not depend on the view.
+    // We depend on this service only for some SysML business usage. It should be located in another SysON common
+    // service since it does not depend on the view.
     // @technical-debt
-
     private final UtilService utilService;
 
     private final TransverseQueryService transverseQueryService;
@@ -96,15 +74,16 @@ public class TransverseMutationService {
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
-    private final CapellaDeleteService capellaDeleteService;
+    private final CommonDeletionService commonDeletionService;
 
-    public TransverseMutationService() {
+    private final Logger logger = LoggerFactory.getLogger(CommonUpdateService.class);
+
+    public CommonUpdateService() {
         this.utilService = new UtilService();
         this.transverseQueryService = new TransverseQueryService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
-        this.capellaDeleteService = new CapellaDeleteService();
-
+        this.commonDeletionService = new CommonDeletionService();
     }
 
     public Element setElementDescription(Element element, String newDescription) {
@@ -119,18 +98,6 @@ public class TransverseMutationService {
                 });
         descriptionDoc.setBody(newDescription);
         return element;
-    }
-
-    public Feature addCapabilityGeneralisation(Usage sourceCapability, Usage targetCapability) {
-        if (this.transverseQueryService.getGeneralizationReferenceValue(sourceCapability).contains(targetCapability)) {
-            return sourceCapability;
-        }
-        var generalization = SysmlFactory.eINSTANCE.createSubsetting();
-        sourceCapability.getOwnedRelationship().add(generalization);
-        generalization.setSubsettingFeature(sourceCapability);
-        generalization.setSubsettedFeature(targetCapability);
-        this.metamodelMutationElementService.initialize(generalization);
-        return sourceCapability;
     }
 
     public Feature setCapabilityGeneralisationSource(Subsetting generalization, Usage oldCapability, Usage newCapability) {
@@ -171,30 +138,6 @@ public class TransverseMutationService {
             capability = newCapability;
             generalization.setSubsettedFeature(newCapability);
             generalization.setGeneral(newCapability);
-        }
-        return capability;
-    }
-
-    public Usage addCapabilityInvolvement(Usage capability, PartUsage component) {
-        if (this.transverseQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
-            return capability;
-        }
-        return this.setArcadiaReferenceFeature(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
-                ARCADIA_INVOLVED_COMPONENTS, component, SysmlPackage.eINSTANCE.getPartUsage().getName());
-    }
-
-    public Usage deleteCapabilityInvolvement(Usage capability, PartUsage component) {
-        var involvedComponents = this.transverseQueryService.getInvolvedComponents(capability);
-        if (!involvedComponents.contains(component)) {
-            return null;
-        }
-        List<Feature> remainingComponents = new ArrayList<>(involvedComponents);
-        remainingComponents.remove(component);
-        if (remainingComponents.isEmpty()) {
-            this.deleteReference(capability, ARCADIA_INVOLVED_COMPONENTS);
-        } else {
-            this.setFeatureReferenceValues(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
-                    ARCADIA_INVOLVED_COMPONENTS, remainingComponents, SysmlPackage.eINSTANCE.getPartUsage());
         }
         return capability;
     }
@@ -297,7 +240,7 @@ public class TransverseMutationService {
 
     public void deleteReference(Usage usage, String referenceName) {
         this.retrieveUsageFromReferenceName(usage, referenceName)
-                .ifPresent(this::delete);
+                .ifPresent(this.commonDeletionService::delete);
     }
 
     public void setFeatureReferenceValues(Usage usage, String libraryPrefix, String attributeName, List<Feature> newValues, EClass referencedFeatureType) {
@@ -381,16 +324,6 @@ public class TransverseMutationService {
         return Optional.empty();
     }
 
-    public ItemUsage createNewExchangeItem(Element parent) {
-        ItemUsage itemUsage = SysmlFactory.eINSTANCE.createItemUsage();
-        this.metamodelMutationElementService.addChildInParent(parent, itemUsage);
-        this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
-        this.metamodelMutationElementService.initialize(itemUsage);
-        itemUsage.setDeclaredName(ARCADIA_EXCHANGE_ITEM + this.transverseQueryService.existingElementsCount(itemUsage));
-
-        return itemUsage;
-    }
-
     /**
      * Redefine a multi-valued reference attribute from a library in a given usage.
      *
@@ -427,245 +360,6 @@ public class TransverseMutationService {
         return feature;
     }
 
-    public Element delete(Element element) {
-        return this.capellaDeleteService.deleteFromModel(element);
-    }
-
-    public RequirementUsage createRequirement(Element parent) {
-        RequirementUsage requirementUsage = null;
-        Optional<Package> optionalRequirementsPackage = this.transverseQueryService.getRequirementsPackage(parent);
-        if (optionalRequirementsPackage.isPresent()) {
-            String name = "Requirement";
-            requirementUsage = SysmlFactory.eINSTANCE.createRequirementUsage();
-
-            this.metamodelMutationElementService.addChildInParent(optionalRequirementsPackage.get(), requirementUsage);
-            this.metamodelMutationElementService.initialize(requirementUsage);
-            // Use native SysML v2 RequirementUsage without Arcadia typing
-
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(requirementUsage);
-            requirementUsage.setDeclaredName(name + WHITE_SPACE + existingElementsCount);
-        }
-        return requirementUsage;
-    }
-
-    public PartUsage createComponent(Element parent) {
-        PartUsage partUsage = null;
-        Optional<Element> optionalTargetContainer = Optional.of(parent);
-        if (!this.transverseQueryService.isComponent(parent)) {
-            optionalTargetContainer = this.transverseQueryService.getStructurePackage(parent)
-                    .map(Element.class::cast);
-        }
-        if (optionalTargetContainer.isPresent()) {
-            Element targetContainer = optionalTargetContainer.get();
-            partUsage = SysmlFactory.eINSTANCE.createPartUsage();
-            this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
-            this.metamodelMutationElementService.initialize(partUsage);
-            this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
-            partUsage.setDeclaredName("C" + WHITE_SPACE + existingElementsCount);
-        }
-        return partUsage;
-    }
-
-    private PortUsage getOrCreateComponentPort(Feature feature, FeatureDirectionKind direction) {
-        PortUsage result = null;
-        if (this.transverseQueryService.isComponent(feature)) {
-            result = this.createComponentPort((PartUsage) feature, direction);
-        } else if (this.transverseQueryService.isComponentPort(feature)) {
-            result = (PortUsage) feature;
-        }
-        return result;
-    }
-
-    public PortUsage createComponentPort(PartUsage container, FeatureDirectionKind direction) {
-        container.unsetDirection();
-        PortUsage portUsage = SysmlFactory.eINSTANCE.createPortUsage();
-        portUsage.setDirection(direction);
-        this.metamodelMutationElementService.addChildInParent(container, portUsage);
-        this.metamodelMutationElementService.initialize(portUsage);
-        this.arcadiaLibraryServices.typeWithArcadiaComponentPort(portUsage);
-        portUsage.setDeclaredName("CP " + this.transverseQueryService.existingElementsCount(portUsage));
-        return portUsage;
-    }
-
-    public PartUsage createActor(Element parent) {
-        PartUsage partUsage = null;
-        Optional<Element> optionalTargetContainer = Optional.of(parent);
-        if (!this.transverseQueryService.isComponent(parent)) {
-            optionalTargetContainer = this.transverseQueryService.getStructurePackage(parent)
-                    .map(Element.class::cast);
-        }
-        if (optionalTargetContainer.isPresent()) {
-            Element targetContainer = optionalTargetContainer.get();
-            partUsage = SysmlFactory.eINSTANCE.createPartUsage();
-            this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
-            this.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
-            this.metamodelMutationElementService.initialize(partUsage);
-            this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.transverseQueryService.existingElementsCount(partUsage);
-            partUsage.setDeclaredName("A" + WHITE_SPACE + existingElementsCount);
-        }
-        return partUsage;
-
-    }
-
-    public ActionUsage createOperationalActivity(Element parent) {
-        ActionUsage activity = null;
-        if (this.transverseQueryService.isOperationalActivity(parent)) {
-            activity = this.createFunction(parent);
-            activity.setDeclaredName("OA " + this.transverseQueryService.existingElementsCount(activity));
-        }
-        return activity;
-    }
-
-    public ActionUsage createFunction(Element parent) {
-        ActionUsage actionUsage = null;
-        Optional<Element> optionalParent = Optional.ofNullable(parent)
-                .filter(this.transverseQueryService::isFunction)
-                .or(() -> this.transverseQueryService.getFunctionsPackage(parent)
-                        .flatMap(this.transverseQueryService::getRootFunction));
-        if (optionalParent.isPresent()) {
-            actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
-            this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);
-            this.arcadiaLibraryServices.typeWithArcadiaFunction(actionUsage);
-            this.metamodelMutationElementService.initialize(actionUsage);
-            actionUsage.setDeclaredName(ARCADIA_FUNCTION + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
-
-            Optional<PartUsage> optionalAllocatingComponent = this.findAllocatingComponent(parent);
-            if (optionalAllocatingComponent.isPresent()) {
-                this.setPerformAction(optionalAllocatingComponent.get(), actionUsage);
-            } else {
-                this.logger.atWarn()
-                        .setMessage("Cannot find allocating component for function {}")
-                        .addArgument(actionUsage.getElementId())
-                        .addKeyValue("actionUsageId", actionUsage.getElementId())
-                        .addKeyValue("parentId", optionalParent.get().getElementId())
-                        .log();
-            }
-        }
-        return actionUsage;
-    }
-
-    public ItemUsage getOrCreateFunctionPort(Feature feature, FeatureDirectionKind direction) {
-        ItemUsage result = null;
-        if (this.transverseQueryService.isFunction(feature)) {
-            result = this.createFunctionPort((ActionUsage) feature, direction);
-        } else if (this.transverseQueryService.isFunctionPort(feature)) {
-            result = (ItemUsage) feature;
-        }
-        return result;
-    }
-
-    public ItemUsage createFunctionPort(ActionUsage container, FeatureDirectionKind direction) {
-        ItemUsage itemUsage = SysmlFactory.eINSTANCE.createItemUsage();
-        itemUsage.setDirection(direction);
-        this.metamodelMutationElementService.addChildInParent(container, itemUsage);
-        this.metamodelMutationElementService.initialize(itemUsage);
-        this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
-        String defaultName = switch (direction) {
-            case IN -> "FIP";
-            case OUT -> "FOP";
-            default -> "FP";
-        };
-        itemUsage.setDeclaredName(defaultName + WHITE_SPACE + this.transverseQueryService.existingElementsCount(itemUsage));
-
-        return itemUsage;
-    }
-
-    public FlowUsage createFunctionalExchange(Feature source, Feature target) {
-        Optional<Package> optionalSourceFunctionsPackage = this.transverseQueryService.getFunctionsPackage(source);
-        Optional<Package> optionalTargetFunctionsPackage = this.transverseQueryService.getFunctionsPackage(target);
-
-        if (optionalSourceFunctionsPackage.isPresent() && optionalSourceFunctionsPackage.equals(optionalTargetFunctionsPackage)) {
-
-            if (this.transverseQueryService.canCreateFunctionalExchange(source, target)) {
-
-                Feature sourcePort = this.getOrCreateFunctionPort(source, FeatureDirectionKind.OUT);
-                Feature targetPort = this.getOrCreateFunctionPort(target, FeatureDirectionKind.IN);
-
-                Optional<Namespace> optionalFunctionalExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target,
-                        e -> this.transverseQueryService.isFunction(e) || this.transverseQueryService.isFunctionsPackage(e));
-                if (optionalFunctionalExchangeParent.isPresent()) {
-
-                    // We can't use diagramMutationElementService#createFlowUsage here because the way SysON computes FlowUsage container doesn't work with Capella for SysON.
-                    FlowUsage functionalExchange = this.metamodelMutationElementService.createFlowUsage(sourcePort, targetPort, source, target, optionalFunctionalExchangeParent.get());
-
-                    this.metamodelMutationElementService.initialize(functionalExchange);
-                    this.arcadiaLibraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
-                    long existingElementsCount = this.transverseQueryService.existingElementsCount(functionalExchange);
-                    functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
-                    return functionalExchange;
-                }
-
-            }
-        }
-        return null;
-    }
-
-    public InterfaceUsage createComponentExchange(Feature source, Feature target) {
-        Optional<Package> optionalSourceStructurePackage = this.transverseQueryService.getStructurePackage(source);
-        Optional<Package> optionalTargetStructurePackage = this.transverseQueryService.getStructurePackage(target);
-
-        if (optionalSourceStructurePackage.isPresent() && optionalSourceStructurePackage.equals(optionalTargetStructurePackage)) {
-
-            if (this.transverseQueryService.canCreateComponentExchange(source, target)) {
-
-                PortUsage sourcePort = this.getOrCreateComponentPort(source, FeatureDirectionKind.OUT);
-                PortUsage targetPort = this.getOrCreateComponentPort(target, FeatureDirectionKind.IN);
-
-                Optional<Namespace> optionalComponentExchangeParent = this.transverseQueryService.findClosestCommonAncestor(source, target,
-                        e -> this.transverseQueryService.isComponent(e) || this.transverseQueryService.isStructurePackage(e));
-                if (optionalComponentExchangeParent.isPresent()) {
-                    InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalComponentExchangeParent.get());
-                    this.metamodelMutationElementService.initialize(componentExchange);
-                    this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
-                    long existingElementsCount = this.transverseQueryService.existingElementsCount(componentExchange);
-                    componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
-                    return componentExchange;
-                }
-            }
-        }
-        return null;
-    }
-
-    public AllocationUsage createDescribes(Element source, Element target) {
-        AllocationUsage allocation = this.metamodelMutationElementService.createAllocateEdge(source, target);
-        this.metamodelMutationElementService.initialize(allocation);
-        return allocation;
-    }
-
-    public OccurrenceUsage createOperationalCapability(Element parent) {
-        return this.transverseQueryService.getCapabilitiesPackage(parent)
-                .map(capabilitiesPackage -> {
-                    var capability = SysmlFactory.eINSTANCE.createOccurrenceUsage();
-                    this.metamodelMutationElementService.addChildInParent(capabilitiesPackage, capability);
-                    this.metamodelMutationElementService.initialize(capability);
-                    this.arcadiaLibraryServices.typeWithArcadiaCapability(capability);
-                    return capability;
-                })
-                .orElse(null);
-    }
-
-    public ActionUsage createFunctionalChain(Element container, List<Object> selectedObjects) {
-        ActionUsage actionUsage = null;
-        List<Element> selectedElements = selectedObjects.stream()
-                .filter(Element.class::isInstance)
-                .map(Element.class::cast)
-                .toList();
-        Optional<Namespace> optionalCommonAncestor = this.transverseQueryService.findClosestCommonAncestor(selectedElements,
-                candidate -> this.transverseQueryService.isFunction(candidate) || this.transverseQueryService.isFunctionsPackage(candidate));
-        if (optionalCommonAncestor.isPresent()) {
-            actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
-            this.metamodelMutationElementService.addChildInParent(optionalCommonAncestor.get(), actionUsage);
-            this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
-            this.metamodelMutationElementService.initialize(actionUsage);
-            actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.transverseQueryService.existingElementsCount(actionUsage));
-            this.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
-                    SysmlPackage.eINSTANCE.getFlowUsage().getName());
-        }
-        return actionUsage;
-    }
-
     public Element setPerformAction(Element ownerElement, ActionUsage function) {
         PerformActionUsage performActionUsage = this.createPerformAction(ownerElement);
 
@@ -686,22 +380,11 @@ public class TransverseMutationService {
      *         Spring context we don't want to have in this service)
      */
     private PerformActionUsage createPerformAction(Element ownerElement) {
-        // create the perform action
         Membership featureMember = this.metamodelMutationElementService.createMembership(ownerElement);
         ownerElement.getOwnedRelationship().add(featureMember);
         PerformActionUsage performAction = SysmlFactory.eINSTANCE.createPerformActionUsage();
         featureMember.getOwnedRelatedElement().add(performAction);
         return performAction;
-    }
-
-    private Optional<PartUsage> findAllocatingComponent(Element parent) {
-        Optional<PartUsage> allocatingComponent = Optional.empty();
-        if (this.transverseQueryService.isComponent(parent)) {
-            allocatingComponent = Optional.of((PartUsage) parent);
-        } else if (this.transverseQueryService.isFunction(parent)) {
-            allocatingComponent = this.transverseQueryService.getAllocatingComponent((ActionUsage) parent);
-        }
-        return allocatingComponent;
     }
 
     /**
@@ -740,7 +423,7 @@ public class TransverseMutationService {
                 .map(MetadataUsage.class::cast)
                 .filter(this.transverseQueryService::isStatusInfo)
                 .findFirst()
-                .ifPresent(this::delete);
+                .ifPresent(this.commonDeletionService::delete);
     }
 
     public FlowUsage setFunctionalExchangePayload(FlowUsage flowUsage, Object newValue) {
@@ -765,34 +448,19 @@ public class TransverseMutationService {
     }
 
     private void setExchangeItem(FlowUsage flowUsage, List<ItemUsage> exchangeItems) {
-        Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this::delete);
+        Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.commonDeletionService::delete);
         exchangeItems.forEach(exchangeItem -> this.addNewExchangeItem(flowUsage, exchangeItem));
     }
 
     private void addNewExchangeItem(FlowUsage flowUsage, ItemUsage exchangeItem) {
-        PayloadFeature payloadFeature = Optional.ofNullable(flowUsage.getPayloadFeature()).orElseGet(() -> this.createPayloadFeature(flowUsage));
+        PayloadFeature payloadFeature = Optional.ofNullable(flowUsage.getPayloadFeature()).orElseGet(() -> {
+            PayloadFeature newPayloadFeature = SysmlFactory.eINSTANCE.createPayloadFeature();
+            this.metamodelMutationElementService.addChildInParent(flowUsage, newPayloadFeature);
+            return newPayloadFeature;
+        });
         FeatureTyping featureTyping = SysmlFactory.eINSTANCE.createFeatureTyping();
         featureTyping.setSpecific(payloadFeature);
         payloadFeature.getOwnedRelationship().add(featureTyping);
         featureTyping.setType(exchangeItem);
-    }
-
-    public PayloadFeature createPayloadFeature(Flow flow) {
-        PayloadFeature payloadFeature = SysmlFactory.eINSTANCE.createPayloadFeature();
-        this.metamodelMutationElementService.addChildInParent(flow, payloadFeature);
-        return payloadFeature;
-    }
-
-    public void deletePerformedActionUsage(PartUsage usage, ActionUsage actionUsage) {
-        this.getPerformActionUsage(usage, actionUsage::equals)
-                .forEach(this::delete);
-    }
-
-    private List<? extends ActionUsage> getPerformActionUsage(PartUsage partUsage, Predicate<? super ActionUsage> predicate) {
-        return partUsage.getNestedUsage().stream()
-                .filter(PerformActionUsage.class::isInstance)
-                .map(PerformActionUsage.class::cast)
-                .filter(performActionUsage -> predicate.test(this.transverseQueryService.getPerformedAction(performActionUsage).orElse(null)))
-                .toList();
     }
 }

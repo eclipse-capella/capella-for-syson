@@ -14,7 +14,7 @@ package org.eclipse.capella.diagram.oabd.view.nodes.activity;
 
 import java.util.Objects;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ChangeContextBuilder;
@@ -49,7 +49,7 @@ public class OperationalActivityToolProvider {
         cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(TransverseMutationService::createOperationalActivity).aqlSelf())
+                    .expression(ServiceMethod.of0(CommonCreationService::createOperationalActivity).aqlSelf())
                     .children(
                             this.diagramBuilderHelper.newCreateView()
                                     .containmentKind(NodeContainmentKind.CHILD_NODE)

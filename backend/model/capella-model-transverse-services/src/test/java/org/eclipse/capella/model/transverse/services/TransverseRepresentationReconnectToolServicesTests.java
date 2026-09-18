@@ -61,7 +61,7 @@ public class TransverseRepresentationReconnectToolServicesTests {
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final TransverseRepresentationReconnectToolServices reconnectToolServices = new TransverseRepresentationReconnectToolServices((element, newParent) -> null,
             this.diagramMutationElementService);
@@ -80,7 +80,7 @@ public class TransverseRepresentationReconnectToolServicesTests {
         var newSourcePort = this.createComponentPort(sourceComponent, "CP 3", componentPortType);
         var newTargetPort = this.createComponentPort(targetComponent, "CP 4", componentPortType);
         var invalidTargetPort = this.createComponentPort(sourceComponent, "CP 5", componentPortType);
-        InterfaceUsage componentExchange = this.transverseMutationService.createComponentExchange(sourcePort, targetPort);
+        InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(sourcePort, targetPort);
 
         this.reconnectToolServices.reconnectComponentExchange(componentExchange, newSourcePort, sourcePort);
         this.reconnectToolServices.reconnectComponentExchange(componentExchange, newTargetPort, targetPort);

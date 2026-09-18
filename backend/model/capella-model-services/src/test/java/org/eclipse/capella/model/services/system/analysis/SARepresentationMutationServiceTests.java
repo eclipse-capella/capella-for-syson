@@ -18,7 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -54,14 +55,16 @@ public class SARepresentationMutationServiceTests {
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
+
+    private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
     private final SAMutationService semanticMutationService = new SAMutationService();
 
     @Test
     public void createSystemActorShouldNameFirstActorAOne() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
-        var actor = this.transverseMutationService.createActor(structurePackage);
+        var actor = this.commonCreationService.createActor(structurePackage);
 
         assertEquals("A 2", actor.getDeclaredName());
     }
@@ -71,16 +74,16 @@ public class SARepresentationMutationServiceTests {
         var packageOutsideSystemAnalysis = SysmlFactory.eINSTANCE.createPackage();
         var componentOutsideSystemAnalysis = SysmlFactory.eINSTANCE.createPartUsage();
 
-        assertNull(this.transverseMutationService.createActor(packageOutsideSystemAnalysis));
-        assertNull(this.transverseMutationService.createRequirement(packageOutsideSystemAnalysis));
-        assertNull(this.transverseMutationService.createFunction(componentOutsideSystemAnalysis));
+        assertNull(this.commonCreationService.createActor(packageOutsideSystemAnalysis));
+        assertNull(this.commonCreationService.createRequirement(packageOutsideSystemAnalysis));
+        assertNull(this.commonCreationService.createFunction(componentOutsideSystemAnalysis));
     }
 
     @Test
     public void createSystemActorShouldCreateNestedActorUnderSelectedActor() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
-        var actor = this.transverseMutationService.createActor(structurePackage);
-        var nestedActor = this.transverseMutationService.createActor(actor);
+        var actor = this.commonCreationService.createActor(structurePackage);
+        var nestedActor = this.commonCreationService.createActor(actor);
 
         assertEquals("A 3", nestedActor.getDeclaredName());
         assertTrue(actor.getOwnedElement().contains(nestedActor));
@@ -96,7 +99,7 @@ public class SARepresentationMutationServiceTests {
                 .findFirst()
                 .ifPresent(system -> SAQueryServiceTests.addOwnedMember(structurePackage, this.createComponent("component", (PartDefinition) system.getType().get(0))));
 
-        var actor = this.transverseMutationService.createActor(structurePackage);
+        var actor = this.commonCreationService.createActor(structurePackage);
 
         assertEquals("A 3", actor.getDeclaredName());
     }
@@ -123,8 +126,8 @@ public class SARepresentationMutationServiceTests {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
 
-        var component = this.transverseMutationService.createComponent(system);
-        var nestedComponent = this.transverseMutationService.createComponent(component);
+        var component = this.commonCreationService.createComponent(system);
+        var nestedComponent = this.commonCreationService.createComponent(component);
 
         assertNotNull(component);
         assertEquals("C 2", component.getDeclaredName());
@@ -138,7 +141,7 @@ public class SARepresentationMutationServiceTests {
     @Test
     public void createSystemComponentShouldRejectStructurePackageAndActors() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
-        var actor = this.transverseMutationService.createActor(structurePackage);
+        var actor = this.commonCreationService.createActor(structurePackage);
 
         assertNull(this.semanticMutationService.createComponentSA(structurePackage));
         assertNull(this.semanticMutationService.createComponentSA(actor));
@@ -154,9 +157,9 @@ public class SARepresentationMutationServiceTests {
                 .findFirst()
                 .orElseThrow();
 
-        var inputPort = this.transverseMutationService.createComponentPort(system, FeatureDirectionKind.IN);
-        var outputPort = this.transverseMutationService.createComponentPort(system, FeatureDirectionKind.OUT);
-        var inOutPort = this.transverseMutationService.createComponentPort(system, FeatureDirectionKind.INOUT);
+        var inputPort = this.commonCreationService.createComponentPort(system, FeatureDirectionKind.IN);
+        var outputPort = this.commonCreationService.createComponentPort(system, FeatureDirectionKind.OUT);
+        var inOutPort = this.commonCreationService.createComponentPort(system, FeatureDirectionKind.INOUT);
 
         assertEquals(FeatureDirectionKind.IN, inputPort.getDirection());
         assertEquals(FeatureDirectionKind.OUT, outputPort.getDirection());
@@ -170,8 +173,8 @@ public class SARepresentationMutationServiceTests {
     public void createComponentExchangeShouldAcceptAComponentActor() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var actor = this.transverseMutationService.createActor(structurePackage);
-        var componentExchange = this.transverseMutationService.createComponentExchange(system, actor);
+        var actor = this.commonCreationService.createActor(structurePackage);
+        var componentExchange = this.commonCreationService.createComponentExchange(system, actor);
 
         assertNotNull(componentExchange);
         assertEquals(structurePackage, componentExchange.getOwner());
@@ -187,7 +190,7 @@ public class SARepresentationMutationServiceTests {
         var sourceSystem = this.getSystem(sourceStructurePackage);
         var targetSystem = this.getSystem(targetStructurePackage);
 
-        assertNull(this.transverseMutationService.createComponentExchange(sourceSystem, targetSystem));
+        assertNull(this.commonCreationService.createComponentExchange(sourceSystem, targetSystem));
         assertTrue(sourceSystem.getOwnedElement().isEmpty());
         assertTrue(targetSystem.getOwnedElement().isEmpty());
     }
@@ -208,7 +211,7 @@ public class SARepresentationMutationServiceTests {
                 .findFirst()
                 .orElseThrow();
 
-        var function = this.transverseMutationService.createFunction(system);
+        var function = this.commonCreationService.createFunction(system);
 
         assertEquals("Function 2", function.getDeclaredName());
         assertTrue(this.getRootFunction(functionsPackage).getNestedAction().contains(function));
@@ -227,9 +230,9 @@ public class SARepresentationMutationServiceTests {
                 .filter(partUsage -> "system".equals(partUsage.getDeclaredName()))
                 .findFirst()
                 .orElseThrow();
-        var function = this.transverseMutationService.createFunction(system);
+        var function = this.commonCreationService.createFunction(system);
 
-        var subFunction = this.transverseMutationService.createFunction(function);
+        var subFunction = this.commonCreationService.createFunction(function);
 
         assertEquals("Function 3", subFunction.getDeclaredName());
         assertTrue(function.getOwnedElement().contains(subFunction));
@@ -248,10 +251,10 @@ public class SARepresentationMutationServiceTests {
                 .filter(partUsage -> "system".equals(partUsage.getDeclaredName()))
                 .findFirst()
                 .orElseThrow();
-        var function = this.transverseMutationService.createFunction(system);
+        var function = this.commonCreationService.createFunction(system);
 
-        var inputPort = this.transverseMutationService.createFunctionPort(function, FeatureDirectionKind.IN);
-        var outputPort = this.transverseMutationService.createFunctionPort(function, FeatureDirectionKind.OUT);
+        var inputPort = this.commonCreationService.createFunctionPort(function, FeatureDirectionKind.IN);
+        var outputPort = this.commonCreationService.createFunctionPort(function, FeatureDirectionKind.OUT);
 
         assertEquals(FeatureDirectionKind.IN, inputPort.getDirection());
         assertEquals(FeatureDirectionKind.OUT, outputPort.getDirection());
@@ -306,16 +309,16 @@ public class SARepresentationMutationServiceTests {
     public void deleteSystemComponentShouldDeleteSubComponentsButNotAllocatedFunctionsFunctionalExchangesAndFunctionalChains() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var deletedComponent = this.transverseMutationService.createComponent(system);
-        var retainedComponent = this.transverseMutationService.createComponent(system);
-        var deletedFunction = this.transverseMutationService.createFunction(deletedComponent);
-        var retainedFunction = this.transverseMutationService.createFunction(retainedComponent);
+        var deletedComponent = this.commonCreationService.createComponent(system);
+        var retainedComponent = this.commonCreationService.createComponent(system);
+        var deletedFunction = this.commonCreationService.createFunction(deletedComponent);
+        var retainedFunction = this.commonCreationService.createFunction(retainedComponent);
 
-        var functionalExchange = this.transverseMutationService.createFunctionalExchange(deletedFunction, retainedFunction);
-        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
+        var functionalExchange = this.commonCreationService.createFunctionalExchange(deletedFunction, retainedFunction);
+        var functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
         var systemAnalysisPackage = structurePackage.getOwner();
 
-        this.transverseMutationService.delete(deletedComponent);
+        this.commonDeletionService.delete(deletedComponent);
 
         assertFalse(system.getOwnedElement().contains(deletedComponent));
         assertTrue(system.getOwnedElement().contains(retainedComponent));
@@ -331,15 +334,15 @@ public class SARepresentationMutationServiceTests {
     public void deleteFunctionShouldRemoveExternalAllocationsAndDependentElements() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceComponent = this.transverseMutationService.createComponent(system);
-        var targetComponent = this.transverseMutationService.createComponent(system);
-        var deletedFunction = this.transverseMutationService.createFunction(sourceComponent);
-        var retainedFunction = this.transverseMutationService.createFunction(targetComponent);
+        var sourceComponent = this.commonCreationService.createComponent(system);
+        var targetComponent = this.commonCreationService.createComponent(system);
+        var deletedFunction = this.commonCreationService.createFunction(sourceComponent);
+        var retainedFunction = this.commonCreationService.createFunction(targetComponent);
 
-        var functionalExchange = this.transverseMutationService.createFunctionalExchange(deletedFunction, retainedFunction);
-        var functionalChain = this.transverseMutationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
+        var functionalExchange = this.commonCreationService.createFunctionalExchange(deletedFunction, retainedFunction);
+        var functionalChain = this.commonCreationService.createFunctionalChain(structurePackage, java.util.List.of(functionalExchange));
 
-        this.transverseMutationService.delete(deletedFunction);
+        this.commonDeletionService.delete(deletedFunction);
 
         var queryService = new TransverseQueryService();
         assertFalse(this.getRootFunction(this.getFunctionsPackage(structurePackage)).getNestedAction().contains(deletedFunction));
@@ -352,9 +355,9 @@ public class SARepresentationMutationServiceTests {
     public void moveFunctionToComponentShouldReplaceItsAllocation() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var sourceComponent = this.transverseMutationService.createComponent(system);
-        var targetComponent = this.transverseMutationService.createComponent(system);
-        var function = this.transverseMutationService.createFunction(sourceComponent);
+        var sourceComponent = this.commonCreationService.createComponent(system);
+        var targetComponent = this.commonCreationService.createComponent(system);
+        var function = this.commonCreationService.createFunction(sourceComponent);
 
         this.semanticMutationService.moveFunctionToComponent(function, sourceComponent, targetComponent);
 
@@ -367,10 +370,10 @@ public class SARepresentationMutationServiceTests {
     public void deleteRequirementShouldDeleteDescribesReferencingIt() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var requirement = this.transverseMutationService.createRequirement(structurePackage);
-        var describes = this.transverseMutationService.createDescribes(requirement, system);
+        var requirement = this.commonCreationService.createRequirement(structurePackage);
+        var describes = this.commonCreationService.createDescribes(requirement, system);
 
-        this.transverseMutationService.delete(requirement);
+        this.commonDeletionService.delete(requirement);
 
         assertFalse(this.getRequirementsPackage(structurePackage).getOwnedElement().contains(requirement));
         assertFalse(this.transverseQueryService.getDescribes(structurePackage.getOwner()).contains(describes));
@@ -380,9 +383,9 @@ public class SARepresentationMutationServiceTests {
     public void deleteSystemActorShouldDeleteTheActorOnly() {
         var structurePackage = this.createSystemAnalysisStructurePackage();
         var system = this.getSystem(structurePackage);
-        var actor = this.transverseMutationService.createActor(structurePackage);
+        var actor = this.commonCreationService.createActor(structurePackage);
 
-        this.transverseMutationService.delete(actor);
+        this.commonDeletionService.delete(actor);
 
         assertFalse(structurePackage.getOwnedElement().contains(actor));
         assertTrue(structurePackage.getOwnedElement().contains(system));

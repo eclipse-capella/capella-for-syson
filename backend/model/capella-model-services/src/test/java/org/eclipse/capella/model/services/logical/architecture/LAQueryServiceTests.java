@@ -17,7 +17,8 @@ import static org.eclipse.capella.model.transverse.services.TransverseQueryServi
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.REQUIREMENTS_PACKAGE;
 import static org.eclipse.capella.model.transverse.services.TransverseQueryService.STRUCTURE_PACKAGE;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
@@ -35,11 +36,11 @@ import org.junit.jupiter.api.Test;
  */
 public class LAQueryServiceTests {
 
-    private final LAQueryService laQueryService = new LAQueryService();
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
     private final TransverseQueryService transverseQueryService = new TransverseQueryService();
 
-    private final TransverseMutationService transverseMutationService = new TransverseMutationService();
+    private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final LATestModelFixture fixture = new LATestModelFixture();
 
@@ -91,8 +92,8 @@ public class LAQueryServiceTests {
         ActionUsage allocatedFunction2 = this.fixture.createArcadiaTypedFunction(root, "Allocated Function 2");
         ActionUsage unallocatedFunction = this.fixture.createArcadiaTypedFunction(root, "Unallocated Function");
 
-        this.transverseMutationService.setPerformAction(component1, allocatedFunction1);
-        this.transverseMutationService.setPerformAction(component2, allocatedFunction2);
+        this.commonUpdateService.setPerformAction(component1, allocatedFunction1);
+        this.commonUpdateService.setPerformAction(component2, allocatedFunction2);
 
         assertThat(this.transverseQueryService.getAllocatedFunctions(component1)).containsExactly(allocatedFunction1);
         assertThat(this.transverseQueryService.getAllocatedFunctions(component2)).containsExactly(allocatedFunction2);
@@ -108,9 +109,9 @@ public class LAQueryServiceTests {
         ActionUsage function1 = this.fixture.createArcadiaTypedFunction(root, "Function 1");
         ActionUsage function2 = this.fixture.createArcadiaTypedFunction(root, "Function 2");
         ActionUsage function3 = this.fixture.createArcadiaTypedFunction(root, "Function 3");
-        FlowUsage outgoingFlow = this.transverseMutationService.createFunctionalExchange(function1, function2);
+        FlowUsage outgoingFlow = this.commonCreationService.createFunctionalExchange(function1, function2);
         outgoingFlow.setDeclaredName("Flow 1");
-        FlowUsage incomingFlow = this.transverseMutationService.createFunctionalExchange(function3, function1);
+        FlowUsage incomingFlow = this.commonCreationService.createFunctionalExchange(function3, function1);
         incomingFlow.setDeclaredName("Flow 2");
 
         assertThat(this.transverseQueryService.getOutgoingFunctionalExchanges(function1)).containsExactly(outgoingFlow);

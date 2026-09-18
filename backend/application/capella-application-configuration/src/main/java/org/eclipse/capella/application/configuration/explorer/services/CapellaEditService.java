@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.ChildCreationDescription;
@@ -52,14 +52,14 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     private final CapellaImagePathsService capellaImagePathsService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
 
     private final IObjectSearchService objectSearchService;
 
     public CapellaEditService(SysMLv2EditService sysMLv2EditService, CapellaImagePathsService capellaImagePathsService, IObjectSearchService objectSearchService) {
         this.sysMLv2EditService = Objects.requireNonNull(sysMLv2EditService);
         this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonCreationService = new CommonCreationService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.transverseQueryService = new TransverseQueryService();
     }
@@ -117,7 +117,7 @@ public class CapellaEditService implements IEditServiceDelegate {
         if (childCreationDescriptionId.startsWith(ID_PREFIX) && object instanceof Element container) {
             String arcadiaType = childCreationDescriptionId.substring(ID_PREFIX.length());
             if (ARCADIA_EXCHANGE_ITEM.equals(arcadiaType)) {
-                value = Optional.ofNullable(this.transverseMutationService.createNewExchangeItem(container));
+                value = Optional.ofNullable(this.commonCreationService.createNewExchangeItem(container));
             }
         } else {
             value = this.sysMLv2EditService.createChild(editingContext, object, childCreationDescriptionId);

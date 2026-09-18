@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -52,7 +52,7 @@ public class DescribesToolProvider {
                 .targetElementDescriptions(targetDiagramElementDescriptions.toArray(new DiagramElementDescription[0]))
                 .iconURLsExpression("/icons/full/obj16/Describes.svg")
                 .body(this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of1(TransverseMutationService::createDescribes)
+                        .expression(ServiceMethod.of1(CommonCreationService::createDescribes)
                                 .aql(EdgeDescription.SEMANTIC_EDGE_SOURCE, EdgeDescription.SEMANTIC_EDGE_TARGET))
                         .build())
                 .build();

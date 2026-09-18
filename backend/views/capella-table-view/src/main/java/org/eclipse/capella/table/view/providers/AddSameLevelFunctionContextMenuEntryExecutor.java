@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.model.transverse.services.TransverseMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.TransverseQueryService;
 import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.collaborative.tables.api.IRowContextMenuEntryExecutor;
@@ -48,13 +48,13 @@ public class AddSameLevelFunctionContextMenuEntryExecutor implements IRowContext
 
     private final TransverseQueryService transverseQueryService;
 
-    private final TransverseMutationService transverseMutationService;
+    private final CommonCreationService commonCreationService;
 
     public AddSameLevelFunctionContextMenuEntryExecutor(IObjectSearchService objectSearchService, IMessageService messageService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.messageService = Objects.requireNonNull(messageService);
         this.transverseQueryService = new TransverseQueryService();
-        this.transverseMutationService = new TransverseMutationService();
+        this.commonCreationService = new CommonCreationService();
     }
 
     @Override
@@ -75,12 +75,12 @@ public class AddSameLevelFunctionContextMenuEntryExecutor implements IRowContext
             // Find the parent of the selected function
             ActionUsage selectedFunction = optionalSelectedFunction.get();
             if (this.transverseQueryService.isFunction(selectedFunction.getOwner())) {
-                this.transverseMutationService.createFunction(selectedFunction.getOwner());
+                this.commonCreationService.createFunction(selectedFunction.getOwner());
                 result = new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
             } else {
                 Optional<Package> optionalFunctionsPackage = this.transverseQueryService.getFunctionsPackage(selectedFunction);
                 if (optionalFunctionsPackage.isPresent()) {
-                    this.transverseMutationService.createFunction(optionalFunctionsPackage.get());
+                    this.commonCreationService.createFunction(optionalFunctionsPackage.get());
                     result = new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
                 }
             }
