@@ -15,6 +15,7 @@ package org.eclipse.capella.diagram.customization.services.api;
 
 import java.util.List;
 
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 
 /**
@@ -27,6 +28,8 @@ public interface IDiagramFilterService {
     List<IDiagramFilter> getAvailableFilters(IEditingContext editingContext, String representationId);
 
     boolean isDiagramFilterActive(String diagramFilterId, String representationId);
+
+    void setDiagramFilterState(IEditingContext editingContext, DiagramContext diagramContext, String diagramFilterId, boolean state);
 
     void initializeFilterStates(IEditingContext editingContext, String representationId);
 
@@ -47,6 +50,11 @@ public interface IDiagramFilterService {
         @Override
         public boolean isDiagramFilterActive(String diagramFilterId, String representationId) {
             return false;
+        }
+
+        @Override
+        public void setDiagramFilterState(IEditingContext editingContext, DiagramContext diagramContext, String diagramFilterId, boolean state) {
+
         }
 
         @Override

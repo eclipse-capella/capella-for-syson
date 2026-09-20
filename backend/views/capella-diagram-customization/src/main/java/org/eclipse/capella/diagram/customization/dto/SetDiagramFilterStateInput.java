@@ -10,21 +10,16 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.lab.view.services.dto;
 
-import java.util.Objects;
+package org.eclipse.capella.diagram.customization.dto;
+
 import java.util.UUID;
 
-import org.eclipse.sirius.components.core.api.IPayload;
+import org.eclipse.sirius.components.collaborative.diagrams.api.IDiagramInput;
 
 /**
- * The payload of the show diagram functions mutation.
+ * The input object of the diagram filter mutation.
  *
- * @author fbarbin
+ * @author Jerome Gout
  */
-public record ShowDiagramFunctionsSuccessPayload(UUID id, boolean show) implements IPayload {
-
-    public ShowDiagramFunctionsSuccessPayload {
-        Objects.requireNonNull(id);
-    }
-}
+public record SetDiagramFilterStateInput(UUID id, String editingContextId, String representationId, String filterId, boolean active) implements IDiagramInput { }

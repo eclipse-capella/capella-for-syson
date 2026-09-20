@@ -10,12 +10,13 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.lab.view.services.datafetchers;
+
+package org.eclipse.capella.diagram.customization.datafetchers;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.capella.diagram.lab.view.services.dto.ShowDiagramFunctionsInput;
+import org.eclipse.capella.diagram.customization.dto.SetDiagramFilterStateInput;
 import org.eclipse.sirius.components.annotations.spring.graphql.QueryDataFetcher;
 import org.eclipse.sirius.components.core.api.IPayload;
 import org.eclipse.sirius.components.graphql.api.IDataFetcherWithFieldCoordinates;
@@ -26,13 +27,12 @@ import graphql.schema.DataFetchingEnvironment;
 import tools.jackson.databind.ObjectMapper;
 
 /**
+ * Data fetcher for setDiagramFilterState mutation.
  *
- * Data fetcher for the field Mutation#showDiagramFunctions.
- *
- * @author fbarbin
+ * @author Jerome Gout
  */
-@QueryDataFetcher(type = "Mutation", field = "showDiagramFunctions")
-public class MutationShowDiagramFunctionsDataFetcher implements IDataFetcherWithFieldCoordinates<CompletableFuture<IPayload>> {
+@QueryDataFetcher(type = "Mutation", field = "setDiagramFilterState")
+public class MutationSetDiagramFilterStateDataFetcher implements IDataFetcherWithFieldCoordinates<CompletableFuture<IPayload>> {
 
     private static final String INPUT_ARGUMENT = "input";
 
@@ -42,7 +42,7 @@ public class MutationShowDiagramFunctionsDataFetcher implements IDataFetcherWith
 
     private final IEditingContextDispatcher editingContextDispatcher;
 
-    public MutationShowDiagramFunctionsDataFetcher(ObjectMapper objectMapper, IExceptionWrapper exceptionWrapper, IEditingContextDispatcher editingContextDispatcher) {
+    public MutationSetDiagramFilterStateDataFetcher(ObjectMapper objectMapper, IExceptionWrapper exceptionWrapper, IEditingContextDispatcher editingContextDispatcher) {
         this.objectMapper = Objects.requireNonNull(objectMapper);
         this.exceptionWrapper = Objects.requireNonNull(exceptionWrapper);
         this.editingContextDispatcher = Objects.requireNonNull(editingContextDispatcher);
@@ -51,7 +51,7 @@ public class MutationShowDiagramFunctionsDataFetcher implements IDataFetcherWith
     @Override
     public CompletableFuture<IPayload> get(DataFetchingEnvironment environment) throws Exception {
         Object argument = environment.getArgument(INPUT_ARGUMENT);
-        var input = this.objectMapper.convertValue(argument, ShowDiagramFunctionsInput.class);
+        var input = this.objectMapper.convertValue(argument, SetDiagramFilterStateInput.class);
 
         return this.exceptionWrapper.wrapMono(() -> this.editingContextDispatcher.dispatchMutation(input.editingContextId(), input), input).toFuture();
     }
