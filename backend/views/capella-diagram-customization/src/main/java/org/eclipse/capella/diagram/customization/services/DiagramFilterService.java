@@ -21,8 +21,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.capella.diagram.customization.services.api.IDiagramFilter;
+import org.eclipse.capella.diagram.customization.services.api.IDiagramFilterExecutor;
 import org.eclipse.capella.diagram.customization.services.api.IDiagramFilterService;
 import org.eclipse.capella.diagram.customization.services.api.IDiagramFiltersProvider;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IRepresentationDescriptionSearchService;
 import org.eclipse.sirius.components.representations.IRepresentationDescription;
@@ -47,15 +49,19 @@ public class DiagramFilterService implements IDiagramFilterService {
 
     private final List<IDiagramFiltersProvider> providers;
 
+    private final List<IDiagramFilterExecutor> executors;
+
     private final IRepresentationDescriptionSearchService representationDescriptionSearchService;
 
     private final IRepresentationMetadataSearchService representationMetadataSearchService;
 
-    public DiagramFilterService(IRepresentationDescriptionSearchService representationDescriptionSearchService, IRepresentationMetadataSearchService representationMetadataSearchService, List<IDiagramFilter> filters, List<IDiagramFiltersProvider> providers) {
+    public DiagramFilterService(IRepresentationDescriptionSearchService representationDescriptionSearchService, IRepresentationMetadataSearchService representationMetadataSearchService, List<IDiagramFilter> filters, List<IDiagramFiltersProvider> providers,
+            List<IDiagramFilterExecutor> executors) {
         this.filters = Objects.requireNonNull(filters);
         this.providers = Objects.requireNonNull(providers);
         this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
         this.representationMetadataSearchService = Objects.requireNonNull(representationMetadataSearchService);
+        this.executors = Objects.requireNonNull(executors);
         this.filterStates = new ConcurrentHashMap<>();
     }
 
@@ -94,6 +100,17 @@ public class DiagramFilterService implements IDiagramFilterService {
                 .findFirst()
                 .map(IDiagramFilter::getInitialState)
                 .orElse(false);
+    }
+
+    @Override
+    public void setDiagramFilterState(IEditingContext editingContext, DiagramContext diagramContext, String diagramFilterId, boolean state) {
+        String representationId = diagramContext.diagram().getId();
+        this.filterStates.computeIfAbsent(representationId, key -> new ConcurrentHashMap<>()).put(diagramFilterId, state);
+        // manage filter change execution
+        this.executors.stream()
+                .filter(executor -> executor.canHandle(editingContext, representationId, diagramFilterId))
+                .findFirst()
+                .ifPresent(executor -> executor.execute(editingContext, diagramContext, diagramFilterId, state));
     }
 
     @Override

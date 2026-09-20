@@ -21,3 +21,22 @@ type CapellaDiagramFilter {
     inactiveTooltip : String!
     urlParam : String!
 }
+
+extend type Mutation {
+    setDiagramFilterState(input: SetDiagramFilterStateInput!): SetDiagramFilterStatePayload!
+}
+
+input SetDiagramFilterStateInput {
+    id: ID!
+    editingContextId: ID!
+    representationId: ID!
+    filterId: String!
+    active: Boolean!
+}
+
+union SetDiagramFilterStatePayload = ErrorPayload | SetDiagramFilterStateSuccessPayload
+
+type SetDiagramFilterStateSuccessPayload {
+    id: ID!
+    active: Boolean!
+}
