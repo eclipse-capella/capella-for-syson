@@ -168,6 +168,33 @@ public class SetDiagramFilterStateIntegrationTest extends AbstractIntegrationTes
                 .verify(Duration.ofSeconds(10));
     }
 
+    @Test
+    @DisplayName("GIVEN an active SAB Show Functions filter, WHEN it is deactivated, THEN its new state is returned and exposed")
+    public void deactivateSABShowFunctionsDiagramFilter() {
+        String representationId = CapellaProjectData.GraphicalIds.SAB_SYSTEM_ANALYSIS_BLANK_DIAGRAM_ID;
+        String filterId = ShowFunctionsDiagramFilter.ID;
+
+        var diagramEventInput = new DiagramEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId);
+        var diagramEvents = this.diagramEventSubscriptionRunner.run(diagramEventInput).flux();
+
+        Runnable deactivateFilter = () -> {
+            assertThat(this.getDiagramFilterState(representationId, filterId)).isTrue();
+            var input = new SetDiagramFilterStateInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId, filterId, false);
+            var result = this.setDiagramFilterStateMutationRunner.run(input).data();
+
+            String typename = JsonPath.read(result, "$.data.setDiagramFilterState.__typename");
+            Boolean active = JsonPath.read(result, "$.data.setDiagramFilterState.active");
+            assertThat(typename).withFailMessage(result).isEqualTo(SetDiagramFilterStateSuccessPayload.class.getSimpleName());
+            assertThat(active).isFalse();
+            assertThat(this.getDiagramFilterState(representationId, filterId)).isFalse();
+        };
+
+        StepVerifier.create(diagramEvents)
+                .then(deactivateFilter)
+                .thenCancel()
+                .verify(Duration.ofSeconds(10));
+    }
+
     private boolean getDiagramFilterState(String representationId, String filterId) {
         Map<String, Object> variables = Map.of(
                 "editingContextId", CapellaProjectData.EDITING_CONTEXT_ID,
