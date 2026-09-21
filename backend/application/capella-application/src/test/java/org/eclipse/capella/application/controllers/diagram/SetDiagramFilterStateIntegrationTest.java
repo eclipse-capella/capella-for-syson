@@ -32,6 +32,7 @@ import org.eclipse.capella.diagram.customization.dto.SetDiagramFilterStateInput;
 import org.eclipse.capella.diagram.customization.dto.SetDiagramFilterStateSuccessPayload;
 import org.eclipse.capella.diagram.customization.filters.ShowFunctionsDiagramFilter;
 import org.eclipse.capella.tests.graphql.RepresentationMetadataDiagramFiltersQueryRunner;
+import org.eclipse.capella.diagram.customization.filters.ShowActivitiesDiagramFilter;
 import org.eclipse.capella.tests.graphql.SetDiagramFilterStateMutationRunner;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.DiagramEventInput;
 import org.eclipse.sirius.components.diagrams.ViewModifier;
@@ -77,8 +78,10 @@ public class SetDiagramFilterStateIntegrationTest extends AbstractIntegrationTes
 
     @Test
     @DisplayName("GIVEN a LAB diagram containing a function, WHEN the Show Functions filter is deactivated, THEN the function is hidden")
-    public void deactivateDiagramFilter() {
+    public void deactivateLABShowFunctionsDiagramFilter() {
         String representationId = CapellaProjectData.GraphicalIds.LAB_LOGICAL_ARCHITECTURE_BLANK_DIAGRAM_ID;
+        String filterId = ShowFunctionsDiagramFilter.ID;
+
         var diagramEventInput = new DiagramEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId);
         var diagramEvents = this.diagramEventSubscriptionRunner.run(diagramEventInput).flux();
 
@@ -111,16 +114,15 @@ public class SetDiagramFilterStateIntegrationTest extends AbstractIntegrationTes
         });
 
         Runnable deactivateFilter = () -> {
-            assertThat(this.getDiagramFilterState(representationId)).isTrue();
-
-            var input = new SetDiagramFilterStateInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId, ShowFunctionsDiagramFilter.ID, false);
+            assertThat(this.getDiagramFilterState(representationId, filterId)).isTrue();
+            var input = new SetDiagramFilterStateInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId, filterId, false);
             var result = this.setDiagramFilterStateMutationRunner.run(input).data();
 
             String typename = JsonPath.read(result, "$.data.setDiagramFilterState.__typename");
             Boolean active = JsonPath.read(result, "$.data.setDiagramFilterState.active");
             assertThat(typename).withFailMessage(result).isEqualTo(SetDiagramFilterStateSuccessPayload.class.getSimpleName());
             assertThat(active).isFalse();
-            assertThat(this.getDiagramFilterState(representationId)).isFalse();
+            assertThat(this.getDiagramFilterState(representationId, filterId)).isFalse();
         };
         Consumer<Object> hiddenFunctionConsumer = assertRefreshedDiagramThat(updatedDiagram -> {
             var functionNode = new DiagramNavigator(updatedDiagram).nodeWithId(functionNodeId.get()).getNode();
@@ -139,13 +141,40 @@ public class SetDiagramFilterStateIntegrationTest extends AbstractIntegrationTes
                 .verify(Duration.ofSeconds(10));
     }
 
-    private boolean getDiagramFilterState(String representationId) {
+    @Test
+    @DisplayName("GIVEN an active OAB Show Activities filter, WHEN it is deactivated, THEN its new state is returned and exposed")
+    public void deactivateOABShowActivitiesDiagramFilter() {
+        String representationId = CapellaProjectData.GraphicalIds.OAB_OPERATIONAL_ANALYSIS_BLANK_DIAGRAM_ID;
+        String filterId = ShowActivitiesDiagramFilter.ID;
+
+        var diagramEventInput = new DiagramEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId);
+        var diagramEvents = this.diagramEventSubscriptionRunner.run(diagramEventInput).flux();
+
+        Runnable deactivateFilter = () -> {
+            assertThat(this.getDiagramFilterState(representationId, filterId)).isTrue();
+            var input = new SetDiagramFilterStateInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId, filterId, false);
+            var result = this.setDiagramFilterStateMutationRunner.run(input).data();
+
+            String typename = JsonPath.read(result, "$.data.setDiagramFilterState.__typename");
+            Boolean active = JsonPath.read(result, "$.data.setDiagramFilterState.active");
+            assertThat(typename).withFailMessage(result).isEqualTo(SetDiagramFilterStateSuccessPayload.class.getSimpleName());
+            assertThat(active).isFalse();
+            assertThat(this.getDiagramFilterState(representationId, filterId)).isFalse();
+        };
+
+        StepVerifier.create(diagramEvents)
+                .then(deactivateFilter)
+                .thenCancel()
+                .verify(Duration.ofSeconds(10));
+    }
+
+    private boolean getDiagramFilterState(String representationId, String filterId) {
         Map<String, Object> variables = Map.of(
                 "editingContextId", CapellaProjectData.EDITING_CONTEXT_ID,
                 "representationId", representationId
         );
         var result = this.representationMetadataDiagramFiltersQueryRunner.run(variables).data();
-        List<Boolean> states = JsonPath.read(result, "$.data.viewer.editingContext.representation.diagramFilters[?(@.id == '" + ShowFunctionsDiagramFilter.ID + "')].state");
+        List<Boolean> states = JsonPath.read(result, "$.data.viewer.editingContext.representation.diagramFilters[?(@.id == '" + filterId + "')].state");
         assertThat(states).hasSize(1);
         return states.get(0);
     }
