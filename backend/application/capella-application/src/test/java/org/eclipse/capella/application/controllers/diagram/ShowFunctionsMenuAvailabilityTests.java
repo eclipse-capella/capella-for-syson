@@ -23,9 +23,9 @@ import java.util.Map;
 import org.eclipse.capella.AbstractIntegrationTests;
 import org.eclipse.capella.CapellaProjectData;
 import org.eclipse.capella.GivenCapellaServer;
+import org.eclipse.capella.diagram.customization.filters.ShowActivitiesDiagramFilter;
 import org.eclipse.capella.diagram.customization.filters.ShowFunctionsDiagramFilter;
 import org.eclipse.capella.tests.graphql.RepresentationMetadataDiagramFiltersQueryRunner;
-import org.eclipse.capella.diagram.customization.filters.ShowActivitiesDiagramFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +71,20 @@ public class ShowFunctionsMenuAvailabilityTests extends AbstractIntegrationTests
         assertThat(availableFilters)
                 .extracting(filter -> filter.get("id"))
                 .contains(ShowActivitiesDiagramFilter.ID);
+    }
+
+    @Test
+    @DisplayName("GIVEN a Capella project with a SAB diagram, WHEN querying available filters, THEN Show Functions is returned")
+    public void showFunctionsAvailabilityInSABDiagram() {
+        Map<String, Object> variables = Map.of(
+                "editingContextId", CapellaProjectData.EDITING_CONTEXT_ID,
+                "representationId", CapellaProjectData.GraphicalIds.SAB_SYSTEM_ANALYSIS_BLANK_DIAGRAM_ID
+        );
+        var diagramFiltersQueryResult = this.representationMetadataDiagramFiltersQueryRunner.run(variables).data();
+        List<Map<String, Object>> availableFilters = JsonPath.read(diagramFiltersQueryResult, "$.data.viewer.editingContext.representation.diagramFilters[*]");
+        assertThat(availableFilters)
+                .extracting(filter -> filter.get("id"))
+                .contains(ShowFunctionsDiagramFilter.ID);
     }
 
     @Test
