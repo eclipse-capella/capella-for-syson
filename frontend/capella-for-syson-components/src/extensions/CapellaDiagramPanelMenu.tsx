@@ -12,6 +12,7 @@
  *******************************************************************************/
 import { DiagramToolbarActionProps } from '@eclipse-sirius/sirius-components-diagrams';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Fade from '@mui/material/Fade';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -22,7 +23,8 @@ import Popper from '@mui/material/Popper';
 import Tooltip from '@mui/material/Tooltip';
 import { useEffect, useRef, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import { ShowHideDiagramFunctions } from './ShowHideDiagramFunctions';
+import { DiagramFilter } from './DiagramFilter';
+import { useRepresentationMetadataDiagramFilters } from './useRepresentationMetadataDiagramFilters';
 
 const useMenuStyles = makeStyles()((_) => ({
   menuEntry: {
@@ -33,6 +35,7 @@ export const CapellaDiagramPanelMenu = ({ editingContextId, diagramId }: Diagram
   const { classes } = useMenuStyles();
   const [open, setOpen] = useState<boolean>(false);
   const anchorRef = useRef<HTMLButtonElement | null>(null);
+  const diagramFilters = useRepresentationMetadataDiagramFilters(editingContextId, diagramId);
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -74,7 +77,8 @@ export const CapellaDiagramPanelMenu = ({ editingContextId, diagramId }: Diagram
           ref={anchorRef}
           aria-haspopup="true"
           onClick={handleToggle}>
-          <KeyboardArrowDownIcon color={open ? 'disabled' : 'action'} />
+          <FilterAltIcon color={'action'} />
+          <KeyboardArrowDownIcon color={'action'} />
         </IconButton>
       </Tooltip>
       <Popper
@@ -89,12 +93,16 @@ export const CapellaDiagramPanelMenu = ({ editingContextId, diagramId }: Diagram
             <Paper>
               <ClickAwayListener onClickAway={handleClose}>
                 <FormGroup>
-                  <FormControlLabel
-                    key={'Show functions - Menu Entry'}
-                    className={classes.menuEntry}
-                    control={<ShowHideDiagramFunctions editingContextId={editingContextId} diagramId={diagramId} />}
-                    label={'Show Functions'}
-                  />
+                  {diagramFilters.map((filter) => (
+                    <FormControlLabel
+                      key={filter.id}
+                      className={classes.menuEntry}
+                      control={
+                        <DiagramFilter editingContextId={editingContextId} diagramId={diagramId} filter={filter} />
+                      }
+                      label={filter.label}
+                    />
+                  ))}
                 </FormGroup>
               </ClickAwayListener>
             </Paper>
