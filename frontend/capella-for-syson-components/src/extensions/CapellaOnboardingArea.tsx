@@ -15,7 +15,7 @@ import { RepresentationsArea } from '@eclipse-sirius/sirius-web-application';
 import { makeStyles } from 'tss-react/mui';
 import { CapellaNewRepresentationArea } from './CapellaNewRepresentationArea';
 
-const useOnboardAreaStyles = makeStyles()((theme) => ({
+const useOnboardingAreaStyles = makeStyles()((theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'column',
@@ -29,11 +29,10 @@ const useOnboardAreaStyles = makeStyles()((theme) => ({
     gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
     gap: theme.spacing(2),
   },
-  box: {},
 }));
 
-export const CapellaOnboardArea = ({ editingContextId, readOnly }: MainAreaComponentProps) => {
-  const { classes } = useOnboardAreaStyles();
+export const CapellaOnboardingArea = ({ editingContextId, readOnly }: MainAreaComponentProps) => {
+  const { classes } = useOnboardingAreaStyles();
 
   return (
     <div className={classes.container} data-testid="capella-onboard-area">

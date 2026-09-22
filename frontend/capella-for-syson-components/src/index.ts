@@ -12,5 +12,5 @@
  *******************************************************************************/
 export { CapellaDiagramPanelMenu } from './extensions/CapellaDiagramPanelMenu';
 export { CapellaExtensionRegistryMergeStrategy } from './extensions/CapellaExtensionRegistryMergeStrategy';
-export { CapellaOnboardArea } from './extensions/CapellaOnboardArea';
+export { ProjectOnboardingArea } from './extensions/ProjectOnboardingArea';
 export { CapellaDDVWorkbenchViewContribution } from './extensions/CapellaDDVWorkbenchViewContribution';

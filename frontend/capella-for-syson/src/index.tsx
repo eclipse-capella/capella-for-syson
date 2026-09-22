@@ -16,7 +16,7 @@ import {
   CapellaDDVWorkbenchViewContribution,
   CapellaDiagramPanelMenu,
   CapellaExtensionRegistryMergeStrategy,
-  CapellaOnboardArea,
+  ProjectOnboardingArea,
 } from '@eclipse-capella/capella-for-syson-components';
 import {
   ExtensionRegistry,
@@ -159,7 +159,7 @@ extensionRegistry.putData<PaletteToolOverriddenContributionProps[]>(paletteToolO
 
 extensionRegistry.addComponent(workbenchMainAreaExtensionPoint, {
   identifier: `capella_${workbenchMainAreaExtensionPoint.identifier}`,
-  Component: CapellaOnboardArea,
+  Component: ProjectOnboardingArea,
 });
 
 extensionRegistry.putData(widgetContributionExtensionPoint, {

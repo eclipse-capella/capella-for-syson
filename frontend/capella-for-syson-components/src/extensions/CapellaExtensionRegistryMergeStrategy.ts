@@ -30,7 +30,7 @@ export class CapellaExtensionRegistryMergeStrategy
     newValues: ComponentExtension<any>[]
   ): ComponentExtension<any>[] {
     if (identifier === workbenchMainAreaExtensionPoint.identifier) {
-      return [...newValues];
+      return [...newValues, ...existingValues];
     }
     return super.mergeComponentExtensions(identifier, existingValues, newValues);
   }
