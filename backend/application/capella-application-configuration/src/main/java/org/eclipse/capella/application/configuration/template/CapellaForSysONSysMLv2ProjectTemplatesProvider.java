@@ -31,7 +31,7 @@ public class CapellaForSysONSysMLv2ProjectTemplatesProvider implements IProjectT
 
     @Override
     public List<ProjectTemplate> getProjectTemplates() {
-        var sysmlv2Template = new ProjectTemplate(SYSMLV2_TEMPLATE_ID, "SysMLv2", "/images/sysmlv2-logo.png", List.of());
+        var sysmlv2Template = new ProjectTemplate(SYSMLV2_TEMPLATE_ID, "SysMLv2", "/images/sysmlv2-logo.png", List.of(), List.of());
         return List.of(sysmlv2Template);
     }
 

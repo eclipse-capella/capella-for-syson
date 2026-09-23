@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.sirius.web.application.project.services.api.IProjectTemplateProvider;
 import org.eclipse.sirius.web.application.project.services.api.ProjectTemplate;
 import org.eclipse.sirius.web.application.project.services.api.ProjectTemplateNature;
+import org.eclipse.sirius.web.application.project.services.api.ProjectTemplateRequiredLibrary;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -33,6 +34,8 @@ public class CapellaProjectTemplateProvider implements IProjectTemplateProvider 
 
     @Override
     public List<ProjectTemplate> getProjectTemplates() {
-        return List.of(new ProjectTemplate(CAPELLA_TEMPLATE_ID, "Capella", "/images/logo_capella.png", List.of(new ProjectTemplateNature(CAPELLA_NATURE))));
+        return List.of(new ProjectTemplate(CAPELLA_TEMPLATE_ID, "Capella", "/images/logo_capella.png",
+                List.of(new ProjectTemplateNature(CAPELLA_NATURE)),
+                List.of(new ProjectTemplateRequiredLibrary("capella", "arcadia", "0.0.1"))));
     }
 }

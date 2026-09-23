@@ -40,7 +40,10 @@ public class CreateCapellaRepresentationMutationRunner implements IMutationRunne
                   }
                 }
                 ... on ErrorPayload {
-                  message
+                  messages {
+                    body
+                    level
+                  }
                 }
               }
             }

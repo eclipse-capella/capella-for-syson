@@ -22,7 +22,10 @@ mutation createProject($input: CreateProjectInput!) {
       }
     }
     ... on ErrorPayload {
-      message
+      messages {
+        body
+        level
+      }
     }
   }
 }

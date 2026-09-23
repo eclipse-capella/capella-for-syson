@@ -21,7 +21,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.EdgeReconnectionTool;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.util.AQLConstants;
 import org.eclipse.syson.util.ServiceMethod;
 
@@ -36,9 +36,12 @@ public class InvolvementPaletteProvider {
 
     private final ViewBuilders viewBuilderHelper;
 
+    private final DiagramDefaultToolsFactory diagramDefaultToolsFactory;
+
     public InvolvementPaletteProvider(DiagramBuilders diagramBuilderHelper, ViewBuilders viewBuilderHelper) {
         this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
         this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
+        this.diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
     }
 
     public EdgePalette createEdgePalette() {
@@ -51,7 +54,7 @@ public class InvolvementPaletteProvider {
         return this.diagramBuilderHelper.newEdgePalette()
                 .deleteTool(deleteTool.build())
                 .edgeReconnectionTools(this.createEdgeReconnectionTools())
-                .toolSections(new DefaultToolsFactory().createDefaultHideRevealEdgeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealEdgeToolSection())
                 .build();
     }
 
