@@ -41,11 +41,11 @@ public class DescribesEdgeStyleProvider {
         return this.diagramBuilderHelper.newEdgeStyle()
                 .fontSize(8)
                 .borderSize(0)
-                .color(this.colorProvider.getColor(SABViewConstants.REQUIREMENT_BORDER_COLOR))
+                .color(this.colorProvider.getColor(SABViewConstants.DESCRIBES_BACKGROUND_COLOR))
                 .edgeWidth(2)
                 .lineStyle(LineStyle.DASH)
                 .sourceArrowStyle(ArrowStyle.NONE)
-                .targetArrowStyle(ArrowStyle.NONE)
+                .targetArrowStyle(ArrowStyle.INPUT_ARROW)
                 .build();
     }
 }
