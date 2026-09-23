@@ -26,7 +26,6 @@ import org.eclipse.syson.sysml.Comment;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.EndFeatureMembership;
 import org.eclipse.syson.sysml.Feature;
-import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.PortUsage;
@@ -78,7 +77,7 @@ public class TransverseRepresentationReconnectToolServices {
             reconnectTarget = oldTarget;
         }
 
-        if (this.isValidFunctionalExchangePort(functionalExchange, newTarget, false)) {
+        if (this.isValidFunctionalExchangePort(functionalExchange, reconnectTarget, false)) {
             this.diagramMutationElementService.reconnectTarget(functionalExchange, reconnectTarget, sourceNode, targetNode, editingContext, diagram);
         }
 
@@ -86,10 +85,6 @@ public class TransverseRepresentationReconnectToolServices {
     }
 
     private boolean isValidFunctionalExchangePort(FlowUsage functionalExchange, Feature feature, boolean isSource) {
-        var expectedDirection = FeatureDirectionKind.IN;
-        if (isSource) {
-            expectedDirection = FeatureDirectionKind.OUT;
-        }
         var otherPort = this.getOtherFunctionalExchangePort(functionalExchange, isSource);
         var owningFunction = Optional.ofNullable(feature)
                 .map(Element::getOwner)
@@ -99,10 +94,14 @@ public class TransverseRepresentationReconnectToolServices {
                 .map(Element::getOwner)
                 .filter(this.transverseQueryService::isFunction)
                 .map(ActionUsage.class::cast);
-        return expectedDirection == feature.getDirection()
-                && owningFunction.isPresent()
-                && otherOwningFunction.isPresent()
-                && !owningFunction.get().equals(otherOwningFunction.get());
+        boolean isValidFunction = owningFunction.isPresent() && otherOwningFunction.isPresent() && !owningFunction.equals(otherOwningFunction);
+        boolean isValidPort;
+        if (isSource) {
+            isValidPort = this.transverseQueryService.canBeExchangeSource(feature);
+        } else {
+            isValidPort = this.transverseQueryService.canBeExchangeTarget(feature);
+        }
+        return isValidFunction && isValidPort;
     }
 
     private Element getOtherFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
@@ -127,7 +126,7 @@ public class TransverseRepresentationReconnectToolServices {
                 sourcePort = this.transverseQueryService.getComponentExchangeSource(componentExchange);
                 targetPort = (PortUsage) newTarget;
             }
-            if (sourcePort != null && targetPort != null && !Objects.equals(sourcePort.getOwner(), targetPort.getOwner())) {
+            if (sourcePort != null && targetPort != null && this.canReconnectComponentExchange(sourcePort, targetPort)) {
                 // Do not allow reconnection that creates a ComponentExchange from/to the same component.
                 var endFeatureMemberships = componentExchange.getOwnedFeatureMembership().stream()
                         .filter(EndFeatureMembership.class::isInstance)
@@ -139,6 +138,13 @@ public class TransverseRepresentationReconnectToolServices {
             }
         }
         return newTarget;
+    }
+
+    private boolean canReconnectComponentExchange(PortUsage sourcePort, PortUsage targetPort) {
+        if (Objects.equals(sourcePort.getOwner(), targetPort.getOwner())) {
+            return false;
+        }
+        return this.transverseQueryService.canBeExchangeSource(sourcePort) && this.transverseQueryService.canBeExchangeTarget(targetPort);
     }
 
     public Element reconnectAnnotating(Element newTarget, Element oldTarget) {
