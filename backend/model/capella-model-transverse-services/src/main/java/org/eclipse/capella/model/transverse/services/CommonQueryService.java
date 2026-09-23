@@ -743,6 +743,17 @@ public class CommonQueryService {
         return this.getParentFunctions(eObject).stream().findFirst();
     }
 
+    /**
+     * Retrieves the parent function for use as a diagram edge endpoint.
+     *
+     * @param eObject
+     *         the child function.
+     * @return the parent function, or {@code null} when the function has no parent.
+     */
+    public ActionUsage getParentFunctionElement(EObject eObject) {
+        return this.getParentFunction(eObject).orElse(null);
+    }
+
     public List<ActionUsage> getFunctionalChains(EObject eObject) {
         var allFlowUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getActionUsage());
         return allFlowUsage.stream()

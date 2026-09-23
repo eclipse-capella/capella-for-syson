@@ -26,6 +26,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
 import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
@@ -64,7 +65,7 @@ public class TransverseRepresentationReconnectToolServicesTests {
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
     private final TransverseRepresentationReconnectToolServices reconnectToolServices = new TransverseRepresentationReconnectToolServices((element, newParent) -> null,
-            this.diagramMutationElementService);
+            this.diagramMutationElementService, new IObjectSearchService.NoOp());
 
     private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
