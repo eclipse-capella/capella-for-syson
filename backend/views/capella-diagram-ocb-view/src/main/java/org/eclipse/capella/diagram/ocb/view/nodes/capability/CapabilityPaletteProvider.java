@@ -22,7 +22,7 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -41,11 +41,14 @@ public class CapabilityPaletteProvider {
 
     private final NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider;
 
+    private final DiagramDefaultToolsFactory diagramDefaultToolsFactory;
+
     public CapabilityPaletteProvider(DiagramBuilders diagramBuilderHelper, ViewBuilders viewBuilderHelper,
             NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider) {
         this.diagramBuilderHelper = Objects.requireNonNull(diagramBuilderHelper);
         this.viewBuilderHelper = Objects.requireNonNull(viewBuilderHelper);
         this.nodeDeleteFromDiagramToolProvider = Objects.requireNonNull(nodeDeleteFromDiagramToolProvider);
+        this.diagramDefaultToolsFactory = new DiagramDefaultToolsFactory();
     }
 
     public NodePalette createNodePalette(IViewDiagramElementFinder cache) {
@@ -66,7 +69,7 @@ public class CapabilityPaletteProvider {
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .edgeTools(new InvolvementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInvolvementTool(cache),
                         new GeneralizationToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewGeneralizationTool(cache))
-                .toolSections(new DefaultToolsFactory().createDefaultHideRevealNodeToolSection())
+                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
     }
 }

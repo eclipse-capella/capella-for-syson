@@ -59,9 +59,12 @@ export const baseTheme: Theme = createTheme({
     },
     navigationBar: {
       border: '#7667A350',
-      background: '#7667A306',
+      background: '#7667A3',
     },
     selected: '#7667A3',
+    view: {
+      background: '#F1F0F6',
+    },
     action: {
       hover: '#A1A4C436',
       selected: '#A1A4C426',

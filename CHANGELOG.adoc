@@ -22,6 +22,8 @@ Methods that delete elements (like `delete`, `deleteCapabilityInvolvement`, etc)
 
 === Dependency update
 
+- [releng] Update Sirius Web and SysON to `2026.9.2`
+
 === Bug fixes
 
 === New Features

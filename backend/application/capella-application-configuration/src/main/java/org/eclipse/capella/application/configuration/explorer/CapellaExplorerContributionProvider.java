@@ -27,8 +27,8 @@ import org.eclipse.sirius.web.application.views.explorer.services.api.IExplorerT
 import org.eclipse.sirius.web.domain.boundedcontexts.project.Nature;
 import org.eclipse.sirius.web.domain.boundedcontexts.project.Project;
 import org.eclipse.sirius.web.domain.boundedcontexts.project.services.api.IProjectSearchService;
-import org.eclipse.sirius.web.domain.boundedcontexts.projectsemanticdata.ProjectSemanticData;
-import org.eclipse.sirius.web.domain.boundedcontexts.projectsemanticdata.services.api.IProjectSemanticDataSearchService;
+import org.eclipse.sirius.web.projects.semanticdata.domain.ProjectSemanticData;
+import org.eclipse.sirius.web.projects.semanticdata.domain.services.api.IProjectSemanticDataSearchService;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 

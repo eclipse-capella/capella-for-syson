@@ -53,7 +53,7 @@ jobs:
       - name: Setup Node SDK
         uses: actions/setup-node@v4
         with:
-          node-version: 22.16
+          node-version: 24.20
           registry-url: https://npm.pkg.github.com/
 
       - name: Cache Node.js modules

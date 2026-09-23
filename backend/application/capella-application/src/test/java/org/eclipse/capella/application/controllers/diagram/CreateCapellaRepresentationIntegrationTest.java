@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.jayway.jsonpath.JsonPath;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.capella.AbstractIntegrationTests;
@@ -79,9 +80,9 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
         var result = this.createCapellaRepresentationMutationRunner.run(input).data();
 
         String typename = JsonPath.read(result, "$.data.createCapellaRepresentation.__typename");
-        String message = JsonPath.read(result, "$.data.createCapellaRepresentation.message");
+        List<String> messages = JsonPath.read(result, "$.data.createCapellaRepresentation.messages[*].body");
         assertThat(typename).isEqualTo("ErrorPayload");
-        assertThat(message).isEqualTo("No diagram description found for unknown");
+        assertThat(messages).contains("No diagram description found for unknown");
     }
 
     private void assertRepresentationCreation(String descriptionId, String expectedLabel) {

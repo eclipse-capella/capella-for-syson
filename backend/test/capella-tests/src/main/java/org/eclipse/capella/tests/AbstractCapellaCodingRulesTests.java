@@ -38,7 +38,7 @@ import org.eclipse.sirius.components.annotations.Builder;
 import org.eclipse.sirius.components.annotations.Immutable;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.tests.architecture.AbstractCodingRulesTests;
-import org.eclipse.sirius.components.view.diagram.provider.DefaultToolsFactory;
+import org.eclipse.sirius.components.view.diagram.provider.StudioDefaultToolsFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -232,18 +232,18 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     }
 
     /**
-     * Checks that no class use Sirius Web {@link DefaultToolsFactory}.
+     * Checks that no class use Sirius Web {@link StudioDefaultToolsFactory}.
      * <p>
-     * {@link DefaultToolsFactory} was initially designed to provide default tools when creating a studio, but its scope has expanded beyond that purpose. In the future, Sirius Web may break this
+     * {@link StudioDefaultToolsFactory} is designed to provide default tools when creating a studio, but its scope has expanded beyond that purpose. In the future, Sirius Web may break this
      * factory, and we should rely on the SysON implementation instead. You can check <a href="https://github.com/eclipse-syson/syson/issues/2452">syson#2452</a> for more information.
      */
     @Test
-    public void noClassShouldUseDefaultToolsFactory() {
+    public void noClassShouldUseStudioDefaultToolsFactory() {
         ArchRule rule = ArchRuleDefinition.noClasses()
                 .should()
                 .dependOnClassesThat()
-                .haveFullyQualifiedName(DefaultToolsFactory.class.getName())
-                .because("default tools should be provided by DiagramDefaultToolsFactory instead of DefaultToolsFactory")
+                .haveFullyQualifiedName(StudioDefaultToolsFactory.class.getName())
+                .because("default tools should be provided by DiagramDefaultToolsFactory instead of StudioDefaultToolsFactory")
                 .allowEmptyShould(true);
 
         rule.check(this.getClasses());
