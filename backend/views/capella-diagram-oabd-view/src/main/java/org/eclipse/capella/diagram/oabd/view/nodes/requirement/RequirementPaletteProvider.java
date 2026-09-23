@@ -15,6 +15,7 @@ package org.eclipse.capella.diagram.oabd.view.nodes.requirement;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.diagram.oabd.view.edges.describes.DescribesToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -66,6 +67,7 @@ public class RequirementPaletteProvider {
         return this.diagramBuilderHelper.newNodePalette()
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
+                .edgeTools(new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewDescribesTool(cache))
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();

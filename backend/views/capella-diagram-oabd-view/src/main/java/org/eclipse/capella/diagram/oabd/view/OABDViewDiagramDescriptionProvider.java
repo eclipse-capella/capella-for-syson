@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oabd.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.oabd.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oabd.view.edges.containedin.ContainedInEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oabd.view.nodes.requirement.RequirementNodeDescriptionProvider;
@@ -65,8 +66,9 @@ public class OABDViewDiagramDescriptionProvider implements IRepresentationDescri
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new OABDCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
-                new RequirementNodeDescriptionProvider(colorProvider)
-                , new ContainedInEdgeDescriptionProvider(colorProvider)
+                new RequirementNodeDescriptionProvider(colorProvider),
+                new ContainedInEdgeDescriptionProvider(colorProvider),
+                new DescribesEdgeDescriptionProvider(colorProvider)
         );
 
         diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
