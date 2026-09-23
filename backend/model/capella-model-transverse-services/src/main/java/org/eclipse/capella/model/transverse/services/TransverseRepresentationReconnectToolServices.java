@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
@@ -48,9 +49,12 @@ public class TransverseRepresentationReconnectToolServices {
 
     private final CommonQueryService commonQueryService;
 
-    public TransverseRepresentationReconnectToolServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService) {
+    private final IObjectSearchService objectSearchService;
+
+    public TransverseRepresentationReconnectToolServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService, IObjectSearchService iObjectSearchService) {
         this.moveService = Objects.requireNonNull(moveService);
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
+        this.objectSearchService = Objects.requireNonNull(iObjectSearchService);
         this.metamodelMutationElementService = new MetamodelMutationElementService();
         this.commonQueryService = new CommonQueryService();
     }
@@ -156,7 +160,23 @@ public class TransverseRepresentationReconnectToolServices {
         } else {
             this.diagramMutationElementService.reconnectTargetAllocateEdge(edgeSemanticElement, newReconnectionTarget);
         }
+        return newReconnectionTarget;
+    }
 
+    public ActionUsage reconnectContainedIn(ActionUsage edgeSemanticElement, ActionUsage newReconnectionTarget, Diagram diagram, IEditingContext editingContext) {
+        var previousParent = this.commonQueryService.getParentFunction(edgeSemanticElement).orElse(null);
+        var diagramRoot = this.objectSearchService.getObject(editingContext, diagram.getTargetObjectId())
+                .filter(ActionUsage.class::isInstance)
+                .map(ActionUsage.class::cast)
+                .orElse(null);
+
+        this.moveService.moveSemanticElement(newReconnectionTarget, previousParent);
+        this.moveService.moveSemanticElement(edgeSemanticElement, diagramRoot);
+        return newReconnectionTarget;
+    }
+
+    public ActionUsage reconnectContainedInTarget(ActionUsage edgeSemanticElement, ActionUsage newReconnectionTarget) {
+        this.moveService.moveSemanticElement(edgeSemanticElement, newReconnectionTarget);
         return newReconnectionTarget;
     }
 }

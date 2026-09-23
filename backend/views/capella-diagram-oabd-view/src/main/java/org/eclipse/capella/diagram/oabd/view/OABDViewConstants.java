@@ -25,4 +25,5 @@ public class OABDViewConstants {
     public static final String REQUIREMENT_BACKGROUND_COLOR = "REQUIREMENT_BACKGROUND_COLOR";
     public static final String REQUIREMENT_BORDER_COLOR = "REQUIREMENT_BORDER_COLOR";
     public static final String REQUIREMENT_LABEL_COLOR = "REQUIREMENT_LABEL_COLOR";
+    public static final String CONTAINED_IN_COLOR = "CONTAINED_IN_COLOR";
 }

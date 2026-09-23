@@ -15,6 +15,7 @@ package org.eclipse.capella.diagram.oabd.view.nodes.activity;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.diagram.oabd.view.edges.containedin.ContainedInToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -61,6 +62,7 @@ public class OperationalActivityPaletteProvider {
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
                 .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
+                .edgeTools(new ContainedInToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewContainedInTool(cache))
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .build();
     }

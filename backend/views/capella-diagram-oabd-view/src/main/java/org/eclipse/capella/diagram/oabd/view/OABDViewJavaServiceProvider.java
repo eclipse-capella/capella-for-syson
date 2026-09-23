@@ -18,6 +18,7 @@ import org.eclipse.capella.model.services.operational.analysis.OARepresentationD
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.diagram.common.view.services.ViewLabelService;
@@ -48,6 +49,7 @@ public class OABDViewJavaServiceProvider implements IJavaServiceProvider {
                     CommonCreationService.class,
                     CommonDeletionService.class,
                     CommonQueryService.class,
+                    TransverseRepresentationReconnectToolServices.class,
                     ViewLabelService.class);
         }
         return List.of();
