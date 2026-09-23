@@ -10,11 +10,11 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.lab.view.edges.describes;
+package org.eclipse.capella.diagram.oabd.view.edges.describes;
 
 import java.util.Objects;
 
-import org.eclipse.capella.diagram.lab.view.LABViewConstants;
+import org.eclipse.capella.diagram.oabd.view.OABDViewConstants;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ArrowStyle;
@@ -41,7 +41,7 @@ public class DescribesEdgeStyleProvider {
         return this.diagramBuilderHelper.newEdgeStyle()
                 .fontSize(8)
                 .borderSize(0)
-                .color(this.colorProvider.getColor(LABViewConstants.DESCRIBES_BACKGROUND_COLOR))
+                .color(this.colorProvider.getColor(OABDViewConstants.DESCRIBES_BACKGROUND_COLOR))
                 .edgeWidth(2)
                 .lineStyle(LineStyle.DASH)
                 .sourceArrowStyle(ArrowStyle.NONE)
