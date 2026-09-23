@@ -41,11 +41,15 @@ import org.eclipse.sirius.components.emf.services.DefaultLabelFeatureProvider;
 import org.eclipse.sirius.components.emf.services.api.IDefaultLabelFeatureProvider;
 import org.eclipse.sirius.components.interpreter.SimpleCrossReferenceProvider;
 import org.eclipse.sirius.components.trees.TreeItem;
+import org.eclipse.sirius.components.view.ColorPalette;
+import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.View;
+import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.ViewPackage;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
+import org.eclipse.sirius.components.view.diagram.ArrowStyle;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
@@ -73,6 +77,12 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
 
     private static final String REQUIREMENT_NODE_DESCRIPTION_NAME = "RequirementNodeDescription";
 
+    private static final String DESCRIBES_EDGE_DESCRIPTION_NAME = "DescribesEdgeDescription";
+
+    private static final String DESCRIBES_COLOR_NAME = "DESCRIBES_BACKGROUND_COLOR";
+
+    private static final String DESCRIBES_COLOR_VALUE = "#72496E";
+
     protected IDefaultLabelFeatureProvider defaultLabelFeatureProvider = new DefaultLabelFeatureProvider();
 
     protected List<Class<?>> diagramServicesClasses;
@@ -85,6 +95,7 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     public void setUp() {
         ViewBuilder viewBuilder = new ViewBuilder();
         View view = viewBuilder.build();
+        view.getColorPalettes().add(this.createDescribesColorPalette());
         IColorProvider colorProvider = this.getColorProvider(view);
         IRepresentationDescriptionProvider representationDescriptionProvider = this.getRepresentationDescriptionProvider();
         this.diagramDescription = (DiagramDescription) representationDescriptionProvider.create(colorProvider);
@@ -190,6 +201,15 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
                 .forEach(this::assertRequirementCompartmentPresentation);
     }
 
+    @Test
+    @DisplayName("Each Requirement Describes edge has the common presentation")
+    public void eachRequirementDescribesEdgeHasTheCommonPresentation() {
+        if (this.diagramDescription.getNodeDescriptions().stream()
+                .anyMatch(nodeDescription -> REQUIREMENT_NODE_DESCRIPTION_NAME.equals(nodeDescription.getName()))) {
+            this.assertRequirementDescribesEdgePresentation();
+        }
+    }
+
     private void assertRequirementCompartmentPresentation(NodeDescription requirementNodeDescription) {
         Assertions.assertThat(requirementNodeDescription.getChildrenDescriptions())
                 .as("Requirement node should have a compartment")
@@ -199,6 +219,34 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
                 .isNotNull();
         Assertions.assertThat(requirementNodeDescription.getInsideLabel().getStyle().getHeaderSeparatorDisplayMode())
                 .isEqualTo(HeaderSeparatorDisplayMode.IF_CHILDREN);
+    }
+
+    private void assertRequirementDescribesEdgePresentation() {
+        var describesEdgeDescription = this.diagramDescription.getEdgeDescriptions().stream()
+                .filter(edgeDescription -> DESCRIBES_EDGE_DESCRIPTION_NAME.equals(edgeDescription.getName()))
+                .findFirst()
+                .orElseThrow();
+
+        Assertions.assertThat(describesEdgeDescription.getCenterLabelExpression())
+                .isEmpty();
+        Assertions.assertThat(describesEdgeDescription.getStyle().getColor())
+                .isInstanceOfSatisfying(FixedColor.class, fixedColor -> {
+                    Assertions.assertThat(fixedColor.getName()).isEqualTo(DESCRIBES_COLOR_NAME);
+                    Assertions.assertThat(fixedColor.getValue()).isEqualTo(DESCRIBES_COLOR_VALUE);
+                });
+        Assertions.assertThat(describesEdgeDescription.getStyle().getSourceArrowStyle())
+                .isEqualTo(ArrowStyle.NONE);
+        Assertions.assertThat(describesEdgeDescription.getStyle().getTargetArrowStyle())
+                .isEqualTo(ArrowStyle.INPUT_ARROW);
+    }
+
+    private ColorPalette createDescribesColorPalette() {
+        var color = ViewFactory.eINSTANCE.createFixedColor();
+        color.setName(DESCRIBES_COLOR_NAME);
+        color.setValue(DESCRIBES_COLOR_VALUE);
+        var colorPalette = ViewFactory.eINSTANCE.createColorPalette();
+        colorPalette.getColors().add(color);
+        return colorPalette;
     }
 
     private List<String> getInterpretedExpressions(EObject eObject) {

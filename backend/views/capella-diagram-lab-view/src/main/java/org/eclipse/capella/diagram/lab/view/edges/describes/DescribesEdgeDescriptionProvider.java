@@ -52,6 +52,7 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
                 .domainType(domainType)
                 .isDomainBasedEdge(true)
                 .name(this.getEdgeDescriptionName())
+                .centerLabelExpression("")
                 .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getDescribes).aqlSelf())
                 .sourceExpression(ServiceMethod.of0(CommonQueryService::getDescribesSource).aqlSelf())
                 .style(describesEdgeStyleProvider.createEdgeStyle())

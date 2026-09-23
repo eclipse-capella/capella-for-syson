@@ -45,7 +45,7 @@ public class DescribesEdgeStyleProvider {
                 .edgeWidth(2)
                 .lineStyle(LineStyle.DASH)
                 .sourceArrowStyle(ArrowStyle.NONE)
-                .targetArrowStyle(ArrowStyle.NONE)
+                .targetArrowStyle(ArrowStyle.INPUT_ARROW)
                 .build();
     }
 
