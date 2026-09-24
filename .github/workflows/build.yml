@@ -130,7 +130,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
-          path: backend/capella-test-coverage/target/site/jacoco-aggregate/
+          path: backend/releng/capella-test-coverage/target/site/jacoco-aggregate/
           retention-days: 5
 
       - name: Prepare the SysON plugin image build arguments
