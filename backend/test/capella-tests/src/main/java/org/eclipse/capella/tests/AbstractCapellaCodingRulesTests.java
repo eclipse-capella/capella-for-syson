@@ -388,7 +388,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
             public boolean test(JavaClass javaClass) {
                 String simpleName = javaClass.getSimpleName();
                 boolean isQueryOrMutationService = simpleName.contains("QueryService") || simpleName.contains("MutationService");
-                boolean isRepresentationService = simpleName.contains("RepresentationQueryService") || simpleName.contains("RepresentationMutationService");
+                boolean isRepresentationService = simpleName.contains("RepresentationQueryService") || simpleName.contains("RepresentationMutationService") || simpleName.contains("View");
                 return isQueryOrMutationService && !isRepresentationService;
             }
         };
