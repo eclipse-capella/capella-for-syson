@@ -42,7 +42,7 @@ jobs:
       - name: Setup Node SDK
         uses: actions/setup-node@v4
         with:
-          node-version: 22.16
+          node-version: "24.20"
 
       - name: Check commit metadata
         env:
