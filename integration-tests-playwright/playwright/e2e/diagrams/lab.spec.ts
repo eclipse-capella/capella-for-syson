@@ -37,4 +37,12 @@ test.describe('LAB diagram', () => {
     await page.getByTestId('tool-New Component').click();
     await expect(nodes).toHaveCount(initialNodeCount + 1);
   });
+
+  test('displays the Show Functions filter enabled by default', async ({ page }) => {
+    await new PlaywrightWorkbench(page).openRepresentation('lab-representation');
+    await page.getByTestId('syson-diagram-panel-menu-icon').click();
+
+    await expect(page.getByTestId('syson-diagram-panel-menu')).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'Show Functions' })).toBeChecked();
+  });
 });
