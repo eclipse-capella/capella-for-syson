@@ -26,6 +26,8 @@ Methods that delete elements (like `delete`, `deleteCapabilityInvolvement`, etc)
 
 === Bug fixes
 
+- https://github.com/eclipse-capella/capella-for-syson/issues/209[#209] [fix] Grant the OIDC permission required to publish npm provenance.
+
 === New Features
 
 - https://github.com/eclipse-capella/capella-for-syson/issues/108[#108] [enh] Initialize OABD diagram.
