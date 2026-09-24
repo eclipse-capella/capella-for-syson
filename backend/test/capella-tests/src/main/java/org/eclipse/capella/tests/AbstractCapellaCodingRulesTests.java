@@ -37,6 +37,7 @@ import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.annotations.Builder;
 import org.eclipse.sirius.components.annotations.Immutable;
 import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IEditingContextSearchService;
 import org.eclipse.sirius.components.tests.architecture.AbstractCodingRulesTests;
 import org.eclipse.sirius.components.view.diagram.provider.StudioDefaultToolsFactory;
 import org.junit.jupiter.api.DisplayName;
@@ -286,6 +287,31 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 .because("test method names should follow <operation>[When][<context>]Should<outcome> and should be used as their display names")
                 .allowEmptyShould(true);
 
+        rule.check(this.getTestClasses());
+    }
+
+    /**
+     * Checks that no class loads an editing context directly.
+     * <p>
+     * Manually loading an editing context is expensive, and produces an unrelated copy of the user's editing context. This means that changing the content of this editing context won't be reflected
+     * in the user explorer, diagram, etc. This may be interesting to compute long-running, offline operations (e.g. indexing a model, or generating a document from a project), but these aren't
+     * features we support at the moment in Capella for SysON.
+     * </p>
+     * <p>
+     * Loading editing contexts manually in tests can be tempting to check the content of a model, but it becomes an issue as soon as we want to check the content of representations. If the content of
+     * an editing context is required in a test, prefer the pattern relying on {@code ExecuteEditingContextFunctionRunner}, which ensures the editing context is reused if it already exists.
+     * </p>
+     *
+     */
+    @Test
+    public void noClassShouldLoadEditingContextDirectly() {
+        ArchRule rule = ArchRuleDefinition.noClasses()
+                .should()
+                .callMethod(IEditingContextSearchService.class, "findById", String.class)
+                .because("loading an editing context creates an expensive, unrelated copy of the user's editing context, there are usually no good reason to do it")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
         rule.check(this.getTestClasses());
     }
 
