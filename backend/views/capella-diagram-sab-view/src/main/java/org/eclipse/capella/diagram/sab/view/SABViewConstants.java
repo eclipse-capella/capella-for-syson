@@ -40,6 +40,8 @@ public final class SABViewConstants {
     public static final String COMPONENT_PORT_BORDER_COLOR = "COMPONENT_PORT_BORDER_COLOR";
 
     public static final String COMPONENT_EXCHANGE_BACKGROUND_COLOR = "COMPONENT_EXCHANGE_BACKGROUND_COLOR";
+    
+    public static final String DESCRIBES_BACKGROUND_COLOR = "DESCRIBES_BACKGROUND_COLOR";
 
     public static final String FUNCTION_BACKGROUND_COLOR = "FUNCTION_BACKGROUND_COLOR";
 

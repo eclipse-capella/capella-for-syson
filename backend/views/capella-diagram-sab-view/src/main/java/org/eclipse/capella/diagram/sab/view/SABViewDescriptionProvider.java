@@ -52,6 +52,7 @@ public class SABViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.COMPONENT_BACKGROUND_COLOR, "#7A8CC8"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.COMPONENT_BORDER_COLOR, "#1C2A3F"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.COMPONENT_LABEL_COLOR, "#FFFFFF"));
+        colorPalette.getColors().add(this.createFixedColor(SABViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.ACTOR_BACKGROUND_COLOR, "#BDEBFA"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.ACTOR_BORDER_COLOR, "#2D5FB2"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.ACTOR_LABEL_COLOR, "#162558"));

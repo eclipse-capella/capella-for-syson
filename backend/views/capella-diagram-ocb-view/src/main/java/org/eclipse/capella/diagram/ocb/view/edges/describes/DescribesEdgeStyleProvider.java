@@ -12,14 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view.edges.describes;
 
+import java.util.Objects;
+
 import org.eclipse.capella.diagram.ocb.view.OCBViewConstants;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ArrowStyle;
 import org.eclipse.sirius.components.view.diagram.EdgeStyle;
 import org.eclipse.sirius.components.view.diagram.LineStyle;
-
-import java.util.Objects;
 
 /**
  * Provide Style for Describes edges.
@@ -45,7 +45,7 @@ public class DescribesEdgeStyleProvider {
                 .edgeWidth(2)
                 .lineStyle(LineStyle.DASH)
                 .sourceArrowStyle(ArrowStyle.NONE)
-                .targetArrowStyle(ArrowStyle.NONE)
+                .targetArrowStyle(ArrowStyle.INPUT_ARROW)
                 .build();
     }
 
