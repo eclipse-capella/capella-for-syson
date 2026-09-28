@@ -110,7 +110,7 @@ public class CapellaImagePathsService {
             case ARCADIA_CAPABILITY -> this.computeCapabilityIcon(perspective, arcadiaType);
             case ARCADIA_COMPONENT_PORT -> "FlowPort";
             case ARCADIA_COMPONENT_EXCHANGE -> arcadiaType;
-            case ARCADIA_FUNCTIONAL_EXCHANGE -> arcadiaType;
+            case ARCADIA_FUNCTIONAL_EXCHANGE -> this.computeFunctionalExchangeIcon(perspective, arcadiaType);
             case ARCADIA_FUNCTIONAL_CHAIN -> arcadiaType;
             case ARCADIA_EXCHANGE_ITEM -> this.computeExchangeItemIcon(element, arcadiaType);
             case ARCADIA_REQUIREMENT -> "Requirement";
@@ -134,6 +134,13 @@ public class CapellaImagePathsService {
                 case OUT -> "FunctionOutputPort";
                 default -> arcadiaType;
             };
+        }
+        return arcadiaType;
+    }
+
+    private String computeFunctionalExchangeIcon(ArcadiaEngineeringPerspective perspective, String arcadiaType) {
+        if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+            return "OperationalInteraction";
         }
         return arcadiaType;
     }

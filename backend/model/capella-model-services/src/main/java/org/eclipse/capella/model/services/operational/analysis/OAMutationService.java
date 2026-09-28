@@ -12,11 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
+import java.util.stream.Stream;
+
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
+import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.OccurrenceUsage;
 
@@ -32,9 +36,49 @@ public class OAMutationService {
 
     private final CommonQueryService commonQueryService;
 
+    private final CommonDeletionService commonDeletionService;
+
     public OAMutationService() {
         this.commonCreationService = new CommonCreationService();
         this.commonQueryService = new CommonQueryService();
+        this.commonDeletionService = new CommonDeletionService();
+    }
+
+    /**
+     * Creates an operational Interaction using the common Functional Exchange semantics.
+     *
+     * @param source
+     *            the source activity or output port
+     * @param target
+     *            the target activity or input port
+     * @return the named Interaction, or {@code null} when the exchange cannot be created
+     */
+    public FlowUsage createInteractionOA(Feature source, Feature target) {
+        var interaction = this.commonCreationService.createFunctionalExchange(source, target);
+        if (interaction != null) {
+            long existingElementsCount = this.commonQueryService.existingElementsCount(interaction);
+            interaction.setDeclaredName("Interaction " + existingElementsCount);
+        }
+        return interaction;
+    }
+
+    /**
+     * Deletes an Operational Interaction and its unused hidden ports from the OAB edge palette.
+     * Ports still used by another exchange are preserved.
+     *
+     * @param interaction
+     *            the Operational Interaction to delete
+     * @return the deleted Interaction, or {@code null} when it is not an Operational Interaction
+     */
+    public FlowUsage deleteInteractionOA(FlowUsage interaction) {
+        var ports = Stream.of(this.commonQueryService.getFunctionalExchangeSource(interaction), this.commonQueryService.getFunctionalExchangeTarget(interaction))
+                .distinct()
+                .toList();
+        this.commonDeletionService.delete(interaction);
+        for (Element port : ports) {
+            this.commonDeletionService.delete(port);
+        }
+        return interaction;
     }
 
     public InterfaceUsage createCommunicationMeanComponentExchangeOA(Feature source, Feature target) {
