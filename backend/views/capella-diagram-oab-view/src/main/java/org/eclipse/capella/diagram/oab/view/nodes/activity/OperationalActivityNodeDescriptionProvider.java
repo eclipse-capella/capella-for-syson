@@ -17,7 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.services.operational.analysis.OARepresentationQueryService;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -46,7 +47,7 @@ public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDesc
         return this.diagramBuilderHelper.newNodeDescription()
                 .name(NODE_DESCRIPTION_NAME)
                 .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getActionUsage()))
-                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubFunctions).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of1(OARepresentationQueryService::getActivityCandidates).aqlSelf(DiagramContext.DIAGRAM_CONTEXT))
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
                 .collapsible(true)
                 .userResizable(UserResizableDirection.BOTH)

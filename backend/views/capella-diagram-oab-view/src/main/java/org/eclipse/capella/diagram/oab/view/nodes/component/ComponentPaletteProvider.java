@@ -18,6 +18,7 @@ import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.oab.view.edges.componentexchange.CommunicationMeanComponentExchangeToolProvider;
+import org.eclipse.capella.diagram.oab.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.activity.OperationalActivityToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
@@ -104,6 +105,7 @@ public class ComponentPaletteProvider {
     private List<NodeDescription> getDroppableNodes(IViewDiagramElementFinder cache) {
         var droppableNodes = new ArrayList<NodeDescription>();
         cache.getNodeDescription(EntityComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(droppableNodes::add);
+        cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(droppableNodes::add);
         return droppableNodes;
     }
 
