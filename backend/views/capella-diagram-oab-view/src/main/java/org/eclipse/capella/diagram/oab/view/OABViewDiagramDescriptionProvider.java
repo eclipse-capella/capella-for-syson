@@ -17,6 +17,7 @@ import java.util.List;
 import org.eclipse.capella.diagram.oab.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oab.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.compartment.OABCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.compartment.OABCompartmentNodeDescriptionProvider;
@@ -64,6 +65,7 @@ public class OABViewDiagramDescriptionProvider implements IRepresentationDescrip
         var cache = new DefaultViewDiagramElementFinder();
         var diagramElementDescriptionProviders = List.of(
                 new EntityComponentNodeDescriptionProvider(colorProvider),
+                new OperationalActivityNodeDescriptionProvider(colorProvider),
                 new CommunicationMeanComponentExchangeEdgeDescriptionProvider(colorProvider),
                 new OABCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),

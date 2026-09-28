@@ -55,6 +55,9 @@ public class OABViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(OABViewConstants.COMPONENT_LABEL_COLOR, "#1C2A3F"));
         colorPalette.getColors().add(this.createFixedColor(OABViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(OABViewConstants.COMPONENT_EXCHANGE_BACKGROUND_COLOR, "#1C2A3F"));
+        colorPalette.getColors().add(this.createFixedColor(OABViewConstants.ACTIVITY_BACKGROUND_COLOR, "#F7DA74"));
+        colorPalette.getColors().add(this.createFixedColor(OABViewConstants.ACTIVITY_BORDER_COLOR, "#5B4040"));
+        colorPalette.getColors().add(this.createFixedColor(OABViewConstants.ACTIVITY_LABEL_COLOR, "#000000"));
         colorPalette.getColors().add(this.createFixedColor(OABViewConstants.REQUIREMENT_BACKGROUND_COLOR, "#D8C3D6"));
         colorPalette.getColors().add(this.createFixedColor(OABViewConstants.REQUIREMENT_BORDER_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(OABViewConstants.REQUIREMENT_LABEL_COLOR, "#72496E"));

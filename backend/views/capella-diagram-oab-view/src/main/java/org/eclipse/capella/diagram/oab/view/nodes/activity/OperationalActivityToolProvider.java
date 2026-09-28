@@ -10,7 +10,8 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.oabd.view.nodes.activity;
+
+package org.eclipse.capella.diagram.oab.view.nodes.activity;
 
 import java.util.Objects;
 
@@ -25,7 +26,7 @@ import org.eclipse.syson.util.AQLConstants;
 import org.eclipse.syson.util.ServiceMethod;
 
 /**
- * Provide tools to create operational activity nodes.
+ * Provides the tool creating Operational Activities in OAB participants.
  *
  * @author tbezierslafosse
  */
@@ -41,27 +42,21 @@ public class OperationalActivityToolProvider {
     }
 
     public NodeTool createNewOperationalActivityNodeTool(IViewDiagramElementFinder cache) {
-
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Operational Activity")
                 .iconURLsExpression("/icons/full/obj16/OperationalActivity.svg");
-
         cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
-
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
                     .expression(ServiceMethod.of0(OAMutationService::createOperationalActivityOA).aqlSelf())
-                    .children(
-                            this.diagramBuilderHelper.newCreateView()
-                                    .containmentKind(NodeContainmentKind.CHILD_NODE)
-                                    .elementDescription(nodeDescription)
-                                    .parentViewExpression("aql:diagram")
-                                    .semanticElementExpression(AQLConstants.AQL_SELF)
-                                    .variableName("newInstanceView")
-                                    .build());
-
+                    .children(this.diagramBuilderHelper.newCreateView()
+                            .containmentKind(NodeContainmentKind.CHILD_NODE)
+                            .elementDescription(nodeDescription)
+                            .parentViewExpression("aql:selectedNode")
+                            .semanticElementExpression(AQLConstants.AQL_SELF)
+                            .variableName("newInstanceView")
+                            .build());
             nodeToolBuilder.body(changeContextBuilder.build());
         });
-
         return nodeToolBuilder.build();
     }
 }

@@ -14,6 +14,7 @@ package org.eclipse.capella.model.services.operational.analysis;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.InterfaceUsage;
@@ -52,6 +53,18 @@ public class OAMutationService {
             capability.setDeclaredName("OC " + existingElementsCount);
         }
         return capability;
+    }
+
+    public ActionUsage createOperationalActivityOA(Element parent) {
+        ActionUsage activity = null;
+        if (this.commonQueryService.isOperationalActivity(parent)
+                || this.commonQueryService.isComponent(parent) && this.commonQueryService.isOperationalAnalysisPerspective(parent)) {
+            activity = this.commonCreationService.createFunction(parent);
+            if (activity != null) {
+                activity.setDeclaredName("OA " + this.commonQueryService.existingElementsCount(activity));
+            }
+        }
+        return activity;
     }
 
 }

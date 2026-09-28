@@ -10,13 +10,13 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.oab.view.nodes.component;
+
+package org.eclipse.capella.diagram.oab.view.nodes.activity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.diagram.oab.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -29,60 +29,45 @@ import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
- * Entity Component node description.
+ * Describes Operational Activity nodes allocated to Operational Entities and Actors in OAB diagrams.
  *
- * @author frouene
+ * @author tbezierslafosse
  */
-public class EntityComponentNodeDescriptionProvider extends AbstractNodeDescriptionProvider {
+public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDescriptionProvider {
 
-    public static final String NODE_DESCRIPTION_NAME = "EntityComponentNodeDescription";
+    public static final String NODE_DESCRIPTION_NAME = "OABOperationalActivityNodeDescription";
 
-    private static final String COMPONENT_DEFAULT_WIDTH = "180";
-
-    private static final String COMPONENT_DEFAULT_HEIGHT = "70";
-
-    public EntityComponentNodeDescriptionProvider(IColorProvider colorProvider) {
+    public OperationalActivityNodeDescriptionProvider(IColorProvider colorProvider) {
         super(colorProvider);
     }
 
     @Override
     public NodeDescription create() {
-        String domainType = SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage());
         return this.diagramBuilderHelper.newNodeDescription()
-                .collapsible(true)
-                .domainType(domainType)
-                .insideLabel(new EntityComponentLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
-                .name(this.getNodeDescriptionName())
-                .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
-                .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubComponents).aqlSelf())
-                .style(new ComponentNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createComponentEntityNodeStyle())
-                .userResizable(UserResizableDirection.BOTH)
+                .name(NODE_DESCRIPTION_NAME)
+                .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getActionUsage()))
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubFunctions).aqlSelf())
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
+                .collapsible(true)
+                .userResizable(UserResizableDirection.BOTH)
+                .insideLabel(new OperationalActivityLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
+                .style(new OperationalActivityNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createOperationalActivityNodeStyle())
                 .build();
-    }
-
-    private String getNodeDescriptionName() {
-        return NODE_DESCRIPTION_NAME;
     }
 
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
-        cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
-
+        cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
-
-            nodeDescription
-                    .setPalette(new ComponentPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            nodeDescription.setPalette(new OperationalActivityPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider)
+                    .createNodePalette(cache));
             nodeDescription.getReusedChildNodeDescriptions().addAll(this.getReusedChildren(cache));
         });
     }
 
     private List<NodeDescription> getReusedChildren(IViewDiagramElementFinder cache) {
         var reusedChildren = new ArrayList<NodeDescription>();
-        cache.getNodeDescription(EntityComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(reusedChildren::add);
-        cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(reusedChildren::add);
+        cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(reusedChildren::add);
         return reusedChildren;
     }
-
 }

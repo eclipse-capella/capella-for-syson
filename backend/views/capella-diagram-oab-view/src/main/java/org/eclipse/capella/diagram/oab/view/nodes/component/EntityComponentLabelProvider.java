@@ -47,7 +47,7 @@ public class EntityComponentLabelProvider {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .labelExpression("aql:self.name")
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
-                .position(InsideLabelPosition.BOTTOM_CENTER)
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .conditionalStyles(this.createActorConditionalInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
