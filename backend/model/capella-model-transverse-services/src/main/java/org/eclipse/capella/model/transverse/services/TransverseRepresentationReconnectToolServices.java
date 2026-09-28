@@ -13,7 +13,6 @@
 package org.eclipse.capella.model.transverse.services;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -59,61 +58,41 @@ public class TransverseRepresentationReconnectToolServices {
         this.commonQueryService = new CommonQueryService();
     }
 
+    /**
+     * Reconnects the source to another OUT function port without moving the previous port.
+     */
     public Feature reconnectFunctionalExchangeSource(FlowUsage functionalExchange, Feature newSource, Feature oldSource, Node sourceNode, Node targetNode, IEditingContext editingContext,
             Diagram diagram) {
-        Feature reconnectTarget = newSource;
-        if (this.commonQueryService.isFunction(newSource) && this.commonQueryService.isExchangeItem(oldSource)) {
-            this.moveService.moveSemanticElement(oldSource, newSource);
-            reconnectTarget = oldSource;
+        if (this.isValidFunctionalExchangePort(functionalExchange, newSource, true)) {
+            this.diagramMutationElementService.reconnectSource(functionalExchange, newSource, sourceNode, targetNode, editingContext, diagram);
         }
-
-        if (this.isValidFunctionalExchangePort(functionalExchange, reconnectTarget, true)) {
-            this.diagramMutationElementService.reconnectSource(functionalExchange, reconnectTarget, sourceNode, targetNode, editingContext, diagram);
-        }
-
-        return reconnectTarget;
+        return newSource;
     }
 
+    /**
+     * Reconnects the target to another IN function port without moving the previous port.
+     */
     public Feature reconnectFunctionalExchangeTarget(FlowUsage functionalExchange, Feature newTarget, Feature oldTarget, Node sourceNode, Node targetNode, IEditingContext editingContext,
             Diagram diagram) {
-        Feature reconnectTarget = newTarget;
-        if (this.commonQueryService.isFunction(newTarget) && this.commonQueryService.isExchangeItem(oldTarget)) {
-            this.moveService.moveSemanticElement(oldTarget, newTarget);
-            reconnectTarget = oldTarget;
-        }
-
         if (this.isValidFunctionalExchangePort(functionalExchange, newTarget, false)) {
-            this.diagramMutationElementService.reconnectTarget(functionalExchange, reconnectTarget, sourceNode, targetNode, editingContext, diagram);
+            this.diagramMutationElementService.reconnectTarget(functionalExchange, newTarget, sourceNode, targetNode, editingContext, diagram);
         }
-
-        return reconnectTarget;
+        return newTarget;
     }
 
-    private boolean isValidFunctionalExchangePort(FlowUsage functionalExchange, Feature feature, boolean isSource) {
+    private boolean isValidFunctionalExchangePort(FlowUsage functionalExchange, Feature port, boolean isSource) {
         var expectedDirection = FeatureDirectionKind.IN;
+        Element otherPort = this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
         if (isSource) {
             expectedDirection = FeatureDirectionKind.OUT;
+            otherPort = this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
         }
-        var otherPort = this.getOtherFunctionalExchangePort(functionalExchange, isSource);
-        var owningFunction = Optional.ofNullable(feature)
-                .map(Element::getOwner)
-                .filter(this.commonQueryService::isFunction)
-                .map(ActionUsage.class::cast);
-        var otherOwningFunction = Optional.ofNullable(otherPort)
-                .map(Element::getOwner)
-                .filter(this.commonQueryService::isFunction)
-                .map(ActionUsage.class::cast);
-        return expectedDirection == feature.getDirection()
-                && owningFunction.isPresent()
-                && otherOwningFunction.isPresent()
-                && !owningFunction.get().equals(otherOwningFunction.get());
-    }
-
-    private Element getOtherFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
-        if (isSource) {
-            return this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
+        boolean valid = false;
+        if (this.commonQueryService.isFunctionPort(port) && port.getDirection() == expectedDirection && otherPort != null) {
+            valid = this.commonQueryService.isFunction(port.getOwner()) && this.commonQueryService.isFunction(otherPort.getOwner())
+                    && !Objects.equals(port.getOwner(), otherPort.getOwner());
         }
-        return this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
+        return valid;
     }
 
     public Element reconnectComponentExchange(InterfaceUsage componentExchange, Element newTarget, Element oldTarget) {
