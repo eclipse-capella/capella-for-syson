@@ -19,8 +19,8 @@ import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFilterService;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.api.IExplorerFilterServiceProvider;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -48,12 +48,12 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
 
     private final CommonQueryService commonQueryService;
 
-    private final LAQueryService laQueryService;
+    private final List<IExplorerFilterServiceProvider> explorerFilterServiceProviders;
 
-    public CapellaExplorerFilterService(final ISysONResourceService sysONResourceService) {
+    public CapellaExplorerFilterService(final ISysONResourceService sysONResourceService, List<IExplorerFilterServiceProvider> explorerFilterServiceProviders) {
         this.sysONResourceService = Objects.requireNonNull(sysONResourceService);
-        this.laQueryService = new LAQueryService();
         this.commonQueryService = new CommonQueryService();
+        this.explorerFilterServiceProviders = List.copyOf(explorerFilterServiceProviders);
     }
 
     @Override
@@ -125,12 +125,21 @@ public class CapellaExplorerFilterService implements ICapellaExplorerFilterServi
     public List<Object> applyFilters(IEditingContext editingContext, List<?> elements, List<String> activeFilterIds) {
         List<Object> alteredElements = new ArrayList<>(elements);
         alteredElements = this.hideMemberships(alteredElements);
+        alteredElements = this.hideRootNamespace(alteredElements);
+        alteredElements = this.keepCapellaElementsAndRepresentations(alteredElements);
+        return this.applyVisibilityFilters(editingContext, alteredElements, activeFilterIds);
+    }
+
+    @Override
+    public List<Object> applyVisibilityFilters(IEditingContext editingContext, List<?> elements, List<String> activeFilterIds) {
+        List<Object> alteredElements = new ArrayList<>(elements);
         alteredElements = this.hideKerMLStandardLibraries(alteredElements);
         alteredElements = this.hideSysMLStandardLibraries(alteredElements);
         alteredElements = this.hideUserLibraries(editingContext, alteredElements);
-        alteredElements = this.hideRootNamespace(alteredElements);
-        alteredElements = this.keepCapellaElementsAndRepresentations(alteredElements);
         alteredElements = this.hidePorts(alteredElements, activeFilterIds);
+        for (var provider : this.explorerFilterServiceProviders) {
+            alteredElements.removeIf(provider.getFilter().negate());
+        }
         return alteredElements;
     }
 
