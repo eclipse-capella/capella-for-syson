@@ -14,17 +14,13 @@ package org.eclipse.capella.application.configuration.explorer.services;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.explorer.CapellaExplorerTreeDescriptionProvider;
-import org.eclipse.capella.application.configuration.explorer.filters.CapellaTreeFilterProvider;
-import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFilterService;
 import org.eclipse.sirius.components.collaborative.trees.api.ITreePathProvider;
 import org.eclipse.sirius.components.collaborative.trees.dto.TreePath;
 import org.eclipse.sirius.components.collaborative.trees.dto.TreePathInput;
@@ -53,17 +49,14 @@ public class CapellaExplorerTreePathProvider implements ITreePathProvider {
 
     private final IRepresentationDescriptionSearchService representationDescriptionSearchService;
 
-    private final LAQueryService laQueryService;
-
-    private final CommonQueryService commonQueryService;
+    private final ICapellaExplorerFilterService filterService;
 
     public CapellaExplorerTreePathProvider(ITreeNavigationService treeNavigationService, IURLParser urlParser,
-            IRepresentationDescriptionSearchService representationDescriptionSearchService) {
+            IRepresentationDescriptionSearchService representationDescriptionSearchService, ICapellaExplorerFilterService filterService) {
         this.treeNavigationService = Objects.requireNonNull(treeNavigationService);
         this.urlParser = Objects.requireNonNull(urlParser);
         this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
-        this.laQueryService = new LAQueryService();
-        this.commonQueryService = new CommonQueryService();
+        this.filterService = Objects.requireNonNull(filterService);
     }
 
     @Override
@@ -96,7 +89,7 @@ public class CapellaExplorerTreePathProvider implements ITreePathProvider {
                     this.getTreeItemObject(editingContext, optTreeDescription.get(), tree, itemAncestor).ifPresent(itemAncestorsObjects::add);
                 }
                 var filteredItemAncestorsIds = new ArrayList<String>();
-                var filteredItemAncestorsObjects = this.applyFilters(itemAncestorsObjects, activeFilterIds);
+                var filteredItemAncestorsObjects = this.filterService.applyVisibilityFilters(editingContext, itemAncestorsObjects, activeFilterIds);
                 for (Object filteredItemAncestorsObject : filteredItemAncestorsObjects) {
                     this.getItemId(editingContext, optTreeDescription.get(), tree, filteredItemAncestorsObject).ifPresent(filteredItemAncestorsIds::add);
                 }
@@ -130,13 +123,5 @@ public class CapellaExplorerTreePathProvider implements ITreePathProvider {
         return this.representationDescriptionSearchService.findById(editingContext, descriptionId)
                 .filter(TreeDescription.class::isInstance)
                 .map(TreeDescription.class::cast);
-    }
-
-    private List<Object> applyFilters(List<Object> elements, List<String> activeFilterIds) {
-        var alteredElements = new ArrayList<Object>(elements);
-        if (activeFilterIds.contains(CapellaTreeFilterProvider.HIDE_PORTS_TREE_ITEM_FILTER_ID)) {
-            alteredElements.removeIf(element -> element instanceof EObject eObject && (this.commonQueryService.isComponentPort(eObject) || this.commonQueryService.isFunctionPort(eObject)));
-        }
-        return alteredElements;
     }
 }

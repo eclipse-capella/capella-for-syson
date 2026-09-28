@@ -41,5 +41,33 @@ public interface ICapellaExplorerFilterService {
 
     List<Object> hideRootNamespace(List<Object> elements);
 
+    /**
+     * Filters visibility without expanding memberships or root namespaces, so this method can also filter explorer ancestor paths.
+     * Hides standard and imported user libraries, applies active optional filters and mandatory rules contributed by explorer filter providers.
+     * Preserves the order and identity of retained elements without modifying the input list or semantic model.
+     *
+     * @param editingContext
+     *         the editing context used to identify imported user libraries
+     * @param elements
+     *         the elements whose visibility is evaluated
+     * @param activeFilterIds
+     *         the identifiers of active optional explorer filters
+     * @return a new list containing the visible elements in their original order
+     */
+    List<Object> applyVisibilityFilters(IEditingContext editingContext, List<?> elements, List<String> activeFilterIds);
+
+    /**
+     * Prepares child elements for display in the explorer: expands memberships and root namespaces into their owned elements,
+     * retains supported Capella elements and representations, then applies {@link #applyVisibilityFilters(IEditingContext, List, List)}.
+     * Does not modify the input list or semantic model. Use {@code applyVisibilityFilters} for ancestor paths, which must not be expanded.
+     *
+     * @param editingContext
+     *         the editing context used to identify imported user libraries
+     * @param elements
+     *         the raw child elements to display
+     * @param activeFilterIds
+     *         the identifiers of active optional explorer filters
+     * @return a new list containing the visible explorer children
+     */
     List<Object> applyFilters(IEditingContext editingContext, List<?> elements, List<String> activeFilterIds);
 }
