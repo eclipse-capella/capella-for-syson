@@ -42,7 +42,7 @@ public class EntityComponentToolProvider {
     public NodeTool createNewEntityComponentNodeTool(IViewDiagramElementFinder cache) {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Operational Entity")
-                .iconURLsExpression("/icons/full/obj16/LogicalComponent.svg");
+                .iconURLsExpression("/icons/full/obj16/OperationalEntity.svg");
 
 
         return this.configureNewComponentNodeTool(nodeToolBuilder, cache, false);

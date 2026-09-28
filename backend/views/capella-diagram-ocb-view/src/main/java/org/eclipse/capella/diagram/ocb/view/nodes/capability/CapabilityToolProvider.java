@@ -42,7 +42,7 @@ public class CapabilityToolProvider {
     public NodeTool createNewCapabilityNodeTool(IViewDiagramElementFinder cache) {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Operational Capability")
-                .iconURLsExpression("/icons/full/obj16/Capability.svg");
+                .iconURLsExpression("/icons/full/obj16/OperationalCapability.svg");
         cache.getNodeDescription(CapabilityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> nodeToolBuilder.body(
                 this.viewBuilderHelper.newChangeContext()
                         .expression(ServiceMethod.of0(OAMutationService::createOperationalCapabilityOA).aqlSelf())
