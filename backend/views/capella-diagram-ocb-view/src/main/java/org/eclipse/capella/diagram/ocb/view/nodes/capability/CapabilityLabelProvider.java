@@ -77,7 +77,7 @@ public class CapabilityLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(OCBViewConstants.CAPABILITY_LABEL_COLOR))
                 .showIconExpression("aql:false")
-                .labelIcon("/icons/full/obj16/Capability.svg")
+                .labelIcon("/icons/full/obj16/OperationalCapability.svg")
                 .build();
     }
 }

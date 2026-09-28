@@ -107,7 +107,7 @@ public class CapellaImagePathsService {
     public Optional<String> getImageFromArcadiaType(ArcadiaEngineeringPerspective perspective, Element element, String arcadiaType) {
         String imageName = switch (arcadiaType) {
             case ARCADIA_COMPONENT, ARCADIA_FUNCTION -> this.computeElementNameWithArchitecture(perspective, arcadiaType, element).orElse(null);
-            case ARCADIA_CAPABILITY -> arcadiaType;
+            case ARCADIA_CAPABILITY -> this.computeCapabilityIcon(perspective, arcadiaType);
             case ARCADIA_COMPONENT_PORT -> "FlowPort";
             case ARCADIA_COMPONENT_EXCHANGE -> arcadiaType;
             case ARCADIA_FUNCTIONAL_EXCHANGE -> arcadiaType;
@@ -134,6 +134,13 @@ public class CapellaImagePathsService {
                 case OUT -> "FunctionOutputPort";
                 default -> arcadiaType;
             };
+        }
+        return arcadiaType;
+    }
+
+    private String computeCapabilityIcon(ArcadiaEngineeringPerspective perspective, String arcadiaType) {
+        if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+            return "OperationalCapability";
         }
         return arcadiaType;
     }
@@ -186,9 +193,9 @@ public class CapellaImagePathsService {
             } else if (this.commonQueryService.isComponentHumanActor(element)) {
                 componentType = LOGICAL + "ActorHuman";
             } else if (this.commonQueryService.isComponentActor(element)) {
-                componentType = LOGICAL + "Actor";
+                componentType = "OperationalEntity";
             } else {
-                componentType = LOGICAL + name;
+                componentType = "OperationalEntity";
             }
         } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
             componentType = PHYSICAL + name;
