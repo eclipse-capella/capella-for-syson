@@ -300,15 +300,6 @@ public class CommonCreationService {
         return allocation;
     }
 
-    public ActionUsage createOperationalActivity(Element parent) {
-        ActionUsage activity = null;
-        if (this.commonQueryService.isOperationalActivity(parent)) {
-            activity = this.createFunction(parent);
-            activity.setDeclaredName("OA " + this.commonQueryService.existingElementsCount(activity));
-        }
-        return activity;
-    }
-
     public OccurrenceUsage createOperationalCapability(Element parent) {
         return this.commonQueryService.getCapabilitiesPackage(parent)
                 .map(capabilitiesPackage -> {
