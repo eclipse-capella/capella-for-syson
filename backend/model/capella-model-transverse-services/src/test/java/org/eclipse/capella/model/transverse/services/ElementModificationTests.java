@@ -15,6 +15,8 @@ package org.eclipse.capella.model.transverse.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
+
 import org.eclipse.capella.tests.fixtures.FunctionsPackage;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -185,5 +187,59 @@ public class ElementModificationTests extends AbstractSemanticTests {
                 .filteredOn(this.commonQueryService::isStatusInfo)
                 .isEmpty();
         assertThat(this.commonQueryService.getStatus(rootFunction)).isNull();
+    }
+
+    @Test
+    public void setRealizesShouldUpdateRealizesAndIsRealizedBy() {
+        ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+
+        this.commonUpdateService.setRealizes(realizer, realized);
+
+        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(realized);
+        assertThat(this.commonQueryService.getIsRealizedBy(realized)).containsExactly(realizer);
+    }
+
+    @Test
+    public void removeRealizesShouldPreserveOtherReferences() {
+        ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage firstRealized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage secondRealized = this.commonCreationService.createFunction(firstRealized);
+        this.commonUpdateService.setRealizes(realizer, List.of(firstRealized, secondRealized));
+
+        this.commonUpdateService.removeRealizes(realizer, firstRealized);
+
+        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(secondRealized);
+        assertThat(this.commonQueryService.getIsRealizedBy(firstRealized)).isEmpty();
+        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).containsExactly(realizer);
+    }
+
+    @Test
+    public void removeRealizesShouldPreserveOtherRealizers() {
+        ActionUsage firstRealizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage secondRealizer = this.commonCreationService.createFunction(firstRealizer);
+        ActionUsage realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        this.commonUpdateService.setRealizes(firstRealizer, realized);
+        this.commonUpdateService.setRealizes(secondRealizer, realized);
+
+        this.commonUpdateService.removeRealizes(firstRealizer, realized);
+
+        assertThat(this.commonQueryService.getRealizes(firstRealizer)).isEmpty();
+        assertThat(this.commonQueryService.getRealizes(secondRealizer)).containsExactly(realized);
+        assertThat(this.commonQueryService.getIsRealizedBy(realized)).containsExactly(secondRealizer);
+    }
+
+    @Test
+    public void clearRealizesShouldRemoveRealizesAndIsRealizedBy() {
+        ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage firstRealized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage secondRealized = this.commonCreationService.createFunction(firstRealized);
+        this.commonUpdateService.setRealizes(realizer, List.of(firstRealized, secondRealized));
+
+        this.commonUpdateService.clearRealizes(realizer);
+
+        assertThat(this.commonQueryService.getRealizes(realizer)).isEmpty();
+        assertThat(this.commonQueryService.getIsRealizedBy(firstRealized)).isEmpty();
+        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).isEmpty();
     }
 }

@@ -263,11 +263,15 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     public void semanticTestMethodsShouldFollowNamingConvention() {
         JavaClasses transverseServiceClasses = new ClassFileImporter().importPackages("org.eclipse.capella.model.transverse.services..");
 
-        Set<String> testableMethodNames = Stream.of(
+        Set<String> testableMethodNames = Stream.concat(Stream.of(
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonQueryService"),
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.ArcadiaElementNameService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonCreationService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonMoveService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonUpdateService"),
-                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonDeletionService"))
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonDeletionService")),
+                this.getClasses().stream()
+                        .filter(javaClass -> javaClass.getName().equals("org.eclipse.capella.application.configuration.details.view.services.ArcadiaElementLabelService")))
                 .flatMap(serviceClass -> serviceClass.getMethods().stream())
                 .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
                 .map(JavaMethod::getName)
@@ -489,7 +493,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
         } else {
             boolean startsWithTestableMethodName = testableMethodNames.stream().anyMatch(testMethodName::startsWith);
             if (!startsWithTestableMethodName) {
-                result = Optional.of("does not start with a public transverse service method name");
+                result = Optional.of("does not start with a public method name of a supported service");
             } else {
                 int whenIndex = testMethodName.indexOf(WHEN);
                 if (whenIndex > shouldIndex) {
