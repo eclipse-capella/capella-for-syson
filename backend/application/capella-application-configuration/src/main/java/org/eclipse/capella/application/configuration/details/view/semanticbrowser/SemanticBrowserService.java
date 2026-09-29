@@ -20,6 +20,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
+import org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
@@ -36,6 +37,7 @@ import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.services
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.SemanticData;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.FlowUsage;
+import org.eclipse.syson.sysml.Usage;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 
@@ -70,6 +72,8 @@ public class SemanticBrowserService {
     private final IRepresentationSearchService representationSearchService;
 
     private final CommonQueryService commonQueryService;
+
+    private final ArcadiaTraceabilityLabelService arcadiaTraceabilityLabelService = new ArcadiaTraceabilityLabelService();
 
     public SemanticBrowserService(IRepresentationMetadataSearchService representationMetadataSearchService, IIdentityService identityService,
             IRepresentationSearchService representationSearchService) {
@@ -174,7 +178,7 @@ public class SemanticBrowserService {
         return result;
     }
 
-    public List<?> getReferencingElementsCategories(EObject element) {
+    public List<String> getReferencingElementsCategories(EObject element) {
         List<String> result = new ArrayList<>();
         if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
             var functionComponent = this.commonQueryService.getAllocatingComponent(actionUsage);
@@ -198,15 +202,26 @@ public class SemanticBrowserService {
             }
 
         }
+        if (element instanceof Usage usage) {
+            this.getRealizingCategoryName(usage).ifPresent(result::add);
+        }
         return result;
     }
 
     public List<?> getReferencingCategoryElements(EObject element, String category) {
         List<?> result = List.of();
-        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(element)) {
+        if (element instanceof Usage usage && this.getRealizingCategoryName(usage).filter(name -> name.equals(category)).isPresent()) {
+            result = this.commonQueryService.getIsRealizedBy(usage);
+        } else if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(element)) {
             result = this.getFunctionReferencingCategoryElements(actionUsage, category);
         }
         return result;
+    }
+
+    private Optional<String> getRealizingCategoryName(Usage usage) {
+        return Optional.of(usage)
+                .filter(element -> !this.commonQueryService.getIsRealizedBy(element).isEmpty())
+                .map(this.arcadiaTraceabilityLabelService::getRealizingLabel);
     }
 
     private List<?> getFunctionReferencingCategoryElements(ActionUsage function, String category) {
@@ -224,7 +239,7 @@ public class SemanticBrowserService {
         return flowUsage.getSource();
     }
 
-    public List<?> getReferencedElementsCategories(EObject element) {
+    public List<String> getReferencedElementsCategories(EObject element) {
         List<String> result = new ArrayList<>();
         if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(actionUsage)) {
             var referencingFunctionalExchanges = this.commonQueryService.getOutgoingFunctionalExchanges(actionUsage);
@@ -234,12 +249,18 @@ public class SemanticBrowserService {
             }
 
         }
+        if (element instanceof Usage usage && this.arcadiaTraceabilityLabelService.hasRealizesWidget(usage) && !this.commonQueryService.getRealizes(usage).isEmpty()) {
+            result.add(this.arcadiaTraceabilityLabelService.getRealizesWidgetLabelValue(usage));
+        }
         return result;
     }
 
     public List<?> getReferencedCategoryElements(EObject element, String category) {
         List<?> result = List.of();
-        if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(element)) {
+        if (element instanceof Usage usage && this.arcadiaTraceabilityLabelService.hasRealizesWidget(usage)
+                && this.arcadiaTraceabilityLabelService.getRealizesWidgetLabelValue(usage).equals(category)) {
+            result = this.commonQueryService.getRealizes(usage);
+        } else if (element instanceof ActionUsage actionUsage && this.commonQueryService.isFunction(element)) {
             result = this.getFunctionReferencedCategoryElements(actionUsage, category);
         }
         return result;
