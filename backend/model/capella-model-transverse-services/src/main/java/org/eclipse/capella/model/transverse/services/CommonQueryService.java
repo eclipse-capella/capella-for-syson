@@ -1242,7 +1242,7 @@ public class CommonQueryService {
                 .findFirst();
         if (perspective.isPresent() && packageName.isPresent()) {
             var sourcePackage = this.getArcadiaPerspectiveSubPackage(usage, perspective.get(), packageName.get());
-            var targetPerspective = this.getPreviousPerspectiveRootElement(usage, perspective.get());
+            var targetPerspective = this.getPreviousPerspectiveRootElement(usage);
             if (sourcePackage.filter(pack -> EcoreUtil.isAncestor(pack, usage)).isPresent() && targetPerspective.isPresent()) {
                 result = targetPerspective.get().getOwnedMember().stream()
                         .filter(Package.class::isInstance)
@@ -1271,9 +1271,11 @@ public class CommonQueryService {
         };
     }
 
-    private Optional<Package> getPreviousPerspectiveRootElement(Element context, ArcadiaEngineeringPerspective perspective) {
-        return perspective.getPreviousPerspective()
+    private Optional<Package> getPreviousPerspectiveRootElement(Element context) {
+        return this.getArcadiaPerspective(context).flatMap(perspective -> {
+            return perspective.getPreviousPerspective()
                 .flatMap(previousPerspective -> this.getArcadiaPerspectivePackage(context, previousPerspective));
+        });
     }
 
     private Predicate<EObject> getRealizesCandidatePredicate(Usage source) {
