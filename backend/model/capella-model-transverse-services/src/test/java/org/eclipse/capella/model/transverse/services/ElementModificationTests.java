@@ -215,7 +215,7 @@ public class ElementModificationTests extends AbstractSemanticTests {
     }
 
     @Test
-    public void removeRealizesShouldPreserveOtherRealizers() {
+    public void removeRealizesShouldPreserveOtherIsRealizedBy() {
         ActionUsage firstRealizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage secondRealizer = this.commonCreationService.createFunction(firstRealizer);
         ActionUsage realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
