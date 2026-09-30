@@ -14,3 +14,4 @@ export { CapellaDiagramPanelMenu } from './extensions/CapellaDiagramPanelMenu';
 export { CapellaExtensionRegistryMergeStrategy } from './extensions/CapellaExtensionRegistryMergeStrategy';
 export { ProjectOnboardingArea } from './extensions/ProjectOnboardingArea';
 export { CapellaDDVWorkbenchViewContribution } from './extensions/CapellaDDVWorkbenchViewContribution';
+export { CapellaRelatedElementsWorkbenchViewContribution } from './extensions/CapellaRelatedElementsWorkbenchViewContribution';
