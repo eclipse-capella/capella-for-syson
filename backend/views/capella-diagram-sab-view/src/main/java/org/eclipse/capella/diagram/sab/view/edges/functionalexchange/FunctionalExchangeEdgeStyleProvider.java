@@ -52,7 +52,9 @@ public class FunctionalExchangeEdgeStyleProvider {
                 .edgeWidth(2)
                 .lineStyle(LineStyle.SOLID)
                 .sourceArrowStyle(ArrowStyle.NONE)
-                .targetArrowStyle(ArrowStyle.INPUT_ARROW)
+                .targetArrowStyle(ArrowStyle.NONE)
+                .showIcon(true)
+                .labelIcon("/icons/full/obj16/FunctionalExchange.svg")
                 .build();
     }
 

@@ -200,7 +200,9 @@ public class CapellaImagePathsService {
         } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
             componentType = PHYSICAL + name;
         } else if (ArcadiaEngineeringPerspective.SystemAnalysis.equals(perspective)) {
-            if (this.commonQueryService.isComponentActor(element)) {
+            if (this.commonQueryService.isComponentHumanActor(element)) {
+                componentType = SYSTEM + "ActorHuman";
+            } else if (this.commonQueryService.isComponentActor(element)) {
                 componentType = SYSTEM + "Actor";
             } else {
                 componentType = SYSTEM + name;

@@ -44,7 +44,7 @@ public class SystemOfInterestLabelProvider {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .labelExpression("aql:self.name")
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
-                .position(InsideLabelPosition.BOTTOM_CENTER)
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
                 .build();
