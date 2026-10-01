@@ -16,7 +16,6 @@ import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ConditionalInsideLabelStyle;
@@ -26,6 +25,7 @@ import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.InsideLabelStyle;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.LabelTextAlign;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide label for the System Actor node.
@@ -47,9 +47,9 @@ public class SystemActorLabelProvider {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .labelExpression("aql:self.name")
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
-                .position(InsideLabelPosition.BOTTOM_CENTER)
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
-                .conditionalStyles(this.createHumanActorConditionalInsideLabelStyle())
+                .conditionalStyles(this.createHumanActorConditionalInsideLabelStyle(), this.createActorConditionalInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
                 .build();
     }
@@ -61,7 +61,7 @@ public class SystemActorLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(SABViewConstants.ACTOR_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/SystemActor.svg")
+                .labelIcon("/icons/full/obj16/SystemComponent.svg")
                 .withHeader(true)
                 .build();
     }
@@ -80,7 +80,26 @@ public class SystemActorLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(SABViewConstants.ACTOR_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/LogicalComponentHuman.svg")
+                .labelIcon("/icons/full/obj16/SystemActorHuman.svg")
+                .withHeader(true)
+                .build();
+    }
+
+    public ConditionalInsideLabelStyle createActorConditionalInsideLabelStyle() {
+        return this.diagramBuilderHelper.newConditionalInsideLabelStyle()
+                .style(this.createActorInsideLabelStyle())
+                .condition(ServiceMethod.of0(CommonQueryService::isComponentActor).aqlSelf())
+                .build();
+    }
+
+    public InsideLabelStyle createActorInsideLabelStyle() {
+        return this.diagramBuilderHelper.newInsideLabelStyle()
+                .borderSize(0)
+                .headerSeparatorDisplayMode(HeaderSeparatorDisplayMode.NEVER)
+                .fontSize(12)
+                .labelColor(this.colorProvider.getColor(SABViewConstants.ACTOR_LABEL_COLOR))
+                .showIconExpression("aql:true")
+                .labelIcon("/icons/full/obj16/SystemActor.svg")
                 .withHeader(true)
                 .build();
     }
