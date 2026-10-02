@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.eclipse.capella.application.configuration.details.view.referencewidget.IsRealizedByReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService;
-import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
@@ -43,12 +42,66 @@ public class ArcadiaTraceabilityLabelServiceTests extends AbstractSemanticTests 
     private final ArcadiaTraceabilityLabelService service = new ArcadiaTraceabilityLabelService();
 
     @Test
+    public void getRealizesWidgetLabelValueShouldUseNameFromRealizedPerspective() {
+        var operationalFunction = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var logicalFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var physicalFunction = this.capellaModel.getPhysicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+
+        assertThat(this.service.getRealizesWidgetLabelValue(operationalFunction)).isEmpty();
+        assertThat(this.service.getRealizesWidgetLabelValue(systemFunction)).isEqualTo("Realized Operational Activities");
+        assertThat(this.service.getRealizesWidgetLabelValue(logicalFunction)).isEqualTo("Realized System Functions");
+        assertThat(this.service.getRealizesWidgetLabelValue(physicalFunction)).isEqualTo("Realized Logical Functions");
+    }
+
+    @Test
+    public void getRealizesWidgetLabelValueShouldMatchFunctionPortDirection() {
+        var function = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var creationService = new CommonCreationService();
+        var input = creationService.createFunctionPort(function, FeatureDirectionKind.IN);
+        var output = creationService.createFunctionPort(function, FeatureDirectionKind.OUT);
+
+        assertThat(this.service.getRealizesWidgetLabelValue(input)).isEqualTo("Realized Function Input Ports");
+        assertThat(this.service.getRealizesWidgetLabelValue(output)).isEqualTo("Realized Function Output Ports");
+    }
+
+    @Test
+    public void getRealizesWidgetLabelValueWhenFunctionPortIsInSystemAnalysisShouldBeEmpty() {
+        var function = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var creationService = new CommonCreationService();
+        var input = creationService.createFunctionPort(function, FeatureDirectionKind.IN);
+        var output = creationService.createFunctionPort(function, FeatureDirectionKind.OUT);
+
+        assertThat(this.service.getRealizesWidgetLabelValue(input)).isEmpty();
+        assertThat(this.service.getRealizesWidgetLabelValue(output)).isEmpty();
+        assertThat(this.service.hasRealizesWidget(input)).isFalse();
+        assertThat(this.service.hasRealizesWidget(output)).isFalse();
+    }
+
+    @Test
+    public void hasRealizesWidgetShouldFollowLabelAvailability() {
+        var operationalFunction = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+
+        assertThat(this.service.hasRealizesWidget(operationalFunction)).isFalse();
+        assertThat(this.service.hasRealizesWidget(systemFunction)).isTrue();
+    }
+
+    @Test
+    public void getRealizesWidgetLabelValueShouldReturnLabelOrEmptyString() {
+        var operationalFunction = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+
+        assertThat(this.service.getRealizesWidgetLabelValue(operationalFunction)).isEmpty();
+        assertThat(this.service.getRealizesWidgetLabelValue(systemFunction)).isEqualTo("Realized Operational Activities");
+    }
+
+    @Test
     public void hasIsRealizedByWidgetShouldFollowReferenceAvailability() {
         var realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var updateService = new CommonUpdateService();
 
-        assertThat(this.service.hasIsRealizedByWidget(realized)).isFalse();
         updateService.setFeatureReferenceValues(realized, ARCADIA_PREFIX + ARCADIA_ELEMENT, ARCADIA_IS_REALIZED_BY,
                 List.of(realizer), SysmlPackage.eINSTANCE.getOccurrenceUsage());
         assertThat(this.service.hasIsRealizedByWidget(realized)).isTrue();
@@ -62,46 +115,32 @@ public class ArcadiaTraceabilityLabelServiceTests extends AbstractSemanticTests 
         assertThat(provider.handleClearReference(description, null, variables)).isInstanceOf(Failure.class);
         assertThat(provider.getReferenceValue(description, null, variables)).isEqualTo(List.of(realizer));
         updateService.deleteReference(realized, ARCADIA_IS_REALIZED_BY);
-        assertThat(this.service.hasIsRealizedByWidget(realized)).isFalse();
         assertThat(this.service.hasIsRealizedByWidget(SysmlFactory.eINSTANCE.createActionUsage())).isFalse();
         assertThat(this.service.hasIsRealizedByWidget(null)).isFalse();
     }
 
     @Test
-    public void getRealizingLabelShouldUseNameFromNextPerspective() {
+    public void getIsRealizedByWidgetLabelValueShouldUseNameFromNextPerspective() {
         var operationalFunction = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         var logicalFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var component = new CommonCreationService().createComponent(this.capellaModel.getPhysicalArchitecturePerspective().getStructurePackage().getElement());
 
-        assertThat(this.service.getRealizingLabel(operationalFunction)).isEqualTo("Realizing System Functions");
-        assertThat(this.service.getRealizingLabel(systemFunction)).isEqualTo("Realizing Logical Functions");
-        assertThat(this.service.getRealizingLabel(logicalFunction)).isEqualTo("Realizing Physical Functions");
-        assertThat(this.service.getRealizingLabel(component)).isEqualTo("Realizing Configuration Items");
+        assertThat(this.service.getIsRealizedByWidgetLabelValue(operationalFunction)).isEqualTo("Realizing System Functions");
+        assertThat(this.service.getIsRealizedByWidgetLabelValue(systemFunction)).isEqualTo("Realizing Logical Functions");
+        assertThat(this.service.getIsRealizedByWidgetLabelValue(logicalFunction)).isEqualTo("Realizing Physical Functions");
+        assertThat(this.service.getIsRealizedByWidgetLabelValue(component)).isEqualTo("Realizing Configuration Items");
     }
 
     @Test
-    public void getRealizingLabelWhenNameIsUnavailableShouldUseGenericLabel() {
-        var physicalFunction = this.capellaModel.getPhysicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        assertThat(this.service.getRealizingLabel(physicalFunction)).isEqualTo("Realizing");
-
-        var component = new CommonCreationService().createComponent(this.capellaModel.getPhysicalArchitecturePerspective().getStructurePackage().getElement());
-        this.capellaModel.getPhysicalArchitecturePerspective().getElement().setDeclaredName(ArcadiaEngineeringPerspective.EPBS.getLabel());
-
-        assertThat(this.service.getRealizingLabel(component)).isEqualTo("Realizing");
-        assertThat(this.service.getRealizingLabel(SysmlFactory.eINSTANCE.createActionUsage())).isEqualTo("Realizing");
-        assertThat(this.service.getRealizingLabel(null)).isEqualTo("Realizing");
-    }
-
-    @Test
-    public void getRealizingLabelShouldMatchFunctionPortDirection() {
+    public void getIsRealizedByWidgetLabelValueShouldMatchFunctionPortDirection() {
         var function = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         var creationService = new CommonCreationService();
         var input = creationService.createFunctionPort(function, FeatureDirectionKind.IN);
         var output = creationService.createFunctionPort(function, FeatureDirectionKind.OUT);
 
-        assertThat(this.service.getRealizingLabel(input)).isEqualTo("Realizing Function Input Ports");
-        assertThat(this.service.getRealizingLabel(output)).isEqualTo("Realizing Function Output Ports");
+        assertThat(this.service.getIsRealizedByWidgetLabelValue(input)).isEqualTo("Realizing Function Input Ports");
+        assertThat(this.service.getIsRealizedByWidgetLabelValue(output)).isEqualTo("Realizing Function Output Ports");
     }
 
 }

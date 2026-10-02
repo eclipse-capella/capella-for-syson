@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.services;
 
+import java.util.Optional;
+
 import org.eclipse.capella.model.transverse.services.ArcadiaElementNameService;
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -30,20 +32,45 @@ public class ArcadiaTraceabilityLabelService {
 
     private final ArcadiaElementNameService arcadiaElementNameService = new ArcadiaElementNameService();
 
-    public boolean hasIsRealizedByWidget(Element element) {
-        return element instanceof Usage usage && !this.commonQueryService.getIsRealizedBy(usage).isEmpty();
+    public boolean hasRealizesWidget(Element element) {
+        return this.getRealizesWidgetLabel(element).isPresent();
     }
 
-    public String getRealizingLabel(Element element) {
-        String empty = "Realizing";
+    /**
+     * Returns the string value expected by the widget label expression.
+     */
+    public String getRealizesWidgetLabelValue(Element element) {
+        return this.getRealizesWidgetLabel(element).orElse("");
+    }
+
+    private Optional<String> getRealizesWidgetLabel(Element element) {
+        Optional<String> result = Optional.empty();
         if (element instanceof Usage usage) {
-            return this.commonQueryService.getArcadiaPerspective(usage)
+            result = this.commonQueryService.getArcadiaPerspective(usage)
+                    .flatMap(ArcadiaEngineeringPerspective::getPreviousPerspective)
+                    .flatMap(perspective -> this.arcadiaElementNameService.getElementName(usage, perspective))
+                    .map(name -> "Realized " + this.getTraceabilityElementName(usage, name));
+        }
+        return result;
+    }
+
+    public boolean hasIsRealizedByWidget(Element element) {
+        return this.getIsRealizedByWidgetLabel(element).isPresent();
+    }
+
+    public String getIsRealizedByWidgetLabelValue(Element element) {
+        return this.getIsRealizedByWidgetLabel(element).orElse("");
+    }
+
+    private Optional<String> getIsRealizedByWidgetLabel(Element element) {
+        Optional<String> result = Optional.empty();
+        if (element instanceof Usage usage) {
+            result = this.commonQueryService.getArcadiaPerspective(usage)
                     .flatMap(ArcadiaEngineeringPerspective::getNextPerspective)
                     .flatMap(perspective -> this.arcadiaElementNameService.getElementName(usage, perspective))
-                    .map(name -> "Realizing " + this.getTraceabilityElementName(usage, name))
-                    .orElse(empty);
+                    .map(name -> "Realizing " + this.getTraceabilityElementName(usage, name));
         }
-        return empty;
+        return result;
     }
 
     private String getTraceabilityElementName(Usage usage, String name) {
