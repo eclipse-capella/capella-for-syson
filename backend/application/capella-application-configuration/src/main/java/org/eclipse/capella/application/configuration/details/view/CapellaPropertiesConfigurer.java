@@ -19,6 +19,7 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.A
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_REALIZED_BY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.Collection;
@@ -36,6 +37,8 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.ICapellaReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionalExchangesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionsWidgetProvider;
+import org.eclipse.capella.application.configuration.details.view.referencewidget.IsRealizedByReferenceWidgetProvider;
+import org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -128,7 +131,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         view.getDescriptions().add(viewFormDescription);
 
         // Convert the View-based FormDescription and register the result into the system
-        AQLInterpreter interpreter = new AQLInterpreter(List.of(CommonQueryService.class, CommonCreationService.class, CommonUpdateService.class),
+        AQLInterpreter interpreter = new AQLInterpreter(List.of(CommonQueryService.class, CommonCreationService.class, CommonUpdateService.class, ArcadiaTraceabilityLabelService.class),
                 List.of(new DetailsViewService(this.composedAdapterFactoryDescriptors, this.feedbackMessageService, this.readOnlyObjectPredicate, new MetamodelQueryElementService(), this.detailsViewHelpTextProviders)),
                 List.of(SysmlPackage.eINSTANCE));
         ViewConverterResult viewConverterResult = this.converter.convert(viewFormDescription, List.of(), interpreter);
@@ -211,7 +214,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         return List.of(radioDescription, refAllocatedPortsWidget);
     }
 
-    private List<WidgetDescription> createArcadiaElementWidgets() {
+    private List<FormElementDescription> createArcadiaElementWidgets() {
         TextfieldDescription textfieldName = FormFactory.eINSTANCE.createTextfieldDescription();
         textfieldName.setName("ArcadiaElementNameWidget");
         textfieldName.setLabelExpression("Name");
@@ -241,7 +244,26 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         var setNewStatusOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewStatusOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE));
         statusSelectDescription.getBody().add(setNewStatusOperation);
-        return List.of(textfieldName, richTextDescription, statusSelectDescription);
+        return List.of(textfieldName, richTextDescription, statusSelectDescription, this.createIsRealizedByWidget());
+    }
+
+    private FormElementIf createIsRealizedByWidget() {
+        FormElementIf widgetIf = FormFactory.eINSTANCE.createFormElementIf();
+        widgetIf.setName("IsRealizedByWidgetIf");
+        widgetIf.setPredicateExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::hasIsRealizedByWidget).aqlSelf());
+
+        var emptyChangeContext = ViewFactory.eINSTANCE.createChangeContext();
+        emptyChangeContext.setExpression(AQLConstants.AQL_SELF);
+
+        var widget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
+        widget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + IsRealizedByReferenceWidgetProvider.WIDGET_NAME);
+        widget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
+        widget.setReferenceNameExpression(ARCADIA_IS_REALIZED_BY);
+        widget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getRealizingLabel).aqlSelf());
+        widget.setIsEnabledExpression(AQLConstants.AQL_FALSE);
+        widget.getBody().add(emptyChangeContext);
+        widgetIf.getChildren().add(widget);
+        return widgetIf;
     }
 
     private FormElementIf createComponentWidget() {
