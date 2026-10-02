@@ -13,43 +13,31 @@
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.Failure;
 import org.eclipse.sirius.components.representations.IStatus;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
-import org.eclipse.syson.sysml.Feature;
-import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.sysml.Usage;
 import org.springframework.stereotype.Service;
 
 /**
- * Provide the source and target reference widget content.
+ * Provide the isRealizedBy reference widget content.
  *
- * @author fbarbin
+ * @author Jerome Gout
  */
 @Service
-public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
+public class IsRealizedByReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
 
+    public static final String WIDGET_NAME = "IsRealizedByWidget";
 
-    public static final String WIDGET_NAME = "SourceAndTargetFunctionWidget";
+    private static final String ERROR_MSG = "The isRealizedBy reference is read-only";
 
-    public static final String SOURCE_FEATURE = "source";
-
-    public static final String TARGET_FEATURE = "target";
-
-    private static final String ERROR_MSG = "Something went wrong while removing the function";
-
-    private final CommonQueryService commonQueryService;
-
-    public FunctionalExchangeFunctionsReferenceWidgetProvider() {
-        this.commonQueryService = new CommonQueryService();
-    }
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Override
     public boolean canHandle(ReferenceWidgetDescription referenceDescription) {
@@ -58,53 +46,38 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
 
     @Override
     public boolean isMany() {
-        return false;
+        return true;
     }
 
     @Override
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        Object object = variableManager.getVariables().get(VariableManager.SELF);
-        if (object instanceof EObject eObject) {
-            return this.commonQueryService.getFunctions(eObject);
-        }
+        // Cannot be edited
         return List.of();
     }
 
     @Override
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        List<Feature> returnValue = List.of();
         Object object = variableManager.getVariables().get(VariableManager.SELF);
-        if (object instanceof FlowUsage flowUsage) {
-            if (SOURCE_FEATURE.equals(referenceDescription.getReferenceNameExpression())) {
-                returnValue = Optional.ofNullable(flowUsage.getSourceFeature())
-                        .map(List::of)
-                        .orElse(List.of());
-            } else if (TARGET_FEATURE.equals(referenceDescription.getReferenceNameExpression())) {
-                Optional<Feature> optionalTarget = flowUsage.getTargetFeature().stream().findFirst();
-                if (optionalTarget.isPresent()) {
-                    returnValue = List.of(optionalTarget.get());
-                }
-            }
+        if (object instanceof Usage usage) {
+            return this.commonQueryService.getIsRealizedBy(usage);
         }
-        return returnValue;
+        return List.of();
     }
 
     @Override
     public IStatus handleItemRemoved(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
-        // reference a function parameter typed by an ExchangeItem.
+        // Cannot be edited
         return new Failure(ERROR_MSG);
     }
 
     @Override
     public EClass getType() {
-        return SysmlPackage.eINSTANCE.getActionUsage();
+        return SysmlPackage.eINSTANCE.getOccurrenceUsage();
     }
 
     @Override
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
-        // reference a function parameter typed by an ExchangeItem.
+        // Cannot be edited
         return new Failure(ERROR_MSG);
     }
 

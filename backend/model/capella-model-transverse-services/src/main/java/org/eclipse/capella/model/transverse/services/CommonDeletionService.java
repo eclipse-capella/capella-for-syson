@@ -48,6 +48,10 @@ public class CommonDeletionService {
         return this.capellaDeleteService.deleteFromModel(element);
     }
 
+    public void deleteReferenceUsage(Usage referenceUsage) {
+        this.capellaDeleteService.deleteReferenceUsage(referenceUsage);
+    }
+
     public Usage deleteCapabilityInvolvement(Usage capability, PartUsage component) {
         var involvedComponents = this.commonQueryService.getInvolvedComponents(capability);
         if (!involvedComponents.contains(component)) {
