@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.services;
 
+import java.util.Optional;
+
 import org.eclipse.capella.model.transverse.services.ArcadiaElementNameService;
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -29,6 +31,28 @@ public class ArcadiaTraceabilityLabelService {
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final ArcadiaElementNameService arcadiaElementNameService = new ArcadiaElementNameService();
+
+    public boolean hasRealizesWidget(Element element) {
+        return this.getRealizesWidgetLabel(element).isPresent();
+    }
+
+    /**
+     * Returns the string value expected by the widget label expression.
+     */
+    public String getRealizesWidgetLabelValue(Element element) {
+        return this.getRealizesWidgetLabel(element).orElse("");
+    }
+
+    private Optional<String> getRealizesWidgetLabel(Element element) {
+        Optional<String> result = Optional.empty();
+        if (element instanceof Usage usage) {
+            result = this.commonQueryService.getArcadiaPerspective(usage)
+                    .flatMap(ArcadiaEngineeringPerspective::getPreviousPerspective)
+                    .flatMap(perspective -> this.arcadiaElementNameService.getElementName(usage, perspective))
+                    .map(name -> "Realized " + this.getTraceabilityElementName(usage, name));
+        }
+        return result;
+    }
 
     public boolean hasIsRealizedByWidget(Element element) {
         return element instanceof Usage usage && !this.commonQueryService.getIsRealizedBy(usage).isEmpty();

@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.ChildCreationDescription;
@@ -34,7 +35,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /**
- * A specific Capella Edit Service to customize children creation in the Model explorer.
+ * A specific Capella Edit Service to customize children creation and semantic deletion in the Model explorer.
  *
  * @author fbarbin
  */
@@ -54,12 +55,15 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     private final CommonCreationService commonCreationService;
 
+    private final CommonDeletionService commonDeletionService;
+
     private final IObjectSearchService objectSearchService;
 
     public CapellaEditService(SysMLv2EditService sysMLv2EditService, CapellaImagePathsService capellaImagePathsService, IObjectSearchService objectSearchService) {
         this.sysMLv2EditService = Objects.requireNonNull(sysMLv2EditService);
         this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
         this.commonCreationService = new CommonCreationService();
+        this.commonDeletionService = new CommonDeletionService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.commonQueryService = new CommonQueryService();
     }
@@ -132,6 +136,10 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     @Override
     public void delete(Object object) {
-        this.sysMLv2EditService.delete(object);
+        if (object instanceof Element element) {
+            this.commonDeletionService.delete(element);
+        } else {
+            this.sysMLv2EditService.delete(object);
+        }
     }
 }

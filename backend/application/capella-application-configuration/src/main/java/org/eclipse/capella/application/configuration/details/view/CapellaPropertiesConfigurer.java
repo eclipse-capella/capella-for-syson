@@ -21,6 +21,7 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.A
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_REALIZED_BY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZES;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionalExchangesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionsWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.IsRealizedByReferenceWidgetProvider;
+import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
@@ -244,7 +246,26 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         var setNewStatusOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewStatusOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE));
         statusSelectDescription.getBody().add(setNewStatusOperation);
-        return List.of(textfieldName, richTextDescription, statusSelectDescription, this.createIsRealizedByWidget());
+        return List.of(textfieldName, richTextDescription, statusSelectDescription, this.createRealizesWidget(), this.createIsRealizedByWidget());
+    }
+
+    private FormElementIf createRealizesWidget() {
+        FormElementIf realizesWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
+        realizesWidgetIf.setName("RealizesWidgetIf");
+        realizesWidgetIf.setPredicateExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::hasRealizesWidget).aqlSelf());
+
+        var realizesWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
+        realizesWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + RealizesReferenceWidgetProvider.WIDGET_NAME);
+        realizesWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
+        realizesWidget.setReferenceNameExpression(ARCADIA_REALIZES);
+        realizesWidget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getRealizesWidgetLabelValue).aqlSelf());
+
+        ChangeContext setRealizesOperation = ViewFactory.eINSTANCE.createChangeContext();
+        setRealizesOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setRealizes).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
+        realizesWidget.getBody().add(setRealizesOperation);
+        realizesWidgetIf.getChildren().add(realizesWidget);
+
+        return realizesWidgetIf;
     }
 
     private FormElementIf createIsRealizedByWidget() {
