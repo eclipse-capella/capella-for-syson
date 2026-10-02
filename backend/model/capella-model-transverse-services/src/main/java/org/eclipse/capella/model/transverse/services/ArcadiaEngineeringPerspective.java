@@ -43,4 +43,19 @@ public enum ArcadiaEngineeringPerspective {
     public String getLabel() {
         return this.label;
     }
+
+    /**
+     * Returns the next perspective in the Arcadia engineering lifecycle.
+     *
+     * @return the next perspective, or an empty optional for EPBS
+     */
+    public Optional<ArcadiaEngineeringPerspective> getNextPerspective() {
+        return switch (this) {
+            case OperationalAnalysis -> Optional.of(SystemAnalysis);
+            case SystemAnalysis -> Optional.of(LogicalArchitecture);
+            case LogicalArchitecture -> Optional.of(PhysicalArchitecture);
+            case PhysicalArchitecture -> Optional.of(EPBS);
+            case EPBS -> Optional.empty();
+        };
+    }
 }

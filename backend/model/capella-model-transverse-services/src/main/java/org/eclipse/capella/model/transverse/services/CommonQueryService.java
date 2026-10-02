@@ -107,6 +107,10 @@ public class CommonQueryService {
 
     public static final String ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES = "involvedFunctionalExchanges";
 
+    public static final String ARCADIA_ELEMENT = "ArcadiaElement";
+
+    public static final String ARCADIA_IS_REALIZED_BY = "isRealizedBy";
+
     public static final String ARCADIA_REQUIREMENT = "ArcadiaRequirement";
 
     public static final String ARCADIA_IS_ACTOR = "isActor";
@@ -1180,4 +1184,8 @@ public class CommonQueryService {
     public Feature getGeneralizationTarget(Subsetting generalization) {
         return generalization.getSubsettedFeature();
     }
+    public List<Feature> getIsRealizedBy(Usage usage) {
+        return this.getFeatureReferenceValue(usage, ARCADIA_IS_REALIZED_BY);
+    }
+
 }
