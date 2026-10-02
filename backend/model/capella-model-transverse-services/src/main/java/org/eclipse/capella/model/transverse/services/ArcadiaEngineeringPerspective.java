@@ -45,6 +45,21 @@ public enum ArcadiaEngineeringPerspective {
     }
 
     /**
+     * Returns the previous perspective in the Arcadia engineering lifecycle.
+     *
+     * @return the previous perspective, or an empty optional for Operational Analysis
+     */
+    public Optional<ArcadiaEngineeringPerspective> getPreviousPerspective() {
+        return switch (this) {
+            case OperationalAnalysis -> Optional.empty();
+            case SystemAnalysis -> Optional.of(OperationalAnalysis);
+            case LogicalArchitecture -> Optional.of(SystemAnalysis);
+            case PhysicalArchitecture -> Optional.of(LogicalArchitecture);
+            case EPBS -> Optional.of(PhysicalArchitecture);
+        };
+    }
+
+    /**
      * Returns the next perspective in the Arcadia engineering lifecycle.
      *
      * @return the next perspective, or an empty optional for EPBS
