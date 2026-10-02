@@ -26,7 +26,6 @@ import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentNodeDescrip
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionPortNodeDescriptionProvider;
-import org.eclipse.capella.diagram.lab.view.nodes.functionalchain.FunctionalChainNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.packagenode.LABPackageNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.compartment.LABCompartmentItemNodeDescriptionProvider;
@@ -101,7 +100,7 @@ public class LABViewDiagramDescriptionProvider implements IRepresentationDescrip
         diagramElementDescriptionProviders.add(new ComponentExchangeEdgeDescriptionProvider(colorProvider));
         diagramElementDescriptionProviders.add(new FunctionalExchangeEdgeDescriptionProvider(colorProvider));
         diagramElementDescriptionProviders.add(new FunctionPortNodeDescriptionProvider(colorProvider));
-        diagramElementDescriptionProviders.add(new FunctionalChainNodeDescriptionProvider(colorProvider));
+        // diagramElementDescriptionProviders.add(new FunctionalChainNodeDescriptionProvider(colorProvider));
 
         // Add RequirementUsage compartment providers (following SySON pattern)
         diagramElementDescriptionProviders.addAll(this.createRequirementCompartmentProviders(colorProvider));
