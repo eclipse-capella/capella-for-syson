@@ -14,6 +14,7 @@
 package org.eclipse.capella.model.transverse.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZES;
 
 import java.util.List;
 
@@ -41,6 +42,63 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     private final CommonDeletionService commonDeletionService = new CommonDeletionService();
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
+
+    @Test
+    public void deleteRealizedFunctionShouldPreserveOtherRealizations() {
+        var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var firstRealized = this.commonCreationService.createFunction(systemFunction);
+        var secondRealized = this.commonCreationService.createFunction(systemFunction);
+        this.commonUpdateService.setRealizes(realizer, List.of(firstRealized, secondRealized));
+
+        this.commonDeletionService.delete(firstRealized);
+
+        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(secondRealized);
+        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).containsExactly(realizer);
+    }
+
+    @Test
+    public void deleteLastRealizedFunctionShouldRemoveRealizesReference() {
+        var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var realized = this.commonCreationService.createFunction(systemFunction);
+        this.commonUpdateService.setRealizes(realizer, realized);
+
+        this.commonDeletionService.delete(realized);
+
+        assertThat(this.commonQueryService.getFeatureReferenceExpression(realizer, ARCADIA_REALIZES)).isEmpty();
+        assertThat(this.commonQueryService.getRealizes(realizer)).isEmpty();
+    }
+
+    @Test
+    public void deleteRealizingFunctionShouldPreserveOtherRealizers() {
+        var logicalFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var firstRealizer = this.commonCreationService.createFunction(logicalFunction);
+        var secondRealizer = this.commonCreationService.createFunction(logicalFunction);
+        var realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        this.commonUpdateService.setRealizes(firstRealizer, realized);
+        this.commonUpdateService.setRealizes(secondRealizer, realized);
+
+        this.commonDeletionService.delete(firstRealizer);
+
+        assertThat(this.commonQueryService.getIsRealizedBy(realized)).containsExactly(secondRealizer);
+        assertThat(this.commonQueryService.getRealizes(secondRealizer)).containsExactly(realized);
+    }
+
+    @Test
+    public void deleteFunctionContainingRealizedFunctionShouldRemoveDescendantRealization() {
+        var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var parent = this.commonCreationService.createFunction(systemFunction);
+        var realized = this.commonCreationService.createFunction(parent);
+        var remaining = this.commonCreationService.createFunction(systemFunction);
+        this.commonUpdateService.setRealizes(realizer, List.of(realized, remaining));
+
+        this.commonDeletionService.delete(parent);
+
+        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(remaining);
+        assertThat(this.commonQueryService.getIsRealizedBy(remaining)).containsExactly(realizer);
+    }
 
     @Test
     public void deleteComponentExchangeSourcePortShouldDeleteComponentExchange() {

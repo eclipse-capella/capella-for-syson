@@ -13,43 +13,41 @@
 package org.eclipse.capella.application.configuration.details.view.referencewidget;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.sirius.components.collaborative.api.ChangeKind;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.Failure;
 import org.eclipse.sirius.components.representations.IStatus;
+import org.eclipse.sirius.components.representations.Success;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
+import org.eclipse.sirius.components.widget.reference.ReferenceWidgetComponent;
 import org.eclipse.syson.sysml.Feature;
-import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.sysml.Usage;
 import org.springframework.stereotype.Service;
 
 /**
- * Provide the source and target reference widget content.
+ * Provide the realizes reference widget content.
  *
- * @author fbarbin
+ * @author Jerome Gout
  */
 @Service
-public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
+public class RealizesReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
 
+    public static final String WIDGET_NAME = "RealizesWidget";
 
-    public static final String WIDGET_NAME = "SourceAndTargetFunctionWidget";
+    public static final String FEATURE_NAME = "realizes";
 
-    public static final String SOURCE_FEATURE = "source";
+    private static final String ERROR_MSG = "Something went wrong while deleting the realized elements";
 
-    public static final String TARGET_FEATURE = "target";
+    private final CommonQueryService commonQueryService = new CommonQueryService();
 
-    private static final String ERROR_MSG = "Something went wrong while removing the function";
-
-    private final CommonQueryService commonQueryService;
-
-    public FunctionalExchangeFunctionsReferenceWidgetProvider() {
-        this.commonQueryService = new CommonQueryService();
-    }
+    private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
     @Override
     public boolean canHandle(ReferenceWidgetDescription referenceDescription) {
@@ -58,53 +56,46 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
 
     @Override
     public boolean isMany() {
-        return false;
+        return true;
     }
 
     @Override
     public List<?> getReferenceOptions(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        Object object = variableManager.getVariables().get(VariableManager.SELF);
-        if (object instanceof EObject eObject) {
-            return this.commonQueryService.getFunctions(eObject);
-        }
-        return List.of();
+        return variableManager.get(VariableManager.SELF, Usage.class)
+                .map(this.commonQueryService::getRealizableElements)
+                .orElse(List.of());
     }
 
     @Override
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        List<Feature> returnValue = List.of();
-        Object object = variableManager.getVariables().get(VariableManager.SELF);
-        if (object instanceof FlowUsage flowUsage) {
-            if (SOURCE_FEATURE.equals(referenceDescription.getReferenceNameExpression())) {
-                returnValue = Optional.ofNullable(flowUsage.getSourceFeature())
-                        .map(List::of)
-                        .orElse(List.of());
-            } else if (TARGET_FEATURE.equals(referenceDescription.getReferenceNameExpression())) {
-                Optional<Feature> optionalTarget = flowUsage.getTargetFeature().stream().findFirst();
-                if (optionalTarget.isPresent()) {
-                    returnValue = List.of(optionalTarget.get());
-                }
-            }
-        }
-        return returnValue;
+        return variableManager.get(VariableManager.SELF, Usage.class)
+                .map(this.commonQueryService::getRealizes)
+                .orElse(List.of());
     }
 
     @Override
     public IStatus handleItemRemoved(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
-        // reference a function parameter typed by an ExchangeItem.
+        Object owner = variableManager.getVariables().get(VariableManager.SELF);
+        if (owner instanceof Usage usage) {
+            variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, Feature.class)
+                    .ifPresent(feature -> this.commonUpdateService.removeRealizes(usage, feature));
+            return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
+        }
         return new Failure(ERROR_MSG);
     }
 
     @Override
     public EClass getType() {
-        return SysmlPackage.eINSTANCE.getActionUsage();
+        return SysmlPackage.eINSTANCE.getOccurrenceUsage();
     }
 
     @Override
     public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
-        // reference a function parameter typed by an ExchangeItem.
+        Object owner = variableManager.getVariables().get(VariableManager.SELF);
+        if (owner instanceof Usage usage) {
+            this.commonUpdateService.clearRealizes(usage);
+            return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
+        }
         return new Failure(ERROR_MSG);
     }
 

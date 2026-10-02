@@ -85,6 +85,8 @@ public class CommonQueryService {
 
     public static final String ARCADIA_PREFIX = "Arcadia" + PATH_SEPARATOR;
 
+    public static final String ARCADIA_ELEMENT = "ArcadiaElement";
+
     public static final String ARCADIA_COMPONENT = "Component";
 
     public static final String ARCADIA_CAPABILITY = "Capability";
@@ -106,6 +108,10 @@ public class CommonQueryService {
     public static final String ARCADIA_INVOLVED_COMPONENTS = "involvedComponents";
 
     public static final String ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES = "involvedFunctionalExchanges";
+
+    public static final String ARCADIA_REALIZES = "realizes";
+
+    public static final String ARCADIA_IS_REALIZED_BY = "isRealizedBy";
 
     public static final String ARCADIA_REQUIREMENT = "ArcadiaRequirement";
 
@@ -243,6 +249,43 @@ public class CommonQueryService {
             }
         }
         return optionalPackage;
+    }
+
+    /**
+     * Returns the package for the given perspective in the resource containing the context element.
+     *
+     * @param context
+     *         a non-null element of the model in which to search
+     * @param perspective
+     *         the non-null perspective to retrieve
+     * @return an optional containing the perspective package if it exists
+     */
+    public Optional<Package> getArcadiaPerspectivePackage(Element context, ArcadiaEngineeringPerspective perspective) {
+        return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getPackage()).stream()
+                .filter(Package.class::isInstance)
+                .map(Package.class::cast)
+                .filter(pack -> Objects.equals(pack.getDeclaredName(), perspective.getLabel()))
+                .findFirst();
+    }
+
+    /**
+     * Returns the sub package with the given name for the given perspective in the resource containing the context element.
+     *
+     * @param context
+     *         an element of the model in which to search
+     * @param perspective
+     *         the perspective to retrieve
+     * @param subPackageName
+     *         the name of the search package (e.g. Functions)
+     * @return an optional containing the searched package if it exists
+     */
+    public Optional<Package> getArcadiaPerspectiveSubPackage(Element context, ArcadiaEngineeringPerspective perspective, String subPackageName) {
+        return this.getArcadiaPerspectivePackage(context, perspective)
+                .flatMap(parent -> parent.getOwnedMember().stream()
+                        .filter(Package.class::isInstance)
+                        .map(Package.class::cast)
+                        .filter(pack -> Objects.equals(pack.getDeclaredName(), subPackageName))
+                        .findFirst());
     }
 
     private boolean isArcadiaPerspectivePackage(Package parentPkg) {
@@ -1180,4 +1223,95 @@ public class CommonQueryService {
     public Feature getGeneralizationTarget(Subsetting generalization) {
         return generalization.getSubsettedFeature();
     }
+
+    /**
+     * Returns the realization candidates from the previous perspective.
+     *
+     * @param usage
+     *         the non-null usage whose realization candidates are requested
+     * @return the realization candidates, or an empty list if no eligible previous perspective package exists
+     */
+    public List<Feature> getRealizableElements(Usage usage) {
+        List<Feature> result = List.of();
+        var perspective = this.getArcadiaPerspective(usage);
+        var packageName = usage.getType().stream()
+                .map(Element::getQualifiedName)
+                .filter(Objects::nonNull)
+                .map(this::getRealizablePackageName)
+                .filter(Objects::nonNull)
+                .findFirst();
+        if (perspective.isPresent() && packageName.isPresent()) {
+            var sourcePackage = this.getArcadiaPerspectiveSubPackage(usage, perspective.get(), packageName.get());
+            var targetPerspective = this.getPreviousPerspectiveRootElement(usage);
+            if (sourcePackage.filter(pack -> EcoreUtil.isAncestor(pack, usage)).isPresent() && targetPerspective.isPresent()) {
+                result = targetPerspective.get().getOwnedMember().stream()
+                        .filter(Package.class::isInstance)
+                        .map(Package.class::cast)
+                        .filter(pack -> Objects.equals(pack.getDeclaredName(), packageName.get()))
+                        .flatMap(pack -> this.getDescendants(pack, this.getRealizesCandidatePredicate(usage)).stream())
+                        .map(Feature.class::cast)
+                        .toList();
+            }
+        }
+        return result;
+    }
+
+    private String getRealizablePackageName(String type) {
+        return switch (type) {
+            case ARCADIA_PREFIX + ARCADIA_FUNCTION,
+                 ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN,
+                 ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_EXCHANGE,
+                 ARCADIA_PREFIX + ARCADIA_EXCHANGE_ITEM,
+                 "SysML::ExchangeItem" -> FUNCTIONS_PACKAGE;
+            case ARCADIA_PREFIX + ARCADIA_CAPABILITY -> CAPABILITIES_PACKAGE;
+            case ARCADIA_PREFIX + ARCADIA_COMPONENT,
+                 ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE,
+                 ARCADIA_PREFIX + ARCADIA_COMPONENT_PORT -> STRUCTURE_PACKAGE;
+            default -> null;
+        };
+    }
+
+    private Optional<Package> getPreviousPerspectiveRootElement(Element context) {
+        return this.getArcadiaPerspective(context).flatMap(perspective -> {
+            return perspective.getPreviousPerspective()
+                .flatMap(previousPerspective -> this.getArcadiaPerspectivePackage(context, previousPerspective));
+        });
+    }
+
+    private Predicate<EObject> getRealizesCandidatePredicate(Usage source) {
+        boolean sourceIsActor = this.isComponentActor(source);
+        boolean sourceIsPort = this.isFunctionPort(source) || this.isComponentPort(source);
+        var sourceTypes = this.getRealizesMatchingTypes(source);
+        Predicate<EObject> candidatePredicate = eObject -> eObject instanceof Feature feature
+                && feature.getType().stream().anyMatch(candidateType -> sourceTypes.contains(candidateType.getQualifiedName()))
+                && sourceIsActor == this.isComponentActor(feature);
+        return candidatePredicate.and(eObject -> !sourceIsPort || this.arePortDirectionsCompatible(source, (Feature) eObject));
+    }
+
+    private boolean arePortDirectionsCompatible(Feature source, Feature candidate) {
+        var sourceDirection = source.getDirection();
+        var candidateDirection = candidate.getDirection();
+        boolean unspecifiedDirection = sourceDirection == null || candidateDirection == null;
+        boolean bidirectional = sourceDirection == FeatureDirectionKind.INOUT || candidateDirection == FeatureDirectionKind.INOUT;
+        return unspecifiedDirection || bidirectional || sourceDirection == candidateDirection;
+    }
+
+    private Set<String> getRealizesMatchingTypes(Usage source) {
+        Set<String> sourceTypes = source.getType().stream().map(Element::getQualifiedName).filter(Objects::nonNull).collect(Collectors.toSet());
+        Set<String> arcadiaTypes = sourceTypes.stream().filter(type -> type.startsWith(ARCADIA_PREFIX)).collect(Collectors.toSet());
+        if (arcadiaTypes.isEmpty()) {
+            return sourceTypes;
+        } else {
+            return arcadiaTypes;
+        }
+    }
+
+    public List<Feature> getRealizes(Usage usage) {
+        return this.getFeatureReferenceValue(usage, ARCADIA_REALIZES);
+    }
+
+    public List<Feature> getIsRealizedBy(Usage usage) {
+        return this.getFeatureReferenceValue(usage, ARCADIA_IS_REALIZED_BY);
+    }
+
 }
