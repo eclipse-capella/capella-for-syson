@@ -268,8 +268,7 @@ public class PullRequestSizeChecker {
                 ".checkstyle",
                 ".classpath",
                 ".project",
-                "backend/application/capella-application/src/test",
-                "backend/model/capella-model-transverse-services/src/test"
+                "/src/test/"
         ).stream().anyMatch(line::contains);
     }
 
