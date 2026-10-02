@@ -13,7 +13,6 @@
 package org.eclipse.capella.model.transverse.services;
 
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
@@ -30,9 +29,12 @@ import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
+import org.eclipse.syson.sysml.Namespace;
 import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Java services dedicated to the reconnection tools.
@@ -51,6 +53,8 @@ public class TransverseRepresentationReconnectToolServices {
 
     private final IObjectSearchService objectSearchService;
 
+    private final Logger logger = LoggerFactory.getLogger(TransverseRepresentationReconnectToolServices.class);
+
     public TransverseRepresentationReconnectToolServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService, IObjectSearchService iObjectSearchService) {
         this.moveService = Objects.requireNonNull(moveService);
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
@@ -59,61 +63,123 @@ public class TransverseRepresentationReconnectToolServices {
         this.commonQueryService = new CommonQueryService();
     }
 
+    /**
+     * Reconnects the source to an OUT port, or moves its existing port to a function and updates the exchange owner.
+     * Reconnection to a function assumes the existing port is used only by the selected exchange.
+     * Invalid destinations and refused moves leave semantic endpoints unchanged.
+     */
     public Feature reconnectFunctionalExchangeSource(FlowUsage functionalExchange, Feature newSource, Feature oldSource, Node sourceNode, Node targetNode, IEditingContext editingContext,
             Diagram diagram) {
         Feature reconnectTarget = newSource;
-        if (this.commonQueryService.isFunction(newSource) && this.commonQueryService.isExchangeItem(oldSource)) {
-            this.moveService.moveSemanticElement(oldSource, newSource);
-            reconnectTarget = oldSource;
+        if (this.commonQueryService.isFunction(newSource)) {
+            reconnectTarget = this.reconnectFunctionalExchangeToFunction(functionalExchange, newSource, true, editingContext, diagram);
+        } else if (this.isValidFunctionalExchangeSource(functionalExchange, newSource)) {
+            this.diagramMutationElementService.reconnectSource(functionalExchange, newSource, sourceNode, targetNode, editingContext, diagram);
         }
-
-        if (this.isValidFunctionalExchangePort(functionalExchange, reconnectTarget, true)) {
-            this.diagramMutationElementService.reconnectSource(functionalExchange, reconnectTarget, sourceNode, targetNode, editingContext, diagram);
-        }
-
         return reconnectTarget;
     }
 
+    /**
+     * Reconnects the target to an IN port, or moves its existing port to a function and updates the exchange owner.
+     * Reconnection to a function assumes the existing port is used only by the selected exchange.
+     * Invalid destinations and refused moves leave semantic endpoints unchanged.
+     */
     public Feature reconnectFunctionalExchangeTarget(FlowUsage functionalExchange, Feature newTarget, Feature oldTarget, Node sourceNode, Node targetNode, IEditingContext editingContext,
             Diagram diagram) {
         Feature reconnectTarget = newTarget;
-        if (this.commonQueryService.isFunction(newTarget) && this.commonQueryService.isExchangeItem(oldTarget)) {
-            this.moveService.moveSemanticElement(oldTarget, newTarget);
-            reconnectTarget = oldTarget;
+        if (this.commonQueryService.isFunction(newTarget)) {
+            reconnectTarget = this.reconnectFunctionalExchangeToFunction(functionalExchange, newTarget, false, editingContext, diagram);
+        } else if (this.isValidFunctionalExchangeTarget(functionalExchange, newTarget)) {
+            this.diagramMutationElementService.reconnectTarget(functionalExchange, newTarget, sourceNode, targetNode, editingContext, diagram);
         }
-
-        if (this.isValidFunctionalExchangePort(functionalExchange, newTarget, false)) {
-            this.diagramMutationElementService.reconnectTarget(functionalExchange, reconnectTarget, sourceNode, targetNode, editingContext, diagram);
-        }
-
         return reconnectTarget;
     }
 
-    private boolean isValidFunctionalExchangePort(FlowUsage functionalExchange, Feature feature, boolean isSource) {
-        var expectedDirection = FeatureDirectionKind.IN;
-        if (isSource) {
-            expectedDirection = FeatureDirectionKind.OUT;
+    /**
+     * Moves the existing semantic port and the selected exchange before rebuilding its endpoint chains.
+     * Graphical parents are deliberately ignored: an OAB activity's graphical parent is its allocated component,
+     * whereas its exchanges belong to the common functional ancestor. Refused moves are undone before any chain is changed.
+     */
+    private Feature reconnectFunctionalExchangeToFunction(FlowUsage functionalExchange, Feature function, boolean isSource, IEditingContext editingContext, Diagram diagram) {
+        Feature result = function;
+        if (functionalExchange != null && this.getFunctionalExchangePort(functionalExchange, isSource) instanceof Feature port) {
+            result = port;
+            var otherPort = this.getFunctionalExchangePort(functionalExchange, !isSource);
+            if (this.isValidFunctionalExchangeEnd(port, function, otherPort, isSource)) {
+                var owner = this.commonQueryService.findClosestCommonAncestor(function, otherPort,
+                        element -> this.commonQueryService.isFunction(element) || this.commonQueryService.isFunctionsPackage(element));
+                if (owner.isPresent() && this.moveFunctionalExchangePort(port, function, functionalExchange, owner.get())) {
+                    if (isSource) {
+                        this.diagramMutationElementService.reconnectSource(functionalExchange, port, null, null, editingContext, diagram);
+                    } else {
+                        this.diagramMutationElementService.reconnectTarget(functionalExchange, port, null, null, editingContext, diagram);
+                    }
+                }
+            }
         }
-        var otherPort = this.getOtherFunctionalExchangePort(functionalExchange, isSource);
-        var owningFunction = Optional.ofNullable(feature)
-                .map(Element::getOwner)
-                .filter(this.commonQueryService::isFunction)
-                .map(ActionUsage.class::cast);
-        var otherOwningFunction = Optional.ofNullable(otherPort)
-                .map(Element::getOwner)
-                .filter(this.commonQueryService::isFunction)
-                .map(ActionUsage.class::cast);
-        return expectedDirection == feature.getDirection()
-                && owningFunction.isPresent()
-                && otherOwningFunction.isPresent()
-                && !owningFunction.get().equals(otherOwningFunction.get());
+        return result;
     }
 
-    private Element getOtherFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
-        if (isSource) {
-            return this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
+    private boolean moveFunctionalExchangePort(Feature port, Feature function, FlowUsage exchange, Namespace owner) {
+        var previousPortOwner = port.getOwner();
+        var previousExchangeOwner = exchange.getOwner();
+        int previousPortPosition = previousPortOwner.getOwnedRelationship().indexOf(port.getOwningRelationship());
+        int previousExchangePosition = previousExchangeOwner.getOwnedRelationship().indexOf(exchange.getOwningRelationship());
+        boolean moved = this.moveService.moveSemanticElement(port, function).isSuccess();
+        if (moved && exchange.getOwner() != owner) {
+            moved = this.moveService.moveSemanticElement(exchange, owner).isSuccess();
         }
-        return this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
+        if (!moved) {
+            this.restoreFunctionalExchangeElement(exchange, previousExchangeOwner, previousExchangePosition);
+            this.restoreFunctionalExchangeElement(port, previousPortOwner, previousPortPosition);
+        }
+        return moved;
+    }
+
+    private void restoreFunctionalExchangeElement(Element element, Element owner, int position) {
+        boolean restored = element.getOwner() == owner || this.moveService.moveSemanticElement(element, owner).isSuccess();
+        if (restored) {
+            owner.getOwnedRelationship().move(position, element.getOwningRelationship());
+        } else {
+            this.logger.atError()
+                    .setMessage("Cannot restore an element after a refused functional exchange port move")
+                    .addKeyValue("elementId", element.getElementId())
+                    .addKeyValue("ownerId", owner.getElementId())
+                    .log();
+        }
+    }
+
+    private boolean isValidFunctionalExchangeSource(FlowUsage functionalExchange, Feature port) {
+        return this.isValidFunctionalExchangeEnd(port, port.getOwner(), this.commonQueryService.getFunctionalExchangeSource(functionalExchange), true);
+    }
+
+    private boolean isValidFunctionalExchangeTarget(FlowUsage functionalExchange, Feature port) {
+        return this.isValidFunctionalExchangeEnd(port, port.getOwner(), this.commonQueryService.getFunctionalExchangeTarget(functionalExchange), false);
+    }
+
+    private boolean isValidFunctionalExchangeEnd(Feature port, Element function, Element otherEnd, boolean isSource) {
+        boolean valid = false;
+        var direction = FeatureDirectionKind.IN;
+        var otherDirection = FeatureDirectionKind.OUT;
+        if (isSource) {
+            direction = FeatureDirectionKind.OUT;
+            otherDirection = FeatureDirectionKind.IN;
+        }
+        if (this.commonQueryService.isFunctionPort(port) && otherEnd instanceof Feature otherPort && this.commonQueryService.isFunctionPort(otherPort)) {
+            var otherFunction = otherPort.getOwner();
+            var functionsPackage = this.commonQueryService.getFunctionsPackage(function);
+            boolean validFunctions = this.commonQueryService.isFunction(function) && !Objects.equals(function, otherFunction)
+                    && functionsPackage.isPresent() && functionsPackage.equals(this.commonQueryService.getFunctionsPackage(otherFunction));
+            valid = port.getDirection() == direction && otherPort.getDirection() == otherDirection && validFunctions;
+        }
+        return valid;
+    }
+
+    private Element getFunctionalExchangePort(FlowUsage functionalExchange, boolean isSource) {
+        if (isSource) {
+            return this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
+        }
+        return this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
     }
 
     public Element reconnectComponentExchange(InterfaceUsage componentExchange, Element newTarget, Element oldTarget) {

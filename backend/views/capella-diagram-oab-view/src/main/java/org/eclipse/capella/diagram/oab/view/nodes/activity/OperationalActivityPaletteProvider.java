@@ -16,6 +16,7 @@ package org.eclipse.capella.diagram.oab.view.nodes.activity;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.diagram.oab.view.edges.functionalexchange.FunctionalExchangeToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -69,6 +70,7 @@ public class OperationalActivityPaletteProvider {
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
+                .edgeTools(new FunctionalExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewFunctionalExchangeTool(cache))
                 .build();
     }
 
