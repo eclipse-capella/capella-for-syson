@@ -83,6 +83,22 @@ public class CommonQueryServiceTests extends AbstractSemanticTests {
         assertThat(this.commonQueryService.getRealizableElements(source)).contains(component).doesNotContain(actor);
     }
 
+    @Test
+    public void getRealizableElementsWhenSourceIsFunctionPortShouldExcludeExchangeItemsOutsideFunctions() {
+        var creationService = new CommonCreationService();
+        var logicalFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var sourcePort = creationService.createFunctionPort(logicalFunction, FeatureDirectionKind.IN);
+        var candidatePort = creationService.createFunctionPort(systemFunction, FeatureDirectionKind.IN);
+        var targetPackage = this.commonQueryService.getFunctionsPackage(systemFunction).orElseThrow();
+        var exchangeItem = creationService.createNewExchangeItem(targetPackage);
+        exchangeItem.setDirection(FeatureDirectionKind.IN);
+
+        assertThat(this.commonQueryService.getRealizableElements(sourcePort))
+                .contains(candidatePort)
+                .doesNotContain(exchangeItem);
+    }
+
     private static Stream<Arguments> getRealizableElementsForPortsShouldRespectDirectionCompatibility() {
         return Stream.of(
                 Arguments.of(FeatureDirectionKind.IN, FeatureDirectionKind.IN, true),

@@ -1280,12 +1280,15 @@ public class CommonQueryService {
 
     private Predicate<EObject> getRealizesCandidatePredicate(Usage source) {
         boolean sourceIsActor = this.isComponentActor(source);
-        boolean sourceIsPort = this.isFunctionPort(source) || this.isComponentPort(source);
+        boolean sourceIsFunctionPort = this.isFunctionPort(source);
+        boolean sourceIsPort = sourceIsFunctionPort || this.isComponentPort(source);
         var sourceTypes = this.getRealizesMatchingTypes(source);
         Predicate<EObject> candidatePredicate = eObject -> eObject instanceof Feature feature
                 && feature.getType().stream().anyMatch(candidateType -> sourceTypes.contains(candidateType.getQualifiedName()))
                 && sourceIsActor == this.isComponentActor(feature);
-        return candidatePredicate.and(eObject -> !sourceIsPort || this.arePortDirectionsCompatible(source, (Feature) eObject));
+        return candidatePredicate
+                .and(eObject -> !sourceIsFunctionPort || this.isFunctionPort(eObject))
+                .and(eObject -> !sourceIsPort || this.arePortDirectionsCompatible(source, (Feature) eObject));
     }
 
     private boolean arePortDirectionsCompatible(Feature source, Feature candidate) {
