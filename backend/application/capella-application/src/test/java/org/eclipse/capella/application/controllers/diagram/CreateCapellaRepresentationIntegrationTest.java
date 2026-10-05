@@ -62,6 +62,12 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
     }
 
     @Test
+    @DisplayName("Given a Capella project, when an OAIB representation is created, then its metadata is returned")
+    public void createOAIBRepresentation() {
+        this.assertRepresentationCreation("OAIB", "OAIB - Operational Activity Interaction Blank");
+    }
+
+    @Test
     @DisplayName("Given a Capella project, when an OCB representation is created, then its metadata is returned")
     public void createOCBRepresentation() {
         this.assertRepresentationCreation("OCB", "OCB - Operational Capability Blank");

@@ -67,6 +67,10 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
     private static final String OABD_REPRESENTATION_NAME = "OABD - Operational Activity Break Down";
 
+    private static final String OAIB_REPRESENTATION_DESCRIPTION_ID = "OAIB";
+
+    private static final String OAIB_REPRESENTATION_NAME = "OAIB - Operational Activity Interaction Blank";
+
     private static final String OCB_REPRESENTATION_DESCRIPTION_ID = "OCB";
 
     private static final String OCB_REPRESENTATION_NAME = "OCB - Operational Capability Blank";
@@ -183,6 +187,8 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
             case OAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.STRUCTURE_PACKAGE);
             case OABD_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.FUNCTIONS_PACKAGE)
                     .flatMap(this.commonQueryService::getRootFunction);
+            case OAIB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.FUNCTIONS_PACKAGE)
+                    .flatMap(this.commonQueryService::getRootFunction);
             case OCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.CAPABILITIES_PACKAGE);
             case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, CommonQueryService.STRUCTURE_PACKAGE);
             case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture, CommonQueryService.STRUCTURE_PACKAGE);
@@ -224,6 +230,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
         return switch (representationDescriptionId) {
             case OAB_REPRESENTATION_DESCRIPTION_ID -> OAB_REPRESENTATION_NAME;
             case OABD_REPRESENTATION_DESCRIPTION_ID -> OABD_REPRESENTATION_NAME;
+            case OAIB_REPRESENTATION_DESCRIPTION_ID -> OAIB_REPRESENTATION_NAME;
             case OCB_REPRESENTATION_DESCRIPTION_ID -> OCB_REPRESENTATION_NAME;
             case SAB_REPRESENTATION_DESCRIPTION_ID -> SAB_REPRESENTATION_NAME;
             case LAB_REPRESENTATION_DESCRIPTION_ID -> LAB_REPRESENTATION_NAME;
