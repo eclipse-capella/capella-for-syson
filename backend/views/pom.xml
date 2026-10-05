@@ -37,6 +37,7 @@
 		<module>capella-diagram-lab-view</module>
         <module>capella-diagram-oab-view</module>
 		<module>capella-diagram-oabd-view</module>
+		<module>capella-diagram-oaib-view</module>
 		<module>capella-diagram-ocb-view</module>
 		<module>capella-diagram-sab-view</module>
 		<module>capella-table-view</module>
