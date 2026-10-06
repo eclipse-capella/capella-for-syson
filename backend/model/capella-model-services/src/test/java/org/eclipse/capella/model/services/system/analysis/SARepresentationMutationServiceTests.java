@@ -31,7 +31,6 @@ import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionDefinition;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.AttributeUsage;
-import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FlowDefinition;
 import org.eclipse.syson.sysml.FlowUsage;
@@ -85,7 +84,7 @@ public class SARepresentationMutationServiceTests {
         var actor = this.commonCreationService.createActor(structurePackage);
         var nestedActor = this.commonCreationService.createActor(actor);
 
-        assertEquals("A 3", nestedActor.getDeclaredName());
+        assertEquals("A 1", nestedActor.getDeclaredName());
         assertTrue(actor.getOwnedElement().contains(nestedActor));
     }
 
@@ -130,10 +129,10 @@ public class SARepresentationMutationServiceTests {
         var nestedComponent = this.commonCreationService.createComponent(component);
 
         assertNotNull(component);
-        assertEquals("C 2", component.getDeclaredName());
+        assertEquals("C 1", component.getDeclaredName());
         assertTrue(system.getOwnedElement().contains(component));
         assertTrue(new SAQueryService().getSystemComponents(system).contains(component));
-        assertEquals("C 3", nestedComponent.getDeclaredName());
+        assertEquals("C 1", nestedComponent.getDeclaredName());
         assertTrue(component.getOwnedElement().contains(nestedComponent));
         assertTrue(new SAQueryService().getSystemComponents(component).contains(nestedComponent));
     }
@@ -213,7 +212,7 @@ public class SARepresentationMutationServiceTests {
 
         var function = this.commonCreationService.createFunction(system);
 
-        assertEquals("Function 2", function.getDeclaredName());
+        assertEquals("Function 1", function.getDeclaredName());
         assertTrue(this.getRootFunction(functionsPackage).getNestedAction().contains(function));
         assertTrue(system.getNestedUsage().stream()
                 .filter(PerformActionUsage.class::isInstance)
@@ -234,7 +233,7 @@ public class SARepresentationMutationServiceTests {
 
         var subFunction = this.commonCreationService.createFunction(function);
 
-        assertEquals("Function 3", subFunction.getDeclaredName());
+        assertEquals("Function 1", subFunction.getDeclaredName());
         assertTrue(function.getOwnedElement().contains(subFunction));
         assertTrue(system.getNestedUsage().stream()
                 .filter(PerformActionUsage.class::isInstance)
@@ -349,6 +348,7 @@ public class SARepresentationMutationServiceTests {
         assertTrue(queryService.getAllocatedFunctions(sourceComponent).isEmpty());
         assertEquals(java.util.List.of(retainedFunction), queryService.getAllocatedFunctions(targetComponent));
         assertTrue(new CommonQueryService().getFunctionalExchanges(structurePackage.getOwner()).isEmpty());
+        assertTrue(new CommonQueryService().getInvolvedFunctionalExchanges(functionalChain).isEmpty());
     }
 
     @Test
@@ -462,7 +462,7 @@ public class SARepresentationMutationServiceTests {
     }
 
     private Package getFunctionsPackage(Package structurePackage) {
-        return ((Element) structurePackage.getOwner()).getOwnedElement().stream()
+        return structurePackage.getOwner().getOwnedElement().stream()
                 .filter(Package.class::isInstance)
                 .map(Package.class::cast)
                 .filter(pkg -> "Functions".equals(pkg.getDeclaredName()))
@@ -471,7 +471,7 @@ public class SARepresentationMutationServiceTests {
     }
 
     private Package getRequirementsPackage(Package structurePackage) {
-        return ((Element) structurePackage.getOwner()).getOwnedElement().stream()
+        return structurePackage.getOwner().getOwnedElement().stream()
                 .filter(Package.class::isInstance)
                 .map(Package.class::cast)
                 .filter(pkg -> "Requirements".equals(pkg.getDeclaredName()))

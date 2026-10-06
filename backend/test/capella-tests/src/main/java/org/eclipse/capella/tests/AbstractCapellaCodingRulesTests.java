@@ -50,6 +50,12 @@ import org.junit.jupiter.api.Test;
  */
 public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRulesTests {
 
+    private static final Map<String, String> PERSPECTIVE_PACKAGE_NAME_MAP = Map.of(
+            "OA", "operational.analysis",
+            "SA", "system.analysis",
+            "LA", "logical.architecture",
+            "PA", "physical.architecture");
+
     private static final Set<String> PERSPECTIVE_SERVICE_PACKAGES = Set.of(
             "org.eclipse.capella.model.services.operational.analysis",
             "org.eclipse.capella.model.services.system.analysis",
@@ -263,15 +269,20 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     public void semanticTestMethodsShouldFollowNamingConvention() {
         JavaClasses transverseServiceClasses = new ClassFileImporter().importPackages("org.eclipse.capella.model.transverse.services..");
 
+        Stream<JavaClass> perspectiveSpecificServiceJavaClasses = this.getPerspectiveSpecificServiceClasses();
+
         Set<String> testableMethodNames = Stream.concat(Stream.of(
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonQueryService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.ArcadiaElementNameService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonCreationService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonMoveService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonUpdateService"),
-                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonDeletionService")),
-                this.getClasses().stream()
-                        .filter(javaClass -> javaClass.getName().equals("org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService")))
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonDeletionService"),
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonNamingService")),
+                Stream.concat(
+                        perspectiveSpecificServiceJavaClasses,
+                        this.getClasses().stream()
+                                .filter(javaClass -> javaClass.getName().equals("org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService"))))
                 .flatMap(serviceClass -> serviceClass.getMethods().stream())
                 .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
                 .map(JavaMethod::getName)
@@ -292,6 +303,27 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 .allowEmptyShould(true);
 
         rule.check(this.getTestClasses());
+    }
+
+    /**
+     * Retrieves Perspective specific service classes. They may not be accessible in the classpath of the CodingRuleTest
+     * instance.
+     *
+     * @param transverseServiceClasses
+     * @return
+     */
+    private Stream<JavaClass> getPerspectiveSpecificServiceClasses() {
+        JavaClasses perspectiveServiceClasses = new ClassFileImporter().importPackages(PERSPECTIVE_SERVICE_PACKAGES.stream().toList());
+        Stream<JavaClass> perspectiveSpecificServiceJavaClasses = Stream.of();
+        try {
+            perspectiveSpecificServiceJavaClasses = PERSPECTIVE_PACKAGE_NAME_MAP.entrySet().stream().map(entry -> {
+                return Stream.of(
+                        perspectiveServiceClasses.get("org.eclipse.capella.model.services." + entry.getValue() + "." + entry.getKey() + "MutationService"),
+                        perspectiveServiceClasses.get("org.eclipse.capella.model.services." + entry.getValue() + "." + entry.getKey() + "QueryService"));
+            }).reduce(Stream::concat).orElse(Stream.of());
+        } catch (IllegalArgumentException e) {
+        }
+        return perspectiveSpecificServiceJavaClasses;
     }
 
     /**

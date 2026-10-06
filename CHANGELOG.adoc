@@ -77,6 +77,7 @@ This service overrides the default behavior of `SysMLMoveElementService` so Cape
 - https://github.com/eclipse-capella/capella-for-syson/issues/102[#102] [diagram, explorer] Improve Actors / HumanActors visual consistency over Perspectives
 - https://github.com/eclipse-capella/capella-for-syson/issues/182[#182] [enh] Add Operational activity nodes to OAIB.
 - https://github.com/eclipse-capella/capella-for-syson/issues/182[#182] [enh] Add Requirement nodes to OAIB.
+- https://github.com/eclipse-capella/capella-for-syson/issues/173[#173] [enh] Default naming count improvement
 
 == 2026.9.0
 

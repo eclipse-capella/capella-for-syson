@@ -292,14 +292,6 @@ public class CommonQueryService {
         return ArcadiaEngineeringPerspective.fromLabel(parentPkg.getDeclaredName()).isPresent();
     }
 
-    public long existingElementsCount(Element element) {
-        String arcadiaType = this.getArcadiaType(element).orElse("");
-        List<EObject> allReachableInResource = this.getAllReachableInResource(element, element.eClass());
-        return allReachableInResource.stream()
-                .filter(member -> arcadiaType.equals(this.getArcadiaType(member).orElse("")))
-                .count();
-    }
-
     /**
      * Rely on SysON UtilService#getAllReachable but restricted to the same resource.
      *
