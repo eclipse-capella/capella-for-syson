@@ -82,7 +82,7 @@ public class CellIconURLsProvider implements BiFunction<VariableManager, Object,
         List<String> iconPath = List.of();
 
         if (this.commonQueryService.isComponentHumanActor(component)) {
-            iconPath = List.of("/icons/full/obj16/LogicalComponentHuman.svg");
+            iconPath = List.of("/icons/full/obj16/ActorHuman.svg");
         } else if (this.commonQueryService.isComponentActor(component)) {
             iconPath = List.of("/icons/full/obj16/LogicalActor.svg");
         } else if (this.commonQueryService.isComponent(component)) {

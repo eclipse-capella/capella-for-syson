@@ -68,7 +68,7 @@ public class ComponentToolProvider {
 
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Actor")
-                .iconURLsExpression("/icons/full/obj16/Actor.svg");
+                .iconURLsExpression("/icons/full/obj16/LogicalActor.svg");
 
         cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 

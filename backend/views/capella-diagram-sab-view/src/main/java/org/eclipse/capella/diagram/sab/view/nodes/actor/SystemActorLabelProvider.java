@@ -80,7 +80,7 @@ public class SystemActorLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(SABViewConstants.ACTOR_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/SystemActorHuman.svg")
+                .labelIcon("/icons/full/obj16/ActorHuman.svg")
                 .withHeader(true)
                 .build();
     }

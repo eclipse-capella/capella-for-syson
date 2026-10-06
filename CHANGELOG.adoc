@@ -74,6 +74,8 @@ This service overrides the default behavior of `SysMLMoveElementService` so Cape
 - https://github.com/eclipse-capella/capella-for-syson/issues/184[#184] [diagrams] Improve System Analysis Blank diagram style
 - https://github.com/eclipse-capella/capella-for-syson/issues/252[#252] [details view] Filter to only real FunctionPort candidates in `realizes` reference.
 - https://github.com/eclipse-capella/capella-for-syson/issues/259[#259] [releng] Exclude all tests from PR size computation
+- https://github.com/eclipse-capella/capella-for-syson/issues/102[#102] [diagram, explorer] Improve Actors / HumanActors visual consistency over Perspectives
+
 
 == 2026.9.0
 

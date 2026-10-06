@@ -42,7 +42,7 @@ public class ComponentToolProvider {
     public NodeTool createNewEntityComponentNodeTool(IViewDiagramElementFinder cache) {
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Operational Entity")
-                .iconURLsExpression("/icons/full/obj16/LogicalComponent.svg");
+                .iconURLsExpression("/icons/full/obj16/OperationalEntity.svg");
 
         return this.configureNewComponentNodeTool(nodeToolBuilder, cache, false);
     }
@@ -51,7 +51,7 @@ public class ComponentToolProvider {
 
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Operational Actor")
-                .iconURLsExpression("/icons/full/obj16/Actor.svg");
+                .iconURLsExpression("/icons/full/obj16/ActorHuman.svg");
 
         return this.configureNewComponentNodeTool(nodeToolBuilder, cache, true);
     }
