@@ -12,10 +12,16 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view;
 
+import java.util.List;
+
+import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
+import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.eclipse.sirius.components.view.diagram.ArrangeLayoutDirection;
 import org.eclipse.sirius.components.view.diagram.DiagramLayoutOption;
@@ -39,6 +45,7 @@ public class OAIBViewDiagramDescriptionProvider implements IRepresentationDescri
         var toolbar = this.diagramBuilderHelper.newDiagramToolbar()
                 .expandedByDefault(true)
                 .build();
+
         var diagramDescription = this.diagramBuilderHelper.newDiagramDescription()
                 .arrangeLayoutDirection(ArrangeLayoutDirection.RIGHT)
                 .layoutOption(DiagramLayoutOption.NONE)
@@ -50,9 +57,13 @@ public class OAIBViewDiagramDescriptionProvider implements IRepresentationDescri
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
 
-        diagramDescription.setPalette(this.diagramBuilderHelper.newDiagramPalette()
-                .dropTool(this.diagramBuilderHelper.newDropTool().build())
-                .build());
+        var cache = new DefaultViewDiagramElementFinder();
+        var providers = List.of(
+                new OperationalActivityNodeDescriptionProvider(colorProvider),
+                new OperationalProcessNodeDescriptionProvider(colorProvider));
+        providers.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
+        providers.forEach(provider -> provider.link(diagramDescription, cache));
+        diagramDescription.setPalette(new OAIBDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache));
         return diagramDescription;
     }
 }

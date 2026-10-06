@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
@@ -111,4 +112,9 @@ public class OAMutationService {
         return activity;
     }
 
+    public ActionUsage createOperationalProcessOA(Element parent, List<Object> selectedObjects) {
+        ActionUsage process = this.commonCreationService.createFunctionalChain(parent, selectedObjects);
+        process.setDeclaredName("OperationalProcess " + this.commonQueryService.existingElementsCount(process));
+        return process;
+    }
 }
