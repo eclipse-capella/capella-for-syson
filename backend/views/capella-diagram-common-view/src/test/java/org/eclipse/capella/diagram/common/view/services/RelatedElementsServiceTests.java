@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -36,11 +37,13 @@ import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.DiagramStyle;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
+import org.eclipse.sirius.components.diagrams.ViewModifier;
 import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
 import org.eclipse.sirius.components.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.components.diagrams.description.NodeDescription;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
+import org.eclipse.sirius.components.diagrams.events.HideDiagramElementEvent;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Namespace;
@@ -125,7 +128,6 @@ public class RelatedElementsServiceTests {
     }
 
     @Test
-    @DisplayName("GIVEN nested nodes representing the same element, WHEN the inner node is populated, THEN children are created under the outer node")
     public void populationUsesTheOuterNodeForTheSameElement() {
         var root = SysmlFactory.eINSTANCE.createPackage();
         var child = SysmlFactory.eINSTANCE.createPackage();
@@ -240,6 +242,51 @@ public class RelatedElementsServiceTests {
         viewCreationContext.createView(element, null);
 
         verify(this.elementService).createView(element, "diagram", "node", null, context, NodeContainmentKind.CHILD_NODE);
+    }
+
+    @Test
+    @DisplayName("GIVEN hidden and visible ports, WHEN all ports are shown, THEN only hidden ports are revealed and the model is unchanged")
+    public void showAllPortsRevealsHiddenBorderNodesAndLeavesTheModelUnchanged() {
+        var hiddenPort = mock(Node.class);
+        when(hiddenPort.getId()).thenReturn("hidden-port");
+        when(hiddenPort.getState()).thenReturn(ViewModifier.Hidden);
+        var visiblePort = mock(Node.class);
+        when(visiblePort.getState()).thenReturn(ViewModifier.Normal);
+        var selected = mock(Node.class);
+        when(selected.getBorderNodes()).thenReturn(List.of(hiddenPort, visiblePort));
+        var component = SysmlFactory.eINSTANCE.createPartUsage();
+        var hiddenSemanticPort = SysmlFactory.eINSTANCE.createPortUsage();
+        hiddenSemanticPort.setDeclaredName("Hidden port");
+        var visibleSemanticPort = SysmlFactory.eINSTANCE.createPortUsage();
+        visibleSemanticPort.setDeclaredName("Visible port");
+        this.addMember(component, hiddenSemanticPort);
+        this.addMember(component, visibleSemanticPort);
+        var relationships = List.copyOf(component.getOwnedRelationship());
+        var context = this.context();
+
+        assertThat(this.service.showAllPorts(component, selected, context)).isSameAs(component);
+
+        assertThat(context.diagramEvents()).usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new HideDiagramElementEvent(Set.of("hidden-port"), false));
+        assertThat(context.viewCreationRequests()).isEmpty();
+        assertThat(component.getOwnedMember()).containsExactly(hiddenSemanticPort, visibleSemanticPort);
+        assertThat(component.getOwnedRelationship()).containsExactlyElementsOf(relationships);
+        assertThat(hiddenSemanticPort.getDeclaredName()).isEqualTo("Hidden port");
+        assertThat(visibleSemanticPort.getDeclaredName()).isEqualTo("Visible port");
+    }
+
+    @Test
+    @DisplayName("GIVEN a node without hidden ports, WHEN all ports are shown, THEN no diagram event is created")
+    public void showAllPortsWithoutHiddenPortsDoesNothing() {
+        var visiblePort = mock(Node.class);
+        when(visiblePort.getState()).thenReturn(ViewModifier.Normal);
+        var selected = mock(Node.class);
+        when(selected.getBorderNodes()).thenReturn(List.of(visiblePort));
+        var context = this.context();
+
+        this.service.showAllPorts(SysmlFactory.eINSTANCE.createPartUsage(), selected, context);
+
+        assertThat(context.diagramEvents()).isEmpty();
     }
 
     @Test
