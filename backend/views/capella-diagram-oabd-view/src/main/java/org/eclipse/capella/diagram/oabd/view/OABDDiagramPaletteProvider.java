@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oabd.view;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,7 @@ public class OABDDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(new RelatedElementsToolProvider().createDiagramToolSection())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),

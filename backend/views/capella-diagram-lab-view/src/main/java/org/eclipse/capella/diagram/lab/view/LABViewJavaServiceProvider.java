@@ -14,6 +14,8 @@ package org.eclipse.capella.diagram.lab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.services.RelatedElementsService;
+
 import org.eclipse.capella.diagram.lab.view.services.LABDiagramService;
 import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
 import org.eclipse.capella.model.services.logical.architecture.LAQueryService;
@@ -58,6 +60,7 @@ public class LABViewJavaServiceProvider implements IJavaServiceProvider {
                 .findFirst();
         if (optDescription.isPresent()) {
             return List.of(LabelService.class,
+                    RelatedElementsService.class,
                     LAQueryService.class,
                     LARepresentationDropServices.class,
                     LARepresentationReconnectToolServices.class,
