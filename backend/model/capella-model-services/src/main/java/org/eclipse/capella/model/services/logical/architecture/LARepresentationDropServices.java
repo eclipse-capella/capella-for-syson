@@ -21,10 +21,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
-import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
@@ -48,8 +47,6 @@ import org.eclipse.syson.util.NodeFinder;
  */
 public class LARepresentationDropServices {
 
-    private final LAQueryService laQueryService;
-
     private final DiagramMutationElementService diagramMutationElementService;
 
     private final IObjectSearchService objectSearchService;
@@ -62,22 +59,18 @@ public class LARepresentationDropServices {
 
     private final CommonDeletionService commonDeletionService;
 
-    private final CommonCreationService commonCreationService;
-
     private final CommonUpdateService commonUpdateService;
 
     private final LAViewCreationRequestSubtreeService viewCreationRequestSubtreeService;
 
     public LARepresentationDropServices(IObjectSearchService objectSearchService, IIdentityService identityService, ISysMLMoveElementService moveService,
             DiagramMutationElementService diagramMutationElementService) {
-        this.laQueryService = new LAQueryService();
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.identityService = Objects.requireNonNull(identityService);
         this.moveService = Objects.requireNonNull(moveService);
         this.commonQueryService = new CommonQueryService();
         this.commonDeletionService = new CommonDeletionService();
-        this.commonCreationService = new CommonCreationService();
         this.commonUpdateService = new CommonUpdateService();
         this.viewCreationRequestSubtreeService = new LAViewCreationRequestSubtreeService();
     }

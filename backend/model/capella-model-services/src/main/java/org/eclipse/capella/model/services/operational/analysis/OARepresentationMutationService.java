@@ -12,24 +12,25 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.OPERATIONAL_ACTOR_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.OPERATIONAL_ENTITY_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaLibraryServices;
-import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.metamodel.services.ElementInitializerSwitch;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
-
 /**
  * Operational Analysis (OA) related mutation service.
  * This class only concerns representation related services, it may depend on other beans or the editingContext.
@@ -46,20 +47,17 @@ public class OARepresentationMutationService {
 
     private final ArcadiaLibraryServices arcadiaLibraryServices;
 
-    private final OAQueryService oaQueryService;
-
     private final MetamodelMutationElementService metamodelMutationElementService;
 
-    private final TransverseRepresentationMutationService transverseRepresentationMutationService;
+    private final CommonNamingService commonNamingService;
 
     public  OARepresentationMutationService(TransverseRepresentationMutationService transverseRepresentationMutationService) {
         this.commonUpdateService = new CommonUpdateService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.commonQueryService = new CommonQueryService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
-        this.oaQueryService = new OAQueryService();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
-        this.transverseRepresentationMutationService = Objects.requireNonNull(transverseRepresentationMutationService);
+        this.commonNamingService = new CommonNamingService();
     }
 
     public PartUsage createEntityComponent(Element parent, boolean isActor) {
@@ -73,19 +71,18 @@ public class OARepresentationMutationService {
                     .map(Element.class::cast);
         }
         if (optionalTargetContainer.isPresent()) {
-            String name = "OE";
+            String name = OPERATIONAL_ENTITY_DEFAULT_DECLAREDNAME_PREFIX;
             Element targetContainer = optionalTargetContainer.get();
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
             this.commonUpdateService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, isActor);
             if (isActor) {
-                name = "OA";
+                name = OPERATIONAL_ACTOR_DEFAULT_DECLAREDNAME_PREFIX;
                 this.commonUpdateService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_HUMAN, true);
             }
             this.elementInitializerSwitch.doSwitch(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.commonQueryService.existingElementsCount(partUsage);
-            partUsage.setDeclaredName(name + " " + existingElementsCount);
+            this.commonNamingService.setElementDefaultDeclaredName(partUsage, name);
         }
         return partUsage;
     }

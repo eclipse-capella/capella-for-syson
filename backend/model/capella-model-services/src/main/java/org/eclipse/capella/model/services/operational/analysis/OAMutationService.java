@@ -12,10 +12,16 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.operational.analysis;
 
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMMUNICATION_MEAN_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.INTERACTION_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.OPERATIONAL_ACTOR_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.OPERATIONAL_CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX;
+
 import java.util.stream.Stream;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
@@ -38,10 +44,13 @@ public class OAMutationService {
 
     private final CommonDeletionService commonDeletionService;
 
+    private final CommonNamingService commonNamingService;
+
     public OAMutationService() {
         this.commonCreationService = new CommonCreationService();
         this.commonQueryService = new CommonQueryService();
         this.commonDeletionService = new CommonDeletionService();
+        this.commonNamingService = new CommonNamingService();
     }
 
     /**
@@ -56,8 +65,7 @@ public class OAMutationService {
     public FlowUsage createInteractionOA(Feature source, Feature target) {
         var interaction = this.commonCreationService.createFunctionalExchange(source, target);
         if (interaction != null) {
-            long existingElementsCount = this.commonQueryService.existingElementsCount(interaction);
-            interaction.setDeclaredName("Interaction " + existingElementsCount);
+            this.commonNamingService.setElementDefaultDeclaredName(interaction, INTERACTION_DEFAULT_DECLAREDNAME_PREFIX);
         }
         return interaction;
     }
@@ -84,8 +92,7 @@ public class OAMutationService {
     public InterfaceUsage createCommunicationMeanComponentExchangeOA(Feature source, Feature target) {
         var componentExchange = this.commonCreationService.createComponentExchange(source, target);
         if (componentExchange != null) {
-            long existingElementsCount = this.commonQueryService.existingElementsCount(componentExchange);
-            componentExchange.setDeclaredName("CommunicationMean " + existingElementsCount);
+            this.commonNamingService.setElementDefaultDeclaredName(componentExchange, COMMUNICATION_MEAN_DEFAULT_DECLAREDNAME_PREFIX);
         }
         return componentExchange;
     }
@@ -93,8 +100,7 @@ public class OAMutationService {
     public OccurrenceUsage createOperationalCapabilityOA(Element parent) {
         var capability = this.commonCreationService.createOperationalCapability(parent);
         if (capability != null) {
-            long existingElementsCount = this.commonQueryService.existingElementsCount(capability);
-            capability.setDeclaredName("OC " + existingElementsCount);
+            this.commonNamingService.setElementDefaultDeclaredName(capability, OPERATIONAL_CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX);
         }
         return capability;
     }
@@ -105,7 +111,7 @@ public class OAMutationService {
                 || this.commonQueryService.isComponent(parent) && this.commonQueryService.isOperationalAnalysisPerspective(parent)) {
             activity = this.commonCreationService.createFunction(parent);
             if (activity != null) {
-                activity.setDeclaredName("OA " + this.commonQueryService.existingElementsCount(activity));
+                this.commonNamingService.setElementDefaultDeclaredName(activity, OPERATIONAL_ACTOR_DEFAULT_DECLAREDNAME_PREFIX);
             }
         }
         return activity;

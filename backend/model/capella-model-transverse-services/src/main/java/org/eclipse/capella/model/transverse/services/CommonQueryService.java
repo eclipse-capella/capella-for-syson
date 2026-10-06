@@ -292,14 +292,6 @@ public class CommonQueryService {
         return ArcadiaEngineeringPerspective.fromLabel(parentPkg.getDeclaredName()).isPresent();
     }
 
-    public long existingElementsCount(Element element) {
-        String arcadiaType = this.getArcadiaType(element).orElse("");
-        List<EObject> allReachableInResource = this.getAllReachableInResource(element, element.eClass());
-        return allReachableInResource.stream()
-                .filter(member -> arcadiaType.equals(this.getArcadiaType(member).orElse("")))
-                .count();
-    }
-
     /**
      * Rely on SysON UtilService#getAllReachable but restricted to the same resource.
      *
@@ -321,6 +313,15 @@ public class CommonQueryService {
                 .filter(Expression.class::isInstance)
                 .map(Expression.class::cast)
                 .findFirst();
+    }
+
+    // TODO: see if necessary after improving
+    // org.eclipse.capella.model.transverse.services.CommonQueryService.getArcadiaType(EObject)
+    public List<EObject> getAllSiblings(Feature object) {
+        List<EObject> siblings = new ArrayList<>();
+        Element owningElement = this.utilService.getOwningElement(object);
+        owningElement.getOwnedElement().stream().filter(o -> object.getClass().isInstance(o.getClass()) && this.getArcadiaType(object).equals(this.getArcadiaType(o))).map(siblings::add);
+        return siblings;
     }
 
     /**

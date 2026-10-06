@@ -13,7 +13,10 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.logical.architecture;
 
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.PACKAGE_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX;
+
+import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.syson.sysml.Annotation;
 import org.eclipse.syson.sysml.Comment;
 import org.eclipse.syson.sysml.Element;
@@ -31,18 +34,16 @@ import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementServic
  */
 public class LARepresentationMutationService {
 
-    private static final String WHITE_SPACE = " ";
-
     private final ElementInitializerSwitch elementInitializerSwitch;
-
-    private final CommonQueryService commonQueryService;
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
+    private final CommonNamingService commonNamingService;
+
     public LARepresentationMutationService() {
-        this.commonQueryService = new CommonQueryService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
+        this.commonNamingService = new CommonNamingService();
     }
 
     /**
@@ -53,14 +54,11 @@ public class LARepresentationMutationService {
      * @return the newly created requirement
      */
     public RequirementUsage createRequirementInPackage(Element parent) {
-        String name = "Requirement";
-
         RequirementUsage requirementUsage = SysmlFactory.eINSTANCE.createRequirementUsage();
         this.metamodelMutationElementService.addChildInParent(parent, requirementUsage);
         this.elementInitializerSwitch.doSwitch(requirementUsage);
 
-        long existingElementsCount = this.commonQueryService.existingElementsCount(requirementUsage);
-        requirementUsage.setDeclaredName(name + WHITE_SPACE + existingElementsCount);
+        this.commonNamingService.setElementDefaultDeclaredName(requirementUsage, REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX);
         return requirementUsage;
     }
 
@@ -72,14 +70,11 @@ public class LARepresentationMutationService {
      * @return the newly created Package
      */
     public Package createPackage(Element parent) {
-        String name = "Package";
-
         Package pkg = SysmlFactory.eINSTANCE.createPackage();
         this.metamodelMutationElementService.addChildInParent(parent, pkg);
         this.elementInitializerSwitch.doSwitch(pkg);
 
-        long existingElementsCount = this.commonQueryService.existingElementsCount(pkg);
-        pkg.setDeclaredName(name + WHITE_SPACE + existingElementsCount);
+        this.commonNamingService.setElementDefaultDeclaredName(pkg, PACKAGE_DEFAULT_DECLAREDNAME_PREFIX);
         return pkg;
     }
 
