@@ -52,7 +52,7 @@ public class EntityComponentToolProvider {
 
         var nodeToolBuilder = this.diagramBuilderHelper.newNodeTool()
                 .name("New Operational Actor")
-                .iconURLsExpression("/icons/full/obj16/Actor.svg");
+                .iconURLsExpression("/icons/full/obj16/ActorHuman.svg");
 
         return this.configureNewComponentNodeTool(nodeToolBuilder, cache, true);
     }

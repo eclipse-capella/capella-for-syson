@@ -106,7 +106,8 @@ public class CapellaImagePathsService {
      */
     public Optional<String> getImageFromArcadiaType(ArcadiaEngineeringPerspective perspective, Element element, String arcadiaType) {
         String imageName = switch (arcadiaType) {
-            case ARCADIA_COMPONENT, ARCADIA_FUNCTION -> this.computeElementNameWithArchitecture(perspective, arcadiaType, element).orElse(null);
+            case ARCADIA_COMPONENT -> this.computeComponentIcon(perspective, arcadiaType, element).orElse(null);
+            case ARCADIA_FUNCTION -> this.computeFunctionIcon(perspective, arcadiaType, element).orElse(null);
             case ARCADIA_CAPABILITY -> this.computeCapabilityIcon(perspective, arcadiaType);
             case ARCADIA_COMPONENT_PORT -> "FlowPort";
             case ARCADIA_COMPONENT_EXCHANGE -> arcadiaType;
@@ -184,37 +185,43 @@ public class CapellaImagePathsService {
         return value;
     }
 
-    private Optional<String> computeElementNameWithArchitecture(ArcadiaEngineeringPerspective perspective, String name, Element element) {
-        String componentType = null;
-        if (ArcadiaEngineeringPerspective.LogicalArchitecture.equals(perspective)) {
-            if (this.commonQueryService.isComponentHumanActor(element)) {
-                componentType = LOGICAL + name + "Human";
-            } else if (this.commonQueryService.isComponentActor(element)) {
-                componentType = LOGICAL + "Actor";
+    private Optional<String> computeComponentIcon(ArcadiaEngineeringPerspective perspective, String name, Element element) {
+        Optional<String> result = Optional.empty();
+        if (this.commonQueryService.isComponentHumanActor(element)) {
+            result = Optional.of("ActorHuman");
+        } else {
+            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+                result = Optional.of("OperationalEntity");
             } else {
-                componentType = LOGICAL + name;
-            }
-        } else if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-            if (ARCADIA_FUNCTION.equals(name)) {
-                componentType = "OperationalActivity";
-            } else if (this.commonQueryService.isComponentHumanActor(element)) {
-                componentType = LOGICAL + "ActorHuman";
-            } else if (this.commonQueryService.isComponentActor(element)) {
-                componentType = "OperationalEntity";
-            } else {
-                componentType = "OperationalEntity";
-            }
-        } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
-            componentType = PHYSICAL + name;
-        } else if (ArcadiaEngineeringPerspective.SystemAnalysis.equals(perspective)) {
-            if (this.commonQueryService.isComponentHumanActor(element)) {
-                componentType = SYSTEM + "ActorHuman";
-            } else if (this.commonQueryService.isComponentActor(element)) {
-                componentType = SYSTEM + "Actor";
-            } else {
-                componentType = SYSTEM + name;
+                String prefix = switch (perspective) {
+                    case ArcadiaEngineeringPerspective.SystemAnalysis -> SYSTEM;
+                    case ArcadiaEngineeringPerspective.LogicalArchitecture -> LOGICAL;
+                    case ArcadiaEngineeringPerspective.PhysicalArchitecture -> PHYSICAL;
+                    case null, default -> null;
+                };
+                result = Optional.ofNullable(prefix).map(p -> {
+                    if (this.commonQueryService.isComponentActor(element)) {
+                        return p + "Actor";
+                    } else {
+                        return p + name;
+                    }
+                });
             }
         }
-        return Optional.ofNullable(componentType);
+        return result;
+    }
+
+    private Optional<String> computeFunctionIcon(ArcadiaEngineeringPerspective perspective, String name, Element element) {
+        Optional<String> result = Optional.empty();
+        if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+            result = Optional.of("OperationalActivity");
+        } else if (ArcadiaEngineeringPerspective.SystemAnalysis.equals(perspective)) {
+            result = Optional.of(SYSTEM + name);
+        } else if (ArcadiaEngineeringPerspective.LogicalArchitecture.equals(perspective)) {
+            result = Optional.of(LOGICAL + name);
+        } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
+            result = Optional.of(PHYSICAL + name);
+        }
+        return result;
     }
 }

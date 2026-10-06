@@ -80,7 +80,7 @@ public class EntityComponentLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(OABViewConstants.COMPONENT_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/LogicalActorHuman.svg")
+                .labelIcon("/icons/full/obj16/ActorHuman.svg")
                 .withHeader(true)
                 .build();
     }

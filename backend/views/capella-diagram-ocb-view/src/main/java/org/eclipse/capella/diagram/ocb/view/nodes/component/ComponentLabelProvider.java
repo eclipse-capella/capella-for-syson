@@ -61,7 +61,7 @@ public class ComponentLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(OCBViewConstants.COMPONENT_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/LogicalComponent.svg")
+                .labelIcon("/icons/full/obj16/OperationalEntity.svg")
                 .withHeader(true)
                 .build();
     }
@@ -80,7 +80,7 @@ public class ComponentLabelProvider {
                 .fontSize(12)
                 .labelColor(this.colorProvider.getColor(OCBViewConstants.COMPONENT_LABEL_COLOR))
                 .showIconExpression("aql:true")
-                .labelIcon("/icons/full/obj16/LogicalActorHuman.svg")
+                .labelIcon("/icons/full/obj16/ActorHuman.svg")
                 .withHeader(true)
                 .build();
     }
