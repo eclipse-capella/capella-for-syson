@@ -25,7 +25,15 @@ public final class OAIBViewConstants {
 
     public static final String ACTIVITY_LABEL_COLOR = "ACTIVITY_LABEL_COLOR";
 
+    public static final String DESCRIBES_BACKGROUND_COLOR = "DESCRIBES_BACKGROUND_COLOR";
+
     public static final String OPERATIONAL_PROCESS_BACKGROUND_COLOR = "OPERATIONAL_PROCESS_BACKGROUND_COLOR";
+
+    public static final String REQUIREMENT_BACKGROUND_COLOR = "REQUIREMENT_BACKGROUND_COLOR";
+
+    public static final String REQUIREMENT_BORDER_COLOR = "REQUIREMENT_BORDER_COLOR";
+
+    public static final String REQUIREMENT_LABEL_COLOR = "REQUIREMENT_LABEL_COLOR";
 
     private OAIBViewConstants() {
         // Prevent instantiation

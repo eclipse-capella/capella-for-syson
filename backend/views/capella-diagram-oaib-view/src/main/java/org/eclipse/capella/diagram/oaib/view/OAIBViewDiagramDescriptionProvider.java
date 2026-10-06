@@ -15,7 +15,11 @@ package org.eclipse.capella.diagram.oaib.view;
 import java.util.List;
 
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.nodes.requirement.compartment.OAIBCompartmentItemNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.nodes.requirement.compartment.OAIBCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
@@ -60,7 +64,13 @@ public class OAIBViewDiagramDescriptionProvider implements IRepresentationDescri
         var cache = new DefaultViewDiagramElementFinder();
         var providers = List.of(
                 new OperationalActivityNodeDescriptionProvider(colorProvider),
-                new OperationalProcessNodeDescriptionProvider(colorProvider));
+                new OperationalProcessNodeDescriptionProvider(colorProvider),
+                new OAIBCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new OAIBCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new RequirementNodeDescriptionProvider(colorProvider),
+                new DescribesEdgeDescriptionProvider(colorProvider));
         providers.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
         providers.forEach(provider -> provider.link(diagramDescription, cache));
         diagramDescription.setPalette(new OAIBDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache));
