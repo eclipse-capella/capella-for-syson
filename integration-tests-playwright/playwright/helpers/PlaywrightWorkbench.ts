@@ -12,6 +12,7 @@
  *******************************************************************************/
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
+import { PlaywrightDiagram } from './PlaywrightDiagram';
 
 export class PlaywrightWorkbench {
   readonly page: Page;
@@ -22,7 +23,14 @@ export class PlaywrightWorkbench {
 
   async openRepresentation(representationTestId: string): Promise<void> {
     await expect(this.page.getByTestId('capella-onboard-area')).toBeAttached();
-    await this.page.getByTestId(representationTestId).click();
+    await new PlaywrightDiagram(this.page).waitForInitialLayout(() =>
+      this.page.getByTestId(representationTestId).click()
+    );
     await expect(this.page.getByTestId('rf__wrapper')).toBeAttached();
+  }
+
+  async openView(viewId: string): Promise<void> {
+    await expect(this.page.getByTestId(viewId)).toBeAttached();
+    await this.page.getByTestId(viewId).click();
   }
 }

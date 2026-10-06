@@ -10,7 +10,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-import type { Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export class PlaywrightDiagram {
   readonly page: Page;
@@ -24,5 +24,24 @@ export class PlaywrightDiagram {
       button: 'right',
       position: { x: 250, y: 250 },
     });
+  }
+
+  async waitForInitialLayout(openDiagram: () => Promise<unknown>): Promise<void> {
+    const [response] = await Promise.all([
+      this.page.waitForResponse((response) => {
+        const request = response.request();
+        if (request.method() !== 'POST' || !request.url().includes('/api/graphql')) {
+          return false;
+        }
+        const body = request.postDataJSON();
+        return body?.operationName === 'layoutDiagram' && body?.variables?.input?.cause === 'refresh';
+      }),
+      openDiagram(),
+    ]);
+
+    expect(response.ok()).toBeTruthy();
+    const body = await response.json();
+    expect(body.errors).toBeUndefined();
+    expect(body.data.layoutDiagram.__typename).toBe('SuccessPayload');
   }
 }
