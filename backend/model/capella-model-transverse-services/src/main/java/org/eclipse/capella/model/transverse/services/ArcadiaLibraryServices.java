@@ -84,6 +84,11 @@ public class ArcadiaLibraryServices {
         // The solution isn't perfect though, since multiple Arcadia packages can still be defined in the root namespace.
         Optional<Type> optionalLibraryType = Optional.ofNullable(this.utilService.findByNameAndType(usage, typeQualifiedName, Type.class))
                 .filter(librarySysMLElementType::isInstance);
+
+        if (!usage.eAdapters().stream().anyMatch(adap -> adap instanceof ArcadiaElementContentAdapter)) {
+            usage.eAdapters().add(ArcadiaElementContentAdapter.getInstance());
+        }
+
         if (optionalLibraryType.isPresent()) {
             this.utilService.setFeatureTyping(usage, optionalLibraryType.get());
         } else {
