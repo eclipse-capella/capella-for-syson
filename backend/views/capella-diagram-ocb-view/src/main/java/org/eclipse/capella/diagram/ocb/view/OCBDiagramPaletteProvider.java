@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
+
 import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentToolProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityNodeDescriptionProvider;
@@ -53,6 +55,7 @@ public class OCBDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(new RelatedElementsToolProvider().createDiagramToolSection())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewEntityComponentNodeTool(cache),
