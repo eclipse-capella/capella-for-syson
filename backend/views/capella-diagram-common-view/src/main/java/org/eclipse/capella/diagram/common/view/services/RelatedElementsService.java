@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -27,7 +28,9 @@ import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.core.api.IRepresentationDescriptionSearchService;
 import org.eclipse.sirius.components.diagrams.Node;
+import org.eclipse.sirius.components.diagrams.ViewModifier;
 import org.eclipse.sirius.components.diagrams.description.NodeDescription;
+import org.eclipse.sirius.components.diagrams.events.HideDiagramElementEvent;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Namespace;
@@ -96,6 +99,17 @@ public class RelatedElementsService {
         var viewCreationContext = new ContainedElementsViewCreationContext(this.elementService, this.objectSearchService, this.representationDescriptionSearchService, editingContext, diagramContext, convertedNodes);
         viewCreationContext.registerElement(this.identityService.getId(self), self);
         this.showChildren(self, parent, recursive, new RenderingContext(viewsByElementId, viewCreationContext), new HashSet<>());
+        return self;
+    }
+
+    public Element showAllPorts(Element self, Node selectedNode, DiagramContext diagramContext) {
+        var portIds = selectedNode.getBorderNodes().stream()
+                .filter(node -> node.getState() == ViewModifier.Hidden)
+                .map(Node::getId)
+                .collect(Collectors.toSet());
+        if (!portIds.isEmpty()) {
+            diagramContext.diagramEvents().add(new HideDiagramElementEvent(portIds, false));
+        }
         return self;
     }
 

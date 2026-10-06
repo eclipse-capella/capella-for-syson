@@ -249,7 +249,7 @@ public class RelatedElementsIntegrationTests extends AbstractIntegrationTests {
                     assertThat(node.getPalette()).as("Palette of %s in %s", node.getName(), diagram.getName()).isNotNull();
                     assertThat(node.getPalette().getToolSections()).filteredOn(section -> "Related Elements".equals(section.getName()))
                             .singleElement().satisfies(section -> assertThat(section.getNodeTools()).extracting(NodeTool::getName)
-                                    .containsExactly("Show all contained elements", "Show all contained elements recursively"));
+                                    .contains("Show all contained elements", "Show all contained elements recursively"));
                 });
             });
         });
@@ -278,13 +278,16 @@ public class RelatedElementsIntegrationTests extends AbstractIntegrationTests {
                 assertThat(nodes).isNotEmpty();
                 var sections = nodes.stream().map(NodeDescription::getPalette).filter(palette -> palette != null)
                         .flatMap(palette -> palette.getToolSections().stream()).toList();
-                assertThat(sections).as("Sections of nodes without children in %s", diagram.getName())
-                        .noneMatch(section -> "Related Elements".equals(section.getName()));
+                var relatedSections = sections.stream().filter(section -> "Related Elements".equals(section.getName())).toList();
+                assertThat(relatedSections).as("Related elements sections of nodes without children in %s", diagram.getName())
+                        .allSatisfy(section -> assertThat(section.getNodeTools()).isNotEmpty());
+                assertThat(relatedSections).flatExtracting(section -> section.getNodeTools()).extracting(NodeTool::getName)
+                        .doesNotContain("Show all contained elements", "Show all contained elements recursively");
             });
         });
 
         StepVerifier.create(events)
-                // Check that leaf nodes in all six editable diagram types have no related elements section.
+                // Check that leaf nodes have no population tools and that any section offering ports is not empty.
                 .then(checkLeafNodePalettes)
                 .thenCancel()
                 .verify(Duration.ofSeconds(20));
@@ -491,6 +494,117 @@ public class RelatedElementsIntegrationTests extends AbstractIntegrationTests {
                 .consumeNextWith(visibleFunctionsConsumer)
                 .thenCancel()
                 .verify(Duration.ofSeconds(40));
+    }
+
+    @Test
+    public void showAllPortsOnLogicalComponent() {
+        String editingContextId = CapellaProjectData.EDITING_CONTEXT_ID;
+        String representationId = CapellaProjectData.GraphicalIds.LAB_LOGICAL_ARCHITECTURE_BLANK_DIAGRAM_ID;
+        var events = this.subscriptionRunner.run(new DiagramEventInput(UUID.randomUUID(), editingContextId, representationId)).flux();
+        var componentId = new AtomicReference<String>();
+        var portId = new AtomicReference<String>();
+
+        Consumer<Object> emptyDiagramConsumer = assertRefreshedDiagramThat(diagram -> assertThat(diagram.getNodes()).isEmpty());
+        Runnable createComponent = () -> this.toolTester.invokeDiagramTool(editingContextId, representationId, "New Component");
+        Consumer<Object> componentCreationConsumer = assertRefreshedDiagramThat(diagram -> componentId.set(diagram.getNodes().getFirst().getId()));
+        Runnable createPort = () -> this.toolTester.invokeTool(editingContextId, representationId, componentId.get(), "New Input Port");
+        Consumer<Object> portCreationConsumer = assertRefreshedDiagramThat(diagram -> {
+            assertThat(diagram.getNodes().getFirst().getBorderNodes()).hasSize(1);
+            portId.set(diagram.getNodes().getFirst().getBorderNodes().getFirst().getId());
+        });
+        Runnable hidePort = () -> this.toolTester.invokeTool(editingContextId, representationId, portId.get(), "Hide");
+        Consumer<Object> hiddenPortConsumer = assertRefreshedDiagramThat(diagram -> assertThat(diagram.getNodes().getFirst().getBorderNodes().getFirst().getState())
+                .isEqualTo(ViewModifier.Hidden));
+        Runnable showAllPorts = () -> this.toolTester.invokeTool(editingContextId, representationId, componentId.get(), "Show all ports");
+        Consumer<Object> visiblePortConsumer = assertRefreshedDiagramThat(diagram -> assertThat(diagram.getNodes().getFirst().getBorderNodes())
+                .singleElement().satisfies(port -> {
+                    assertThat(port.getId()).isEqualTo(portId.get());
+                    assertThat(port.getState()).isEqualTo(ViewModifier.Normal);
+                }));
+
+        StepVerifier.create(events)
+                // Check that the diagram is initially empty.
+                .consumeNextWith(emptyDiagramConsumer)
+                // Create the parent component.
+                .then(createComponent)
+                // Remember the parent component ID.
+                .consumeNextWith(componentCreationConsumer)
+                // Create an input port on the parent component.
+                .then(createPort)
+                // Check that the port exists and remember its ID.
+                .consumeNextWith(portCreationConsumer)
+                // Hide the port in the diagram.
+                .then(hidePort)
+                // Check that the port is hidden.
+                .consumeNextWith(hiddenPortConsumer)
+                // Reveal all ports using the parent component palette.
+                .then(showAllPorts)
+                // Check that the same port is visible again without creating a duplicate.
+                .consumeNextWith(visiblePortConsumer)
+                .thenCancel()
+                .verify(Duration.ofSeconds(20));
+    }
+
+    @Test
+    public void showAllPortsOnSystemFunction() {
+        String editingContextId = CapellaProjectData.EDITING_CONTEXT_ID;
+        String representationId = CapellaProjectData.GraphicalIds.SAB_SYSTEM_ANALYSIS_BLANK_DIAGRAM_ID;
+        String systemId = CapellaProjectData.GraphicalIds.SYSTEM_PAR_NODE_ID;
+        var events = this.subscriptionRunner.run(new DiagramEventInput(UUID.randomUUID(), editingContextId, representationId)).flux();
+        var functionId = new AtomicReference<String>();
+        var portId = new AtomicReference<String>();
+
+        Consumer<Object> initialDiagramConsumer = assertRefreshedDiagramThat(diagram -> {
+            assertThat(diagram.getNodes()).singleElement().satisfies(system -> {
+                assertThat(system.getId()).isEqualTo(systemId);
+                assertThat(system.getChildNodes()).isEmpty();
+            });
+        });
+        Runnable createFunction = () -> this.toolTester.invokeTool(editingContextId, representationId, systemId, "New Function");
+        Consumer<Object> functionCreationConsumer = assertRefreshedDiagramThat(diagram -> {
+            var system = new DiagramNavigator(diagram).nodeWithId(systemId).getNode();
+            assertThat(system.getChildNodes()).singleElement().satisfies(function -> functionId.set(function.getId()));
+        });
+        Runnable createPort = () -> this.toolTester.invokeTool(editingContextId, representationId, functionId.get(), "New Input Function Port");
+        Consumer<Object> portCreationConsumer = assertRefreshedDiagramThat(diagram -> {
+            var function = new DiagramNavigator(diagram).nodeWithId(functionId.get()).getNode();
+            assertThat(function.getBorderNodes()).singleElement().satisfies(port -> portId.set(port.getId()));
+        });
+        Runnable hidePort = () -> this.toolTester.invokeTool(editingContextId, representationId, portId.get(), "Hide");
+        Consumer<Object> hiddenPortConsumer = assertRefreshedDiagramThat(diagram -> {
+            var port = new DiagramNavigator(diagram).nodeWithId(portId.get()).getNode();
+            assertThat(port.getState()).isEqualTo(ViewModifier.Hidden);
+        });
+        Runnable showAllPorts = () -> this.toolTester.invokeTool(editingContextId, representationId, functionId.get(), "Show all ports");
+        Consumer<Object> visiblePortConsumer = assertRefreshedDiagramThat(diagram -> {
+            var function = new DiagramNavigator(diagram).nodeWithId(functionId.get()).getNode();
+            assertThat(function.getBorderNodes()).singleElement().satisfies(port -> {
+                assertThat(port.getId()).isEqualTo(portId.get());
+                assertThat(port.getState()).isEqualTo(ViewModifier.Normal);
+            });
+        });
+
+        StepVerifier.create(events)
+                // Check that the diagram contains the existing system without allocated functions.
+                .consumeNextWith(initialDiagramConsumer)
+                // Create a function allocated to the system.
+                .then(createFunction)
+                // Remember the function ID for the port tools.
+                .consumeNextWith(functionCreationConsumer)
+                // Create an input port using the function palette and its reused border description.
+                .then(createPort)
+                // Remember the newly created port ID.
+                .consumeNextWith(portCreationConsumer)
+                // Hide the function port in the diagram.
+                .then(hidePort)
+                // Check that the function port is hidden.
+                .consumeNextWith(hiddenPortConsumer)
+                // Reveal the ports using the function palette.
+                .then(showAllPorts)
+                // Check that the same function port is visible again without creating a duplicate.
+                .consumeNextWith(visiblePortConsumer)
+                .thenCancel()
+                .verify(Duration.ofSeconds(20));
     }
 
     private void checkEditingContext(Consumer<IEditingContext> check) {
