@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.common.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.services.RelatedElementsService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -25,9 +26,10 @@ import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
-import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
+import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
  * Provides the related elements tools shared by Capella diagrams.
@@ -49,24 +51,32 @@ public class RelatedElementsToolProvider {
                 .build();
     }
 
-    public NodeToolSection createNodeToolSection() {
-        return this.diagramBuilders.newNodeToolSection()
-                .name(RELATED_ELEMENTS_TOOL_SECTION)
-                .nodeTools(this.createContainedElementsTool(), this.createRecursiveContainedElementsTool())
-                .build();
-    }
-
     public void addNodeToolSections(DiagramDescription diagramDescription) {
         var nodeDescriptions = new ArrayList<NodeDescription>();
         this.collectDescendants(diagramDescription.getNodeDescriptions(), nodeDescriptions);
-        nodeDescriptions.stream()
-                .filter(nodeDescription -> !nodeDescription.getChildrenDescriptions().isEmpty() || !nodeDescription.getReusedChildNodeDescriptions().isEmpty())
-                .forEach(nodeDescription -> {
-                    if (nodeDescription.getPalette() == null) {
-                        nodeDescription.setPalette(this.diagramBuilders.newNodePalette().build());
-                    }
-                    nodeDescription.getPalette().getToolSections().add(this.createNodeToolSection());
-                });
+        nodeDescriptions.forEach(nodeDescription -> {
+            boolean hasChildren = !nodeDescription.getChildrenDescriptions().isEmpty() || !nodeDescription.getReusedChildNodeDescriptions().isEmpty();
+            boolean hasPorts = this.isPortOwnerNodeDescription(nodeDescription)
+                    && (!nodeDescription.getBorderNodesDescriptions().isEmpty() || !nodeDescription.getReusedBorderNodeDescriptions().isEmpty());
+            if (hasChildren || hasPorts) {
+                var tools = new ArrayList<NodeTool>();
+                if (hasChildren) {
+                    tools.add(this.createContainedElementsTool());
+                    tools.add(this.createRecursiveContainedElementsTool());
+                }
+                if (hasPorts) {
+                    tools.add(this.createPortsTool());
+                }
+                var section = this.diagramBuilders.newNodeToolSection()
+                        .name(RELATED_ELEMENTS_TOOL_SECTION)
+                        .nodeTools(tools.toArray(NodeTool[]::new))
+                        .build();
+                if (nodeDescription.getPalette() == null) {
+                    nodeDescription.setPalette(this.diagramBuilders.newNodePalette().build());
+                }
+                nodeDescription.getPalette().getToolSections().add(section);
+            }
+        });
     }
 
     private void collectDescendants(List<NodeDescription> nodes, List<NodeDescription> descendants) {
@@ -75,6 +85,22 @@ public class RelatedElementsToolProvider {
             this.collectDescendants(node.getChildrenDescriptions(), descendants);
             this.collectDescendants(node.getBorderNodesDescriptions(), descendants);
         }
+    }
+
+    private boolean isPortOwnerNodeDescription(NodeDescription nodeDescription) {
+        return Objects.equals(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage()), nodeDescription.getDomainType())
+                || Objects.equals(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getActionUsage()), nodeDescription.getDomainType());
+    }
+
+    private NodeTool createPortsTool() {
+        return this.diagramBuilders.newNodeTool()
+                .name("Show all ports")
+                .iconURLsExpression("/icons/AddExistingElements.svg")
+                .preconditionExpression("aql:self.isComponent() or self.isFunction()")
+                .body(this.viewBuilders.newChangeContext()
+                        .expression(ServiceMethod.of2(RelatedElementsService::showAllPorts).aqlSelf(Node.SELECTED_NODE, DiagramContext.DIAGRAM_CONTEXT))
+                        .build())
+                .build();
     }
 
     public NodeTool createContainedElementsTool() {

@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
+import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.SysMLMetamodelHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -91,5 +93,66 @@ public class RelatedElementsToolProviderTests {
         assertThat(node.getPalette()).isSameAs(palette);
         assertThat(palette.getToolSections()).containsExactly(existingSection);
         assertThat(borderNode.getPalette()).isNull();
+    }
+
+    @Test
+    @DisplayName("GIVEN a component supporting only direct border ports, WHEN related element tools are added, THEN its section offers only Show all ports")
+    public void componentWithoutChildrenOffersOnlyPortsTool() {
+        var builders = new DiagramBuilders();
+        var port = builders.newNodeDescription().name("Port").build();
+        var component = builders.newNodeDescription().name("Component")
+                .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage()))
+                .borderNodesDescriptions(port).build();
+        var diagram = builders.newDiagramDescription().nodeDescriptions(component).build();
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagram);
+
+        assertThat(component.getPalette()).isNotNull();
+        assertThat(component.getPalette().getToolSections()).singleElement().satisfies(section -> {
+            assertThat(section.getName()).isEqualTo(RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION);
+            assertThat(section.getNodeTools()).extracting(NodeTool::getName).containsExactly("Show all ports");
+        });
+        assertThat(port.getPalette()).isNull();
+    }
+
+    @Test
+    @DisplayName("GIVEN a function supporting only reused border ports, WHEN related element tools are added, THEN its section offers only Show all ports")
+    public void functionWithoutChildrenOffersOnlyPortsTool() {
+        var builders = new DiagramBuilders();
+        var port = builders.newNodeDescription().name("Reused port").build();
+        var function = builders.newNodeDescription().name("Function")
+                .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getActionUsage())).build();
+        function.getReusedBorderNodeDescriptions().add(port);
+        var diagram = builders.newDiagramDescription().nodeDescriptions(function, port).build();
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagram);
+
+        assertThat(function.getPalette()).isNotNull();
+        assertThat(function.getPalette().getToolSections()).singleElement().satisfies(section -> {
+            assertThat(section.getName()).isEqualTo(RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION);
+            assertThat(section.getNodeTools()).extracting(NodeTool::getName).containsExactly("Show all ports");
+        });
+        assertThat(port.getPalette()).isNull();
+    }
+
+    @Test
+    @DisplayName("GIVEN a component supporting children and ports, WHEN related element tools are added, THEN one section offers all three tools")
+    public void componentWithChildrenAndPortsOffersAllToolsInOneSection() {
+        var builders = new DiagramBuilders();
+        var child = builders.newNodeDescription().name("Child").build();
+        var port = builders.newNodeDescription().name("Port").build();
+        var component = builders.newNodeDescription().name("Component")
+                .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage()))
+                .childrenDescriptions(child).borderNodesDescriptions(port).build();
+        var diagram = builders.newDiagramDescription().nodeDescriptions(component).build();
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagram);
+
+        assertThat(component.getPalette()).isNotNull();
+        assertThat(component.getPalette().getToolSections()).singleElement().satisfies(section -> {
+            assertThat(section.getName()).isEqualTo(RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION);
+            assertThat(section.getNodeTools()).extracting(NodeTool::getName)
+                    .containsExactly("Show all contained elements", "Show all contained elements recursively", "Show all ports");
+        });
     }
 }

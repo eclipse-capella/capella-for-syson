@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -34,7 +35,9 @@ import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.sirius.components.diagrams.DiagramStyle;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
+import org.eclipse.sirius.components.diagrams.ViewModifier;
 import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
+import org.eclipse.sirius.components.diagrams.events.HideDiagramElementEvent;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Namespace;
@@ -153,6 +156,62 @@ public class RelatedElementsServiceTests {
 
         verify(root).getOwnedMember();
         assertThat(context.viewCreationRequests()).extracting(ViewCreationRequest::getTargetObjectId).containsExactly("root");
+    }
+
+    @Test
+    @DisplayName("GIVEN hidden and visible ports, WHEN all ports are shown, THEN only hidden ports are revealed and the model is unchanged")
+    public void showAllPortsRevealsHiddenBorderNodesAndLeavesTheModelUnchanged() {
+        var hiddenPort = mock(Node.class);
+        when(hiddenPort.getId()).thenReturn("hidden-port");
+        when(hiddenPort.getState()).thenReturn(ViewModifier.Hidden);
+        var visiblePort = mock(Node.class);
+        when(visiblePort.getState()).thenReturn(ViewModifier.Normal);
+        var selected = mock(Node.class);
+        when(selected.getBorderNodes()).thenReturn(List.of(hiddenPort, visiblePort));
+        var component = SysmlFactory.eINSTANCE.createPartUsage();
+        var hiddenSemanticPort = SysmlFactory.eINSTANCE.createPortUsage();
+        hiddenSemanticPort.setDeclaredName("Hidden port");
+        var visibleSemanticPort = SysmlFactory.eINSTANCE.createPortUsage();
+        visibleSemanticPort.setDeclaredName("Visible port");
+        this.addMember(component, hiddenSemanticPort);
+        this.addMember(component, visibleSemanticPort);
+        var relationships = List.copyOf(component.getOwnedRelationship());
+        var context = this.context();
+
+        assertThat(this.service.showAllPorts(component, selected, context)).isSameAs(component);
+
+        assertThat(context.diagramEvents()).usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new HideDiagramElementEvent(Set.of("hidden-port"), false));
+        assertThat(context.viewCreationRequests()).isEmpty();
+        assertThat(component.getOwnedMember()).containsExactly(hiddenSemanticPort, visibleSemanticPort);
+        assertThat(component.getOwnedRelationship()).containsExactlyElementsOf(relationships);
+        assertThat(hiddenSemanticPort.getDeclaredName()).isEqualTo("Hidden port");
+        assertThat(visibleSemanticPort.getDeclaredName()).isEqualTo("Visible port");
+    }
+
+    @Test
+    @DisplayName("GIVEN no selected node, WHEN all ports are shown, THEN no diagram event is created")
+    public void showAllPortsWithoutSelectedNodeDoesNothing() {
+        var component = SysmlFactory.eINSTANCE.createPartUsage();
+        var context = this.context();
+
+        assertThat(this.service.showAllPorts(component, null, context)).isSameAs(component);
+
+        assertThat(context.diagramEvents()).isEmpty();
+    }
+
+    @Test
+    @DisplayName("GIVEN a node without hidden ports, WHEN all ports are shown, THEN no diagram event is created")
+    public void showAllPortsWithoutHiddenPortsDoesNothing() {
+        var visiblePort = mock(Node.class);
+        when(visiblePort.getState()).thenReturn(ViewModifier.Normal);
+        var selected = mock(Node.class);
+        when(selected.getBorderNodes()).thenReturn(List.of(visiblePort));
+        var context = this.context();
+
+        this.service.showAllPorts(SysmlFactory.eINSTANCE.createPartUsage(), selected, context);
+
+        assertThat(context.diagramEvents()).isEmpty();
     }
 
     @Test
