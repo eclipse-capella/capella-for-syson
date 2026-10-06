@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.sab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
@@ -94,6 +95,8 @@ public class SABViewDiagramDescriptionProvider implements IRepresentationDescrip
 
         var palette = new SABDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache);
         diagramDescription.setPalette(palette);
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagramDescription);
 
         return diagramDescription;
     }

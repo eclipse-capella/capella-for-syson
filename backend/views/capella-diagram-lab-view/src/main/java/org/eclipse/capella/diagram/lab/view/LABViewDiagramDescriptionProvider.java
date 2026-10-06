@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.lab.view.edges.annotating.AnnotatingEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.edges.describes.DescribesEdgeDescriptionProvider;
@@ -118,6 +119,8 @@ public class LABViewDiagramDescriptionProvider implements IRepresentationDescrip
 
         var palette = new LABDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache);
         diagramDescription.setPalette(palette);
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagramDescription);
 
         return diagramDescription;
     }
