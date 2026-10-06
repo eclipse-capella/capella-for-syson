@@ -48,7 +48,6 @@ public class OAIBDiagramPaletteProvider {
                 .nodeTools(
                         new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),
                         new OperationalProcessToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalProcessNodeTool(cache),
-                        new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
                 .build();
     }

@@ -12,13 +12,18 @@
  *******************************************************************************/
 package org.eclipse.capella.model.transverse.services;
 
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.ACTOR_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_PORT_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTION_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_EXCHANGE;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTION;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
@@ -57,8 +62,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CommonCreationService {
 
-    private static final String WHITE_SPACE = " ";
-
     private final CommonQueryService commonQueryService;
 
     private final CommonUpdateService commonUpdateService;
@@ -67,6 +70,8 @@ public class CommonCreationService {
 
     private final MetamodelMutationElementService metamodelMutationElementService;
 
+    private final CommonNamingService commonNamingService;
+
     private final Logger logger = LoggerFactory.getLogger(CommonCreationService.class);
 
     public CommonCreationService() {
@@ -74,6 +79,7 @@ public class CommonCreationService {
         this.commonUpdateService = new CommonUpdateService();
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
+        this.commonNamingService = new CommonNamingService();
     }
 
     public Feature createCapabilityGeneralization(Usage sourceCapability, Usage targetCapability) {
@@ -101,7 +107,7 @@ public class CommonCreationService {
         this.metamodelMutationElementService.addChildInParent(parent, itemUsage);
         this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
         this.metamodelMutationElementService.initialize(itemUsage);
-        itemUsage.setDeclaredName(ARCADIA_EXCHANGE_ITEM + this.commonQueryService.existingElementsCount(itemUsage));
+        this.commonNamingService.setElementDefaultDeclaredName(itemUsage, ARCADIA_EXCHANGE_ITEM);
 
         return itemUsage;
     }
@@ -110,15 +116,13 @@ public class CommonCreationService {
         RequirementUsage requirementUsage = null;
         Optional<Package> optionalRequirementsPackage = this.commonQueryService.getRequirementsPackage(parent);
         if (optionalRequirementsPackage.isPresent()) {
-            String name = "Requirement";
             requirementUsage = SysmlFactory.eINSTANCE.createRequirementUsage();
 
             this.metamodelMutationElementService.addChildInParent(optionalRequirementsPackage.get(), requirementUsage);
             this.metamodelMutationElementService.initialize(requirementUsage);
             // Use native SysML v2 RequirementUsage without Arcadia typing
 
-            long existingElementsCount = this.commonQueryService.existingElementsCount(requirementUsage);
-            requirementUsage.setDeclaredName(name + WHITE_SPACE + existingElementsCount);
+            this.commonNamingService.setElementDefaultDeclaredName(requirementUsage, REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX);
         }
         return requirementUsage;
     }
@@ -136,8 +140,8 @@ public class CommonCreationService {
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);
             this.metamodelMutationElementService.initialize(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.commonQueryService.existingElementsCount(partUsage);
-            partUsage.setDeclaredName("C" + WHITE_SPACE + existingElementsCount);
+
+            this.commonNamingService.setElementDefaultDeclaredName(partUsage, COMPONENT_DEFAULT_DECLAREDNAME_PREFIX);
         }
         return partUsage;
     }
@@ -159,7 +163,8 @@ public class CommonCreationService {
         this.metamodelMutationElementService.addChildInParent(container, portUsage);
         this.metamodelMutationElementService.initialize(portUsage);
         this.arcadiaLibraryServices.typeWithArcadiaComponentPort(portUsage);
-        portUsage.setDeclaredName("CP " + this.commonQueryService.existingElementsCount(portUsage));
+
+        this.commonNamingService.setElementDefaultDeclaredName(portUsage, COMPONENT_PORT_DEFAULT_DECLAREDNAME_PREFIX);
         return portUsage;
     }
 
@@ -177,8 +182,8 @@ public class CommonCreationService {
             this.commonUpdateService.setBooleanAttribute(partUsage, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, true);
             this.metamodelMutationElementService.initialize(partUsage);
             this.arcadiaLibraryServices.typeWithArcadiaComponent(partUsage);
-            long existingElementsCount = this.commonQueryService.existingElementsCount(partUsage);
-            partUsage.setDeclaredName("A" + WHITE_SPACE + existingElementsCount);
+
+            this.commonNamingService.setElementDefaultDeclaredName(partUsage, ACTOR_DEFAULT_DECLAREDNAME_PREFIX);
         }
         return partUsage;
 
@@ -195,7 +200,8 @@ public class CommonCreationService {
             this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunction(actionUsage);
             this.metamodelMutationElementService.initialize(actionUsage);
-            actionUsage.setDeclaredName(ARCADIA_FUNCTION + WHITE_SPACE + this.commonQueryService.existingElementsCount(actionUsage));
+
+            this.commonNamingService.setElementDefaultDeclaredName(actionUsage, FUNCTION_DEFAULT_DECLAREDNAME_PREFIX);
 
             Optional<PartUsage> optionalAllocatingComponent = this.findAllocatingComponent(parent);
             if (optionalAllocatingComponent.isPresent()) {
@@ -228,12 +234,8 @@ public class CommonCreationService {
         this.metamodelMutationElementService.addChildInParent(container, itemUsage);
         this.metamodelMutationElementService.initialize(itemUsage);
         this.arcadiaLibraryServices.typeWithExchangeItem(itemUsage);
-        String defaultName = switch (direction) {
-            case IN -> "FIP";
-            case OUT -> "FOP";
-            default -> "FP";
-        };
-        itemUsage.setDeclaredName(defaultName + WHITE_SPACE + this.commonQueryService.existingElementsCount(itemUsage));
+        String defaultName = this.commonNamingService.getFunctionPortDefaultDeclaredNamePrefix(direction);
+        this.commonNamingService.setElementDefaultDeclaredName(itemUsage, defaultName);
 
         return itemUsage;
     }
@@ -258,8 +260,8 @@ public class CommonCreationService {
 
                     this.metamodelMutationElementService.initialize(functionalExchange);
                     this.arcadiaLibraryServices.typeWithArcadiaFunctionalExchange(functionalExchange);
-                    long existingElementsCount = this.commonQueryService.existingElementsCount(functionalExchange);
-                    functionalExchange.setDeclaredName(ARCADIA_FUNCTIONAL_EXCHANGE + WHITE_SPACE + existingElementsCount);
+
+                    this.commonNamingService.setElementDefaultDeclaredName(functionalExchange, FUNCTIONAL_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX);
                     return functionalExchange;
                 }
 
@@ -285,8 +287,8 @@ public class CommonCreationService {
                     InterfaceUsage componentExchange = this.metamodelMutationElementService.createInterfaceUsage(sourcePort, targetPort, source, target, optionalComponentExchangeParent.get());
                     this.metamodelMutationElementService.initialize(componentExchange);
                     this.arcadiaLibraryServices.typeWithArcadiaComponentExchange(componentExchange);
-                    long existingElementsCount = this.commonQueryService.existingElementsCount(componentExchange);
-                    componentExchange.setDeclaredName(ARCADIA_COMPONENT_EXCHANGE + " " + existingElementsCount);
+
+                    this.commonNamingService.setElementDefaultDeclaredName(componentExchange, COMPONENT_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX);
                     return componentExchange;
                 }
             }
@@ -325,7 +327,8 @@ public class CommonCreationService {
             this.metamodelMutationElementService.addChildInParent(optionalCommonAncestor.get(), actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.metamodelMutationElementService.initialize(actionUsage);
-            actionUsage.setDeclaredName(ARCADIA_FUNCTIONAL_CHAIN + WHITE_SPACE + this.commonQueryService.existingElementsCount(actionUsage));
+
+            this.commonNamingService.setElementDefaultDeclaredName(actionUsage, FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX);
             this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
                     SysmlPackage.eINSTANCE.getFlowUsage().getName());
         }

@@ -34,6 +34,6 @@ test.describe('SAB diagram', () => {
     await systemNode.openPalette();
     await expect(page.getByTestId('Palette')).toBeAttached();
     await page.getByTestId('tool-New Function').click();
-    await expect(new PlaywrightNode(page, 'Function 6').nodeLocator).toBeAttached();
+    await expect(new PlaywrightNode(page, 'Function 1').nodeLocator).toBeAttached();
   });
 });
