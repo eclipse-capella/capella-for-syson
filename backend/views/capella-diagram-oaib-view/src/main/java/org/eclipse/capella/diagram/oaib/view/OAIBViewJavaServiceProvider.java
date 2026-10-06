@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oaib.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.services.RelatedElementsService;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
@@ -44,6 +45,7 @@ public class OAIBViewJavaServiceProvider implements IJavaServiceProvider {
     public List<Class<?>> getServiceClasses(View view) {
         if (view.getDescriptions().stream().anyMatch(description -> OAIBViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(description.getName()))) {
             return List.of(
+                    RelatedElementsService.class,
                     OARepresentationDropServices.class,
                     OAMutationService.class,
                     OAQueryService.class,
