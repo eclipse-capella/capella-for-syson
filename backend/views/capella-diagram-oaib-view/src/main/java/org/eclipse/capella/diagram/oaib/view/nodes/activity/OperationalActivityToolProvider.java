@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view.nodes.activity;
 
-import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -43,7 +43,7 @@ public class OperationalActivityToolProvider {
                 .iconURLsExpression("/icons/full/obj16/OperationalActivity.svg");
         cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> nodeToolBuilder.body(
                 this.viewBuilderHelper.newChangeContext()
-                        .expression(ServiceMethod.of0(CommonCreationService::createFunction).aqlSelf())
+                        .expression(ServiceMethod.of0(OAMutationService::createOperationalActivityOA).aqlSelf())
                         .children(this.diagramBuilderHelper.newCreateView()
                                 .containmentKind(NodeContainmentKind.CHILD_NODE)
                                 .elementDescription(nodeDescription)

@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.oaib.view.nodes.activity;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.diagram.oaib.view.OAIBViewConstants;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -95,6 +96,8 @@ public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDesc
                                     .build())
                             .build())
                     .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
+                    .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
+                    .edgeTools(new InteractionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInteractionTool(cache))
                     .build());
         });
     }

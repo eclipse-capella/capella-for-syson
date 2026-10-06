@@ -14,9 +14,12 @@ package org.eclipse.capella.diagram.oaib.view;
 
 import java.util.List;
 
+import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
+import org.eclipse.capella.model.services.operational.analysis.OARepresentationReconnectToolServices;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
@@ -41,9 +44,12 @@ public class OAIBViewJavaServiceProvider implements IJavaServiceProvider {
         if (view.getDescriptions().stream().anyMatch(description -> OAIBViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(description.getName()))) {
             return List.of(
                     OARepresentationDropServices.class,
+                    OAMutationService.class,
+                    OARepresentationReconnectToolServices.class,
                     CommonCreationService.class,
                     CommonDeletionService.class,
                     CommonQueryService.class,
+                    TransverseRepresentationReconnectToolServices.class,
                     DiagramMutationExposeService.class,
                     DiagramMutationLabelService.class,
                     DiagramQueryLabelService.class,

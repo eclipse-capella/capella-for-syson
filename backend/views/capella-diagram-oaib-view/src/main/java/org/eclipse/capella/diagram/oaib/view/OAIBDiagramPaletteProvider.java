@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.oaib.view;
 
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityToolProvider;
+import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessToolProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
@@ -46,6 +47,7 @@ public class OAIBDiagramPaletteProvider {
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(
                         new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),
+                        new OperationalProcessToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalProcessNodeTool(cache),
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
                 .build();
     }
