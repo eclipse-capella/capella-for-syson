@@ -28,6 +28,7 @@ import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IRepresentationDescriptionSearchService;
 import org.eclipse.sirius.components.representations.IRepresentationDescription;
+import org.eclipse.sirius.web.application.UUIDParser;
 import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.services.api.IRepresentationMetadataSearchService;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
@@ -67,7 +68,8 @@ public class DiagramFilterService implements IDiagramFilterService {
 
     @Override
     public List<IDiagramFilter> getAvailableFilters(IEditingContext editingContext, String representationId) {
-        return this.representationMetadataSearchService.findMetadataById(AggregateReference.to(UUID.fromString(editingContext.getId())), UUID.fromString(representationId))
+        return new UUIDParser().parse(representationId)
+                .flatMap(id -> this.representationMetadataSearchService.findMetadataById(AggregateReference.to(UUID.fromString(editingContext.getId())), id))
                 .flatMap(representationMetadata -> this.representationDescriptionSearchService.findById(editingContext, representationMetadata.getDescriptionId()))
                 .map(this::getAvailableFilters)
                 .orElse(Collections.emptyList());
