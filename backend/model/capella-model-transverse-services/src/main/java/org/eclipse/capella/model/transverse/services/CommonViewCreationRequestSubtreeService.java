@@ -10,7 +10,10 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.model.services.logical.architecture;
+package org.eclipse.capella.model.transverse.services;
+
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.diagrams.Node;
@@ -18,15 +21,12 @@ import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
 import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
 import org.eclipse.sirius.components.diagrams.components.NodeIdProvider;
 
-import java.util.List;
-import java.util.Set;
-
 /**
  * Services used to recreate nested view creation requests when a node is moved to a new parent.
  *
- * @author fbarbin
+ * @author tbezierslafosse
  */
-public class LAViewCreationRequestSubtreeService {
+public class CommonViewCreationRequestSubtreeService {
 
     public String getNodeIdFromViewCreationRequest(ViewCreationRequest viewCreationRequest) {
         // Keep id generation aligned with diagram runtime so duplicate detection is reliable.

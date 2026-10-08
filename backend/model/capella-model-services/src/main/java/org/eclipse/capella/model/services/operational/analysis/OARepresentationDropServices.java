@@ -13,15 +13,18 @@
 package org.eclipse.capella.model.services.operational.analysis;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonViewCreationRequestSubtreeService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
@@ -68,6 +71,8 @@ public class OARepresentationDropServices {
 
     private final OARepresentationQueryService representationQueryService;
 
+    private final CommonViewCreationRequestSubtreeService commonViewCreationRequestSubtreeService;
+
     public OARepresentationDropServices(IIdentityService identityService, ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService,
             IObjectSearchService objectSearchService) {
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
@@ -78,6 +83,7 @@ public class OARepresentationDropServices {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.commonDeletionService = new CommonDeletionService();
         this.commonUpdateService = new CommonUpdateService();
+        this.commonViewCreationRequestSubtreeService = new CommonViewCreationRequestSubtreeService();
     }
 
     public Element dropIntoComponentFromDiagram(Element droppedElement, Node droppedNode, Element targetElement, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
@@ -133,7 +139,7 @@ public class OARepresentationDropServices {
                     .filter(ActionUsage.class::isInstance)
                     .filter(object -> this.commonQueryService.isOperationalActivity((ActionUsage) object))
                     .isPresent()) {
-                this.diagramMutationElementService.createView(activity, editingContext, diagramContext, selectedNode, convertedNodes);
+                this.createActivityViewUnderDisplayedParent(activity, selectedNode, editingContext, diagramContext, convertedNodes);
                 return droppedElement;
             }
             this.getOperationalComponentNode(selectedNode, editingContext, diagramContext)
@@ -147,6 +153,32 @@ public class OARepresentationDropServices {
             }
         }
         return droppedElement;
+    }
+
+    private void createActivityViewUnderDisplayedParent(ActionUsage activity, Object selectedNode, IEditingContext editingContext, DiagramContext diagramContext,
+            Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
+        Object parentView = this.commonQueryService.getParentFunction(activity)
+                .flatMap(parent -> this.representationQueryService.findView(parent, diagramContext))
+                .orElse(selectedNode);
+        this.diagramMutationElementService.createView(activity, editingContext, diagramContext, parentView, convertedNodes);
+    }
+
+    public ActionUsage dropIntoOAIBActivity(ActionUsage droppedActivity, Node droppedNode, ActionUsage targetActivity, Node targetNode, IEditingContext editingContext,
+            DiagramContext diagramContext, Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
+        if (droppedActivity != targetActivity) {
+            this.dropActivityIntoOAIBActivity(droppedActivity, targetActivity, targetNode, editingContext, diagramContext, convertedNodes);
+        }
+        return droppedActivity;
+    }
+
+    private void dropActivityIntoOAIBActivity(ActionUsage activity, ActionUsage targetActivity, Node targetNode, IEditingContext editingContext,
+            DiagramContext diagramContext, Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
+        var previousOwner = activity.getOwner();
+        if (previousOwner == targetActivity || this.moveService.moveSemanticElement(activity, targetActivity).isSuccess()) {
+            if (!this.moveActivityView(activity, targetNode, editingContext, diagramContext, convertedNodes) && previousOwner != targetActivity) {
+                this.moveService.moveSemanticElement(activity, previousOwner);
+            }
+        }
     }
 
     private void droppedComponentIntoComponentCase(Element droppedElement, Node droppedNode, Element targetElement, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
@@ -213,7 +245,11 @@ public class OARepresentationDropServices {
             previousParentId = request.getParentElementId();
         }
         if (!parentId.equals(previousParentId)) {
+            Object previousView = view;
             view = this.diagramMutationElementService.createView(activity, editingContext, diagramContext, parentView, convertedNodes);
+            if (previousView instanceof Node previousNode && view != null) {
+                this.recreateActivitySubtreeViews(previousNode, this.getViewId(view), finder, diagramContext);
+            }
         }
         if (view == null) {
             return false;
@@ -228,6 +264,12 @@ public class OARepresentationDropServices {
             }
         });
         return true;
+    }
+
+    private void recreateActivitySubtreeViews(Node previousNode, String parentViewId, NodeFinder finder, DiagramContext diagramContext) {
+        Set<String> existingNodeIds = new HashSet<>(finder.getAllNodesMatching(node -> true).stream().map(Node::getId).toList());
+        diagramContext.viewCreationRequests().stream().map(this::getViewId).forEach(existingNodeIds::add);
+        this.commonViewCreationRequestSubtreeService.addRecursiveViewCreationRequestsForSubtree(previousNode, parentViewId, diagramContext, existingNodeIds);
     }
 
     private String getViewId(Object view) {

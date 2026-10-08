@@ -46,6 +46,7 @@ import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
+import org.eclipse.syson.sysml.RequirementUsage;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -54,6 +55,16 @@ import org.junit.jupiter.api.Test;
  * @author tbezierslafosse
  */
 public class OARepresentationDropServicesTests extends AbstractSemanticTests {
+
+    private static final String ACTIVITY_NODE_ID = "activity-node";
+
+    private static final String DIAGRAM_TARGET_ID = "diagram-target";
+
+    private static final String PARENT_NODE_ID = "parent-node";
+
+    private static final String TARGET_NODE_ID = "target-node";
+
+    private static final String VIEW_PREFIX = "view-";
 
     private final CommonCreationService commonCreationService = new CommonCreationService();
 
@@ -85,7 +96,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var targetEntity = this.createOperationalEntity();
         ActionUsage activity = this.oaMutationService.createOperationalActivityOA(allocatingEntity);
         var diagramServices = new RecordingDiagramServices();
-        var droppedNode = this.createNode(activity.getElementId(), "activity-node");
+        var droppedNode = this.createNode(activity.getElementId(), ACTIVITY_NODE_ID);
         var targetNode = this.createNode(targetEntity.getElementId(), "target-entity-node");
         var diagramContext = this.createDiagramContext();
 
@@ -94,7 +105,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
 
         assertEquals(Optional.of(targetEntity), this.commonQueryService.getAllocatingComponent(activity));
         assertEquals(List.of(activity), diagramServices.createdElements);
-        assertEquals(List.of("activity-node"), diagramContext.viewDeletionRequests().stream().map(request -> request.getElementId()).toList());
+        assertEquals(List.of(ACTIVITY_NODE_ID), diagramContext.viewDeletionRequests().stream().map(request -> request.getElementId()).toList());
     }
 
     @Test
@@ -105,12 +116,75 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var diagramContext = this.createDiagramContext();
         var allocation = this.commonQueryService.getAllocatedFunctions(entity);
 
-        this.createDropServices(Map.of("diagram-target", activity), diagramServices)
+        this.createDropServices(Map.of(DIAGRAM_TARGET_ID, activity), diagramServices)
                 .dropIntoDiagramFromExplorer(activity, diagramContext.diagram(), null, diagramContext, Map.of());
 
         assertEquals(allocation, this.commonQueryService.getAllocatedFunctions(entity));
         assertEquals(Optional.of(entity), this.commonQueryService.getAllocatingComponent(activity));
         assertEquals(List.of(activity), diagramServices.createdElements);
+    }
+
+    @Test
+    public void createFunctionViewWhenDroppedFromExplorerInOAIBShouldPreserveAllocation() {
+        var entity = this.createOperationalEntity();
+        ActionUsage activity = this.oaMutationService.createOperationalActivityOA(entity);
+        var diagramServices = new RecordingDiagramServices();
+        var diagramContext = this.createDiagramContext();
+        var allocation = this.commonQueryService.getAllocatedFunctions(entity);
+
+        this.createDropServices(Map.of(DIAGRAM_TARGET_ID, activity), diagramServices)
+                .dropIntoDiagramFromExplorer(activity, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(allocation, this.commonQueryService.getAllocatedFunctions(entity));
+        assertEquals(List.of(activity), diagramServices.createdElements);
+    }
+
+    @Test
+    public void createFunctionViewWhenDroppedFromExplorerInOAIBShouldUseDisplayedParent() {
+        var entity = this.createOperationalEntity();
+        var parent = this.oaMutationService.createOperationalActivityOA(entity);
+        var child = this.oaMutationService.createOperationalActivityOA(parent);
+        var parentNode = this.createNode(VIEW_PREFIX + parent.getElementId(), PARENT_NODE_ID);
+        var diagramContext = this.createDiagramContext(parentNode);
+        var diagramServices = new RecordingDiagramServices(VIEW_PREFIX);
+        var identity = mock(IIdentityService.class);
+        when(identity.getId(any(Element.class))).thenAnswer(invocation -> VIEW_PREFIX + ((Element) invocation.getArgument(0)).getElementId());
+        IObjectSearchService objectSearchService = (editingContext, objectId) -> Optional.<Object>of(parent).filter(element -> DIAGRAM_TARGET_ID.equals(objectId));
+
+        new OARepresentationDropServices(identity, mock(ISysMLMoveElementService.class), diagramServices.elementService, objectSearchService)
+                .dropIntoDiagramFromExplorer(child, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(List.of(child), diagramServices.createdElements);
+        assertEquals(PARENT_NODE_ID, diagramContext.viewCreationRequests().getFirst().getParentElementId());
+    }
+
+    @Test
+    public void createFunctionViewWhenDroppedFromExplorerInOABShouldUseDisplayedParent() {
+        var entity = this.createOperationalEntity();
+        var parent = this.oaMutationService.createOperationalActivityOA(entity);
+        var child = this.oaMutationService.createOperationalActivityOA(parent);
+        var parentNode = this.createNode(parent.getElementId(), PARENT_NODE_ID);
+        var diagramContext = this.createDiagramContext(parentNode);
+        var diagramServices = new RecordingDiagramServices();
+
+        this.createDropServices(Map.of(DIAGRAM_TARGET_ID, parent), diagramServices)
+                .dropIntoDiagramFromExplorer(child, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(List.of(child), diagramServices.createdElements);
+        assertEquals(PARENT_NODE_ID, diagramContext.viewCreationRequests().getFirst().getParentElementId());
+    }
+
+    @Test
+    public void createRequirementViewWhenDroppedFromExplorerInOAIBShouldOnlyCreateView() {
+        Package structurePackage = this.capellaModel.getOperationalAnalysisPerspective().getStructurePackage().getElement();
+        RequirementUsage requirement = this.commonCreationService.createRequirement(structurePackage);
+        var diagramServices = new RecordingDiagramServices();
+        var diagramContext = this.createDiagramContext();
+
+        this.createDropServices(Map.of(), diagramServices)
+                .dropIntoDiagramFromExplorer(requirement, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(List.of(requirement), diagramServices.createdElements);
     }
 
     @Test
@@ -120,11 +194,11 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var sourceEntity = this.createOperationalEntity();
         ActionUsage droppedActivity = this.oaMutationService.createOperationalActivityOA(sourceEntity);
         var diagramServices = new RecordingDiagramServices();
-        var activityNode = this.createNode(selectedActivity.getElementId(), "activity-node");
+        var activityNode = this.createNode(selectedActivity.getElementId(), ACTIVITY_NODE_ID);
         var entityNode = this.createNode(entity.getElementId(), "entity-node");
         when(entityNode.getChildNodes()).thenReturn(List.of(activityNode));
         var diagramContext = new DiagramContext(Diagram.newDiagram("diagram")
-                .targetObjectId("diagram-target")
+                .targetObjectId(DIAGRAM_TARGET_ID)
                 .descriptionId("diagram-description")
                 .nodes(List.of(entityNode))
                 .edges(List.of())
@@ -149,8 +223,8 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var activity = this.oaMutationService.createOperationalActivityOA(parentActivity);
         var childActivity = this.oaMutationService.createOperationalActivityOA(activity);
         var targetActivity = this.oaMutationService.createOperationalActivityOA(targetEntity);
-        var droppedNode = this.createNode(activity.getElementId(), "activity-node");
-        var targetNode = this.createNode(targetActivity.getElementId(), "target-node");
+        var droppedNode = this.createNode(activity.getElementId(), ACTIVITY_NODE_ID);
+        var targetNode = this.createNode(targetActivity.getElementId(), TARGET_NODE_ID);
         var diagramContext = this.createDiagramContext();
         var diagramServices = new RecordingDiagramServices();
 
@@ -162,7 +236,66 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         assertEquals(Optional.of(targetEntity), this.commonQueryService.getAllocatingComponent(childActivity));
         assertEquals(List.of(parentActivity), this.commonQueryService.getAllocatedFunctions(sourceEntity));
         verify(diagramServices.elementService).createView(same(activity), any(), same(diagramContext), same(targetNode), any());
-        assertEquals(List.of("activity-node"), diagramContext.viewDeletionRequests().stream().map(request -> request.getElementId()).toList());
+        assertEquals(List.of(ACTIVITY_NODE_ID), diagramContext.viewDeletionRequests().stream().map(request -> request.getElementId()).toList());
+    }
+
+    @Test
+    public void moveSemanticElementActivityWhenDroppedOnOAIBActivityShouldPreserveAllocationAndCreateView() {
+        var sourceEntity = this.createOperationalEntity();
+        var targetEntity = this.createOperationalEntity();
+        var activity = this.oaMutationService.createOperationalActivityOA(sourceEntity);
+        var targetActivity = this.oaMutationService.createOperationalActivityOA(targetEntity);
+        var droppedNode = this.createNode(activity.getElementId(), ACTIVITY_NODE_ID);
+        var targetNode = this.createNode(targetActivity.getElementId(), TARGET_NODE_ID);
+        var diagramContext = this.createDiagramContext(droppedNode, targetNode);
+        var diagramServices = new RecordingDiagramServices();
+
+        this.createDropServices(Map.of(), diagramServices)
+                .dropIntoOAIBActivity(activity, droppedNode, targetActivity, targetNode, null, diagramContext, Map.of());
+
+        assertEquals(targetActivity, activity.getOwner());
+        assertEquals(Optional.of(sourceEntity), this.commonQueryService.getAllocatingComponent(activity));
+        assertEquals(List.of(activity), diagramServices.createdElements);
+        assertEquals(TARGET_NODE_ID, diagramContext.viewCreationRequests().getFirst().getParentElementId());
+        assertEquals(List.of(ACTIVITY_NODE_ID), diagramContext.viewDeletionRequests().stream().map(request -> request.getElementId()).toList());
+    }
+
+    @Test
+    public void moveSemanticElementActivityWhenDroppedOnOAIBActivityShouldPreserveDisplayedChildren() {
+        var sourceEntity = this.createOperationalEntity();
+        var targetEntity = this.createOperationalEntity();
+        var activity = this.oaMutationService.createOperationalActivityOA(sourceEntity);
+        var child = this.oaMutationService.createOperationalActivityOA(activity);
+        var grandchild = this.oaMutationService.createOperationalActivityOA(child);
+        var targetActivity = this.oaMutationService.createOperationalActivityOA(targetEntity);
+        var grandchildNode = this.createNode(grandchild.getElementId(), "grandchild-node", "grandchild-description", List.of());
+        var childNode = this.createNode(child.getElementId(), "child-node", "child-description", List.of(grandchildNode));
+        var activityNode = this.createNode(activity.getElementId(), ACTIVITY_NODE_ID, "activity-description", List.of(childNode));
+        var targetNode = this.createNode(targetActivity.getElementId(), TARGET_NODE_ID);
+        var diagramContext = this.createDiagramContext(activityNode, targetNode);
+        var diagramServices = new RecordingDiagramServices();
+
+        this.createDropServices(Map.of(), diagramServices)
+                .dropIntoOAIBActivity(activity, activityNode, targetActivity, targetNode, null, diagramContext, Map.of());
+
+        var activityView = diagramContext.viewCreationRequests().stream()
+                .filter(request -> activity.getElementId().equals(request.getTargetObjectId()))
+                .findFirst()
+                .orElseThrow();
+        var childView = diagramContext.viewCreationRequests().stream()
+                .filter(request -> child.getElementId().equals(request.getTargetObjectId()))
+                .findFirst()
+                .orElseThrow();
+        var grandchildView = diagramContext.viewCreationRequests().stream()
+                .filter(request -> grandchild.getElementId().equals(request.getTargetObjectId()))
+                .findFirst()
+                .orElseThrow();
+
+        assertEquals(3, diagramContext.viewCreationRequests().size());
+        assertEquals(new NodeIdProvider().getNodeId(activityView.getParentElementId(), activityView.getDescriptionId(), activityView.getContainmentKind(), activityView.getTargetObjectId()),
+                childView.getParentElementId());
+        assertEquals(new NodeIdProvider().getNodeId(childView.getParentElementId(), childView.getDescriptionId(), childView.getContainmentKind(), childView.getTargetObjectId()),
+                grandchildView.getParentElementId());
     }
 
     @Test
@@ -176,7 +309,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var dropServices = this.createDropServices(Map.of(), diagramServices);
 
         for (var target : List.of(parentActivity, childActivity)) {
-            dropServices.dropIntoActivityFromDiagram(parentActivity, this.createNode(parentActivity.getElementId(), "parent-node"),
+            dropServices.dropIntoActivityFromDiagram(parentActivity, this.createNode(parentActivity.getElementId(), PARENT_NODE_ID),
                     target, this.createNode(target.getElementId(), "target-node"), null, diagramContext, Map.of());
         }
 
@@ -200,7 +333,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var drops = this.createDropServices(Map.of(target.getElementId(), target), services);
         var targetNode = this.createNode(target.getElementId(), "target-node");
 
-        drops.dropIntoComponentFromDiagram(parent, this.createNode(parent.getElementId(), "parent-node"), target, targetNode, null, context, Map.of());
+        drops.dropIntoComponentFromDiagram(parent, this.createNode(parent.getElementId(), PARENT_NODE_ID), target, targetNode, null, context, Map.of());
         drops.dropIntoDiagramFromExplorer(parent, targetNode, null, context, Map.of());
 
         assertEquals(List.of(), this.commonQueryService.getAllocatedFunctions(source));
@@ -238,7 +371,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var entity = this.createOperationalEntity();
         var parent = this.oaMutationService.createOperationalActivityOA(entity);
         var child = this.oaMutationService.createOperationalActivityOA(parent);
-        var parentNode = this.createNode("view-" + parent.getElementId(), "parent-node");
+        var parentNode = this.createNode(VIEW_PREFIX + parent.getElementId(), PARENT_NODE_ID);
         var entityNode = this.createNode("view-" + entity.getElementId(), "entity-node");
         when(entityNode.getChildNodes()).thenReturn(List.of(parentNode));
         var context = this.createDiagramContext(entityNode);
@@ -251,7 +384,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
                 .dropIntoDiagramFromExplorer(child, entityNode, null, context, Map.of());
 
         assertEquals(List.of(child), services.createdElements);
-        assertEquals("parent-node", context.viewCreationRequests().getFirst().getParentElementId());
+        assertEquals(PARENT_NODE_ID, context.viewCreationRequests().getFirst().getParentElementId());
         assertEquals(parent, child.getOwner());
         assertEquals(Optional.of(entity), this.commonQueryService.getAllocatingComponent(child));
     }
@@ -262,7 +395,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var parent = this.oaMutationService.createOperationalActivityOA(entity);
         var child = this.oaMutationService.createOperationalActivityOA(parent);
         var childNode = this.createNode(child.getElementId(), "child-node");
-        var parentNode = this.createNode(parent.getElementId(), "parent-node");
+        var parentNode = this.createNode(parent.getElementId(), PARENT_NODE_ID);
         var entityNode = this.createNode(entity.getElementId(), "entity-node");
         when(parentNode.getChildNodes()).thenReturn(List.of(childNode));
         when(entityNode.getChildNodes()).thenReturn(List.of(parentNode));
@@ -284,7 +417,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var parent = this.oaMutationService.createOperationalActivityOA(entity);
         var middle = this.oaMutationService.createOperationalActivityOA(parent);
         var child = this.oaMutationService.createOperationalActivityOA(middle);
-        var parentNode = this.createNode(parent.getElementId(), "parent-node");
+        var parentNode = this.createNode(parent.getElementId(), PARENT_NODE_ID);
         var entityNode = this.createNode(entity.getElementId(), "entity-node");
         when(entityNode.getChildNodes()).thenReturn(List.of(parentNode));
         var context = this.createDiagramContext(entityNode);
@@ -292,7 +425,7 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         var drops = this.createDropServices(Map.of(entity.getElementId(), entity), services);
 
         drops.dropIntoDiagramFromExplorer(child, entityNode, null, context, Map.of());
-        assertEquals("parent-node", context.viewCreationRequests().getFirst().getParentElementId());
+        assertEquals(PARENT_NODE_ID, context.viewCreationRequests().getFirst().getParentElementId());
         drops.dropIntoDiagramFromExplorer(middle, entityNode, null, context, Map.of());
 
         var middleView = context.viewCreationRequests().stream().filter(request -> request.getTargetObjectId().equals(middle.getElementId())).findFirst().orElseThrow();
@@ -337,6 +470,16 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         return node;
     }
 
+    private Node createNode(String targetObjectId, String nodeId, String descriptionId, List<Node> childNodes) {
+        Node node = this.createNode(targetObjectId, nodeId);
+        when(node.getDescriptionId()).thenReturn(descriptionId);
+        when(node.getChildNodes()).thenReturn(childNodes);
+        return node;
+    }
+
+    /**
+     * Records requested diagram mutations.
+     */
     private static final class RecordingDiagramServices {
 
         private final List<Element> createdElements = new ArrayList<>();

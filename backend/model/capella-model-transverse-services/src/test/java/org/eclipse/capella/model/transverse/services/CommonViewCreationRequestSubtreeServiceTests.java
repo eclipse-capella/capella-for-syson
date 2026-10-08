@@ -10,33 +10,34 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.model.services.logical.architecture;
+package org.eclipse.capella.model.transverse.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
-import org.eclipse.sirius.components.diagrams.Diagram;
-import org.eclipse.sirius.components.diagrams.Node;
-import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
-import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
+import org.eclipse.sirius.components.diagrams.Diagram;
+import org.eclipse.sirius.components.diagrams.DiagramStyle;
+import org.eclipse.sirius.components.diagrams.Node;
+import org.eclipse.sirius.components.diagrams.ViewCreationRequest;
+import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 /**
- * Tests for {@link LAViewCreationRequestSubtreeService}.
+ * Tests for {@link CommonViewCreationRequestSubtreeService}.
  *
  * @author fbarbin
  */
-public class LAViewCreationRequestSubtreeServiceTests {
+public class CommonViewCreationRequestSubtreeServiceTests {
 
-    private final LADiagramTestFixture diagramFixture = new LADiagramTestFixture();
-
-    private final LAViewCreationRequestSubtreeService viewCreationRequestSubtreeService = new LAViewCreationRequestSubtreeService();
+    private final CommonViewCreationRequestSubtreeService commonViewCreationRequestSubtreeService = new CommonViewCreationRequestSubtreeService();
 
     @Test
     @DisplayName("GIVEN a moved component node with nested descendants, WHEN recreating subtree view requests, THEN child and border descendants are recreated recursively")
@@ -46,11 +47,11 @@ public class LAViewCreationRequestSubtreeServiceTests {
         Node borderNode = this.createNode("border-node-id", "border-target-id", "border-description-id", true, List.of(), List.of());
         Node sourceRootNode = this.createNode("source-root-node-id", "source-root-target-id", "source-root-description-id", false, List.of(childNode), List.of(borderNode));
 
-        Diagram diagram = this.diagramFixture.createDiagram(List.of(sourceRootNode));
+        Diagram diagram = this.createDiagram(List.of(sourceRootNode));
         DiagramContext diagramContext = new DiagramContext(diagram, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         String newParentNodeId = "new-parent-node-id";
 
-        this.viewCreationRequestSubtreeService.addRecursiveViewCreationRequestsForSubtree(sourceRootNode, newParentNodeId, diagramContext, new HashSet<>());
+        this.commonViewCreationRequestSubtreeService.addRecursiveViewCreationRequestsForSubtree(sourceRootNode, newParentNodeId, diagramContext, new HashSet<>());
 
         assertThat(diagramContext.viewCreationRequests()).hasSize(3);
 
@@ -59,7 +60,7 @@ public class LAViewCreationRequestSubtreeServiceTests {
         assertThat(childRequest.getDescriptionId()).isEqualTo("child-description-id");
         assertThat(childRequest.getContainmentKind()).isEqualTo(NodeContainmentKind.CHILD_NODE);
 
-        String movedChildNodeId = this.viewCreationRequestSubtreeService.getNodeIdFromViewCreationRequest(childRequest);
+        String movedChildNodeId = this.commonViewCreationRequestSubtreeService.getNodeIdFromViewCreationRequest(childRequest);
         ViewCreationRequest nestedChildRequest = this.findRequest(diagramContext.viewCreationRequests(), "nested-child-target-id");
         assertThat(nestedChildRequest.getParentElementId()).isEqualTo(movedChildNodeId);
         assertThat(nestedChildRequest.getDescriptionId()).isEqualTo("nested-child-description-id");
@@ -77,7 +78,7 @@ public class LAViewCreationRequestSubtreeServiceTests {
         Node childNode = this.createNode("child-node-id", "child-target-id", "child-description-id", false, List.of(), List.of());
         Node sourceRootNode = this.createNode("source-root-node-id", "source-root-target-id", "source-root-description-id", false, List.of(childNode), List.of());
 
-        Diagram diagram = this.diagramFixture.createDiagram(List.of(sourceRootNode));
+        Diagram diagram = this.createDiagram(List.of(sourceRootNode));
         DiagramContext diagramContext = new DiagramContext(diagram, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         String newParentNodeId = "new-parent-node-id";
 
@@ -87,20 +88,31 @@ public class LAViewCreationRequestSubtreeServiceTests {
                 .targetObjectId("child-target-id")
                 .containmentKind(NodeContainmentKind.CHILD_NODE)
                 .build();
-        Set<String> alreadyCreatedNodeIds = new HashSet<>(List.of(this.viewCreationRequestSubtreeService.getNodeIdFromViewCreationRequest(existingChildRequest)));
+        Set<String> alreadyCreatedNodeIds = new HashSet<>(List.of(this.commonViewCreationRequestSubtreeService.getNodeIdFromViewCreationRequest(existingChildRequest)));
 
-        this.viewCreationRequestSubtreeService.addRecursiveViewCreationRequestsForSubtree(sourceRootNode, newParentNodeId, diagramContext, alreadyCreatedNodeIds);
+        this.commonViewCreationRequestSubtreeService.addRecursiveViewCreationRequestsForSubtree(sourceRootNode, newParentNodeId, diagramContext, alreadyCreatedNodeIds);
 
         assertThat(diagramContext.viewCreationRequests()).isEmpty();
     }
 
     private Node createNode(String nodeId, String targetObjectId, String descriptionId, boolean borderNode, List<Node> childNodes, List<Node> borderNodes) {
-        Node seedNode = this.diagramFixture.createNode(nodeId, targetObjectId);
-        return Node.newNode(seedNode)
-                .descriptionId(descriptionId)
-                .borderNode(borderNode)
-                .childNodes(childNodes)
-                .borderNodes(borderNodes)
+        Node node = mock(Node.class);
+        when(node.getId()).thenReturn(nodeId);
+        when(node.getTargetObjectId()).thenReturn(targetObjectId);
+        when(node.getDescriptionId()).thenReturn(descriptionId);
+        when(node.isBorderNode()).thenReturn(borderNode);
+        when(node.getChildNodes()).thenReturn(childNodes);
+        when(node.getBorderNodes()).thenReturn(borderNodes);
+        return node;
+    }
+
+    private Diagram createDiagram(List<Node> nodes) {
+        return Diagram.newDiagram("diagram-id")
+                .descriptionId("diagram-description-id")
+                .targetObjectId("diagram-target-id")
+                .nodes(nodes)
+                .edges(List.of())
+                .style(DiagramStyle.newDiagramStyle().build())
                 .build();
     }
 

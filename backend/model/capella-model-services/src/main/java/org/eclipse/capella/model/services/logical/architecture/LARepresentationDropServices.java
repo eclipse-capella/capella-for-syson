@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonViewCreationRequestSubtreeService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
@@ -61,7 +62,7 @@ public class LARepresentationDropServices {
 
     private final CommonUpdateService commonUpdateService;
 
-    private final LAViewCreationRequestSubtreeService viewCreationRequestSubtreeService;
+    private final CommonViewCreationRequestSubtreeService commonViewCreationRequestSubtreeService;
 
     public LARepresentationDropServices(IObjectSearchService objectSearchService, IIdentityService identityService, ISysMLMoveElementService moveService,
             DiagramMutationElementService diagramMutationElementService) {
@@ -72,7 +73,7 @@ public class LARepresentationDropServices {
         this.commonQueryService = new CommonQueryService();
         this.commonDeletionService = new CommonDeletionService();
         this.commonUpdateService = new CommonUpdateService();
-        this.viewCreationRequestSubtreeService = new LAViewCreationRequestSubtreeService();
+        this.commonViewCreationRequestSubtreeService = new CommonViewCreationRequestSubtreeService();
     }
 
     public Element dropIntoComponentFromDiagram(Element droppedElement, Node droppedNode, Element targetElement, Node targetNode, IEditingContext editingContext, DiagramContext diagramContext,
@@ -244,7 +245,7 @@ public class LARepresentationDropServices {
                 .toList());
         // Future node ids from already queued creation requests.
         alreadyCreatedNodeIds.addAll(diagramContext.viewCreationRequests().stream()
-                .map(this.viewCreationRequestSubtreeService::getNodeIdFromViewCreationRequest)
+                .map(this.commonViewCreationRequestSubtreeService::getNodeIdFromViewCreationRequest)
                 .collect(Collectors.toSet()));
 
         var nodeFinder = new NodeFinder(diagramContext.diagram());
@@ -256,10 +257,10 @@ public class LARepresentationDropServices {
                     // Recreate the sub-component under the newly created parent view.
                     ViewCreationRequest movedSubComponentRequest = this.diagramMutationElementService.createView(subComponent, editingContext, diagramContext, parentViewCreationRequest, convertedNodes);
                     if (movedSubComponentRequest != null) {
-                        String movedSubComponentNodeId = this.viewCreationRequestSubtreeService.getNodeIdFromViewCreationRequest(movedSubComponentRequest);
+                        String movedSubComponentNodeId = this.commonViewCreationRequestSubtreeService.getNodeIdFromViewCreationRequest(movedSubComponentRequest);
                         alreadyCreatedNodeIds.add(movedSubComponentNodeId);
                         // Recreate existing descendants under the new node id to preserve the visible subtree.
-                        this.viewCreationRequestSubtreeService.addRecursiveViewCreationRequestsForSubtree(node, movedSubComponentNodeId, diagramContext, alreadyCreatedNodeIds);
+                        this.commonViewCreationRequestSubtreeService.addRecursiveViewCreationRequestsForSubtree(node, movedSubComponentNodeId, diagramContext, alreadyCreatedNodeIds);
                         // Remove the old root-level view now that its replacement subtree is queued.
                         diagramContext.viewDeletionRequests().add(ViewDeletionRequest.newViewDeletionRequest().elementId(node.getId()).build());
                     }
