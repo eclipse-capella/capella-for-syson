@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.describes.DescribesEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.compartment.OAIBCompartmentItemNodeDescriptionProvider;
@@ -70,6 +71,7 @@ public class OAIBViewDiagramDescriptionProvider implements IRepresentationDescri
                 new OAIBCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new RequirementNodeDescriptionProvider(colorProvider),
+                new InteractionEdgeDescriptionProvider(colorProvider),
                 new DescribesEdgeDescriptionProvider(colorProvider));
         providers.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
         providers.forEach(provider -> provider.link(diagramDescription, cache));

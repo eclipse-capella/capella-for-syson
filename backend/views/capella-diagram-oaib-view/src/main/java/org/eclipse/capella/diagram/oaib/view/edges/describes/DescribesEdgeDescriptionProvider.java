@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.oaib.view.edges.describes;
 
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementNodeDescriptionProvider;
@@ -63,6 +64,7 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
             cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
             cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
             cache.getNodeDescription(OperationalProcessNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
+            cache.getEdgeDescription(InteractionEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
         });
     }
 }
