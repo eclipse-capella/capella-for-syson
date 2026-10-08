@@ -14,17 +14,22 @@ package org.eclipse.capella.diagram.oaib.view.nodes.activity;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionToolProvider;
+import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.diagram.oaib.view.OAIBViewConstants;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
+import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
+import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
+import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -96,9 +101,22 @@ public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDesc
                                     .build())
                             .build())
                     .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
+                    .dropNodeTool(this.createDropFromDiagramTool(cache))
                     .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
                     .edgeTools(new InteractionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInteractionTool(cache))
                     .build());
         });
+    }
+
+    private DropNodeTool createDropFromDiagramTool(IViewDiagramElementFinder cache) {
+        var tool = this.diagramBuilderHelper.newDropNodeTool()
+                .name("Drop from Diagram")
+                .body(this.viewBuilderHelper.newChangeContext()
+                        .expression(ServiceMethod.of6(OARepresentationDropServices::dropIntoOAIBActivity)
+                                .aql("droppedElement", "droppedNode", "targetElement", "targetNode", IEditingContext.EDITING_CONTEXT,
+                                        DiagramContext.DIAGRAM_CONTEXT, ViewDiagramDescriptionConverter.CONVERTED_NODES_VARIABLE))
+                        .build());
+        cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(tool::acceptedNodeTypes);
+        return tool.build();
     }
 }
