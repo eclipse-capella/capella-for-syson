@@ -44,7 +44,7 @@ public class FunctionLabelProvider {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
                 .labelExpression("aql:self.name")
-                .position(InsideLabelPosition.MIDDLE_CENTER)
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
                 .build();
