@@ -35,6 +35,7 @@ Methods that delete elements (like `delete`, `deleteCapabilityInvolvement`, etc)
 - https://github.com/eclipse-capella/capella-for-syson/issues/155[#155] [bug] Display the OE and OC icons for Operational Entities and Capabilities.
 - https://github.com/eclipse-capella/capella-for-syson/issues/246[#246] [bug] Hide Operational Activity ports permanently in the model explorer, including when the Hide Ports filter is disabled.
 - https://github.com/eclipse-capella/capella-for-syson/issues/256[#256] [ddv] Fix DDV transient diagrams
+- https://github.com/eclipse-capella/capella-for-syson/issues/267[#267] [ocb] Restrict Generalization to distinct Capabilities and Involvement to Capability-to-Entity/Actor connections.
 
 === New Features
 

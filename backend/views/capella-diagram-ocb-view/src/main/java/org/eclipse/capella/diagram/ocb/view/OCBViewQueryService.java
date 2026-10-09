@@ -35,15 +35,39 @@ public class OCBViewQueryService {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
     }
 
-    public boolean canCreateInvolvement(Object receiver, IEditingContext editingContext) {
-        if (receiver instanceof EObject semanticSource) {
-            return this.commonQueryService.isCapability(semanticSource);
+    /**
+     * Checks that Involvement starts from a Capability and targets an Entity or Actor when an endpoint is selected.
+     * Like Generalization, an explicit {@code null} target denotes source-side availability in the node palette.
+     *
+     * @param receiver the semantic source or its graphical node
+     * @param semanticTarget the selected semantic target, or {@code null} in the node palette
+     * @param editingContext the editing context used to resolve graphical receivers
+     * @return whether the tool is available in the current palette context
+     */
+    public boolean canCreateInvolvement(Object receiver, Object semanticTarget, IEditingContext editingContext) {
+        if (!this.commonQueryService.isCapability(this.getSemanticElement(receiver, editingContext))) {
+            return false;
         }
-        return this.commonQueryService.isComponent(this.getSemanticElement(receiver, editingContext));
+        return semanticTarget == null || (semanticTarget instanceof EObject target && this.commonQueryService.isComponent(target));
     }
 
-    public boolean canCreateGeneralization(Object receiver, IEditingContext editingContext) {
-        return this.commonQueryService.isCapability(this.getSemanticElement(receiver, editingContext));
+    /**
+     * Checks the Generalization source and, when selected, its semantic target.
+     * A {@code null} target denotes the node palette before an endpoint is selected, not a valid connector endpoint.
+     * The OCB palette variable provider supplies that explicit {@code null} because an absent AQL variable is an error.
+     *
+     * @param receiver the semantic source or its graphical node
+     * @param semanticTarget the selected semantic target, or {@code null} in the node palette
+     * @param editingContext the editing context used to resolve graphical receivers
+     * @return whether the tool is available in the current palette context
+     */
+    public boolean canCreateGeneralization(Object receiver, Object semanticTarget, IEditingContext editingContext) {
+        var semanticSource = this.getSemanticElement(receiver, editingContext);
+        if (!this.commonQueryService.isCapability(semanticSource)) {
+            return false;
+        }
+        return semanticTarget == null || (semanticSource != semanticTarget && semanticTarget instanceof EObject target
+                && this.commonQueryService.isCapability(target));
     }
 
     private EObject getSemanticElement(Object receiver, IEditingContext editingContext) {

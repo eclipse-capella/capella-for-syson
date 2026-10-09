@@ -42,8 +42,8 @@ public class InvolvementToolProvider {
         var participantDescription = cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).orElse(null);
         return this.diagramBuilderHelper.newEdgeTool()
                 .name("New Involvement")
-                .preconditionExpression(ServiceMethod.of1(OCBViewQueryService::canCreateInvolvement)
-                        .aqlSelf("editingContext"))
+                .preconditionExpression(ServiceMethod.of2(OCBViewQueryService::canCreateInvolvement)
+                        .aqlSelf(EdgeDescription.SEMANTIC_EDGE_TARGET, "editingContext"))
                 .targetElementDescriptions(participantDescription)
                 .iconURLsExpression("/icons/full/obj16/Describes.svg")
                 .body(this.viewBuilderHelper.newChangeContext()
