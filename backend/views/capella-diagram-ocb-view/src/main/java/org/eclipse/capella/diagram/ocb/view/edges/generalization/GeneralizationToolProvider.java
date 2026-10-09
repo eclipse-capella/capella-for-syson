@@ -45,8 +45,8 @@ public class GeneralizationToolProvider {
 
         return this.diagramBuilderHelper.newEdgeTool()
                 .name("New Generalization")
-                .preconditionExpression(ServiceMethod.of1(OCBViewQueryService::canCreateGeneralization)
-                        .aqlSelf("editingContext"))
+                .preconditionExpression(ServiceMethod.of2(OCBViewQueryService::canCreateGeneralization)
+                        .aqlSelf(EdgeDescription.SEMANTIC_EDGE_TARGET, "editingContext"))
                 .iconURLsExpression("/icons/full/obj16/Subsetting.svg")
                 .targetElementDescriptions(targetNode)
                 .body(this.viewBuilderHelper.newChangeContext()
