@@ -46,6 +46,7 @@ import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
+import org.eclipse.syson.sysml.RequirementUsage;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -114,6 +115,69 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
     }
 
     @Test
+    public void createFunctionViewWhenDroppedFromExplorerInOAIBShouldPreserveAllocation() {
+        var entity = this.createOperationalEntity();
+        ActionUsage activity = this.oaMutationService.createOperationalActivityOA(entity);
+        var diagramServices = new RecordingDiagramServices();
+        var diagramContext = this.createDiagramContext();
+        var allocation = this.commonQueryService.getAllocatedFunctions(entity);
+
+        this.createDropServices(Map.of("diagram-target", activity), diagramServices)
+                .dropIntoDiagramFromExplorer(activity, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(allocation, this.commonQueryService.getAllocatedFunctions(entity));
+        assertEquals(List.of(activity), diagramServices.createdElements);
+    }
+
+    @Test
+    public void createFunctionViewWhenDroppedFromExplorerInOAIBShouldUseDisplayedParent() {
+        var entity = this.createOperationalEntity();
+        var parent = this.oaMutationService.createOperationalActivityOA(entity);
+        var child = this.oaMutationService.createOperationalActivityOA(parent);
+        var parentNode = this.createNode("view-" + parent.getElementId(), "parent-node");
+        var diagramContext = this.createDiagramContext(parentNode);
+        var diagramServices = new RecordingDiagramServices("view-");
+        var identity = mock(IIdentityService.class);
+        when(identity.getId(any(Element.class))).thenAnswer(invocation -> "view-" + ((Element) invocation.getArgument(0)).getElementId());
+        IObjectSearchService objectSearchService = (editingContext, objectId) -> Optional.<Object>of(parent).filter(element -> "diagram-target".equals(objectId));
+
+        new OARepresentationDropServices(identity, mock(ISysMLMoveElementService.class), diagramServices.elementService, objectSearchService)
+                .dropIntoDiagramFromExplorer(child, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(List.of(child), diagramServices.createdElements);
+        assertEquals("parent-node", diagramContext.viewCreationRequests().getFirst().getParentElementId());
+    }
+
+    @Test
+    public void createFunctionViewWhenDroppedFromExplorerInOABShouldUseDisplayedParent() {
+        var entity = this.createOperationalEntity();
+        var parent = this.oaMutationService.createOperationalActivityOA(entity);
+        var child = this.oaMutationService.createOperationalActivityOA(parent);
+        var parentNode = this.createNode(parent.getElementId(), "parent-node");
+        var diagramContext = this.createDiagramContext(parentNode);
+        var diagramServices = new RecordingDiagramServices();
+
+        this.createDropServices(Map.of("diagram-target", parent), diagramServices)
+                .dropIntoDiagramFromExplorer(child, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(List.of(child), diagramServices.createdElements);
+        assertEquals("parent-node", diagramContext.viewCreationRequests().getFirst().getParentElementId());
+    }
+
+    @Test
+    public void createRequirementViewWhenDroppedFromExplorerInOAIBShouldOnlyCreateView() {
+        Package structurePackage = this.capellaModel.getOperationalAnalysisPerspective().getStructurePackage().getElement();
+        RequirementUsage requirement = this.commonCreationService.createRequirement(structurePackage);
+        var diagramServices = new RecordingDiagramServices();
+        var diagramContext = this.createDiagramContext();
+
+        this.createDropServices(Map.of(), diagramServices)
+                .dropIntoDiagramFromExplorer(requirement, diagramContext.diagram(), null, diagramContext, Map.of());
+
+        assertEquals(List.of(requirement), diagramServices.createdElements);
+    }
+
+    @Test
     public void createFunctionViewWhenDroppedOnActivityInAnotherComponentShouldReallocateAndCreateViewUnderOperationalEntity() {
         var entity = this.createOperationalEntity();
         ActionUsage selectedActivity = this.oaMutationService.createOperationalActivityOA(entity);
@@ -162,6 +226,27 @@ public class OARepresentationDropServicesTests extends AbstractSemanticTests {
         assertEquals(Optional.of(targetEntity), this.commonQueryService.getAllocatingComponent(childActivity));
         assertEquals(List.of(parentActivity), this.commonQueryService.getAllocatedFunctions(sourceEntity));
         verify(diagramServices.elementService).createView(same(activity), any(), same(diagramContext), same(targetNode), any());
+        assertEquals(List.of("activity-node"), diagramContext.viewDeletionRequests().stream().map(request -> request.getElementId()).toList());
+    }
+
+    @Test
+    public void moveSemanticElementActivityWhenDroppedOnOAIBActivityShouldPreserveAllocationAndCreateView() {
+        var sourceEntity = this.createOperationalEntity();
+        var targetEntity = this.createOperationalEntity();
+        var activity = this.oaMutationService.createOperationalActivityOA(sourceEntity);
+        var targetActivity = this.oaMutationService.createOperationalActivityOA(targetEntity);
+        var droppedNode = this.createNode(activity.getElementId(), "activity-node");
+        var targetNode = this.createNode(targetActivity.getElementId(), "target-node");
+        var diagramContext = this.createDiagramContext(droppedNode, targetNode);
+        var diagramServices = new RecordingDiagramServices();
+
+        this.createDropServices(Map.of(), diagramServices)
+                .dropIntoOAIBActivity(activity, droppedNode, targetActivity, targetNode, null, diagramContext, Map.of());
+
+        assertEquals(targetActivity, activity.getOwner());
+        assertEquals(Optional.of(sourceEntity), this.commonQueryService.getAllocatingComponent(activity));
+        assertEquals(List.of(activity), diagramServices.createdElements);
+        assertEquals("target-node", diagramContext.viewCreationRequests().getFirst().getParentElementId());
         assertEquals(List.of("activity-node"), diagramContext.viewDeletionRequests().stream().map(request -> request.getElementId()).toList());
     }
 
