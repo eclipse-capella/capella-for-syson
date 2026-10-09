@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.oab.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
@@ -83,6 +84,8 @@ public class OABViewDiagramDescriptionProvider implements IRepresentationDescrip
 
         var palette = new OABDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache);
         diagramDescription.setPalette(palette);
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagramDescription);
 
         return diagramDescription;
     }

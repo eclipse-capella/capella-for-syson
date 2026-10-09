@@ -47,6 +47,7 @@ Methods that delete elements (like `delete`, `deleteCapabilityInvolvement`, etc)
 - https://github.com/eclipse-capella/capella-for-syson/issues/123[#123] [details view] Add `ArcadiaElement` traceability references `realizes` in Details view
 - https://github.com/eclipse-capella/capella-for-syson/issues/122[#122] [semantic browser] Add traceability references (`realizes` and `isRealizedBy`) in semantic browser
 - https://github.com/eclipse-capella/capella-for-syson/issues/182[#182] [enh] Initialize OAIB diagram.
+- https://github.com/eclipse-capella/capella-for-syson/issues/239[#239] [diagrams] Add direct and recursive diagram population tools
 
 === Improvements
 

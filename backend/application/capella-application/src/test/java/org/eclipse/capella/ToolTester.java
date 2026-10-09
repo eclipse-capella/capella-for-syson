@@ -76,6 +76,14 @@ public class ToolTester {
         var result = this.paletteQueryRunner.run(variables).data();
         List<String> toolIds = JsonPath.read(result,
                 "$.data.viewer.editingContext.representation.description.palette.paletteEntries[?(@.label == '" + toolLabel + "')].id");
+        if (toolIds.isEmpty()) {
+            toolIds = JsonPath.read(result,
+                    "$.data.viewer.editingContext.representation.description.palette.paletteEntries[*].tools[?(@.label == '" + toolLabel + "')].id");
+        }
+        if (toolIds.isEmpty()) {
+            toolIds = JsonPath.read(result,
+                    "$.data.viewer.editingContext.representation.description.palette.quickAccessTools[?(@.label == '" + toolLabel + "')].id");
+        }
         assertThat(toolIds).as("The tool '%s' should be available", toolLabel).hasSize(1);
         return toolIds.getFirst();
     }

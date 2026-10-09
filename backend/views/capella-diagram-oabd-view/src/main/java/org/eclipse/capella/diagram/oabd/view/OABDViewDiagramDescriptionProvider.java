@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oabd.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.oabd.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oabd.view.edges.containedin.ContainedInEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
@@ -76,6 +77,8 @@ public class OABDViewDiagramDescriptionProvider implements IRepresentationDescri
 
         var palette = new OABDDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache);
         diagramDescription.setPalette(palette);
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagramDescription);
 
         return diagramDescription;
     }
