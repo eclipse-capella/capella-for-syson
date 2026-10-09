@@ -21,7 +21,6 @@ import org.eclipse.sirius.components.view.diagram.DiagramPalette;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Test;
 public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends AbstractDiagramDescriptionTests {
 
     @Test
-    @DisplayName("Each EdgeDescription has reconnect tools")
     public void eachEdgeHasReconnectTools() {
         SoftAssertions softly = new SoftAssertions();
         this.diagramDescription.getEdgeDescriptions()
@@ -47,7 +45,6 @@ public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Each EdgeDescription with a center label expression has a direct edit tool")
     public void eachEdgeWithCenterLabelHasDirectEditTool() {
         SoftAssertions softly = new SoftAssertions();
         this.diagramDescription.getEdgeDescriptions().stream()
@@ -62,7 +59,6 @@ public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Each NodeDescription with an inside label has a direct edit tool")
     public void eachNodeHasDirectEditTool() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
@@ -83,7 +79,6 @@ public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Each NodeDescription has a delete tool")
     public void eachNodeHasDeleteTool() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
@@ -102,7 +97,6 @@ public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Diagram has a semantic drag & drop tool")
     public void diagramHasSemanticDragAndDropTool() {
         assertThat(this.diagramDescription.getPalette())
                 .as("DiagramDescription should have a palette")

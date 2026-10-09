@@ -18,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.SoftAssertions;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.Test;
 public abstract non-sealed class AbstractReadOnlyDiagramDescriptionTests extends AbstractDiagramDescriptionTests {
 
     @Test
-    @DisplayName("Each EdgeDescription has no reconnect tool")
     public void eachEdgeHasNoReconnectTools() {
         SoftAssertions softly = new SoftAssertions();
         this.diagramDescription.getEdgeDescriptions()
@@ -44,7 +42,6 @@ public abstract non-sealed class AbstractReadOnlyDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Each EdgeDescription with a center label expression has no direct edit tool")
     public void eachEdgeWithCenterLabelHasNoDirectEditTool() {
         SoftAssertions softly = new SoftAssertions();
         this.diagramDescription.getEdgeDescriptions().stream()
@@ -60,7 +57,6 @@ public abstract non-sealed class AbstractReadOnlyDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Each NodeDescription with an inside label has no direct edit tool")
     public void eachNodeHasNoDirectEditTool() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
@@ -78,7 +74,6 @@ public abstract non-sealed class AbstractReadOnlyDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Each NodeDescription has no delete tool")
     public void eachNodeHasNoDeleteTool() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
@@ -94,7 +89,6 @@ public abstract non-sealed class AbstractReadOnlyDiagramDescriptionTests extends
     }
 
     @Test
-    @DisplayName("Diagram has no semantic drag & drop tool")
     public void diagramHasNoSemanticDragAndDropTool() {
         if (this.diagramDescription.getPalette() != null) {
             assertThat(this.diagramDescription.getPalette().getDropTool())

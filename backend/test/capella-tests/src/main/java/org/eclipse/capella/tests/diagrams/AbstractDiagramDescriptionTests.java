@@ -61,7 +61,6 @@ import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -153,7 +152,6 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     }
 
     @Test
-    @DisplayName("Every reused Node Description has a container")
     public void allReusedNodeDescriptionsHaveAContainer() {
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class).forEach(nodeDescription -> {
             nodeDescription.getReusedChildNodeDescriptions().forEach(reusedChildNodeDescription -> {
@@ -168,7 +166,6 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     }
 
     @Test
-    @DisplayName("Each NodeTool has an icon URL")
     public void eachNodeToolHasAnIconURL() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeTool.class)
@@ -177,7 +174,6 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     }
 
     @Test
-    @DisplayName("Each EdgeTool has a palette containing tools")
     public void eachEdgeToolHasAPaletteWithTools() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, EdgeTool.class)
@@ -191,7 +187,6 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     }
 
     @Test
-    @DisplayName("Each service called in AQL is a public method from a service class")
     public void eachAQLServicesIsPublicServiceMethod() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.eAllContentStreamWithSelf(this.diagramDescription)
@@ -222,7 +217,6 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     }
 
     @Test
-    @DisplayName("Each Requirement node has a compartment and displays its header separator")
     public void eachRequirementNodeHasACompartmentAndDisplaysItsHeaderSeparator() {
         this.diagramDescription.getNodeDescriptions().stream()
                 .filter(nodeDescription -> REQUIREMENT_NODE_DESCRIPTION_NAME.equals(nodeDescription.getName()))
@@ -230,7 +224,6 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     }
 
     @Test
-    @DisplayName("Each Requirement Describes edge has the common presentation")
     public void eachRequirementDescribesEdgeHasTheCommonPresentation() {
         if (this.diagramDescription.getNodeDescriptions().stream()
                 .anyMatch(nodeDescription -> REQUIREMENT_NODE_DESCRIPTION_NAME.equals(nodeDescription.getName()))) {
