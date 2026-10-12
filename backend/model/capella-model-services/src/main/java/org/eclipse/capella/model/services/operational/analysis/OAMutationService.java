@@ -48,11 +48,14 @@ public class OAMutationService {
 
     private final CommonNamingService commonNamingService;
 
+    private final OAQueryService oaQueryService;
+
     public OAMutationService() {
         this.commonCreationService = new CommonCreationService();
         this.commonQueryService = new CommonQueryService();
         this.commonDeletionService = new CommonDeletionService();
         this.commonNamingService = new CommonNamingService();
+        this.oaQueryService = new OAQueryService();
     }
 
     /**
@@ -65,9 +68,12 @@ public class OAMutationService {
      * @return the named Interaction, or {@code null} when the exchange cannot be created
      */
     public FlowUsage createInteractionOA(Feature source, Feature target) {
-        var interaction = this.commonCreationService.createFunctionalExchange(source, target);
-        if (interaction != null) {
-            this.commonNamingService.setElementDefaultDeclaredName(interaction, INTERACTION_DEFAULT_DECLAREDNAME_PREFIX);
+        FlowUsage interaction = null;
+        if (this.oaQueryService.canCreateInteractionOA(source, target)) {
+            interaction = this.commonCreationService.createFunctionalExchange(source, target);
+            if (interaction != null) {
+                this.commonNamingService.setElementDefaultDeclaredName(interaction, INTERACTION_DEFAULT_DECLAREDNAME_PREFIX);
+            }
         }
         return interaction;
     }

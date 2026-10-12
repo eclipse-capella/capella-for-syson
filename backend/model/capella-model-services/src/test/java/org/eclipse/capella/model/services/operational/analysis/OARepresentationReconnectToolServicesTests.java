@@ -37,6 +37,7 @@ import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
@@ -104,6 +105,51 @@ public class OARepresentationReconnectToolServicesTests extends AbstractSemantic
         verifyNoInteractions(moveService, diagramService);
         assertThat(sourcePort.getOwner()).isSameAs(source);
         assertThat(targetPort.getOwner()).isSameAs(target);
+    }
+
+    @ParameterizedTest
+    @CsvSource({"false, false, false", "false, true, false", "true, false, false", "true, true, false",
+            "false, false, true", "false, true, true", "true, false, true", "true, true, true"})
+    public void reconnectInteractionBetweenRelatedActivitiesShouldLeaveModelUnchanged(boolean isSource, boolean indirect, boolean toDescendant) {
+        var root = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var ancestor = this.creationService.createFunction(root);
+        var parent = ancestor;
+        if (indirect) {
+            parent = this.creationService.createFunction(ancestor);
+        }
+        var child = this.creationService.createFunction(parent);
+        var sibling = this.creationService.createFunction(root);
+        var relatedSource = child;
+        var relatedTarget = ancestor;
+        if (toDescendant) {
+            relatedSource = ancestor;
+            relatedTarget = child;
+        }
+        var source = relatedSource;
+        var target = sibling;
+        if (isSource) {
+            source = sibling;
+            target = relatedTarget;
+        }
+        var interaction = this.creationService.createFunctionalExchange(source, target);
+        var sourcePort = (Feature) this.queryService.getFunctionalExchangeSource(interaction);
+        var targetPort = (Feature) this.queryService.getFunctionalExchangeTarget(interaction);
+        var relationships = List.copyOf(interaction.getOwnedRelationship());
+        var moveService = mock(ISysMLMoveElementService.class);
+        var diagramService = mock(DiagramMutationElementService.class);
+        var services = new OARepresentationReconnectToolServices(moveService, diagramService);
+
+        if (isSource) {
+            services.reconnectInteractionSource(interaction, relatedSource, new IEditingContext.NoOp(), mock(Diagram.class));
+        } else {
+            services.reconnectInteractionTarget(interaction, relatedTarget, new IEditingContext.NoOp(), mock(Diagram.class));
+        }
+
+        verifyNoInteractions(moveService, diagramService);
+        assertThat(sourcePort.getOwner()).isSameAs(source);
+        assertThat(targetPort.getOwner()).isSameAs(target);
+        assertThat(interaction.getOwner()).isSameAs(root);
+        assertThat(interaction.getOwnedRelationship()).containsExactlyElementsOf(relationships);
     }
 
     private DiagramMutationElementService createDiagramService() {

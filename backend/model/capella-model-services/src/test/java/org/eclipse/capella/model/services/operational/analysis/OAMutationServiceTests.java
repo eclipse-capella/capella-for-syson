@@ -30,6 +30,8 @@ import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests {@link OAMutationService}.
@@ -110,6 +112,25 @@ public class OAMutationServiceTests extends AbstractSemanticTests {
         assertThat(this.commonQueryService.isFunctionalExchange(interactionOA));
         assertThat(interactionOA.getDeclaredName()).isEqualTo(INTERACTION_DEFAULT_DECLAREDNAME_PREFIX + WHITE_SPACE + "1");
         assertThat(interactionOA2.getDeclaredName()).isEqualTo(INTERACTION_DEFAULT_DECLAREDNAME_PREFIX + WHITE_SPACE + "2");
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    public void createInteractionBetweenRelatedActivitiesShouldLeaveModelUnchanged(boolean indirect) {
+        var root = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var ancestor = this.commonCreationService.createFunction(root);
+        var parent = ancestor;
+        if (indirect) {
+            parent = this.commonCreationService.createFunction(ancestor);
+        }
+        var child = this.commonCreationService.createFunction(parent);
+        var ancestorContents = List.copyOf(ancestor.getOwnedElement());
+        var childContents = List.copyOf(child.getOwnedElement());
+
+        assertThat(this.oaMutationService.createInteractionOA(child, ancestor)).isNull();
+        assertThat(this.oaMutationService.createInteractionOA(ancestor, child)).isNull();
+        assertThat(ancestor.getOwnedElement()).containsExactlyElementsOf(ancestorContents);
+        assertThat(child.getOwnedElement()).containsExactlyElementsOf(childContents);
     }
 
     @Test

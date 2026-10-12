@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view.edges.interaction;
 
+import org.eclipse.capella.diagram.oaib.view.OAIBViewQueryService;
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
@@ -42,6 +43,8 @@ public class InteractionToolProvider {
         NodeDescription targetDescription = cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).orElse(null);
         return this.diagramBuilderHelper.newEdgeTool()
                 .name("New Interaction")
+                .preconditionExpression(ServiceMethod.of2(OAIBViewQueryService::canCreateInteraction)
+                        .aqlSelf(EdgeDescription.SEMANTIC_EDGE_TARGET, "editingContext"))
                 .targetElementDescriptions(targetDescription)
                 .iconURLsExpression("/icons/full/obj16/OperationalInteraction.svg")
                 .body(this.viewBuilderHelper.newChangeContext()

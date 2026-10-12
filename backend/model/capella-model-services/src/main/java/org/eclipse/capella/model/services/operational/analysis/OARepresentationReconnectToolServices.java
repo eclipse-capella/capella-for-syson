@@ -38,6 +38,8 @@ public class OARepresentationReconnectToolServices {
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
+    private final OAQueryService oaQueryService = new OAQueryService();
+
     public OARepresentationReconnectToolServices(ISysMLMoveElementService moveService, DiagramMutationElementService diagramMutationElementService) {
         this.moveService = Objects.requireNonNull(moveService);
         this.diagramMutationElementService = Objects.requireNonNull(diagramMutationElementService);
@@ -86,7 +88,7 @@ public class OARepresentationReconnectToolServices {
         return result;
     }
 
-    private boolean isValidFunctionalExchangeEnd(Feature port, Element function, Element otherEnd, boolean isSource) {
+    private boolean isValidFunctionalExchangeEnd(Feature port, Feature function, Element otherEnd, boolean isSource) {
         boolean valid = false;
         var direction = FeatureDirectionKind.IN;
         var otherDirection = FeatureDirectionKind.OUT;
@@ -97,7 +99,11 @@ public class OARepresentationReconnectToolServices {
         if (this.commonQueryService.isFunctionPort(port) && otherEnd instanceof Feature otherPort && this.commonQueryService.isFunctionPort(otherPort)) {
             var otherFunction = otherPort.getOwner();
             var functionsPackage = this.commonQueryService.getFunctionsPackage(function);
-            boolean validFunctions = this.commonQueryService.isOperationalActivity(otherFunction) && !Objects.equals(function, otherFunction)
+            boolean validEndpoints = this.oaQueryService.canCreateInteractionOA(otherPort, function);
+            if (isSource) {
+                validEndpoints = this.oaQueryService.canCreateInteractionOA(function, otherPort);
+            }
+            boolean validFunctions = this.commonQueryService.isOperationalActivity(otherFunction) && validEndpoints
                     && functionsPackage.isPresent() && functionsPackage.equals(this.commonQueryService.getFunctionsPackage(otherFunction));
             valid = port.getDirection() == direction && otherPort.getDirection() == otherDirection && validFunctions;
         }

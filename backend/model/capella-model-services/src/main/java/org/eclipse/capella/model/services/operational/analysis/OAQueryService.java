@@ -17,10 +17,14 @@ import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.PartUsage;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 
 /**
  * Operational Analysis (OA) related query service. It is important to note that this service must retain its empty constructor and should not have constructors with parameters.
@@ -33,6 +37,20 @@ public class OAQueryService {
 
     public OAQueryService() {
         this.commonQueryService = new CommonQueryService();
+    }
+
+    /**
+     * Checks Interaction endpoints, rejecting the same activity, ancestor targets, and descendant targets.
+     * Specializes the common Functional Exchange validation for Operational Activities and their ports.
+     */
+    public boolean canCreateInteractionOA(Feature source, Feature target) {
+        var sourceActivity = EMFUtils.getFirstAncestor(ActionUsage.class, source, this.commonQueryService::isOperationalActivity);
+        var targetActivity = EMFUtils.getFirstAncestor(ActionUsage.class, target, this.commonQueryService::isOperationalActivity);
+        boolean valid = sourceActivity.isPresent() && targetActivity.isPresent();
+        if (valid) {
+            valid = !EcoreUtil.isAncestor(targetActivity.get(), sourceActivity.get()) && !EcoreUtil.isAncestor(sourceActivity.get(), targetActivity.get());
+        }
+        return valid;
     }
 
     /**

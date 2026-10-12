@@ -47,6 +47,7 @@ public class OAIBViewJavaServiceProvider implements IJavaServiceProvider {
                     OARepresentationDropServices.class,
                     OAMutationService.class,
                     OAQueryService.class,
+                    OAIBViewQueryService.class,
                     OARepresentationReconnectToolServices.class,
                     CommonCreationService.class,
                     CommonDeletionService.class,
