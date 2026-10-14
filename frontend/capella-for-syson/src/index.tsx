@@ -16,6 +16,7 @@ import {
   CapellaDDVWorkbenchViewContribution,
   CapellaDiagramPanelMenu,
   CapellaExtensionRegistryMergeStrategy,
+  CapellaRelatedElementsWorkbenchViewContribution,
   ProjectOnboardingArea,
 } from '@eclipse-capella/capella-for-syson-components';
 import {
@@ -72,6 +73,7 @@ import {
   SysONNavigationBarMenuIcon,
 } from '@eclipse-syson/syson-components';
 import BubbleChartIcon from '@mui/icons-material/BubbleChart';
+import LinkIcon from '@mui/icons-material/Link';
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined';
 import { createRoot } from 'react-dom/client';
 import { httpOrigin, wsOrigin } from './core/URL';
@@ -193,6 +195,12 @@ extensionRegistry.putData(widgetContributionExtensionPoint, {
  *******************************************************************************/
 
 const workbenchViewContributions: WorkbenchViewContribution[] = [
+  {
+    id: 'related-elements',
+    title: 'Related Elements',
+    icon: <LinkIcon />,
+    component: CapellaRelatedElementsWorkbenchViewContribution,
+  },
   {
     id: 'ddv-view',
     title: 'Related Elements Visual View',
