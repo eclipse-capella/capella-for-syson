@@ -552,6 +552,23 @@ public class CommonQueryService {
                 && this.isOperationalAnalysisPerspective(packageElt);
     }
 
+    /**
+     * Checks whether the context is the System Analysis Capabilities package or one of its nested packages.
+     *
+     * @param element
+     *         the diagram context
+     * @return whether an MCB diagram can be created on the context
+     */
+    public boolean isSystemAnalysisCapabilitiesPackage(Object element) {
+        if (element instanceof Package packageElt
+                && this.getArcadiaPerspective(packageElt).filter(ArcadiaEngineeringPerspective.SystemAnalysis::equals).isPresent()) {
+            return this.getCapabilitiesPackage(packageElt)
+                    .filter(capabilitiesPackage -> EcoreUtil.isAncestor(capabilitiesPackage, packageElt))
+                    .isPresent();
+        }
+        return false;
+    }
+
     public boolean isFunctionsPackage(Object element) {
         return element instanceof Package packageElt
                 && FUNCTIONS_PACKAGE.equals(packageElt.getDeclaredName());
