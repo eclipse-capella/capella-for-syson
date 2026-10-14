@@ -45,4 +45,24 @@ test.describe('LAB diagram', () => {
     await expect(page.getByTestId('syson-diagram-panel-menu')).toBeVisible();
     await expect(page.getByRole('checkbox', { name: 'Show Functions' })).toBeChecked();
   });
+
+  test('reveals an existing component from the diagram palette without duplicating it', async ({ page }) => {
+    await new PlaywrightWorkbench(page).openRepresentation('lab-representation');
+    const diagram = new PlaywrightDiagram(page);
+    const component = page.locator('[data-testid="FreeForm - C 1"]:not(#hidden-node-container *)');
+    await diagram.openPalette();
+    await page.getByTestId('tool-New Component').click();
+    await expect(component).toHaveCount(1);
+    await component.locator('..').click({ button: 'right', position: { x: 10, y: 10 } });
+    await page.getByTestId('Delete from Diagram - Tool').click();
+    await expect(component).toHaveCount(0);
+    await diagram.openPalette();
+    await page.getByTestId('toolSection-Related Elements').click();
+    await page.getByRole('navigation').getByTestId('tool-Show all contained elements recursively').click();
+    await expect(component).toHaveCount(1);
+    await diagram.openPalette();
+    await page.getByTestId('toolSection-Related Elements').click();
+    await page.getByRole('navigation').getByTestId('tool-Show all contained elements recursively').click();
+    await expect(component).toHaveCount(1);
+  });
 });
