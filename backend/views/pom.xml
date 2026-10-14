@@ -39,6 +39,7 @@
 		<module>capella-diagram-oabd-view</module>
 		<module>capella-diagram-oaib-view</module>
 		<module>capella-diagram-ocb-view</module>
+		<module>capella-diagram-mcb-view</module>
 		<module>capella-diagram-sab-view</module>
 		<module>capella-table-view</module>
         <module>capella-form-view</module>
