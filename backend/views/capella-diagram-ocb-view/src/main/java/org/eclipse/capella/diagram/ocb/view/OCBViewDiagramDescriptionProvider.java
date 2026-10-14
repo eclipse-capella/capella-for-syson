@@ -13,6 +13,8 @@
 package org.eclipse.capella.diagram.ocb.view;
 
 import java.util.List;
+
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.generalization.GeneralizationEdgeDescriptionProvider;
@@ -82,6 +84,8 @@ public class OCBViewDiagramDescriptionProvider implements IRepresentationDescrip
 
         var palette = new OCBDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache);
         diagramDescription.setPalette(palette);
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagramDescription);
 
         return diagramDescription;
     }
