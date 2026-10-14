@@ -81,7 +81,7 @@ Before running locally the application, the database needs to be started:
 Then start the application as follows:
 
 ```bash
-java -jar backend/application/capella-application/target/capella-application-2026.7.0.jar
+java -jar backend/application/capella-application/target/capella-application-<Capella for SysON version>.jar
 ```
 
 The application is exposed on `localhost:8080`.
