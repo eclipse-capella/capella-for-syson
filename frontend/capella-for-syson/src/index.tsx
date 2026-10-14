@@ -78,6 +78,7 @@ import { httpOrigin, wsOrigin } from './core/URL';
 import { CapellaNavigationBarIcon } from './extensions/CapellaNavigationBarIcon';
 import './fonts.css';
 import './ReactFlow.css';
+import './semanticBrowser.css';
 import { capellaTheme } from './theme/capellaTheme';
 import './variables.css';
 
