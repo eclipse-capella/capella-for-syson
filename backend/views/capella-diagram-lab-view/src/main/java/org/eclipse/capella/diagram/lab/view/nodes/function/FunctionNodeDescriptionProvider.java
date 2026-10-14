@@ -55,7 +55,7 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .name(this.getNodeDescriptionName())
                 .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubFunctions).aqlSelf())
                 .style(functionNodeStyleProvider.createFunctionNodeStyle())
-                .conditionalStyles(functionNodeStyleProvider.createFunctionConditionalNodeStyles())
+                // .conditionalStyles(functionNodeStyleProvider.createFunctionConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
                 .isHiddenByDefaultExpression(ServiceMethod.of1(LABDiagramService::isFunctionHidden).aqlSelf(DiagramContext.DIAGRAM_CONTEXT))
@@ -69,7 +69,7 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
-            // NOTE: FunctionNode is contained in ComponentNode.childrenDescriptions, so we do NOT add it to 
+            // NOTE: FunctionNode is contained in ComponentNode.childrenDescriptions, so we do NOT add it to
             // diagramDescription.nodeDescriptions (it would conflict with the containment from Component).
             nodeDescription
                     .setPalette(new FunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
