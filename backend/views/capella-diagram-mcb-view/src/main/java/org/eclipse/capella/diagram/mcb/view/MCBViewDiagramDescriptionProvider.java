@@ -12,7 +12,17 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.mcb.view;
 
+import java.util.List;
+
+import org.eclipse.capella.diagram.mcb.view.nodes.actor.SystemActorNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.nodes.mission.MissionNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.nodes.capability.CapabilityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.nodes.requirement.compartment.MCBCompartmentNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.nodes.requirement.compartment.MCBCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
+import org.eclipse.syson.diagram.common.view.ViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -50,9 +60,15 @@ public class MCBViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
 
-        diagramDescription.setPalette(this.diagramBuilderHelper.newDiagramPalette()
-                .dropTool(this.diagramBuilderHelper.newDropTool().build())
-                .build());
+        var cache = new ViewDiagramElementFinder();
+        var providers = List.of(new SystemActorNodeDescriptionProvider(colorProvider), new MissionNodeDescriptionProvider(colorProvider),
+                new CapabilityNodeDescriptionProvider(colorProvider),
+                new MCBCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(), SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new MCBCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(), SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new RequirementNodeDescriptionProvider(colorProvider));
+        providers.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
+        providers.forEach(provider -> provider.link(diagramDescription, cache));
+        diagramDescription.setPalette(new MCBDiagramPaletteProvider().createDiagramPalette(cache));
         return diagramDescription;
     }
 }

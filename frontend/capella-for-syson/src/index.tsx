@@ -78,6 +78,9 @@ import { httpOrigin, wsOrigin } from './core/URL';
 import { CapellaNavigationBarIcon } from './extensions/CapellaNavigationBarIcon';
 import './fonts.css';
 import './ReactFlow.css';
+import { EllipseNode } from './diagrams/mcb/EllipseNode';
+import { EllipseNodeConverter } from './diagrams/mcb/EllipseNodeConverter';
+import { EllipseNodeLayoutHandler } from './diagrams/mcb/EllipseNodeLayoutHandler';
 import { capellaTheme } from './theme/capellaTheme';
 import './variables.css';
 
@@ -211,18 +214,21 @@ extensionRegistry.putData(workbenchViewContributionExtensionPoint, {
  */
 const nodeTypeRegistry: NodeTypeRegistry = {
   nodeLayoutHandlers: [
+    new EllipseNodeLayoutHandler(),
     new SysMLPackageNodeLayoutHandler(),
     new SysMLNoteNodeLayoutHandler(),
     new SysMLImportedPackageNodeLayoutHandler(),
     new SysMLViewFrameNodeLayoutHandler(),
   ],
   nodeConverters: [
+    new EllipseNodeConverter(),
     new SysMLPackageNodeConverter(),
     new SysMLNoteNodeConverter(),
     new SysMLImportedPackageNodeConverter(),
     new SysMLViewFrameNodeConverter(),
   ],
   nodeTypeContributions: [
+    <NodeTypeContribution component={EllipseNode} type={'ellipseNode'} />,
     <NodeTypeContribution component={SysMLPackageNode} type={'sysMLPackageNode'} />,
     <NodeTypeContribution component={SysMLNoteNode} type={'sysMLNoteNode'} />,
     <NodeTypeContribution component={SysMLImportedPackageNode} type={'sysMLImportedPackageNode'} />,
