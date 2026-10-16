@@ -60,6 +60,10 @@ public class ArcadiaElementNameService {
         return Optional.ofNullable(switch (type) {
             case ARCADIA_PREFIX + ARCADIA_FUNCTION -> this.getFunctionName(perspective);
             case ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN -> this.getFunctionalChainName(perspective);
+            case ARCADIA_PREFIX + CommonQueryService.ARCADIA_MISSION -> switch (perspective) {
+                case SystemAnalysis -> "Mission";
+                default -> null;
+            };
             case ARCADIA_PREFIX + ARCADIA_CAPABILITY -> this.getCapabilityName(perspective);
             case ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_EXCHANGE -> this.getFunctionalExchangeName(perspective);
             case ARCADIA_PREFIX + ARCADIA_EXCHANGE_ITEM, "SysML::ExchangeItem" -> this.getPortName("Function Port", perspective);

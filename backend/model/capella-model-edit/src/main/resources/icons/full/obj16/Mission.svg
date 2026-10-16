@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2026 Obeo. SPDX-License-Identifier: EPL-2.0 -->
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <ellipse cx="8" cy="8" rx="7" ry="5" fill="#E8E3C5" stroke="#6B5F2A"/>
+  <path d="M4.5 10.5v-5L8 9l3.5-3.5v5" fill="none" stroke="#1C2A3F" stroke-linejoin="round"/>
+</svg>

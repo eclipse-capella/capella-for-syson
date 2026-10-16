@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.EEnumLiteral;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -88,6 +89,20 @@ public class CommonUpdateService {
         this.arcadiaLibraryServices = new ArcadiaLibraryServices();
         this.metamodelMutationElementService = new MetamodelMutationElementService();
         this.commonDeletionService = new CommonDeletionService();
+    }
+
+    /**
+     * Sets an actor's semantic container without permitting cycles, human containers or cross-perspective moves.
+     *
+     * @return whether the semantic move succeeded
+     */
+    public boolean setSystemActorContainer(PartUsage actor, Element parent) {
+        if (!this.commonQueryService.isSystemAnalysisActor(actor) || !this.commonQueryService.canContainSystemActor(parent)
+                || EcoreUtil.isAncestor(actor, parent)
+                || !this.commonQueryService.getArcadiaPerspectivePackage(actor).equals(this.commonQueryService.getArcadiaPerspectivePackage(parent))) {
+            return false;
+        }
+        return new CommonMoveService().moveSemanticElement(actor, parent).isSuccess();
     }
 
     public Element setElementDescription(Element element, String newDescription) {
