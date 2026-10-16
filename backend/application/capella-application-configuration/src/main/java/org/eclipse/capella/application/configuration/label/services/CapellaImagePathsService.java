@@ -108,6 +108,7 @@ public class CapellaImagePathsService {
         String imageName = switch (arcadiaType) {
             case ARCADIA_COMPONENT -> this.computeComponentIcon(perspective, arcadiaType, element).orElse(null);
             case ARCADIA_FUNCTION -> this.computeFunctionIcon(perspective, arcadiaType, element).orElse(null);
+            case CommonQueryService.ARCADIA_MISSION -> CommonQueryService.ARCADIA_MISSION;
             case ARCADIA_CAPABILITY -> this.computeCapabilityIcon(perspective, arcadiaType);
             case ARCADIA_COMPONENT_PORT -> "FlowPort";
             case ARCADIA_COMPONENT_EXCHANGE -> arcadiaType;

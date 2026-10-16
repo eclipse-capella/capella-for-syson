@@ -91,6 +91,8 @@ public class CommonQueryService {
 
     public static final String ARCADIA_CAPABILITY = "Capability";
 
+    public static final String ARCADIA_MISSION = "Mission";
+
     public static final String ARCADIA_ACTOR = "Actor";
 
     public static final String ARCADIA_FUNCTION = "Function";
@@ -468,6 +470,43 @@ public class CommonQueryService {
         return false;
     }
 
+    /**
+     * Checks whether the object is an Arcadia Mission.
+     */
+    public boolean isMission(EObject object) {
+        return object instanceof OccurrenceUsage usage && this.checkType(usage, ARCADIA_PREFIX + ARCADIA_MISSION);
+    }
+
+    /**
+     * Returns Missions reachable from the context, including imported resources.
+     */
+    public List<OccurrenceUsage> getMissions(EObject context) {
+        return this.utilService.getAllReachable(context, SysmlPackage.eINSTANCE.getOccurrenceUsage()).stream()
+                .filter(this::isMission)
+                .map(OccurrenceUsage.class::cast)
+                .toList();
+    }
+
+    /**
+     * Checks whether an actor belongs to the System Analysis Structure package.
+     */
+    public boolean isSystemAnalysisActor(Element element) {
+        return this.isComponent(element) && this.isComponentActor(element)
+                && this.getArcadiaPerspective(element).filter(ArcadiaEngineeringPerspective.SystemAnalysis::equals).isPresent()
+                && this.getStructurePackage(element).filter(parent -> EcoreUtil.isAncestor(parent, element)).isPresent();
+    }
+
+    /**
+     * Checks whether the semantic parent can contain a System Analysis actor.
+     */
+    public boolean canContainSystemActor(Element parent) {
+        if (this.isSystemAnalysisActor(parent)) {
+            return !this.isComponentHumanActor(parent);
+        }
+        return parent instanceof Package && this.getArcadiaPerspective(parent).filter(ArcadiaEngineeringPerspective.SystemAnalysis::equals).isPresent()
+                && this.getStructurePackage(parent).filter(parent::equals).isPresent();
+    }
+
     public Boolean isCapability(EObject eObject) {
         return eObject instanceof OccurrenceUsage occurrenceUsage
                 && this.checkType(occurrenceUsage, ARCADIA_PREFIX + ARCADIA_CAPABILITY);
@@ -550,6 +589,23 @@ public class CommonQueryService {
         return element instanceof Package packageElt
                 && CAPABILITIES_PACKAGE.equals(packageElt.getDeclaredName())
                 && this.isOperationalAnalysisPerspective(packageElt);
+    }
+
+    /**
+     * Checks whether the context is the System Analysis Capabilities package or one of its nested packages.
+     *
+     * @param element
+     *         the diagram context
+     * @return whether an MCB diagram can be created on the context
+     */
+    public boolean isSystemAnalysisCapabilitiesPackage(Object element) {
+        if (element instanceof Package packageElt
+                && this.getArcadiaPerspective(packageElt).filter(ArcadiaEngineeringPerspective.SystemAnalysis::equals).isPresent()) {
+            return this.getCapabilitiesPackage(packageElt)
+                    .filter(capabilitiesPackage -> EcoreUtil.isAncestor(capabilitiesPackage, packageElt))
+                    .isPresent();
+        }
+        return false;
     }
 
     public boolean isFunctionsPackage(Object element) {
@@ -1255,7 +1311,7 @@ public class CommonQueryService {
                  ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_EXCHANGE,
                  ARCADIA_PREFIX + ARCADIA_EXCHANGE_ITEM,
                  "SysML::ExchangeItem" -> FUNCTIONS_PACKAGE;
-            case ARCADIA_PREFIX + ARCADIA_CAPABILITY -> CAPABILITIES_PACKAGE;
+            case ARCADIA_PREFIX + ARCADIA_CAPABILITY, ARCADIA_PREFIX + ARCADIA_MISSION -> CAPABILITIES_PACKAGE;
             case ARCADIA_PREFIX + ARCADIA_COMPONENT,
                  ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE,
                  ARCADIA_PREFIX + ARCADIA_COMPONENT_PORT -> STRUCTURE_PACKAGE;

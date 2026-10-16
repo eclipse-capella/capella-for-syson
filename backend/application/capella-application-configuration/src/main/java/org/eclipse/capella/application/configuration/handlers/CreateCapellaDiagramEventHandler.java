@@ -75,6 +75,10 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
 
     private static final String OCB_REPRESENTATION_NAME = "OCB - Operational Capability Blank";
 
+    private static final String MCB_REPRESENTATION_DESCRIPTION_ID = "MCB";
+
+    private static final String MCB_REPRESENTATION_NAME = "MCB - Mission and Capabilities Blank";
+
     private static final String LAB_REPRESENTATION_DESCRIPTION_ID = "LAB";
 
     private static final String LAB_REPRESENTATION_NAME = "LAB - Logical Architecture Blank";
@@ -190,6 +194,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
             case OAIB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.FUNCTIONS_PACKAGE)
                     .flatMap(this.commonQueryService::getRootFunction);
             case OCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.CAPABILITIES_PACKAGE);
+            case MCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, CommonQueryService.CAPABILITIES_PACKAGE);
             case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, CommonQueryService.STRUCTURE_PACKAGE);
             case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture, CommonQueryService.STRUCTURE_PACKAGE);
             default -> Optional.empty();
@@ -232,6 +237,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
             case OABD_REPRESENTATION_DESCRIPTION_ID -> OABD_REPRESENTATION_NAME;
             case OAIB_REPRESENTATION_DESCRIPTION_ID -> OAIB_REPRESENTATION_NAME;
             case OCB_REPRESENTATION_DESCRIPTION_ID -> OCB_REPRESENTATION_NAME;
+            case MCB_REPRESENTATION_DESCRIPTION_ID -> MCB_REPRESENTATION_NAME;
             case SAB_REPRESENTATION_DESCRIPTION_ID -> SAB_REPRESENTATION_NAME;
             case LAB_REPRESENTATION_DESCRIPTION_ID -> LAB_REPRESENTATION_NAME;
             default -> "";
