@@ -14,13 +14,11 @@
 package org.eclipse.capella.model.services.logical.architecture;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.Annotation;
 import org.eclipse.syson.sysml.Comment;
-import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.SysmlPackage;
 
 /**
@@ -67,7 +65,4 @@ public class LAQueryService {
                 .toList();
     }
 
-    private Predicate<? super Feature> isTypedWith(String qualifiedName) {
-        return element -> element.getType().stream().anyMatch(t -> t != null && qualifiedName != null && qualifiedName.equals(t.getQualifiedName()));
-    }
 }

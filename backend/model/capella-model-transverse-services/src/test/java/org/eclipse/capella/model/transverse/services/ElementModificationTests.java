@@ -49,6 +49,24 @@ public class ElementModificationTests extends AbstractSemanticTests {
     private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
     @Test
+    public void setStatusKindWhenTypeIndexInstalledShouldReplaceAndRemoveStatus() {
+        var function = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var resourceSet = function.eResource().getResourceSet();
+        var adapter = new ArcadiaElementContentAdapter(resourceSet);
+        resourceSet.eAdapters().add(adapter);
+        try {
+            this.commonUpdateService.setStatusKind(function, "open");
+            assertThat(this.commonQueryService.getStatusStringValue(function)).isEqualTo("open");
+            this.commonUpdateService.setStatusKind(function, "tbd");
+            assertThat(this.commonQueryService.getStatusStringValue(function)).isEqualTo("tbd");
+            this.commonUpdateService.unSetUsageStatusKind(function);
+            assertThat(this.commonQueryService.getStatus(function)).isNull();
+        } finally {
+            resourceSet.eAdapters().remove(adapter);
+        }
+    }
+
+    @Test
     public void setFeatureDirectionShouldUpdatePortConnectedThroughConnectionUsage() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage sourceComponent = this.commonCreationService.createComponent(parent);

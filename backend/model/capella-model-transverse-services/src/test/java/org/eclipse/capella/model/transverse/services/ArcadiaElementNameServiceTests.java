@@ -36,6 +36,24 @@ public class ArcadiaElementNameServiceTests extends AbstractSemanticTests {
     private final ArcadiaElementNameService service = new ArcadiaElementNameService();
 
     @Test
+    public void getElementNameWhenIndexInstalledShouldFollowRetypingAndKeepNonArcadiaFallback() {
+        var function = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        var resourceSet = function.eResource().getResourceSet();
+        var adapter = new ArcadiaElementContentAdapter(resourceSet);
+        resourceSet.eAdapters().add(adapter);
+        try {
+            assertThat(this.service.getElementName(function, ArcadiaEngineeringPerspective.SystemAnalysis)).contains("System Function");
+            new ArcadiaLibraryServices().typeWithArcadiaFunctionalChain(function);
+            assertThat(this.service.getElementName(function, ArcadiaEngineeringPerspective.SystemAnalysis)).contains("Functional Chain");
+            var nativeRequirement = new CommonCreationService().createRequirement(function);
+            assertThat(this.service.getElementName(nativeRequirement, ArcadiaEngineeringPerspective.SystemAnalysis)).isEmpty();
+            assertThat(new CommonQueryService().getArcadiaType(nativeRequirement)).isEmpty();
+        } finally {
+            resourceSet.eAdapters().remove(adapter);
+        }
+    }
+
+    @Test
     public void getElementNameShouldFollowSemanticBrowserLabelTable() {
         var libraryServices = new ArcadiaLibraryServices();
         this.assertNames(this.createTypedElement(SysmlFactory.eINSTANCE.createActionUsage(), libraryServices::typeWithArcadiaFunction),

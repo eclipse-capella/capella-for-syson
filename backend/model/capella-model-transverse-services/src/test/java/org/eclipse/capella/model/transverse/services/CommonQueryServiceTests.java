@@ -17,7 +17,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.stream.Stream;
 
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
+import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
+import org.eclipse.syson.sysml.FeatureTyping;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,6 +33,101 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class CommonQueryServiceTests extends AbstractSemanticTests {
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
+
+    @Test
+    public void getRequirementsShouldIncludeNativeAndArcadiaRequirementsFromTheSamePerspective() {
+        var creationService = new CommonCreationService();
+        var logicalContext = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var nativeRequirement = creationService.createRequirement(logicalContext);
+        var arcadiaRequirement = creationService.createRequirement(logicalContext);
+        var otherPerspective = creationService.createRequirement(this.capellaModel.getSystemAnalysisPerspective().getStructurePackage().getElement());
+        var library = new ArcadiaLibraryServices();
+        library.typeWithLibrary(arcadiaRequirement, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_REQUIREMENT,
+                SysmlPackage.eINSTANCE.getRequirementDefinition());
+        library.typeWithLibrary(otherPerspective, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_REQUIREMENT,
+                SysmlPackage.eINSTANCE.getRequirementDefinition());
+
+        assertThat(this.commonQueryService.getRequirements(logicalContext)).contains(nativeRequirement, arcadiaRequirement).doesNotContain(otherPerspective);
+        assertThat(this.commonQueryService.isRequirement(nativeRequirement)).isTrue();
+        assertThat(this.commonQueryService.isArcadiaRequirement(nativeRequirement)).isFalse();
+    }
+
+    @Test
+    public void getRealizableElementsShouldFollowCandidateRetypingAndRejectUntypedSource() {
+        var creationService = new CommonCreationService();
+        var source = creationService.createComponent(this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement());
+        var candidate = creationService.createComponent(this.capellaModel.getSystemAnalysisPerspective().getStructurePackage().getElement());
+        var typing = candidate.getOwnedRelationship().stream().filter(FeatureTyping.class::isInstance).map(FeatureTyping.class::cast).findFirst().orElseThrow();
+        var originalType = typing.getType();
+        assertThat(this.commonQueryService.getRealizableElements(source)).contains(candidate);
+
+        typing.setType(null);
+
+        assertThat(this.commonQueryService.getRealizableElements(source)).doesNotContain(candidate);
+        typing.setType(originalType);
+        assertThat(this.commonQueryService.getRealizableElements(source)).contains(candidate);
+        source.getOwnedRelationship().stream().filter(FeatureTyping.class::isInstance).map(FeatureTyping.class::cast).forEach(sourceTyping -> sourceTyping.setType(null));
+        assertThat(this.commonQueryService.getRealizableElements(source)).isEmpty();
+    }
+
+    @Test
+    public void getComponentsWhenIndexInstalledShouldPreserveCandidatesAfterRetyping() {
+        var creationService = new CommonCreationService();
+        var parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var first = creationService.createComponent(parent);
+        creationService.createComponent(parent);
+        var expected = this.commonQueryService.getComponents(parent);
+        var resourceSet = parent.eResource().getResourceSet();
+        var adapter = new ArcadiaElementContentAdapter(resourceSet);
+        resourceSet.eAdapters().add(adapter);
+        try {
+            assertThat(this.commonQueryService.getComponents(parent)).containsExactlyInAnyOrderElementsOf(expected);
+            var typing = first.getOwnedRelationship().stream().filter(FeatureTyping.class::isInstance).map(FeatureTyping.class::cast).findFirst().orElseThrow();
+            var type = typing.getType();
+            typing.setType(null);
+            assertThat(this.commonQueryService.getComponents(parent)).doesNotContain(first);
+            typing.setType(type);
+            assertThat(this.commonQueryService.getComponents(parent)).containsExactlyInAnyOrderElementsOf(expected);
+        } finally {
+            resourceSet.eAdapters().remove(adapter);
+        }
+    }
+
+    @Test
+    public void getAllocatedFunctionsWhenIndexInstalledShouldResolvePerformedFunction() {
+        var creationService = new CommonCreationService();
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        var component = creationService.createComponent(perspective.getStructurePackage().getElement());
+        var function = creationService.createFunction(perspective.getFunctionsPackage().getRootFunction().getElement());
+        var resourceSet = component.eResource().getResourceSet();
+        var adapter = new ArcadiaElementContentAdapter(resourceSet);
+        resourceSet.eAdapters().add(adapter);
+        try {
+            new CommonUpdateService().setPerformAction(component, function);
+            assertThat(this.commonQueryService.getAllocatedFunctions(component)).containsExactly(function);
+        } finally {
+            resourceSet.eAdapters().remove(adapter);
+        }
+    }
+
+    @Test
+    public void isFunctionPortWhenIndexInstalledShouldRecognizeArcadiaExchangeItemInFunction() {
+        var creationService = new CommonCreationService();
+        var parent = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var resourceSet = parent.eResource().getResourceSet();
+        var adapter = new ArcadiaElementContentAdapter(resourceSet);
+        resourceSet.eAdapters().add(adapter);
+        try {
+            var port = creationService.createFunctionPort(parent, FeatureDirectionKind.IN);
+            var exchangeItem = creationService.createNewExchangeItem(this.commonQueryService.getFunctionsPackage(parent).orElseThrow());
+            assertThat(adapter.getType(port)).contains(CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_EXCHANGE_ITEM);
+            assertThat(this.commonQueryService.isFunctionPort(port)).isTrue();
+            assertThat(this.commonQueryService.isFunctionPort(exchangeItem)).isFalse();
+            assertThat(this.commonQueryService.getExchangeItems(parent)).contains(port, exchangeItem);
+        } finally {
+            resourceSet.eAdapters().remove(adapter);
+        }
+    }
 
     @Test
     public void getArcadiaPerspectivePackageShouldReturnTheRequestedPerspectivePackage() {

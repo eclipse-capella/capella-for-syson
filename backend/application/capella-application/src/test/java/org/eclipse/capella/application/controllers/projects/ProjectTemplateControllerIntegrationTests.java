@@ -25,8 +25,11 @@ import java.util.function.BiFunction;
 import org.eclipse.capella.AbstractIntegrationTests;
 import org.eclipse.capella.GivenCapellaServer;
 import org.eclipse.capella.application.configuration.template.CapellaProjectTemplateProvider;
+import org.eclipse.capella.model.transverse.services.ArcadiaElementContentAdapter;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.sirius.components.collaborative.dto.EditingContextEventInput;
 import org.eclipse.sirius.components.core.api.ErrorPayload;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -122,6 +125,10 @@ public class ProjectTemplateControllerIntegrationTests extends AbstractIntegrati
 
                 assertThat(optionalRootFunction).isPresent();
                 ActionUsage rootFunction = optionalRootFunction.get();
+                assertThat(EcoreUtil.getAdapter(resourceSet.eAdapters(), ArcadiaElementContentAdapter.class))
+                        .isInstanceOfSatisfying(ArcadiaElementContentAdapter.class,
+                                index -> assertThat(index.getType(rootFunction)).contains("Arcadia::Function"));
+                assertThat(new CommonQueryService().getFunctions(rootFunction)).contains(rootFunction);
                 assertThat(rootFunction.getOwnedRelationship())
                         .hasSize(1)
                         .first()

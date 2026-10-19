@@ -34,6 +34,8 @@ import org.eclipse.syson.sysml.Usage;
  */
 public class ArcadiaElementNameService {
 
+    private final TypeQueryService typeQueryService = new TypeQueryService();
+
     /**
      * Returns the business name of the element for the given perspective.
      *
@@ -45,11 +47,8 @@ public class ArcadiaElementNameService {
      */
     public Optional<String> getElementName(Element element, ArcadiaEngineeringPerspective perspective) {
         if (element instanceof Usage usage) {
-            return usage.getType().stream()
-                    .map(Element::getQualifiedName)
-                    .map(type -> this.getElementName(type, perspective))
-                    .flatMap(Optional::stream)
-                    .findFirst();
+            return this.typeQueryService.getType(usage)
+                    .flatMap(type -> this.getElementName(type, perspective));
         }
         return Optional.empty();
     }

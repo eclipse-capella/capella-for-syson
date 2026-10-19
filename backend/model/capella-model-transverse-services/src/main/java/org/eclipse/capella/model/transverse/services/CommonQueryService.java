@@ -143,9 +143,12 @@ public class CommonQueryService {
 
     private final UtilService utilService;
 
+    private final TypeQueryService typeQueryService;
+
     public CommonQueryService() {
         this.modelQueryAQLService = new ModelQueryAQLService();
         this.utilService = new UtilService();
+        this.typeQueryService = new TypeQueryService();
     }
 
     /**
@@ -200,8 +203,8 @@ public class CommonQueryService {
     }
 
     public Optional<String> getArcadiaType(EObject eObject) {
-        if (eObject instanceof Feature feature && feature.getType() != null) {
-            return feature.getType().stream().map(Element::getQualifiedName).filter(name -> name != null && name.startsWith(ARCADIA_PREFIX)).findFirst();
+        if (eObject instanceof Feature feature) {
+            return this.typeQueryService.getType(feature).filter(name -> name.startsWith(ARCADIA_PREFIX));
         }
         return Optional.empty();
     }
@@ -214,7 +217,7 @@ public class CommonQueryService {
     }
 
     public Predicate<? super Feature> isTypedWith(String qualifiedName) {
-        return element -> element.getType().stream().anyMatch(t -> t != null && qualifiedName != null && qualifiedName.equals(t.getQualifiedName()));
+        return element -> qualifiedName != null && this.typeQueryService.getType(element).filter(qualifiedName::equals).isPresent();
     }
 
     public Feature getSource(ConnectorAsUsage connectorAsUsage) {
@@ -530,9 +533,7 @@ public class CommonQueryService {
     }
 
     public Boolean checkType(Feature feature, String expectedType) {
-        return feature.getType().stream().anyMatch(t -> {
-            return t != null && t.getQualifiedName() != null && t.getQualifiedName().equals(expectedType);
-        });
+        return this.isTypedWith(expectedType).test(feature);
     }
 
     public boolean isStructurePackage(Object element) {
@@ -762,11 +763,8 @@ public class CommonQueryService {
     }
 
     public List<ActionUsage> getFunctions(EObject eObject) {
-        var allActionUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getActionUsage());
-        return allActionUsage.stream()
-                .filter(ActionUsage.class::isInstance)
+        return this.typeQueryService.getElements(eObject, SysmlPackage.eINSTANCE.getActionUsage(), ARCADIA_PREFIX + ARCADIA_FUNCTION).stream()
                 .map(ActionUsage.class::cast)
-                .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_FUNCTION))
                 .toList();
     }
 
@@ -834,11 +832,8 @@ public class CommonQueryService {
     }
 
     public List<ActionUsage> getFunctionalChains(EObject eObject) {
-        var allFlowUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getActionUsage());
-        return allFlowUsage.stream()
-                .filter(ActionUsage.class::isInstance)
+        return this.typeQueryService.getElements(eObject, SysmlPackage.eINSTANCE.getActionUsage(), ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN).stream()
                 .map(ActionUsage.class::cast)
-                .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN))
                 .toList();
     }
 
@@ -918,12 +913,6 @@ public class CommonQueryService {
                 .toList();
     }
 
-    public List<RequirementUsage> getArcadiaRequirements(EObject eObject) {
-        return this.getRequirements(eObject).stream()
-                .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_REQUIREMENT))
-                .toList();
-    }
-
     public List<AllocationUsage> getDescribes(EObject eObject) {
         var allAllocationUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getAllocationUsage());
         return allAllocationUsage.stream()
@@ -942,11 +931,8 @@ public class CommonQueryService {
     }
 
     public List<PartUsage> getComponents(EObject eObject) {
-        var allPartUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getPartUsage());
-        return allPartUsage.stream()
-                .filter(PartUsage.class::isInstance)
+        return this.typeQueryService.getElements(eObject, SysmlPackage.eINSTANCE.getPartUsage(), ARCADIA_PREFIX + ARCADIA_COMPONENT).stream()
                 .map(PartUsage.class::cast)
-                .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_COMPONENT))
                 .toList();
     }
 
@@ -1099,10 +1085,8 @@ public class CommonQueryService {
     }
 
     public List<OccurrenceUsage> getCapabilities(EObject context) {
-        return this.getAllReachableInResource(context, SysmlPackage.eINSTANCE.getOccurrenceUsage()).stream()
-            .filter(OccurrenceUsage.class::isInstance)
+        return this.typeQueryService.getElements(context, SysmlPackage.eINSTANCE.getOccurrenceUsage(), ARCADIA_PREFIX + ARCADIA_CAPABILITY).stream()
             .map(OccurrenceUsage.class::cast)
-            .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_CAPABILITY))
             .toList();
     }
 
@@ -1127,11 +1111,8 @@ public class CommonQueryService {
     }
 
     public List<ItemUsage> getExchangeItems(EObject eObject) {
-        var allItemUsage = this.getAllReachableInResource(eObject, SysmlPackage.eINSTANCE.getItemUsage());
-        return allItemUsage.stream()
-                .filter(ItemUsage.class::isInstance)
+        return this.typeQueryService.getElements(eObject, SysmlPackage.eINSTANCE.getItemUsage(), ARCADIA_PREFIX + ARCADIA_EXCHANGE_ITEM).stream()
                 .map(ItemUsage.class::cast)
-                .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_EXCHANGE_ITEM))
                 .toList();
     }
 
@@ -1226,12 +1207,7 @@ public class CommonQueryService {
     public List<Feature> getRealizableElements(Usage usage) {
         List<Feature> result = List.of();
         var perspective = this.getArcadiaPerspective(usage);
-        var packageName = usage.getType().stream()
-                .map(Element::getQualifiedName)
-                .filter(Objects::nonNull)
-                .map(this::getRealizablePackageName)
-                .filter(Objects::nonNull)
-                .findFirst();
+        var packageName = this.typeQueryService.getType(usage).map(this::getRealizablePackageName);
         if (perspective.isPresent() && packageName.isPresent()) {
             var sourcePackage = this.getArcadiaPerspectiveSubPackage(usage, perspective.get(), packageName.get());
             var targetPerspective = this.getPreviousPerspectiveRootElement(usage);
@@ -1274,9 +1250,9 @@ public class CommonQueryService {
         boolean sourceIsActor = this.isComponentActor(source);
         boolean sourceIsFunctionPort = this.isFunctionPort(source);
         boolean sourceIsPort = sourceIsFunctionPort || this.isComponentPort(source);
-        var sourceTypes = this.getRealizesMatchingTypes(source);
+        var sourceType = this.typeQueryService.getType(source).orElse(null);
         Predicate<EObject> candidatePredicate = eObject -> eObject instanceof Feature feature
-                && feature.getType().stream().anyMatch(candidateType -> sourceTypes.contains(candidateType.getQualifiedName()))
+                && this.isTypedWith(sourceType).test(feature)
                 && sourceIsActor == this.isComponentActor(feature);
         return candidatePredicate
                 .and(eObject -> !sourceIsFunctionPort || this.isFunctionPort(eObject))
@@ -1289,16 +1265,6 @@ public class CommonQueryService {
         boolean unspecifiedDirection = sourceDirection == null || candidateDirection == null;
         boolean bidirectional = sourceDirection == FeatureDirectionKind.INOUT || candidateDirection == FeatureDirectionKind.INOUT;
         return unspecifiedDirection || bidirectional || sourceDirection == candidateDirection;
-    }
-
-    private Set<String> getRealizesMatchingTypes(Usage source) {
-        Set<String> sourceTypes = source.getType().stream().map(Element::getQualifiedName).filter(Objects::nonNull).collect(Collectors.toSet());
-        Set<String> arcadiaTypes = sourceTypes.stream().filter(type -> type.startsWith(ARCADIA_PREFIX)).collect(Collectors.toSet());
-        if (arcadiaTypes.isEmpty()) {
-            return sourceTypes;
-        } else {
-            return arcadiaTypes;
-        }
     }
 
     public List<Feature> getRealizes(Usage usage) {
