@@ -12,7 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view;
 
+import java.util.Objects;
+
 import org.eclipse.capella.diagram.common.view.IViewDescriptionProvider;
+import org.eclipse.capella.diagram.customization.styles.api.IFunctionalChainColorPaletteProvider;
 import org.eclipse.sirius.components.view.ColorPalette;
 import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.View;
@@ -29,6 +32,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class SABViewDescriptionProvider implements IViewDescriptionProvider {
+
+    private final IFunctionalChainColorPaletteProvider functionalChainColorPaletteProvider;
+
+    public SABViewDescriptionProvider(IFunctionalChainColorPaletteProvider functionalChainColorPaletteProvider) {
+        this.functionalChainColorPaletteProvider = Objects.requireNonNull(functionalChainColorPaletteProvider);
+    }
 
     @Override
     public String getViewDiagramId() {
@@ -63,10 +72,8 @@ public class SABViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTION_BORDER_COLOR, "#5E8F2D"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTION_LABEL_COLOR, "#325C14"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTIONAL_EXCHANGE_BACKGROUND_COLOR, "#325C14"));
-        colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR, "#F4E9BD"));
-        colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_0, "#FF2F1A"));
-        colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_1, "#079459"));
-        colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_2, "#01C1FF"));
+        colorPalette.getColors().add(this.createFixedColor(SABViewConstants.DEFAULT_FUNCTIONAL_CHAIN_BACKGROUND_COLOR, "#F4E9BD"));
+        colorPalette.getColors().addAll(this.functionalChainColorPaletteProvider.createColors());
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTIONAL_CHAIN_BORDER_COLOR, "#18340E"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.FUNCTIONAL_CHAIN_LABEL_COLOR, "#000000"));
         colorPalette.getColors().add(this.createFixedColor(SABViewConstants.REQUIREMENT_BACKGROUND_COLOR, "#D8C3D6"));

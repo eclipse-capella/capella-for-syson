@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.customization.styles.FunctionalChainColorPaletteProvider;
 import org.eclipse.capella.diagram.common.view.ColorProvider;
 import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.describes.DescribesEdgeDescriptionProvider;
@@ -35,6 +36,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDes
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.ViewFactory;
+import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.diagram.DeleteView;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
@@ -51,6 +53,15 @@ import org.junit.jupiter.api.Test;
  * @author tbezierslafosse
  */
 public class SABViewDescriptionProviderTests {
+
+    @Test
+    public void paletteContainsTheSevenFunctionalChainColorsInOrder() {
+        var view = new SABViewDescriptionProvider(new FunctionalChainColorPaletteProvider()).getRepresentationDescriptions().getFirst();
+        var colors = view.getColorPalettes().getFirst().getColors().stream()
+                .filter(color -> color.getName().matches("FUNCTIONAL_CHAIN_COLOR_[0-9]+"))
+                .map(FixedColor.class::cast).map(FixedColor::getValue).toList();
+        assertEquals(List.of("#1864D9", "#7B2CBF", "#C65D00", "#237A3B", "#007F86", "#9A7B00", "#666666"), colors);
+    }
 
     @Test
     public void createShouldBuildSABDiagramDescriptionScopedToSystemAnalysisStructure() {
@@ -95,7 +106,7 @@ public class SABViewDescriptionProviderTests {
         assertEquals(SynchronizationPolicy.UNSYNCHRONIZED, functionalChainDescription.getSynchronizationPolicy());
         assertEquals("30", functionalChainDescription.getDefaultWidthExpression());
         assertEquals("30", functionalChainDescription.getDefaultHeightExpression());
-        assertEquals(3, functionalChainDescription.getConditionalStyles().size());
+        assertTrue(functionalChainDescription.getConditionalStyles().isEmpty());
         assertNotNull(functionalChainDescription.getPalette().getDeleteTool());
         assertNotNull(functionalChainDescription.getPalette().getLabelEditTool());
         assertDeleteFromDiagramQuickAccessTool(functionalChainDescription);
@@ -217,6 +228,7 @@ public class SABViewDescriptionProviderTests {
 
         var functionDescription = this.getNodeDescription(diagramDescription, FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME);
         assertDeleteFromDiagramQuickAccessTool(functionDescription);
+        assertTrue(functionDescription.getConditionalStyles().isEmpty());
         var functionPortDescription = functionDescription.getReusedBorderNodeDescriptions().stream()
                 .filter(nodeDescription -> FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME.equals(nodeDescription.getName()))
                 .findFirst()
@@ -249,7 +261,7 @@ public class SABViewDescriptionProviderTests {
         assertEquals(ServiceMethod.of0(CommonQueryService::getFunctionalExchanges).aqlSelf(), functionalExchangeDescription.getSemanticCandidatesExpression());
         assertEquals(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeSource).aqlSelf(), functionalExchangeDescription.getSourceExpression());
         assertEquals(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeTarget).aqlSelf(), functionalExchangeDescription.getTargetExpression());
-        assertEquals(4, functionalExchangeDescription.getConditionalStyles().size());
+        assertTrue(functionalExchangeDescription.getConditionalStyles().isEmpty());
         assertEquals(List.of(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME), functionalExchangeDescription.getSourceDescriptions().stream().map(DiagramElementDescription::getName).toList());
         assertEquals(List.of(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME), functionalExchangeDescription.getTargetDescriptions().stream().map(DiagramElementDescription::getName).toList());
         assertNotNull(functionalExchangeDescription.getPalette().getDeleteTool());
@@ -261,7 +273,7 @@ public class SABViewDescriptionProviderTests {
     @Test
     public void createShouldConfigureRequirementAndDescribesInteractions() {
         var view = ViewFactory.eINSTANCE.createView();
-        var colorProvider = new SABViewDescriptionProvider().getColorProvider(view);
+        var colorProvider = new SABViewDescriptionProvider(new FunctionalChainColorPaletteProvider()).getColorProvider(view);
         var diagramDescription = (DiagramDescription) new SABViewDiagramDescriptionProvider().create(colorProvider);
 
         var requirementDescription = this.getNodeDescription(diagramDescription, RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME);

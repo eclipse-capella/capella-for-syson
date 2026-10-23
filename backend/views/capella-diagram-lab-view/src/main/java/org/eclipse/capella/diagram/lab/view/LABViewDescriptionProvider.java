@@ -13,8 +13,11 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
+import java.util.Objects;
+
 import org.eclipse.capella.diagram.common.view.ColorProvider;
 import org.eclipse.capella.diagram.common.view.IViewDescriptionProvider;
+import org.eclipse.capella.diagram.customization.styles.api.IFunctionalChainColorPaletteProvider;
 import org.eclipse.sirius.components.view.ColorPalette;
 import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.View;
@@ -33,6 +36,12 @@ import org.springframework.stereotype.Service;
 public class LABViewDescriptionProvider implements IViewDescriptionProvider {
 
     private static final String BLACK_COLOR = "#000000";
+
+    private final IFunctionalChainColorPaletteProvider functionalChainColorPaletteProvider;
+
+    public LABViewDescriptionProvider(IFunctionalChainColorPaletteProvider functionalChainColorPaletteProvider) {
+        this.functionalChainColorPaletteProvider = Objects.requireNonNull(functionalChainColorPaletteProvider);
+    }
 
     @Override
     public String getViewDiagramId() {
@@ -61,9 +70,8 @@ public class LABViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTION_BACKGROUND_COLOR, "#CBE5AC"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTION_BORDER_COLOR, "#046866"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTION_LABEL_COLOR, "#046866"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_0, "#FF2F1A"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_1, "#079459"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR_2, "#01C1FF"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.DEFAULT_FUNCTIONAL_CHAIN_BACKGROUND_COLOR, "#F4E9BD"));
+        colorPalette.getColors().addAll(this.functionalChainColorPaletteProvider.createColors());
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BORDER_COLOR, "#18340E"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_LABEL_COLOR, BLACK_COLOR));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BACKGROUND_COLOR, "#D0F1FE"));

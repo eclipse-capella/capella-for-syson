@@ -55,7 +55,6 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .name(this.getNodeDescriptionName())
                 .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubFunctions).aqlSelf())
                 .style(functionNodeStyleProvider.createFunctionNodeStyle())
-                .conditionalStyles(functionNodeStyleProvider.createFunctionConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
                 .isHiddenByDefaultExpression(ServiceMethod.of1(LABDiagramService::isFunctionHidden).aqlSelf(DiagramContext.DIAGRAM_CONTEXT))

@@ -53,8 +53,7 @@ public class FunctionalChainNodeDescriptionProvider extends AbstractNodeDescript
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
                 .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getFunctionalChains).aqlSelf())
-                .style(functionalChainNodeStyleProvider.createComponentNodeStyle())
-                .conditionalStyles(functionalChainNodeStyleProvider.createConditionalNodeStyles())
+                .style(functionalChainNodeStyleProvider.createNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
                 .build();
