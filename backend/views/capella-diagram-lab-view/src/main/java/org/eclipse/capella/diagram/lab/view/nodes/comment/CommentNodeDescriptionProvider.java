@@ -62,8 +62,9 @@ public class CommentNodeDescriptionProvider extends AbstractNodeDescriptionProvi
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
-            nodeDescription
-                    .setPalette(new CommentPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            CommentPaletteProvider paletteProvider = new CommentPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(paletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(paletteProvider.createEdgeTools(cache)));
         });
     }
 }

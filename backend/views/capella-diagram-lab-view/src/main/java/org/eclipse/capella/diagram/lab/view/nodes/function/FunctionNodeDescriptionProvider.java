@@ -69,10 +69,11 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
-            // NOTE: FunctionNode is contained in ComponentNode.childrenDescriptions, so we do NOT add it to 
+            // NOTE: FunctionNode is contained in ComponentNode.childrenDescriptions, so we do NOT add it to
             // diagramDescription.nodeDescriptions (it would conflict with the containment from Component).
-            nodeDescription
-                    .setPalette(new FunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            FunctionPaletteProvider functionPaletteProvider = new FunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(functionPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(functionPaletteProvider.createEdgeTools(cache)));
             Optional<NodeDescription> optionalPortNodeDescription = cache.getNodeDescription(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME);
             optionalPortNodeDescription.ifPresent(nodeDescription.getBorderNodesDescriptions()::add);
             nodeDescription.getReusedChildNodeDescriptions().addAll(this.getReusedChildren(cache));

@@ -62,8 +62,9 @@ public class CapabilityNodeDescriptionProvider extends AbstractNodeDescriptionPr
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
-            nodeDescription.setPalette(new CapabilityPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider)
-                    .createNodePalette(cache));
+            CapabilityPaletteProvider capabilityPaletteProvider = new CapabilityPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(capabilityPaletteProvider.createNodePalette(cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(capabilityPaletteProvider.createEdgeTools(cache)));
         });
     }
 }

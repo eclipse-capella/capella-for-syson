@@ -70,10 +70,11 @@ public class FunctionPortNodeDescriptionProvider extends AbstractNodeDescription
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
-            // NOTE: FunctionPort is contained in FunctionNode.borderNodesDescriptions, so we do NOT add it to 
+            // NOTE: FunctionPort is contained in FunctionNode.borderNodesDescriptions, so we do NOT add it to
             // diagramDescription.nodeDescriptions (it would conflict with the containment from Function).
-            nodeDescription
-                    .setPalette(new FunctionPortPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            FunctionPortPaletteProvider functionPortPaletteProvider = new FunctionPortPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(functionPortPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(functionPortPaletteProvider.createEdgeTools(cache)));
         });
     }
 

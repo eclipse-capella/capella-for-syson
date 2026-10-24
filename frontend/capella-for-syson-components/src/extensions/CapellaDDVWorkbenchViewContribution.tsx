@@ -232,6 +232,7 @@ export const CapellaDDVWorkbenchViewContribution = forwardRef<WorkbenchViewHandl
               editingContextId={editingContextId}
               representationId={representationId}
               readOnly={readOnly}
+              onRepresentationUnavailable={() => {}}
             />
           </SelectionContextProvider>
         </Box>

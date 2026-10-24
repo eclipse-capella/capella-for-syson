@@ -70,8 +70,9 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
-            nodeDescription
-                    .setPalette(new RequirementPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            RequirementPaletteProvider requirementPaletteProvider = new RequirementPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(requirementPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(requirementPaletteProvider.createEdgeTools(cache)));
 
             // Add all compartments as direct children (following SySON pattern)
             this.addCompartments(nodeDescription, cache);

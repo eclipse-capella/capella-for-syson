@@ -63,7 +63,9 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
             diagramDescription.getNodeDescriptions().add(nodeDescription);
             cache.getNodeDescription(FunctionPortNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
                     .ifPresent(nodeDescription.getReusedBorderNodeDescriptions()::add);
-            nodeDescription.setPalette(new FunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            FunctionPaletteProvider functionPaletteProvider = new FunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(functionPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(functionPaletteProvider.createEdgeTools(cache)));
             nodeDescription.getReusedChildNodeDescriptions().addAll(this.getReusedChildren(cache));
         });
     }

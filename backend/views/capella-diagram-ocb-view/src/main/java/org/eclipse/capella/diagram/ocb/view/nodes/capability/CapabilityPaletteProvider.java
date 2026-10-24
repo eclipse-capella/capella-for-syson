@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view.nodes.capability;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
@@ -21,6 +22,7 @@ import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
+import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
 import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
@@ -67,9 +69,12 @@ public class CapabilityPaletteProvider {
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
-                .edgeTools(new InvolvementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInvolvementTool(cache),
-                        new GeneralizationToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewGeneralizationTool(cache))
                 .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
+    }
+
+    public List<EdgeTool> createEdgeTools(IViewDiagramElementFinder cache) {
+        return List.of(new InvolvementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInvolvementTool(cache),
+                new GeneralizationToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewGeneralizationTool(cache));
     }
 }

@@ -74,7 +74,9 @@ public class SystemComponentNodeDescriptionProvider extends AbstractNodeDescript
             cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
                     .ifPresent(nodeDescription.getReusedChildNodeDescriptions()::add);
             nodeDescription.getReusedChildNodeDescriptions().addAll(this.getReusedChildren(cache));
-            nodeDescription.setPalette(new SystemComponentPaletteProvider(this.diagramBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            SystemComponentPaletteProvider systemComponentPaletteProvider = new SystemComponentPaletteProvider(this.diagramBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(systemComponentPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(systemComponentPaletteProvider.createEdgeTools(cache)));
         });
     }
 

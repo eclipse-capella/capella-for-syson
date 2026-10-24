@@ -28,6 +28,7 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DropNodeTool;
+import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
@@ -88,9 +89,12 @@ public class ComponentPaletteProvider {
                         this.createNewComponentPortNodeTool("New Input Port", "/icons/full/obj16/InFlowPort.svg", "sysml::FeatureDirectionKind::_in"),
                         this.createNewComponentPortNodeTool("New Output Port", "/icons/full/obj16/OutFlowPort.svg", "sysml::FeatureDirectionKind::out"),
                         this.createNewComponentPortNodeTool("New InOut Port", "/icons/full/obj16/InOutFlowPort.svg", "sysml::FeatureDirectionKind::inout"))
-                .edgeTools(new ComponentExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentExchangeTool(cache))
                 .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
+    }
+
+    public List<EdgeTool> createEdgeTools(IViewDiagramElementFinder cache) {
+        return List.of(new ComponentExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentExchangeTool(cache));
     }
 
     private DropNodeTool createDropFromDiagramTool(IViewDiagramElementFinder cache) {

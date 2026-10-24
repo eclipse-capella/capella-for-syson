@@ -18,6 +18,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.INodeDescriptionProvider;
+import org.eclipse.syson.diagram.common.view.nodes.LegacyEdgeToolConverter;
 
 /**
  * Common pieces of node descriptions shared by {@link INodeDescriptionProvider} in all diagram View.
@@ -33,6 +34,8 @@ public abstract class AbstractNodeDescriptionProvider implements INodeDescriptio
     protected final NodeDeleteFromDiagramToolProvider nodeDeleteFromDiagramToolProvider = new NodeDeleteFromDiagramToolProvider();
 
     protected final IColorProvider colorProvider;
+
+    protected final LegacyEdgeToolConverter edgeToolConverter = new LegacyEdgeToolConverter();
 
     public AbstractNodeDescriptionProvider(IColorProvider colorProvider) {
         this.colorProvider = Objects.requireNonNull(colorProvider);

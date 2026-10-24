@@ -13,6 +13,7 @@
 
 package org.eclipse.capella.diagram.oab.view.nodes.activity;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
@@ -24,6 +25,7 @@ import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
+import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
@@ -70,7 +72,6 @@ public class OperationalActivityPaletteProvider {
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
-                .edgeTools(new FunctionalExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewFunctionalExchangeTool(cache))
                 .build();
     }
 
@@ -85,5 +86,9 @@ public class OperationalActivityPaletteProvider {
         cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
                 .ifPresent(tool::acceptedNodeTypes);
         return tool.build();
+    }
+
+    public List<EdgeTool> createEdgeTools(IViewDiagramElementFinder cache) {
+        return List.of(new FunctionalExchangeToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewFunctionalExchangeTool(cache));
     }
 }

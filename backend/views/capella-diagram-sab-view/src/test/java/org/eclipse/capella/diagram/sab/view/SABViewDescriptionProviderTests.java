@@ -154,8 +154,9 @@ public class SABViewDescriptionProviderTests {
                 .anyMatch(nodeTool -> "New Component".equals(nodeTool.getName())));
         assertTrue(componentDescription.getPalette().getNodeTools().stream()
                 .anyMatch(nodeTool -> "New Function".equals(nodeTool.getName())));
-        assertTrue(componentDescription.getPalette().getEdgeTools().stream()
-                .anyMatch(edgeTool -> "New Component Exchange".equals(edgeTool.getName())));
+        assertTrue(componentDescription.getEdgeTools().stream()
+                .flatMap(edgeTool -> edgeTool.getPalette().getNodeTools().stream())
+                .anyMatch(nodeTool -> "New Component Exchange".equals(nodeTool.getName())));
     }
 
     @Test
@@ -173,8 +174,9 @@ public class SABViewDescriptionProviderTests {
         assertTrue(componentPortDescription.getPalette().getQuickAccessTools().isEmpty());
         assertNotNull(componentPortDescription.getPalette().getDeleteTool());
         assertFalse(componentPortDescription.getPalette().getToolSections().isEmpty());
-        assertTrue(componentPortDescription.getPalette().getEdgeTools().stream()
-                .anyMatch(edgeTool -> "New Component Exchange".equals(edgeTool.getName())));
+        assertTrue(componentPortDescription.getEdgeTools().stream()
+                .flatMap(edgeTool -> edgeTool.getPalette().getNodeTools().stream())
+                .anyMatch(nodeTool -> "New Component Exchange".equals(nodeTool.getName())));
     }
 
     @Test
@@ -230,8 +232,9 @@ public class SABViewDescriptionProviderTests {
                 .anyMatch(nodeTool -> "New Input Function Port".equals(nodeTool.getName())));
         assertTrue(functionDescription.getPalette().getNodeTools().stream()
                 .anyMatch(nodeTool -> "New Output Function Port".equals(nodeTool.getName())));
-        assertTrue(functionPortDescription.getPalette().getEdgeTools().stream()
-                .anyMatch(edgeTool -> "New Functional Exchange".equals(edgeTool.getName())));
+        assertTrue(functionPortDescription.getEdgeTools().stream()
+                .flatMap(edgeTool -> edgeTool.getPalette().getNodeTools().stream())
+                .anyMatch(nodeTool -> "New Functional Exchange".equals(nodeTool.getName())));
     }
 
     @Test
@@ -269,8 +272,9 @@ public class SABViewDescriptionProviderTests {
         assertEquals(SynchronizationPolicy.UNSYNCHRONIZED, requirementDescription.getSynchronizationPolicy());
         assertNotNull(requirementDescription.getPalette().getDeleteTool());
         assertDeleteFromDiagramQuickAccessTool(requirementDescription);
-        assertTrue(requirementDescription.getPalette().getEdgeTools().stream()
-                .anyMatch(edgeTool -> "New Describes".equals(edgeTool.getName())));
+        assertTrue(requirementDescription.getEdgeTools().stream()
+                .flatMap(edgeTool -> edgeTool.getPalette().getNodeTools().stream())
+                .anyMatch(nodeTool -> "New Describes".equals(nodeTool.getName())));
 
         var describesDescription = diagramDescription.getEdgeDescriptions().stream()
                 .filter(edgeDescription -> DescribesEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME.equals(edgeDescription.getName()))

@@ -66,16 +66,20 @@ public class CapellaReferenceWidgetBehaviorConverter extends ReferenceWidgetBeha
     public void convert(Builder referenceWidgetDescriptionBuilder, ReferenceWidgetDescription viewReferenceWidgetDescription, AQLInterpreter interpreter) {
         if (viewReferenceWidgetDescription.getName().startsWith(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX)) {
 
-            referenceWidgetDescriptionBuilder.clearHandlerProvider(variableManager -> this.handleClearReference(interpreter, variableManager, viewReferenceWidgetDescription))
-                    .itemRemoveHandlerProvider(variableManager -> this.handleItemRemove(interpreter, variableManager, viewReferenceWidgetDescription))
-                    .moveHandlerProvider(variableManager -> this.handleMoveReferenceValue(interpreter, variableManager, viewReferenceWidgetDescription));
+            // referenceWidgetDescriptionBuilder.clearHandlerProvider(variableManager ->
+            // this.handleClearReference(interpreter, variableManager, viewReferenceWidgetDescription))
+            // .itemRemoveHandlerProvider(variableManager -> this.handleItemRemove(interpreter, variableManager,
+            // viewReferenceWidgetDescription))
+            // .moveHandlerProvider(variableManager -> this.handleMoveReferenceValue(interpreter, variableManager,
+            // viewReferenceWidgetDescription));
 
             if (viewReferenceWidgetDescription.getHelpExpression() != null && !viewReferenceWidgetDescription.getHelpExpression().isBlank()) {
                 referenceWidgetDescriptionBuilder.helpTextProvider(new StringValueProvider(interpreter, Optional.ofNullable(viewReferenceWidgetDescription.getHelpExpression()).orElse("")));
             }
             if (!viewReferenceWidgetDescription.getBody().isEmpty()) {
                 referenceWidgetDescriptionBuilder.setHandlerProvider(variableManager -> this.newValueHandler(interpreter, variableManager, viewReferenceWidgetDescription.getBody()));
-                referenceWidgetDescriptionBuilder.addHandlerProvider(variableManager -> this.newValueHandler(interpreter, variableManager, viewReferenceWidgetDescription.getBody()));
+                // referenceWidgetDescriptionBuilder.addHandlerProvider(variableManager ->
+                // this.newValueHandler(interpreter, variableManager, viewReferenceWidgetDescription.getBody()));
             }
         }
 

@@ -72,7 +72,9 @@ public class SystemActorNodeDescriptionProvider extends AbstractNodeDescriptionP
             cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
                     .ifPresent(nodeDescription.getReusedChildNodeDescriptions()::add);
             nodeDescription.getReusedChildNodeDescriptions().addAll(this.getReusedChildren(cache));
-            nodeDescription.setPalette(new SystemActorPaletteProvider(this.diagramBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            SystemActorPaletteProvider systemActorPaletteProvider = new SystemActorPaletteProvider(this.diagramBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(systemActorPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(systemActorPaletteProvider.createEdgeTools(cache)));
         });
     }
 
