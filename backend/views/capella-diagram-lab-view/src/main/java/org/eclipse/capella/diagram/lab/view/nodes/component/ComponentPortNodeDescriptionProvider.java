@@ -70,8 +70,9 @@ public class ComponentPortNodeDescriptionProvider extends AbstractNodeDescriptio
         cache.getNodeDescription(this.getNodeDescriptionName()).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
 
-            nodeDescription
-                    .setPalette(new ComponentPortPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            ComponentPortPaletteProvider componentPortPaletteProvider = new ComponentPortPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(componentPortPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(componentPortPaletteProvider.createEdgeTools(cache)));
         });
     }
 

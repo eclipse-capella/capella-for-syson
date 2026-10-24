@@ -71,7 +71,9 @@ public class SystemOfInterestNodeDescriptionProvider extends AbstractNodeDescrip
                     .ifPresent(nodeDescription.getReusedChildNodeDescriptions()::add);
             cache.getNodeDescription(SystemComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
                     .ifPresent(nodeDescription.getReusedChildNodeDescriptions()::add);
-            nodeDescription.setPalette(new SystemOfInterestPaletteProvider(this.diagramBuilderHelper).createNodePalette(cache));
+            SystemOfInterestPaletteProvider systemOfInterestPaletteProvider = new SystemOfInterestPaletteProvider(this.diagramBuilderHelper);
+            nodeDescription.setPalette(systemOfInterestPaletteProvider.createNodePalette(cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(systemOfInterestPaletteProvider.createEdgeTools(cache)));
         });
     }
 }

@@ -71,8 +71,9 @@ public class ComponentNodeDescriptionProvider extends AbstractNodeDescriptionPro
 
             diagramDescription.getNodeDescriptions().add(nodeDescription);
 
-            nodeDescription
-                    .setPalette(new ComponentPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            ComponentPaletteProvider componentPaletteProvider = new ComponentPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(componentPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(componentPaletteProvider.createEdgeTools(cache)));
             nodeDescription.getReusedChildNodeDescriptions().addAll(this.getReusedChildren(cache));
         });
     }

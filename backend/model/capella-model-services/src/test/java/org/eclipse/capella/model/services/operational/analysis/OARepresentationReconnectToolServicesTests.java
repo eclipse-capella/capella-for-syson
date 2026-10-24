@@ -30,7 +30,6 @@ import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Diagram;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.services.api.ISysMLMoveElementService;
-import org.eclipse.syson.services.api.MoveStatus;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.EndFeatureMembership;
 import org.eclipse.syson.sysml.Feature;

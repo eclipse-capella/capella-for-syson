@@ -78,6 +78,7 @@ public class CapellaReferenceWidgetPropertiesConverter extends ReferenceWidgetPr
             Function<VariableManager, String> semanticTargetIdProvider = variableManager -> variableManager.get(VariableManager.SELF, Object.class)
                     .map(this.identityService::getId)
                     .orElse(null);
+            var referenceNameProvider = new StringValueProvider(interpreter, viewReferenceWidgetDescription.getReferenceNameExpression());
 
             referenceWidgetDescriptionBuilder
                     .idProvider(new WidgetIdProvider())
@@ -93,6 +94,7 @@ public class CapellaReferenceWidgetPropertiesConverter extends ReferenceWidgetPr
                     .itemIconURLProvider(this::getItemIconURL)
                     .ownerKindProvider(this::getOwnerKind)
                     .referenceKindProvider(variableManager -> this.getReferenceKind(interpreter, variableManager, viewReferenceWidgetDescription))
+                    .referenceNameProvider(variableManager -> ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + referenceNameProvider.apply(variableManager))
                     .isContainmentProvider(variableManager -> this.isContainment(interpreter, variableManager, viewReferenceWidgetDescription))
                     .isManyProvider(variableManager -> this.isMany(interpreter, variableManager, viewReferenceWidgetDescription))
                     .ownerIdProvider(variableManager -> this.getOwnerId(interpreter, viewReferenceWidgetDescription, variableManager))

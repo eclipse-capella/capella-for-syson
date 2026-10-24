@@ -18,6 +18,7 @@ import java.util.Objects;
 import org.eclipse.sirius.web.application.library.services.ProjectLibrariesImporter;
 import org.eclipse.syson.application.expressions.services.ExpressionsPaletteToolsProvider;
 import org.eclipse.syson.application.sysmlv2.SysMLv2ProjectTemplatesProvider;
+import org.eclipse.syson.diagram.common.view.services.SysONDiagramElementPaletteVariableManagerProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -53,6 +54,10 @@ public class CapellaForSysONBeanDefinitionRegistryPostProcessor implements BeanD
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         for (String beanName : registry.getBeanDefinitionNames()) {
             BeanDefinition beanDefinition =  registry.getBeanDefinition(beanName);
+            if (Objects.equals(beanDefinition.getBeanClassName(), SysONDiagramElementPaletteVariableManagerProvider.class.getName())) {
+                // Keep SysON as the Capella provider's delegate, with Capella as the sole primary implementation.
+                beanDefinition.setPrimary(false);
+            }
             if (EXCLUDED_BEAN_CLASSES.stream().anyMatch(excluded -> Objects.equals(beanDefinition.getBeanClassName(), excluded.getName()))) {
                 registry.removeBeanDefinition(beanName);
                 this.logger.atDebug()

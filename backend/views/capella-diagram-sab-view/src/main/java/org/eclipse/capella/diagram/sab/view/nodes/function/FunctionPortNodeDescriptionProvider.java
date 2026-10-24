@@ -66,7 +66,9 @@ public class FunctionPortNodeDescriptionProvider extends AbstractNodeDescription
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
-            nodeDescription.setPalette(new FunctionPortPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider).createNodePalette(nodeDescription, cache));
+            FunctionPortPaletteProvider functionPortPaletteProvider = new FunctionPortPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(functionPortPaletteProvider.createNodePalette(nodeDescription, cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(functionPortPaletteProvider.createEdgeTools(cache)));
         });
     }
 

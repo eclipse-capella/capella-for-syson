@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view.nodes.activity;
 
+import java.util.List;
+
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
@@ -103,8 +105,9 @@ public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDesc
                     .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                     .dropNodeTool(this.createDropFromDiagramTool(cache))
                     .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
-                    .edgeTools(new InteractionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInteractionTool(cache))
                     .build());
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(
+                    List.of(new InteractionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInteractionTool(cache))));
         });
     }
 

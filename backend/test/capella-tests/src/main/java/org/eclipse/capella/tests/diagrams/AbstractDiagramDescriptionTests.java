@@ -154,11 +154,16 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     }
 
     @Test
-    @DisplayName("Each EdgeTool has an iconURL")
-    public void eachEdgeToolHasAnIconURL() {
+    @DisplayName("Each EdgeTool has a palette containing tools")
+    public void eachEdgeToolHasAPaletteWithTools() {
         SoftAssertions softly = new SoftAssertions();
         EMFUtils.allContainedObjectOfType(this.diagramDescription, EdgeTool.class)
-                .forEach(edgeTool -> this.checkIconURL(edgeTool.getIconURLsExpression(), edgeTool, softly));
+                .forEach(edgeTool -> {
+                    softly.assertThat(edgeTool.getPalette()).as("Palette in EdgeTool '%s'", edgeTool.getName()).isNotNull();
+                    if (edgeTool.getPalette() != null) {
+                        softly.assertThat(edgeTool.getPalette().getNodeTools()).as("Tools in EdgeTool '%s'", edgeTool.getName()).isNotEmpty();
+                    }
+                });
         softly.assertAll();
     }
 

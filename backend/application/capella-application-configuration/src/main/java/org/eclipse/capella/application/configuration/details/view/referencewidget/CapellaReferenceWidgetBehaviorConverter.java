@@ -36,6 +36,8 @@ import org.eclipse.sirius.components.view.emf.operations.api.OperationExecutionS
 import org.eclipse.sirius.components.view.emf.widget.reference.ReferenceWidgetBehaviorConverter;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
 import org.eclipse.sirius.components.widget.reference.ReferenceWidgetDescription.Builder;
+import org.eclipse.sirius.components.widget.reference.ReferenceWidgetComponent;
+import org.eclipse.sirius.components.widget.reference.ReferenceWidgetClearButtonDescription;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
@@ -66,16 +68,23 @@ public class CapellaReferenceWidgetBehaviorConverter extends ReferenceWidgetBeha
     public void convert(Builder referenceWidgetDescriptionBuilder, ReferenceWidgetDescription viewReferenceWidgetDescription, AQLInterpreter interpreter) {
         if (viewReferenceWidgetDescription.getName().startsWith(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX)) {
 
-            referenceWidgetDescriptionBuilder.clearHandlerProvider(variableManager -> this.handleClearReference(interpreter, variableManager, viewReferenceWidgetDescription))
+            referenceWidgetDescriptionBuilder
+                    .clearButtonDescription(new ReferenceWidgetClearButtonDescription(variableManager -> true))
                     .itemRemoveHandlerProvider(variableManager -> this.handleItemRemove(interpreter, variableManager, viewReferenceWidgetDescription))
-                    .moveHandlerProvider(variableManager -> this.handleMoveReferenceValue(interpreter, variableManager, viewReferenceWidgetDescription));
+                    .moveHandlerProvider(variableManager -> this.handleMoveReferenceValue(interpreter, variableManager, viewReferenceWidgetDescription))
+                    .setHandlerProvider(variableManager -> {
+                        if (variableManager.get(ReferenceWidgetComponent.NEW_VALUE, List.class).filter(List::isEmpty).isPresent()) {
+                            return this.handleClearReference(interpreter, variableManager, viewReferenceWidgetDescription);
+                        }
+                        IStatus status = new Failure("Setting this reference is not supported.");
+                        if (!viewReferenceWidgetDescription.getBody().isEmpty()) {
+                            status = this.newValueHandler(interpreter, variableManager, viewReferenceWidgetDescription.getBody());
+                        }
+                        return status;
+                    });
 
             if (viewReferenceWidgetDescription.getHelpExpression() != null && !viewReferenceWidgetDescription.getHelpExpression().isBlank()) {
                 referenceWidgetDescriptionBuilder.helpTextProvider(new StringValueProvider(interpreter, Optional.ofNullable(viewReferenceWidgetDescription.getHelpExpression()).orElse("")));
-            }
-            if (!viewReferenceWidgetDescription.getBody().isEmpty()) {
-                referenceWidgetDescriptionBuilder.setHandlerProvider(variableManager -> this.newValueHandler(interpreter, variableManager, viewReferenceWidgetDescription.getBody()));
-                referenceWidgetDescriptionBuilder.addHandlerProvider(variableManager -> this.newValueHandler(interpreter, variableManager, viewReferenceWidgetDescription.getBody()));
             }
         }
 
@@ -134,6 +143,4 @@ public class CapellaReferenceWidgetBehaviorConverter extends ReferenceWidgetBeha
         }
         return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of(), this.feedbackMessageService.getFeedbackMessages());
     }
-
-
 }

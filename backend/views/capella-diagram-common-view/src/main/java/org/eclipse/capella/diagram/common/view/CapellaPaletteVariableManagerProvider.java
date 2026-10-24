@@ -19,15 +19,14 @@ import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.representations.VariableManager;
-import org.eclipse.sirius.components.view.emf.diagram.tools.DiagramElementPaletteVariableManagerProvider;
 import org.eclipse.sirius.components.view.emf.diagram.tools.api.IDiagramElementPaletteVariableManagerProvider;
+import org.eclipse.syson.diagram.common.view.services.SysONDiagramElementPaletteVariableManagerProvider;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 /**
  * Defines an explicit absent connector target in node palettes so AQL preconditions can also evaluate selected targets.
- * Sirius Web 2026.9.2 otherwise leaves semanticEdgeTarget undefined before a connector target is selected.
- * Delegates standard variables and preserves any existing target value.
+ * Delegates SysON variables and preserves any existing target value.
  *
  * @author tbezierslafosse
  */
@@ -35,9 +34,9 @@ import org.springframework.stereotype.Service;
 @Primary
 public class CapellaPaletteVariableManagerProvider implements IDiagramElementPaletteVariableManagerProvider {
 
-    private final DiagramElementPaletteVariableManagerProvider delegate;
+    private final SysONDiagramElementPaletteVariableManagerProvider delegate;
 
-    public CapellaPaletteVariableManagerProvider(DiagramElementPaletteVariableManagerProvider delegate) {
+    public CapellaPaletteVariableManagerProvider(SysONDiagramElementPaletteVariableManagerProvider delegate) {
         this.delegate = Objects.requireNonNull(delegate);
     }
 

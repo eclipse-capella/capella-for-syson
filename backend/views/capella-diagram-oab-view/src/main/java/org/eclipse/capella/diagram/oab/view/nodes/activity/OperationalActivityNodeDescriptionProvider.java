@@ -60,8 +60,9 @@ public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDesc
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
-            nodeDescription.setPalette(new OperationalActivityPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider)
-                    .createNodePalette(cache));
+            OperationalActivityPaletteProvider operationalActivityPaletteProvider = new OperationalActivityPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
+            nodeDescription.setPalette(operationalActivityPaletteProvider.createNodePalette(cache));
+            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(operationalActivityPaletteProvider.createEdgeTools(cache)));
             nodeDescription.getReusedChildNodeDescriptions().addAll(this.getReusedChildren(cache));
         });
     }

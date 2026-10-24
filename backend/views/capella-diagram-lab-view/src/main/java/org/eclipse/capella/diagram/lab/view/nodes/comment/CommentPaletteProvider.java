@@ -13,6 +13,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.comment;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
@@ -24,6 +25,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
 import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.nodes.LegacyEdgeToolConverter;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
 import org.eclipse.syson.sysml.Comment;
@@ -65,13 +67,11 @@ public class CommentPaletteProvider {
                         .expression(ServiceMethod.of1(DiagramMutationAQLService::directEditNode).aqlSelf("newLabel"))
                         .build());
 
-        var linkTool = new AnnotatingToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper)
-                .createLinkCommentTool(cache);
-
+        nodeDescription.getEdgeTools().addAll(new LegacyEdgeToolConverter().convertToEdgeToolsWithPalette(
+                List.of(new AnnotatingToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createLinkCommentTool(cache))));
         return this.diagramBuilderHelper.newNodePalette()
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
-                .edgeTools(linkTool)
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();

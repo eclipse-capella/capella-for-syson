@@ -42,8 +42,8 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
-import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -77,8 +77,11 @@ import org.eclipse.sirius.components.view.form.WidgetDescription;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceFactory;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
 import org.eclipse.sirius.components.widget.reference.ReferenceWidgetComponent;
-import org.eclipse.syson.application.services.DetailsViewService;
+import org.eclipse.syson.form.services.FormMutationElementService;
+import org.eclipse.syson.form.services.FormQueryElementService;
 import org.eclipse.syson.form.services.api.IDetailsViewHelpTextProvider;
+import org.eclipse.syson.form.services.aql.FormMutationAQLService;
+import org.eclipse.syson.form.services.aql.FormQueryAQLService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelQueryElementService;
@@ -133,8 +136,11 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         view.getDescriptions().add(viewFormDescription);
 
         // Convert the View-based FormDescription and register the result into the system
+        FormQueryElementService formQueryElementService = new FormQueryElementService(this.composedAdapterFactoryDescriptors, this.readOnlyObjectPredicate, new MetamodelQueryElementService(),
+                this.detailsViewHelpTextProviders);
         AQLInterpreter interpreter = new AQLInterpreter(List.of(CommonQueryService.class, CommonCreationService.class, CommonUpdateService.class, ArcadiaTraceabilityLabelService.class),
-                List.of(new DetailsViewService(this.composedAdapterFactoryDescriptors, this.feedbackMessageService, this.readOnlyObjectPredicate, new MetamodelQueryElementService(), this.detailsViewHelpTextProviders)),
+                List.of(new FormQueryAQLService(formQueryElementService),
+                        new FormMutationAQLService(new FormMutationElementService(this.feedbackMessageService, new MetamodelQueryElementService(), formQueryElementService))),
                 List.of(SysmlPackage.eINSTANCE));
         ViewConverterResult viewConverterResult = this.converter.convert(viewFormDescription, List.of(), interpreter);
         if (viewConverterResult.representationDescription() instanceof org.eclipse.sirius.components.forms.description.FormDescription formDescription) {
@@ -192,9 +198,9 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         RadioDescription radioDescription = FormFactory.eINSTANCE.createRadioDescription();
         radioDescription.setName("ComponentPortDirectionWidget");
         radioDescription.setLabelExpression("Direction");
-        radioDescription.setValueExpression(ServiceMethod.<DetailsViewService, Element, String> of1(DetailsViewService::getEnumValue).aqlSelf("'direction'"));
+        radioDescription.setValueExpression(ServiceMethod.<FormQueryAQLService, Element, String> of1(FormQueryAQLService::getEnumValue).aqlSelf("'direction'"));
 
-        radioDescription.setCandidatesExpression(ServiceMethod.<DetailsViewService, Element, String> of1(DetailsViewService::getEnumCandidates).aqlSelf("'direction'"));
+        radioDescription.setCandidatesExpression(ServiceMethod.<FormQueryAQLService, Element, String> of1(FormQueryAQLService::getEnumCandidates).aqlSelf("'direction'"));
         radioDescription.setCandidateLabelExpression(AQLConstants.AQL + SelectComponent.CANDIDATE_VARIABLE);
 
         ChangeContext setNewDirectionValueChangeContext = ViewFactory.eINSTANCE.createChangeContext();
@@ -225,7 +231,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
 
         ChangeContext setNewValueOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewValueOperation.setExpression(
-                ServiceMethod.<DetailsViewService, Element, String, Object> of2(DetailsViewService::setNewValue).aqlSelf("'declaredName'", ViewFormDescriptionConverter.NEW_VALUE));
+                ServiceMethod.<FormMutationAQLService, Element, String, Object> of2(FormMutationAQLService::setNewValue).aqlSelf("'declaredName'", ViewFormDescriptionConverter.NEW_VALUE));
         textfieldName.getBody().add(setNewValueOperation);
 
         RichTextDescription richTextDescription = FormFactory.eINSTANCE.createRichTextDescription();
@@ -518,7 +524,7 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         RadioDescription radioDescription = FormFactory.eINSTANCE.createRadioDescription();
         radioDescription.setName("FunctionPortDirectionWidget");
         radioDescription.setLabelExpression("Direction");
-        radioDescription.setValueExpression(ServiceMethod.<DetailsViewService, Element, String> of1(DetailsViewService::getEnumValue).aqlSelf("'direction'"));
+        radioDescription.setValueExpression(ServiceMethod.<FormQueryAQLService, Element, String> of1(FormQueryAQLService::getEnumValue).aqlSelf("'direction'"));
 
         radioDescription.setCandidatesExpression(ServiceMethod.of1(CommonQueryService::getExchangeItemEnumLiterals).aqlSelf("'direction'"));
         radioDescription.setCandidateLabelExpression(AQLConstants.AQL + SelectComponent.CANDIDATE_VARIABLE);
