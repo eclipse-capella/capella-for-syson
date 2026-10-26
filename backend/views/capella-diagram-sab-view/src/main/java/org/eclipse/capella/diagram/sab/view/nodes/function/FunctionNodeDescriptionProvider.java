@@ -51,7 +51,6 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .name(NODE_DESCRIPTION_NAME)
                 .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubFunctions).aqlSelf())
                 .style(styleProvider.createFunctionNodeStyle())
-                .conditionalStyles(styleProvider.createFunctionConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
                 .build();

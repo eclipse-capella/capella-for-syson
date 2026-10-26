@@ -16,18 +16,11 @@ package org.eclipse.capella.diagram.lab.view.edges.functionalexchange;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseRepresentationQueryService;
-import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ArrowStyle;
-import org.eclipse.sirius.components.view.diagram.ConditionalEdgeStyle;
 import org.eclipse.sirius.components.view.diagram.EdgeStyle;
 import org.eclipse.sirius.components.view.diagram.LineStyle;
-import org.eclipse.syson.sysml.FlowUsage;
-import org.eclipse.syson.util.ServiceMethod;
-import org.eclipse.syson.util.ViewConstants;
 
 /**
  * Provide Style for Functional Exchange edges.
@@ -57,36 +50,4 @@ public class FunctionalExchangeEdgeStyleProvider {
                 .build();
     }
 
-    public ConditionalEdgeStyle createSeveralFCImpliedInConditionalEdgeStyle() {
-        return this.diagramBuilderHelper.newConditionalEdgeStyle()
-                .condition(ServiceMethod.<TransverseRepresentationQueryService, FlowUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
-                        .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = 99")
-                .edgeWidth(3)
-                .fontSize(12)
-                .borderSize(0)
-                .color(this.colorProvider.getColor(ViewConstants.DEFAULT_EDGE_COLOR))
-                .lineStyle(LineStyle.SOLID)
-                .sourceArrowStyle(ArrowStyle.NONE)
-                .targetArrowStyle(ArrowStyle.NONE)
-                .build();
-    }
-
-    public ConditionalEdgeStyle createFCImpliedInConditionalEdgeStyle(int index) {
-        return this.diagramBuilderHelper.newConditionalEdgeStyle()
-                .condition(ServiceMethod.<TransverseRepresentationQueryService, FlowUsage, IEditingContext, DiagramContext> of2(TransverseRepresentationQueryService::getImpliedInFunctionalChainIndex)
-                        .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
-                .edgeWidth(3)
-                .fontSize(12)
-                .borderSize(0)
-                .color(this.colorProvider.getColor(LABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR + "_" + index))
-                .lineStyle(LineStyle.SOLID)
-                .sourceArrowStyle(ArrowStyle.NONE)
-                .targetArrowStyle(ArrowStyle.NONE)
-                .build();
-    }
-
-    public ConditionalEdgeStyle[] createConditionalEdgeStyles() {
-        return new ConditionalEdgeStyle[] { this.createSeveralFCImpliedInConditionalEdgeStyle(), this.createFCImpliedInConditionalEdgeStyle(0), this.createFCImpliedInConditionalEdgeStyle(1),
-                this.createFCImpliedInConditionalEdgeStyle(2) };
-    }
 }

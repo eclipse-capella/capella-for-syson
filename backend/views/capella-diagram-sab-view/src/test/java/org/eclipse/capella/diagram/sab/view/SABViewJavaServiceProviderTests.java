@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.sab.view;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.eclipse.capella.diagram.customization.styles.FunctionalChainColorPaletteProvider;
 import org.eclipse.capella.model.services.system.analysis.SAMutationService;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
@@ -47,7 +48,7 @@ public class SABViewJavaServiceProviderTests {
     @Test
     public void getServiceClassesShouldReturnSABServicesForSABView() {
         var view = ViewFactory.eINSTANCE.createView();
-        view.getDescriptions().add(new SABViewDiagramDescriptionProvider().create(new SABViewDescriptionProvider().getColorProvider(view)));
+        view.getDescriptions().add(new SABViewDiagramDescriptionProvider().create(new SABViewDescriptionProvider(new FunctionalChainColorPaletteProvider()).getColorProvider(view)));
 
         var services = new SABViewJavaServiceProvider().getServiceClasses(view);
 

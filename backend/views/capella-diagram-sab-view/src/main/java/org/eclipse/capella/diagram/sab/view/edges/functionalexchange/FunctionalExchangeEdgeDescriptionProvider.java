@@ -48,7 +48,6 @@ public class FunctionalExchangeEdgeDescriptionProvider extends AbstractEdgeDescr
                 .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchanges).aqlSelf())
                 .sourceExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeSource).aqlSelf())
                 .style(styleProvider.createEdgeStyle())
-                .conditionalStyles(styleProvider.createConditionalEdgeStyles())
                 .synchronizationPolicy(SynchronizationPolicy.SYNCHRONIZED)
                 .targetExpression(ServiceMethod.of0(CommonQueryService::getFunctionalExchangeTarget).aqlSelf())
                 .palette(new FunctionalExchangePaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper).createEdgePalette())

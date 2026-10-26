@@ -15,14 +15,9 @@ package org.eclipse.capella.diagram.sab.view.nodes.functionalchain;
 import java.util.Objects;
 
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
-import org.eclipse.capella.model.transverse.services.TransverseRepresentationQueryService;
-import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
-import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
-import org.eclipse.sirius.components.view.diagram.ConditionalNodeStyle;
 import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
-import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provides styles for SAB Functional Chain nodes.
@@ -41,20 +36,7 @@ public class FunctionalChainNodeStyleProvider {
     }
 
     public NodeStyleDescription createNodeStyle() {
-        return this.createFunctionalChainNodeStyle(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR);
-    }
-
-    public ConditionalNodeStyle[] createConditionalNodeStyles() {
-        return new ConditionalNodeStyle[] { this.createFunctionalChainConditionalNodeStyle(0), this.createFunctionalChainConditionalNodeStyle(1),
-                this.createFunctionalChainConditionalNodeStyle(2) };
-    }
-
-    private ConditionalNodeStyle createFunctionalChainConditionalNodeStyle(int index) {
-        return this.diagramBuilderHelper.newConditionalNodeStyle()
-                .condition(ServiceMethod.of2(TransverseRepresentationQueryService::getFunctionalChainIndexInDiagram)
-                        .aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT) + " = " + index)
-                .style(this.createFunctionalChainNodeStyle(SABViewConstants.FUNCTIONAL_CHAIN_BACKGROUND_COLOR + "_" + index))
-                .build();
+        return this.createFunctionalChainNodeStyle(SABViewConstants.DEFAULT_FUNCTIONAL_CHAIN_BACKGROUND_COLOR);
     }
 
     private NodeStyleDescription createFunctionalChainNodeStyle(String color) {
