@@ -45,6 +45,7 @@ import {
   ApolloClientOptionsConfigurer,
   apolloClientOptionsConfigurersExtensionPoint,
   DiagramRepresentationConfiguration,
+  footerExtensionPoint,
   ImportLibraryCommand,
   navigationBarIconExtensionPoint,
   navigationBarMenuHelpURLExtensionPoint,
@@ -75,6 +76,7 @@ import BubbleChartIcon from '@mui/icons-material/BubbleChart';
 import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined';
 import { createRoot } from 'react-dom/client';
 import { httpOrigin, wsOrigin } from './core/URL';
+import { CapellaFooter } from './extensions/CapellaFooter';
 import { CapellaNavigationBarIcon } from './extensions/CapellaNavigationBarIcon';
 import './fonts.css';
 import './ReactFlow.css';
@@ -87,6 +89,11 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const extensionRegistry: ExtensionRegistry = new ExtensionRegistry();
+
+extensionRegistry.addComponent(footerExtensionPoint, {
+  identifier: `capella_${footerExtensionPoint.identifier}`,
+  Component: CapellaFooter,
+});
 
 extensionRegistry.addComponent(navigationBarIconExtensionPoint, {
   identifier: `capella_${navigationBarIconExtensionPoint.identifier}`,
