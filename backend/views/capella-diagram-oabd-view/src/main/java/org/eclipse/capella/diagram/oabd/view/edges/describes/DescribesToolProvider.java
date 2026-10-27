@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.oabd.view.edges.describes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oabd.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -40,8 +42,15 @@ public class DescribesToolProvider {
         this.diagramBuilderHelper = diagramBuilderHelper;
     }
 
+    public List<DiagramElementDescription> getTargetDescriptions(IViewDiagramElementFinder cache) {
+        List<DiagramElementDescription> targets = new ArrayList<>();
+        cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targets::add);
+        cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targets::add);
+        return targets;
+    }
+
     public EdgeTool createNewDescribesTool(IViewDiagramElementFinder cache) {
-        List<DiagramElementDescription> targetDiagramElementDescriptions = new ArrayList<>(cache.getNodeDescriptions());
+        List<DiagramElementDescription> targetDiagramElementDescriptions = this.getTargetDescriptions(cache);
         var edgeToolBuilder = this.diagramBuilderHelper.newEdgeTool()
                 .name("New Describes")
                 .targetElementDescriptions(targetDiagramElementDescriptions.toArray(new DiagramElementDescription[0]))
