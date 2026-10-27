@@ -12,18 +12,12 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.edges.describes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.sab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
-import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.syson.sysml.SysmlPackage;
@@ -62,17 +56,12 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
 
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
-        var optEdgeDescription = cache.getEdgeDescription(EDGE_DESCRIPTION_NAME);
-        if (optEdgeDescription.isPresent()) {
-            EdgeDescription edgeDescription = optEdgeDescription.get();
+        cache.getEdgeDescription(EDGE_DESCRIPTION_NAME).ifPresent(edgeDescription -> {
             diagramDescription.getEdgeDescriptions().add(edgeDescription);
-
-            List<DiagramElementDescription> diagramElementDescriptions = new ArrayList<>(cache.getNodeDescriptions());
-            cache.getEdgeDescription(ComponentExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(diagramElementDescriptions::add);
-            cache.getEdgeDescription(FunctionalExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(diagramElementDescriptions::add);
-
-            cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getSourceDescriptions()::add);
-            diagramElementDescriptions.forEach(edgeDescription.getTargetDescriptions()::add);
-        }
+            cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
+                    .ifPresent(edgeDescription.getSourceDescriptions()::add);
+            edgeDescription.getTargetDescriptions().addAll(
+                    new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).getTargetDescriptions(cache));
+        });
     }
 }
