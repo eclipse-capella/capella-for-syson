@@ -297,9 +297,13 @@ public class CommonCreationService {
     }
 
     public AllocationUsage createDescribes(Element source, Element target) {
-        AllocationUsage allocation = this.metamodelMutationElementService.createAllocateEdge(source, target);
-        this.metamodelMutationElementService.initialize(allocation);
-        return allocation;
+        if (this.commonQueryService.isRequirement(source)
+                && (this.commonQueryService.isRequirement(target) || this.commonQueryService.isArcadiaElement(target))) {
+            AllocationUsage allocation = this.metamodelMutationElementService.createAllocateEdge(source, target);
+            this.metamodelMutationElementService.initialize(allocation);
+            return allocation;
+        }
+        return null;
     }
 
     public OccurrenceUsage createOperationalCapability(Element parent) {
