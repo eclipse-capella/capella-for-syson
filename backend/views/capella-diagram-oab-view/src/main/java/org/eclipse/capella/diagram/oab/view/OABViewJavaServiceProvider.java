@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.services.ConnectedElementsService;
 import org.eclipse.capella.diagram.common.view.services.RelatedElementsService;
 
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
@@ -59,6 +60,7 @@ public class OABViewJavaServiceProvider implements IJavaServiceProvider {
         if (optDescription.isPresent()) {
             return List.of(LabelService.class,
                     RelatedElementsService.class,
+                    ConnectedElementsService.class,
                     OAQueryService.class,
                     OARepresentationDropServices.class,
                     TransverseRepresentationReconnectToolServices.class,

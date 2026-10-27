@@ -23,11 +23,13 @@ import org.eclipse.syson.util.SysMLMetamodelHelper;
 import org.junit.jupiter.api.Test;
 
 /**
- * Checks that related elements tools are added to existing palettes on nodes supporting children or ports.
+ * Checks that related element tools are added to existing palettes on nodes supporting children, ports, or connections.
  *
  * @author jgout
  */
 public class RelatedElementsToolProviderTests {
+
+    private static final String SHOW_CONNECTED_ELEMENTS_TOOL = "Show all connected elements";
 
     @Test
     public void addPopulationToolsPreservesExistingPalettesOnParentAndDescendants() {
@@ -45,13 +47,15 @@ public class RelatedElementsToolProviderTests {
         new RelatedElementsToolProvider().addNodeToolSections(diagram);
 
         assertThat(parent.getPalette().getToolSections()).hasSize(2).contains(existingSection);
-        assertThat(List.of(parent, child)).allSatisfy(node -> {
-            assertThat(node.getPalette()).isNotNull();
-            assertThat(node.getPalette().getToolSections())
-                    .filteredOn(section -> RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION.equals(section.getName()))
-                    .singleElement().satisfies(section -> assertThat(section.getNodeTools()).extracting(NodeTool::getName)
-                            .containsExactly("Show all contained elements", "Show all contained elements recursively"));
-        });
+        assertThat(parent.getPalette()).isSameAs(existingPalette);
+        assertThat(parent.getPalette().getToolSections())
+                .filteredOn(section -> RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION.equals(section.getName()))
+                .singleElement().satisfies(section -> assertThat(section.getNodeTools()).extracting(NodeTool::getName)
+                        .containsExactly("Show all contained elements", "Show all contained elements recursively", SHOW_CONNECTED_ELEMENTS_TOOL));
+        assertThat(child.getPalette()).isSameAs(childPalette);
+        assertThat(child.getPalette().getToolSections()).singleElement()
+                .satisfies(section -> assertThat(section.getNodeTools()).extracting(NodeTool::getName)
+                        .containsExactly("Show all contained elements", "Show all contained elements recursively"));
         assertThat(grandchild.getPalette().getToolSections()).isEmpty();
         assertThat(borderNode.getPalette().getToolSections()).isEmpty();
     }
@@ -76,7 +80,7 @@ public class RelatedElementsToolProviderTests {
     }
 
     @Test
-    public void nodesWithoutChildrenKeepTheirPaletteUnchanged() {
+    public void borderOnlyNodesOfferConnectedToolAndPreserveExistingSections() {
         var builders = new DiagramBuilders();
         var existingSection = builders.newNodeToolSection().name("Existing tools").build();
         var palette = builders.newNodePalette().toolSections(existingSection).build();
@@ -86,12 +90,17 @@ public class RelatedElementsToolProviderTests {
 
         new RelatedElementsToolProvider().addNodeToolSections(diagram);
 
-        assertThat(palette.getToolSections()).containsExactly(existingSection);
+        assertThat(node.getPalette()).isSameAs(palette);
+        assertThat(palette.getToolSections()).hasSize(2).contains(existingSection);
+        assertThat(palette.getToolSections())
+                .filteredOn(section -> RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION.equals(section.getName()))
+                .singleElement().satisfies(section -> assertThat(section.getNodeTools()).extracting(NodeTool::getName)
+                        .containsExactly(SHOW_CONNECTED_ELEMENTS_TOOL));
         assertThat(borderNode.getPalette().getToolSections()).isEmpty();
     }
 
     @Test
-    public void componentWithoutChildrenOffersOnlyPortsTool() {
+    public void componentWithoutChildrenOffersPortsAndConnectedTools() {
         var builders = new DiagramBuilders();
         var palette = builders.newNodePalette().build();
         var port = builders.newNodeDescription().name("Port").palette(builders.newNodePalette().build()).build();
@@ -104,13 +113,13 @@ public class RelatedElementsToolProviderTests {
 
         assertThat(component.getPalette().getToolSections()).singleElement().satisfies(section -> {
             assertThat(section.getName()).isEqualTo(RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION);
-            assertThat(section.getNodeTools()).extracting(NodeTool::getName).containsExactly("Show all ports");
+            assertThat(section.getNodeTools()).extracting(NodeTool::getName).containsExactly("Show all ports", SHOW_CONNECTED_ELEMENTS_TOOL);
         });
         assertThat(port.getPalette().getToolSections()).isEmpty();
     }
 
     @Test
-    public void functionWithoutChildrenOffersOnlyPortsTool() {
+    public void functionWithoutChildrenOffersPortsAndConnectedTools() {
         var builders = new DiagramBuilders();
         var palette = builders.newNodePalette().build();
         var port = builders.newNodeDescription().name("Reused port").palette(builders.newNodePalette().build()).build();
@@ -123,7 +132,7 @@ public class RelatedElementsToolProviderTests {
 
         assertThat(function.getPalette().getToolSections()).singleElement().satisfies(section -> {
             assertThat(section.getName()).isEqualTo(RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION);
-            assertThat(section.getNodeTools()).extracting(NodeTool::getName).containsExactly("Show all ports");
+            assertThat(section.getNodeTools()).extracting(NodeTool::getName).containsExactly("Show all ports", SHOW_CONNECTED_ELEMENTS_TOOL);
         });
         assertThat(port.getPalette().getToolSections()).isEmpty();
     }
@@ -144,7 +153,42 @@ public class RelatedElementsToolProviderTests {
         assertThat(component.getPalette().getToolSections()).singleElement().satisfies(section -> {
             assertThat(section.getName()).isEqualTo(RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION);
             assertThat(section.getNodeTools()).extracting(NodeTool::getName)
-                    .containsExactly("Show all contained elements", "Show all contained elements recursively", "Show all ports");
+                    .containsExactly("Show all contained elements", "Show all contained elements recursively", "Show all ports", SHOW_CONNECTED_ELEMENTS_TOOL);
         });
+    }
+
+    @Test
+    public void leafEdgeEndpointsOfferConnectedToolWithoutChildrenOrPorts() {
+        var builders = new DiagramBuilders();
+        var source = builders.newNodeDescription().name("Source").palette(builders.newNodePalette().build()).build();
+        var target = builders.newNodeDescription().name("Target").palette(builders.newNodePalette().build()).build();
+        var isolated = builders.newNodeDescription().name("Isolated").build();
+        var edge = builders.newEdgeDescription().sourceDescriptions(source).targetDescriptions(target).build();
+        var diagram = builders.newDiagramDescription().nodeDescriptions(source, target, isolated).edgeDescriptions(edge).build();
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagram);
+
+        assertThat(List.of(source, target)).allSatisfy(node -> {
+            assertThat(node.getPalette()).isNotNull();
+            assertThat(node.getPalette().getToolSections()).singleElement().satisfies(section -> {
+                assertThat(section.getName()).isEqualTo(RelatedElementsToolProvider.RELATED_ELEMENTS_TOOL_SECTION);
+                assertThat(section.getNodeTools()).extracting(NodeTool::getName).containsExactly(SHOW_CONNECTED_ELEMENTS_TOOL);
+            });
+        });
+        assertThat(isolated.getPalette()).isNull();
+    }
+
+    @Test
+    public void connectedNodesWithoutPaletteKeepTheirPaletteAbsent() {
+        var builders = new DiagramBuilders();
+        var source = builders.newNodeDescription().name("Source").build();
+        var target = builders.newNodeDescription().name("Target").build();
+        var edge = builders.newEdgeDescription().sourceDescriptions(source).targetDescriptions(target).build();
+        var diagram = builders.newDiagramDescription().nodeDescriptions(source, target).edgeDescriptions(edge).build();
+
+        new RelatedElementsToolProvider().addNodeToolSections(diagram);
+
+        assertThat(source.getPalette()).isNull();
+        assertThat(target.getPalette()).isNull();
     }
 }

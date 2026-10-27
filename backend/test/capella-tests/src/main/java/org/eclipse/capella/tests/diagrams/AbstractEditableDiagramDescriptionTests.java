@@ -74,6 +74,17 @@ public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends
     }
 
     @Test
+    public void endpointPalettesHaveConnectedElementsTool() {
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(node -> node.getPalette() != null)
+                .filter(node -> this.diagramDescription.getEdgeDescriptions().stream()
+                        .anyMatch(edge -> edge.getSourceDescriptions().contains(node) || edge.getTargetDescriptions().contains(node))
+                        || !node.getBorderNodesDescriptions().isEmpty() || !node.getReusedBorderNodeDescriptions().isEmpty())
+                .forEach(node -> assertThat(node.getPalette().getToolSections()).flatExtracting(section -> section.getNodeTools())
+                        .extracting(NodeTool::getName).contains("Show all connected elements"));
+    }
+
+    @Test
     @DisplayName("Each EdgeDescription has reconnect tools")
     public void eachEdgeHasReconnectTools() {
         SoftAssertions softly = new SoftAssertions();

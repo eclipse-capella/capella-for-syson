@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.common.view.services;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -32,6 +33,7 @@ import org.eclipse.sirius.components.diagrams.ViewModifier;
 import org.eclipse.sirius.components.diagrams.description.NodeDescription;
 import org.eclipse.sirius.components.diagrams.events.HideDiagramElementEvent;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Namespace;
 import org.eclipse.syson.sysml.PartUsage;
@@ -93,12 +95,9 @@ public class RelatedElementsService {
                 && Objects.equals(node.getTargetObjectId(), parentNode.getTargetObjectId())) {
             parent = parentNode;
         }
-        Map<String, Object> viewsByElementId = new HashMap<>();
-        nodeFinder.getAllNodesMatching(node -> true).forEach(node -> viewsByElementId.putIfAbsent(node.getTargetObjectId(), node));
-        diagramContext.viewCreationRequests().forEach(request -> viewsByElementId.putIfAbsent(request.getTargetObjectId(), request));
-        var viewCreationContext = new ContainedElementsViewCreationContext(this.elementService, this.objectSearchService, this.representationDescriptionSearchService, editingContext, diagramContext, convertedNodes);
-        viewCreationContext.registerElement(this.identityService.getId(self), self);
-        this.showChildren(self, parent, recursive, new RenderingContext(viewsByElementId, viewCreationContext), new HashSet<>());
+        var context = this.createRenderingContext(editingContext, diagramContext, convertedNodes);
+        context.viewCreation().registerElement(this.identityService.getId(self), self);
+        this.showChildren(self, parent, recursive, context, new HashSet<>());
         return self;
     }
 
@@ -111,6 +110,46 @@ public class RelatedElementsService {
             diagramContext.diagramEvents().add(new HideDiagramElementEvent(portIds, false));
         }
         return self;
+    }
+
+    /**
+     * Reveals elements and their graphical owners using one rendering context for the whole operation.
+     */
+    public void showElementsWithOwners(Collection<Element> elements, IEditingContext editingContext, DiagramContext diagramContext,
+            Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
+        var context = this.createRenderingContext(editingContext, diagramContext, convertedNodes);
+        elements.forEach(element -> this.showWithOwner(element, context, new HashSet<>()));
+    }
+
+    private RenderingContext createRenderingContext(IEditingContext editingContext, DiagramContext diagramContext,
+            Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
+        Map<String, Object> viewsByElementId = new HashMap<>();
+        new NodeFinder(diagramContext.diagram()).getAllNodesMatching(node -> true).forEach(node -> viewsByElementId.putIfAbsent(node.getTargetObjectId(), node));
+        diagramContext.viewCreationRequests().forEach(request -> viewsByElementId.putIfAbsent(request.getTargetObjectId(), request));
+        var viewCreationContext = new ContainedElementsViewCreationContext(this.elementService, this.objectSearchService, this.representationDescriptionSearchService,
+                editingContext, diagramContext, convertedNodes);
+        return new RenderingContext(viewsByElementId, viewCreationContext, diagramContext);
+    }
+
+    private Optional<Object> showWithOwner(Element element, RenderingContext context, Set<Element> visited) {
+        if (!visited.add(element)) {
+            return Optional.empty();
+        }
+        Object view = context.viewsByElementId().get(this.identityService.getId(element));
+        if (view instanceof Node node) {
+            this.revealNodeWithAncestors(node, context.diagramContext());
+        }
+        return Optional.ofNullable(view).or(() -> {
+            Element owner = element.getOwner();
+            if (element instanceof ActionUsage function) {
+                owner = this.queryService.getAllocatingComponent(function).<Element>map(component -> component).orElse(owner);
+            }
+            Object parent = null;
+            if (owner != null && (this.queryService.isComponent(owner) || this.queryService.isFunction(owner) || this.queryService.isUserPackage(owner))) {
+                parent = this.showWithOwner(owner, context, visited).orElse(null);
+            }
+            return this.showNode(element, parent, context);
+        });
     }
 
     private void showChildren(Element element, Object parent, boolean recursive, RenderingContext context, Set<Element> visited) {
@@ -145,9 +184,24 @@ public class RelatedElementsService {
         return Optional.ofNullable(view);
     }
 
+    private void revealNodeWithAncestors(Node node, DiagramContext diagramContext) {
+        var finder = new NodeFinder(diagramContext.diagram());
+        Set<String> hiddenIds = new HashSet<>();
+        Object current = node;
+        while (current instanceof Node view) {
+            if (view.getState() == ViewModifier.Hidden) {
+                hiddenIds.add(view.getId());
+            }
+            current = finder.getParent(view);
+        }
+        if (!hiddenIds.isEmpty()) {
+            diagramContext.diagramEvents().add(new HideDiagramElementEvent(hiddenIds, false));
+        }
+    }
+
     /**
      * Context shared by recursive view creation requests.
      */
-    private record RenderingContext(Map<String, Object> viewsByElementId, ContainedElementsViewCreationContext viewCreation) {
+    private record RenderingContext(Map<String, Object> viewsByElementId, ContainedElementsViewCreationContext viewCreation, DiagramContext diagramContext) {
     }
 }
