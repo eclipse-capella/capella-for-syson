@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.sab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.services.ConnectedElementsService;
 import org.eclipse.capella.diagram.common.view.services.RelatedElementsService;
 
 import org.eclipse.capella.model.services.system.analysis.SAMutationService;
@@ -53,6 +54,7 @@ public class SABViewJavaServiceProvider implements IJavaServiceProvider {
         if (handlesSABView) {
             return List.of(
                     RelatedElementsService.class,
+                    ConnectedElementsService.class,
                     SAQueryService.class,
                     SARepresentationDropServices.class,
                     SARepresentationMutationService.class,

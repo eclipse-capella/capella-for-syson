@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.tests.fixtures.SemanticDataTestFixture;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IIdentityService;
@@ -41,12 +44,13 @@ import org.eclipse.sirius.components.diagrams.ViewModifier;
 import org.eclipse.sirius.components.diagrams.components.NodeContainmentKind;
 import org.eclipse.sirius.components.diagrams.description.DiagramDescription;
 import org.eclipse.sirius.components.diagrams.description.NodeDescription;
+import org.eclipse.sirius.components.diagrams.events.HideDiagramElementEvent;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
-import org.eclipse.sirius.components.diagrams.events.HideDiagramElementEvent;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Namespace;
+import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -242,6 +246,91 @@ public class RelatedElementsServiceTests {
         viewCreationContext.createView(element, null);
 
         verify(this.elementService).createView(element, "diagram", "node", null, context, NodeContainmentKind.CHILD_NODE);
+    }
+
+    @Test
+    public void revealStopsAtAlreadyVisitedOwners() {
+        var first = mock(Package.class);
+        var second = mock(Package.class);
+        when(first.getElementId()).thenReturn("first");
+        when(first.getDeclaredName()).thenReturn("First package");
+        when(first.getOwner()).thenReturn(second);
+        when(second.getElementId()).thenReturn("second");
+        when(second.getDeclaredName()).thenReturn("Second package");
+        when(second.getOwner()).thenReturn(first);
+        var context = this.context();
+        this.createViews(context);
+
+        this.service.showElementsWithOwners(List.of(first), null, context, Map.of());
+
+        assertThat(context.viewCreationRequests()).extracting(ViewCreationRequest::getTargetObjectId).containsExactly("second", "first");
+        assertThat(context.viewCreationRequests()).extracting(ViewCreationRequest::getParentElementId).containsExactly("diagram", "second");
+        verify(first).getOwner();
+        verify(second).getOwner();
+    }
+
+    @Test
+    public void repeatedFunctionRevealPreservesAllocationAndDoesNotDuplicateViews() {
+        var model = new SemanticDataTestFixture().createCapellaModel();
+        var creationService = new CommonCreationService();
+        var component = creationService.createComponent(model.getLogicalArchitecturePerspective().getStructurePackage().getElement());
+        var function = creationService.createFunction(component);
+        var owner = function.getOwner();
+        var context = this.context();
+        this.createViews(context);
+
+        this.service.showElementsWithOwners(List.of(function), null, context, Map.of());
+        this.service.showElementsWithOwners(List.of(function), null, context, Map.of());
+
+        assertThat(context.viewCreationRequests()).extracting(ViewCreationRequest::getTargetObjectId)
+                .containsExactly(component.getElementId(), function.getElementId());
+        assertThat(context.viewCreationRequests().getLast().getParentElementId()).isEqualTo(component.getElementId());
+        assertThat(function.getOwner()).isSameAs(owner);
+        assertThat(new CommonQueryService().getAllocatingComponent(function)).isEqualTo(Optional.of(component));
+    }
+
+    @Test
+    public void connectedElementRevealsItsHiddenGraphicalAncestors() {
+        var function = SysmlFactory.eINSTANCE.createActionUsage();
+        var child = mock(Node.class);
+        when(child.getId()).thenReturn("function-view");
+        when(child.getTargetObjectId()).thenReturn(function.getElementId());
+        when(child.getState()).thenReturn(ViewModifier.Hidden);
+        var parent = mock(Node.class);
+        when(parent.getId()).thenReturn("component-view");
+        when(parent.getTargetObjectId()).thenReturn("component");
+        when(parent.getState()).thenReturn(ViewModifier.Hidden);
+        when(parent.getChildNodes()).thenReturn(List.of(child));
+        var context = new DiagramContext(Diagram.newDiagram(this.context().diagram()).nodes(List.of(parent)).build());
+
+        this.service.showElementsWithOwners(List.of(function), null, context, Map.of());
+
+        assertThat(context.diagramEvents()).usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(new HideDiagramElementEvent(Set.of("component-view", "function-view"), false));
+        assertThat(context.viewCreationRequests()).isEmpty();
+    }
+
+    @Test
+    public void containedPopulationReusesHiddenNodesWithoutRevealingThem() {
+        var root = SysmlFactory.eINSTANCE.createPackage();
+        var function = SysmlFactory.eINSTANCE.createActionUsage();
+        this.addMember(root, function);
+        var child = mock(Node.class);
+        when(child.getId()).thenReturn("function-view");
+        when(child.getTargetObjectId()).thenReturn(function.getElementId());
+        when(child.getState()).thenReturn(ViewModifier.Hidden);
+        var parent = mock(Node.class);
+        when(parent.getId()).thenReturn("package-view");
+        when(parent.getTargetObjectId()).thenReturn(root.getElementId());
+        when(parent.getState()).thenReturn(ViewModifier.Hidden);
+        when(parent.getChildNodes()).thenReturn(List.of(child));
+        var context = new DiagramContext(Diagram.newDiagram(this.context().diagram()).nodes(List.of(parent)).build());
+
+        this.service.showContainedElements(root, true, null, context, parent, Map.of());
+
+        assertThat(context.diagramEvents()).isEmpty();
+        assertThat(context.viewCreationRequests()).isEmpty();
+        verifyNoInteractions(this.elementService);
     }
 
     @Test

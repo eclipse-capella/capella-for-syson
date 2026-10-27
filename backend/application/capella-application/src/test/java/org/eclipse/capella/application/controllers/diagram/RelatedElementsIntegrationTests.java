@@ -31,6 +31,7 @@ import org.eclipse.capella.ToolTester;
 import org.eclipse.capella.diagram.customization.dto.SetDiagramFilterStateInput;
 import org.eclipse.capella.diagram.customization.dto.SetDiagramFilterStateSuccessPayload;
 import org.eclipse.capella.diagram.customization.filters.ShowFunctionsDiagramFilter;
+import org.eclipse.capella.diagram.customization.services.api.IDiagramFilterService;
 import org.eclipse.capella.tests.graphql.SetDiagramFilterStateMutationRunner;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.DiagramEventInput;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -66,6 +67,8 @@ import reactor.test.StepVerifier;
 @GivenCapellaServer
 public class RelatedElementsIntegrationTests extends AbstractIntegrationTests {
 
+    private static final String NEW_COMPONENT_TOOL = "New Component";
+
     @Autowired
     private DiagramEventSubscriptionRunner subscriptionRunner;
 
@@ -81,9 +84,13 @@ public class RelatedElementsIntegrationTests extends AbstractIntegrationTests {
     @Autowired
     private IExecuteEditingContextFunctionRunner executeEditingContextFunctionRunner;
 
+    @Autowired
+    private IDiagramFilterService diagramFilterService;
+
     @BeforeEach
     void beforeEach() {
         this.givenInitialServerState.initialize();
+        this.diagramFilterService.cleanDiagramFilters(CapellaProjectData.GraphicalIds.LAB_LOGICAL_ARCHITECTURE_BLANK_DIAGRAM_ID);
     }
 
     @ParameterizedTest
@@ -101,14 +108,14 @@ public class RelatedElementsIntegrationTests extends AbstractIntegrationTests {
 
         Consumer<Object> emptyDiagramConsumer = assertRefreshedDiagramThat(diagram -> assertThat(diagram.getNodes()).isEmpty());
 
-        Runnable createComponent = () -> this.toolTester.invokeDiagramTool(editingContextId, representationId, "New Component");
+        Runnable createComponent = () -> this.toolTester.invokeDiagramTool(editingContextId, representationId, NEW_COMPONENT_TOOL);
 
         Consumer<Object> componentCreationConsumer = assertRefreshedDiagramThat(diagram -> {
             assertThat(diagram.getNodes()).hasSize(1);
             parentNodeId.set(diagram.getNodes().getFirst().getId());
         });
 
-        Runnable createChildComponent = () -> this.toolTester.invokeTool(editingContextId, representationId, parentNodeId.get(), "New Component");
+        Runnable createChildComponent = () -> this.toolTester.invokeTool(editingContextId, representationId, parentNodeId.get(), NEW_COMPONENT_TOOL);
 
         Consumer<Object> childComponentCreationConsumer = assertRefreshedDiagramThat(diagram -> assertThat(diagram.getNodes().getFirst().getChildNodes()).hasSize(1));
 
@@ -605,6 +612,72 @@ public class RelatedElementsIntegrationTests extends AbstractIntegrationTests {
                 .consumeNextWith(visiblePortConsumer)
                 .thenCancel()
                 .verify(Duration.ofSeconds(20));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    public void connectedRequirementRevealsTheDescribedExchangeAndItsEndpoints(boolean hide) {
+        String editingContextId = CapellaProjectData.EDITING_CONTEXT_ID;
+        String representationId = CapellaProjectData.GraphicalIds.SAB_SYSTEM_ANALYSIS_BLANK_DIAGRAM_ID;
+        String systemId = CapellaProjectData.GraphicalIds.SYSTEM_PAR_NODE_ID;
+        var events = this.subscriptionRunner.run(new DiagramEventInput(UUID.randomUUID(), editingContextId, representationId)).flux();
+        var sourceId = new AtomicReference<String>();
+        var targetId = new AtomicReference<String>();
+        var requirementId = new AtomicReference<String>();
+        var exchangeId = new AtomicReference<String>();
+        String removalTool = "Delete from Diagram";
+        if (hide) {
+            removalTool = "Hide";
+        }
+        String tool = removalTool;
+
+        StepVerifier.create(events)
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> assertThat(diagram.getNodes()).hasSize(1)))
+                .then(() -> this.toolTester.invokeDiagramTool(editingContextId, representationId, "New Actor"))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> sourceId.set(diagram.getNodes().stream()
+                        .filter(node -> !node.getId().equals(systemId)).findFirst().orElseThrow().getId())))
+                .then(() -> this.toolTester.invokeDiagramTool(editingContextId, representationId, "New Actor"))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> targetId.set(diagram.getNodes().stream()
+                        .filter(node -> !Set.of(systemId, sourceId.get()).contains(node.getId())).findFirst().orElseThrow().getId())))
+                .then(() -> this.toolTester.invokeConnectorTool(editingContextId, representationId, sourceId.get(), targetId.get(), "New Component Exchange"))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> {
+                    assertThat(diagram.getEdges()).singleElement().satisfies(edge -> exchangeId.set(edge.getId()));
+                }))
+                .then(() -> this.toolTester.invokeDiagramTool(editingContextId, representationId, "New Requirement"))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> requirementId.set(diagram.getNodes().stream()
+                        .filter(node -> !Set.of(systemId, sourceId.get(), targetId.get()).contains(node.getId())).findFirst().orElseThrow().getId())))
+                .then(() -> this.toolTester.invokeConnectorTool(editingContextId, representationId, requirementId.get(), exchangeId.get(), "New Describes"))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> assertThat(diagram.getEdges()).hasSize(2)))
+                .then(() -> this.toolTester.invokeTool(editingContextId, representationId, exchangeId.get(), "Hide"))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> assertThat(diagram.getEdges().stream()
+                        .filter(edge -> edge.getId().equals(exchangeId.get())).findFirst().orElseThrow().getState()).isEqualTo(ViewModifier.Hidden)))
+                .then(() -> this.toolTester.invokeTool(editingContextId, representationId, sourceId.get(), tool))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> {
+                    if (hide) {
+                        assertThat(diagram.getNodes()).hasSize(4);
+                    } else {
+                        assertThat(diagram.getNodes()).hasSize(3);
+                    }
+                }))
+                .then(() -> this.toolTester.invokeTool(editingContextId, representationId, targetId.get(), tool))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> {
+                    if (hide) {
+                        assertThat(new DiagramNavigator(diagram).nodeWithId(sourceId.get()).getNode().getState()).isEqualTo(ViewModifier.Hidden);
+                        assertThat(new DiagramNavigator(diagram).nodeWithId(targetId.get()).getNode().getState()).isEqualTo(ViewModifier.Hidden);
+                    } else {
+                        assertThat(diagram.getNodes()).hasSize(2);
+                        assertThat(diagram.getEdges()).isEmpty();
+                    }
+                }))
+                .then(() -> this.toolTester.invokeTool(editingContextId, representationId, requirementId.get(), "Show all connected elements"))
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> {
+                    assertThat(diagram.getNodes()).hasSize(4).allSatisfy(node -> assertThat(node.getState()).isEqualTo(ViewModifier.Normal));
+                    assertThat(new DiagramNavigator(diagram).nodeWithId(sourceId.get()).getNode().getBorderNodes()).hasSize(1);
+                    assertThat(new DiagramNavigator(diagram).nodeWithId(targetId.get()).getNode().getBorderNodes()).hasSize(1);
+                    assertThat(diagram.getEdges()).hasSize(2).allSatisfy(edge -> assertThat(edge.getState()).isEqualTo(ViewModifier.Normal));
+                }))
+                .thenCancel()
+                .verify(Duration.ofSeconds(30));
     }
 
     private void checkEditingContext(Consumer<IEditingContext> check) {

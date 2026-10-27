@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.capella.diagram.common.view.services.ConnectedElementsService;
 import org.eclipse.capella.diagram.common.view.services.RelatedElementsService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -55,7 +56,7 @@ public class RelatedElementsToolProvider {
         var nodeDescriptions = new ArrayList<NodeDescription>();
         this.collectDescendants(diagramDescription.getNodeDescriptions(), nodeDescriptions);
         nodeDescriptions.forEach(nodeDescription -> {
-            var tools = this.createRelatedElementsTools(nodeDescription);
+            var tools = this.createRelatedElementsTools(nodeDescription, diagramDescription);
             if (!tools.isEmpty() && nodeDescription.getPalette() != null) {
                 var section = this.diagramBuilders.newNodeToolSection()
                         .name(RELATED_ELEMENTS_TOOL_SECTION)
@@ -66,7 +67,7 @@ public class RelatedElementsToolProvider {
         });
     }
 
-    private List<NodeTool> createRelatedElementsTools(NodeDescription nodeDescription) {
+    private List<NodeTool> createRelatedElementsTools(NodeDescription nodeDescription, DiagramDescription diagramDescription) {
         var tools = new ArrayList<NodeTool>();
         if (!nodeDescription.getChildrenDescriptions().isEmpty() || !nodeDescription.getReusedChildNodeDescriptions().isEmpty()) {
             tools.add(this.createContainedElementsTool());
@@ -76,7 +77,16 @@ public class RelatedElementsToolProvider {
                 && (!nodeDescription.getBorderNodesDescriptions().isEmpty() || !nodeDescription.getReusedBorderNodeDescriptions().isEmpty())) {
             tools.add(this.createPortsTool());
         }
+        if (this.hasConnection(nodeDescription, diagramDescription)) {
+            tools.add(this.createConnectedElementsTool());
+        }
         return tools;
+    }
+
+    private boolean hasConnection(NodeDescription nodeDescription, DiagramDescription diagramDescription) {
+        return diagramDescription.getEdgeDescriptions().stream()
+                .anyMatch(edge -> edge.getSourceDescriptions().contains(nodeDescription) || edge.getTargetDescriptions().contains(nodeDescription))
+                || !nodeDescription.getBorderNodesDescriptions().isEmpty() || !nodeDescription.getReusedBorderNodeDescriptions().isEmpty();
     }
 
     private void collectDescendants(List<NodeDescription> nodes, List<NodeDescription> descendants) {
@@ -90,6 +100,17 @@ public class RelatedElementsToolProvider {
     private boolean isPortOwnerNodeDescription(NodeDescription nodeDescription) {
         return Objects.equals(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage()), nodeDescription.getDomainType())
                 || Objects.equals(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getActionUsage()), nodeDescription.getDomainType());
+    }
+
+    private NodeTool createConnectedElementsTool() {
+        return this.diagramBuilders.newNodeTool()
+                .name("Show all connected elements")
+                .iconURLsExpression("/icons/AddReferencedElements.svg")
+                .body(this.viewBuilders.newChangeContext()
+                        .expression(ServiceMethod.of4(ConnectedElementsService::showConnectedElements).aqlSelf(IEditingContext.EDITING_CONTEXT, DiagramContext.DIAGRAM_CONTEXT,
+                                Node.SELECTED_NODE, ViewDiagramDescriptionConverter.CONVERTED_NODES_VARIABLE))
+                        .build())
+                .build();
     }
 
     private NodeTool createPortsTool() {
