@@ -15,6 +15,15 @@ package org.eclipse.capella.diagram.mcb.view;
 import java.util.List;
 
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.syson.diagram.common.view.services.ViewLabelService;
+import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
+import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
+import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
+import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
+import org.eclipse.syson.diagram.services.aql.DiagramQueryAQLService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.springframework.stereotype.Service;
@@ -34,7 +43,16 @@ public class MCBViewJavaServiceProvider implements IJavaServiceProvider {
                 .filter(desc -> MCBViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(desc.getName()))
                 .findFirst();
         if (optDescription.isPresent()) {
-            return List.of(SAQueryService.class);
+            return List.of(SAQueryService.class,
+                    CommonQueryService.class,
+                    CommonCreationService.class,
+                    CommonDeletionService.class,
+                    ViewLabelService.class,
+                    DiagramMutationLabelService.class,
+                    DiagramQueryLabelService.class,
+                    DiagramMutationExposeService.class,
+                    DiagramMutationAQLService.class,
+                    DiagramQueryAQLService.class);
         }
         return List.of();
     }

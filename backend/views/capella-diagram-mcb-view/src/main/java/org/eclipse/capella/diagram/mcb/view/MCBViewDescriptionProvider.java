@@ -13,7 +13,10 @@
 package org.eclipse.capella.diagram.mcb.view;
 
 import org.eclipse.capella.diagram.common.view.IViewDescriptionProvider;
+import org.eclipse.sirius.components.view.ColorPalette;
+import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.View;
+import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.eclipse.syson.services.ColorProvider;
@@ -39,6 +42,23 @@ public class MCBViewDescriptionProvider implements IViewDescriptionProvider {
 
     @Override
     public IColorProvider getColorProvider(View view) {
-        return new ColorProvider(view);
+        IColorProvider colorProvider = new ColorProvider(view);
+        view.getColorPalettes().add(this.createColorPalette());
+        return colorProvider;
+    }
+
+    private ColorPalette createColorPalette() {
+        var colorPalette = ViewFactory.eINSTANCE.createColorPalette();
+        colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.REQUIREMENT_BACKGROUND_COLOR, "#D8C3D6"));
+        colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.REQUIREMENT_BORDER_COLOR, "#72496E"));
+        colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.REQUIREMENT_LABEL_COLOR, "#72496E"));
+        return colorPalette;
+    }
+
+    private FixedColor createFixedColor(String name, String value) {
+        var fixedColor = ViewFactory.eINSTANCE.createFixedColor();
+        fixedColor.setName(name);
+        fixedColor.setValue(value);
+        return fixedColor;
     }
 }
