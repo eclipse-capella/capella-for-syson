@@ -28,6 +28,7 @@ import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.Subsetting;
+import org.eclipse.syson.sysml.SysmlFactory;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -42,6 +43,73 @@ public class ElementCreationTests extends AbstractSemanticTests {
     private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
+
+    @Test
+    public void createDescribesToArcadiaPortShouldPreserveBothEndpoints() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        var requirement = this.commonCreationService.createRequirement(perspective.getElement());
+        var component = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
+        var port = this.commonCreationService.createComponentPort(component, FeatureDirectionKind.IN);
+
+        var describes = this.commonCreationService.createDescribes(requirement, port);
+
+        assertThat(describes).isNotNull();
+        assertThat(this.commonQueryService.getDescribesSource(describes)).isSameAs(requirement);
+        assertThat(this.commonQueryService.getDescribesTarget(describes)).isSameAs(port);
+    }
+
+    @Test
+    public void createDescribesBetweenNativeRequirementsShouldPreserveBothEndpoints() {
+        var parent = this.capellaModel.getOperationalAnalysisPerspective().getElement();
+        var source = this.commonCreationService.createRequirement(parent);
+        var target = this.commonCreationService.createRequirement(parent);
+
+        assertThat(this.commonQueryService.isArcadiaRequirement(source)).isFalse();
+        assertThat(this.commonQueryService.isArcadiaElement(target)).isFalse();
+
+        var describes = this.commonCreationService.createDescribes(source, target);
+
+        assertThat(describes).isNotNull();
+        assertThat(this.commonQueryService.getDescribesSource(describes)).isSameAs(source);
+        assertThat(this.commonQueryService.getDescribesTarget(describes)).isSameAs(target);
+    }
+
+    @Test
+    public void createDescribesToNonArcadiaUsageShouldNotModifyTheModel() {
+        var requirement = this.commonCreationService.createRequirement(this.capellaModel.getLogicalArchitecturePerspective().getElement());
+        var owner = requirement.getOwner();
+        var previousRelationships = List.copyOf(owner.getOwnedRelationship());
+
+        var describes = this.commonCreationService.createDescribes(requirement, SysmlFactory.eINSTANCE.createActionUsage());
+
+        assertThat(describes).isNull();
+        assertThat(owner.getOwnedRelationship()).containsExactlyElementsOf(previousRelationships);
+    }
+
+    @Test
+    public void createDescribesToGeneralizationShouldNotModifyTheModel() {
+        var requirement = this.commonCreationService.createRequirement(this.capellaModel.getOperationalAnalysisPerspective().getElement());
+        var owner = requirement.getOwner();
+        var previousRelationships = List.copyOf(owner.getOwnedRelationship());
+
+        var describes = this.commonCreationService.createDescribes(requirement, SysmlFactory.eINSTANCE.createSubsetting());
+
+        assertThat(describes).isNull();
+        assertThat(owner.getOwnedRelationship()).containsExactlyElementsOf(previousRelationships);
+    }
+
+    @Test
+    public void createDescribesFromNonRequirementShouldNotModifyTheModel() {
+        var parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var source = this.commonCreationService.createComponent(parent);
+        var target = this.commonCreationService.createComponent(parent);
+        var previousRelationships = List.copyOf(parent.getOwnedRelationship());
+
+        var describes = this.commonCreationService.createDescribes(source, target);
+
+        assertThat(describes).isNull();
+        assertThat(parent.getOwnedRelationship()).containsExactlyElementsOf(previousRelationships);
+    }
 
     @Test
     public void createComponentShouldCreateNonActorComponentInParent() {

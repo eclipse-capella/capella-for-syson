@@ -13,9 +13,6 @@
 package org.eclipse.capella.diagram.oaib.view.edges.describes;
 
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
-import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -60,11 +57,10 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         cache.getEdgeDescription(EDGE_DESCRIPTION_NAME).ifPresent(edgeDescription -> {
             diagramDescription.getEdgeDescriptions().add(edgeDescription);
-            cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getSourceDescriptions()::add);
-            cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
-            cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
-            cache.getNodeDescription(OperationalProcessNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
-            cache.getEdgeDescription(InteractionEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(edgeDescription.getTargetDescriptions()::add);
+            cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
+                    .ifPresent(edgeDescription.getSourceDescriptions()::add);
+            edgeDescription.getTargetDescriptions().addAll(
+                    new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).getTargetDescriptions(cache));
         });
     }
 }
