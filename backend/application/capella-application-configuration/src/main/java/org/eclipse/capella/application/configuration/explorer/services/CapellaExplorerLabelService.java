@@ -91,6 +91,8 @@ public class CapellaExplorerLabelService implements IExplorerLabelServiceDelegat
         List<String> result = List.of();
         if (self instanceof ICapellaExplorerFragment fragment) {
             result = fragment.getIconURL();
+        } else if (self instanceof RequirementUsage) {
+            result = List.of("/icons/full/obj16/Requirement.svg");
         } else {
             result = this.capellaImagePathsService.getImagePaths(self);
         }
