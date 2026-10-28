@@ -49,6 +49,7 @@ import org.eclipse.syson.sysml.FeatureChainExpression;
 import org.eclipse.syson.sysml.FeatureChaining;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FeatureReferenceExpression;
+import org.eclipse.syson.sysml.FeatureValue;
 import org.eclipse.syson.sysml.FlowEnd;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
@@ -130,6 +131,8 @@ public class CommonQueryService {
     public static final String CAPABILITIES_PACKAGE = "Capabilities";
 
     public static final String FUNCTIONS_PACKAGE = "Functions";
+
+    public static final String INTERFACES_PACKAGE = "Interfaces";
 
     public static final String REQUIREMENTS_PACKAGE = "Requirements";
 
@@ -1069,6 +1072,10 @@ public class CommonQueryService {
         return this.getArcadiaPerspectiveOwnedPackage(element, FUNCTIONS_PACKAGE);
     }
 
+    public Optional<Package> getInterfacesPackage(Element element) {
+        return this.getArcadiaPerspectiveOwnedPackage(element, INTERFACES_PACKAGE);
+    }
+
     public Optional<ActionUsage> getRootFunction(Package functionsPackage) {
         return functionsPackage.getOwnedElement().stream()
                 .filter(this::isFunction)
@@ -1275,4 +1282,45 @@ public class CommonQueryService {
         return this.getFeatureReferenceValue(usage, ARCADIA_IS_REALIZED_BY);
     }
 
+    /**
+     * Returns the exchange items bound to a function port from its perspective's Interfaces package.
+     *
+     * @param functionPort
+     *         the input or output function port
+     * @return the linked exchange items, or an empty list when no binding exists
+     */
+    public List<ItemUsage> getFunctionPortExchangeItems(Usage functionPort) {
+        if (!this.isFunctionPort(functionPort)) {
+            return List.of();
+        }
+        return this.getInterfacesPackage(functionPort).stream()
+                .flatMap(pack -> functionPort.getOwnedRelationship().stream()
+                        .filter(FeatureValue.class::isInstance)
+                        .map(FeatureValue.class::cast)
+                        .flatMap(value -> this.extractAllFeatures(value.getValue()).stream())
+                        .filter(ItemUsage.class::isInstance)
+                        .map(ItemUsage.class::cast)
+                        .filter(this::isExchangeItem)
+                        .filter(exchangeItem -> EcoreUtil.isAncestor(pack, exchangeItem)))
+                .distinct()
+                .toList();
+    }
+
+    /**
+     * An ItemUsage can be linked to a function port if they share the same perspective, it is typed as an exchange item
+     * and is under the interface package.
+     *
+     * @param functionPort
+     *            the function port
+     * @param exchangeItems
+     *            a list of features
+     * @return true if all the elements of exchangeItems are interfaces
+     */
+    public boolean areInterfacesExchangeItems(Usage functionPort, List<Feature> exchangeItems) {
+        return !exchangeItems.isEmpty() &&
+                this.getInterfacesPackage(functionPort)
+                        .filter(pack -> exchangeItems.stream().allMatch(exchangeItem -> this.isExchangeItem(exchangeItem)
+                                && EcoreUtil.isAncestor(pack, exchangeItem)))
+                        .isPresent();
+    }
 }

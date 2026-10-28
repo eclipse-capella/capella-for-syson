@@ -44,6 +44,7 @@ import org.eclipse.syson.sysml.FeatureValue;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.ItemUsage;
 import org.eclipse.syson.sysml.LiteralBoolean;
+import org.eclipse.syson.sysml.LiteralExpression;
 import org.eclipse.syson.sysml.Membership;
 import org.eclipse.syson.sysml.MetadataUsage;
 import org.eclipse.syson.sysml.ParameterMembership;
@@ -55,6 +56,7 @@ import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.Subsetting;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.sysml.Type;
 import org.eclipse.syson.sysml.Usage;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.slf4j.Logger;
@@ -269,28 +271,26 @@ public class CommonUpdateService {
         String libraryFeatureAbsolutePath = prefix + PATH_SEPARATOR + attributeName;
 
         // Step 1 : We try to retrieve the Reference Usage if it is already defined.
-        Optional<ReferenceUsage> optionalReferenceUsage = usage.getNestedReference().stream().filter(referenceUsage -> attributeName.equals(referenceUsage.getName())).findFirst()
+        Optional<ReferenceUsage> optionalReferenceUsage = usage.getNestedReference().stream()
+                .filter(referenceUsage -> attributeName.equals(referenceUsage.getName()))
+                .findFirst()
                 .or(() -> this.createReferenceUsage(usage, referencedFeatureType, libraryFeatureAbsolutePath));
 
-        // Step 2 : for each values, we create the Feature Value and add it in the reference usage relationships.
-        if (optionalReferenceUsage.isPresent()) {
+        optionalReferenceUsage.ifPresent(referenceUsage -> this.addFeatureValue(referenceUsage, values));
+    }
 
-            //For multivalued (multi reference expression, we add them in an operator expression.
-            if (values.size() > 1) {
+    private void addFeatureValue(Feature feature, List<Expression> values) {
+        if (!values.isEmpty()) {
+            var featureValue = SysmlFactory.eINSTANCE.createFeatureValue();
+            feature.getOwnedRelationship().add(featureValue);
+            if (values.size() == 1) {
+                featureValue.getOwnedRelatedElement().add(values.getFirst());
+            } else {
                 var operatorExpression = SysmlFactory.eINSTANCE.createOperatorExpression();
-                var featureValue = SysmlFactory.eINSTANCE.createFeatureValue();
+                operatorExpression.setOperator(",");
+                values.forEach(value -> operatorExpression.getOwnedRelationship().add(this.createParameter(value)));
                 featureValue.getOwnedRelatedElement().add(operatorExpression);
-                optionalReferenceUsage.get().getOwnedRelationship().add(featureValue);
-                for (Expression value : values) {
-                    var parameter = this.createParameter(value);
-                    operatorExpression.getOwnedRelationship().add(parameter);
-                }
-            } else if (!values.isEmpty()) {
-                var featureValue = SysmlFactory.eINSTANCE.createFeatureValue();
-                featureValue.getOwnedRelatedElement().add(values.get(0));
-                optionalReferenceUsage.get().getOwnedRelationship().add(featureValue);
             }
-
         }
     }
 
@@ -299,9 +299,7 @@ public class CommonUpdateService {
         Feature feature = SysmlFactory.eINSTANCE.createFeature();
         feature.setDirection(FeatureDirectionKind.IN);
         parameterMembership.getOwnedRelatedElement().add(feature);
-        FeatureValue featureValue = SysmlFactory.eINSTANCE.createFeatureValue();
-        feature.getOwnedRelationship().add(featureValue);
-        featureValue.getOwnedRelatedElement().add(value);
+        this.addFeatureValue(feature, List.of(value));
         return parameterMembership;
     }
 
@@ -313,10 +311,8 @@ public class CommonUpdateService {
         if (optionalUsage.isPresent()) {
 
             // Step 2 : we create the Reference Usage
-            var featureMembership = SysmlFactory.eINSTANCE.createFeatureMembership();
-            usage.getOwnedRelationship().add(featureMembership);
             ReferenceUsage referenceUsage = SysmlFactory.eINSTANCE.createReferenceUsage();
-            featureMembership.getOwnedRelatedElement().add(referenceUsage);
+            this.metamodelMutationElementService.addChildInParent(usage, referenceUsage);
 
             // Step 3 : We set the redefinition referencing the library usage (ref usage or attribute usage).
             Redefinition redefinition = SysmlFactory.eINSTANCE.createRedefinition();
@@ -337,6 +333,11 @@ public class CommonUpdateService {
      *         The list of target elements you want to reference
      */
     private void createFeatureReference(Usage usage, String libraryPrefix, String attributeName, List<?> targets, EClass referencedFeatureType) {
+        List<Expression> values = this.createFeatureReferenceExpression(targets);
+        this.redefineFeature(usage, libraryPrefix, attributeName, values, referencedFeatureType);
+    }
+
+    private List<Expression> createFeatureReferenceExpression(List<?> targets) {
         List<Expression> values = new ArrayList<>();
         for (Object target : targets) {
             if (target instanceof Feature targetFeature) {
@@ -347,7 +348,7 @@ public class CommonUpdateService {
                 values.add(featureReferenceExpression);
             }
         }
-        this.redefineFeature(usage, libraryPrefix, attributeName, values, referencedFeatureType);
+        return values;
     }
 
     public Feature setFeatureDirection(Feature feature, Object newValue) {
@@ -544,7 +545,7 @@ public class CommonUpdateService {
     }
 
     public Usage setRealizes(Usage usage, Object newValue) {
-        List<Feature> newValues = this.getNewRealizesValues(usage, newValue);
+        List<Feature> newValues = this.computeUpdatedValues(newValue, this.commonQueryService.getRealizes(usage));
         if (newValues.stream().allMatch(this.commonQueryService.getRealizableElements(usage)::contains)) {
             this.updateRealizes(usage, newValues);
         }
@@ -605,7 +606,19 @@ public class CommonUpdateService {
         }
     }
 
-    private List<Feature> getNewRealizesValues(Usage usage, Object newValue) {
+    /**
+     * Computes the updated values from the given input.
+     * <p>
+     * If the input contains at most one feature, it is appended to the existing values. Otherwise, the supplied
+     * features replace the existing ones. Duplicates are removed after merging, preserving encounter order.
+     *
+     * @param newValue
+     *            a feature or a list of features; null or unsupported input retains the existing values
+     * @param existingValues
+     *            a list of features
+     * @return the distinct updated values
+     */
+    private List<Feature> computeUpdatedValues(Object newValue, List<? extends Feature> existingValues) {
         List<Feature> values = new ArrayList<>();
         if (newValue instanceof List<?> newValues) {
             values.addAll(newValues.stream()
@@ -617,8 +630,65 @@ public class CommonUpdateService {
             values.add(feature);
         }
         if (values.size() <= 1) {
-            values.addAll(this.commonQueryService.getRealizes(usage));
+            values.addAll(existingValues);
         }
         return values.stream().distinct().toList();
+    }
+
+    /**
+     * Binds exchange items from the same perspective's Interfaces package to an input or output function port.
+     *
+     * If newValue is an empty list -> no action <br>
+     * If newValue is a single interface -> add it to the existing elements <br>
+     * If newValue is a collection of elements -> replace the existing collection by the new one
+     *
+     * @param functionPort
+     *            the function port
+     * @param newValue
+     *            an exchange item or a list of exchange items
+     * @return the function port for convenience
+     */
+    public Usage setFunctionPortExchangeItems(Usage functionPort, Object newValue) {
+        List<Feature> exchangeItems = this.computeUpdatedValues(newValue, this.commonQueryService.getFunctionPortExchangeItems(functionPort));
+        if (this.commonQueryService.areInterfacesExchangeItems(functionPort, exchangeItems)) {
+            this.updateFunctionPortExchangeItems(functionPort, exchangeItems);
+        }
+        return functionPort;
+    }
+
+    private void updateFunctionPortExchangeItems(Usage functionPort, List<Feature> newExchangeItems) {
+        List<ItemUsage> existingExchangeItems = this.commonQueryService.getFunctionPortExchangeItems(functionPort);
+        if (!existingExchangeItems.equals(newExchangeItems) && this.commonQueryService.isFunctionPort(functionPort)) {
+            this.setFunctionPortExchangeItemsReferences(functionPort, newExchangeItems);
+        }
+    }
+
+    private void setFunctionPortExchangeItemsReferences(Usage functionPort, List<Feature> newExchangeItems) {
+        this.deleteFunctionPortExchangeItemsReference(functionPort);
+        if (!newExchangeItems.isEmpty()) {
+            this.addFeatureValue(functionPort, this.createFeatureReferenceExpression(newExchangeItems));
+            this.setMultiplicityRange(functionPort, SysmlFactory.eINSTANCE.createLiteralInteger(), SysmlFactory.eINSTANCE.createLiteralInfinity());
+        }
+    }
+
+    private void setMultiplicityRange(Type type, LiteralExpression lowerBound, LiteralExpression higherBound) {
+        Optional.ofNullable(type.getMultiplicity()).ifPresent(this.commonDeletionService::delete);
+        var multiplicity = SysmlFactory.eINSTANCE.createMultiplicityRange();
+        var membership = SysmlFactory.eINSTANCE.createOwningMembership();
+        membership.getOwnedRelatedElement().add(multiplicity);
+        type.getOwnedRelationship().add(membership);
+        this.metamodelMutationElementService.addChildInParent(multiplicity, lowerBound);
+        this.metamodelMutationElementService.addChildInParent(multiplicity, higherBound);
+    }
+
+    private void deleteFunctionPortExchangeItemsReference(Usage functionPort) {
+        // delete all features referencing interfaces
+        // (these references are pure sysml, they do not have a name)
+        functionPort.getOwnedRelationship().stream()
+                .filter(FeatureValue.class::isInstance)
+                .map(FeatureValue.class::cast)
+                .filter(featureValue -> this.commonQueryService.areInterfacesExchangeItems(functionPort, this.commonQueryService.extractAllFeatures(featureValue.getValue())))
+                .toList()
+                .forEach(this.commonDeletionService::delete);
     }
 }
