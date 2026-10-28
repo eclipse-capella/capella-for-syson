@@ -35,6 +35,7 @@ import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.Package;
+import org.eclipse.syson.sysml.RequirementUsage;
 import org.springframework.stereotype.Service;
 
 /**
@@ -81,6 +82,8 @@ public class CapellaImagePathsService {
             imageName = this.computePackageImage(pkg);
         } else if (this.commonQueryService.isDescribes(object)) {
             imageName = String.format(ICONS_FULL_PATH, "Describes");
+        } else if (object instanceof RequirementUsage) {
+            imageName = String.format(ICONS_FULL_PATH, "Requirement");
         } else if (object instanceof Element element) {
             String arcadiaType = this.commonQueryService.getArcadiaType(element).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(null);
             if (arcadiaType != null) {
