@@ -50,7 +50,7 @@ public class OAIBViewDescriptionProvider implements IViewDescriptionProvider {
     private ColorPalette createColorPalette() {
         var colorPalette = ViewFactory.eINSTANCE.createColorPalette();
         colorPalette.getColors().add(this.createFixedColor(OAIBViewConstants.ACTIVITY_BACKGROUND_COLOR, "#F7DA74"));
-        colorPalette.getColors().add(this.createFixedColor(OAIBViewConstants.ACTIVITY_BORDER_COLOR, "#000000"));
+        colorPalette.getColors().add(this.createFixedColor(OAIBViewConstants.ACTIVITY_BORDER_COLOR, "#5B4040"));
         colorPalette.getColors().add(this.createFixedColor(OAIBViewConstants.ACTIVITY_LABEL_COLOR, "#000000"));
         colorPalette.getColors().add(this.createFixedColor(OAIBViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(OAIBViewConstants.INTERACTION_COLOR, "#5B4040"));
