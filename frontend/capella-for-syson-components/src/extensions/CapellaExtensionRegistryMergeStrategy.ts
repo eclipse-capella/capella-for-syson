@@ -15,6 +15,7 @@ import {
   ComponentExtension,
   DataExtension,
   ExtensionRegistryMergeStrategy,
+  WorkbenchViewContribution,
   workbenchMainAreaExtensionPoint,
   workbenchViewContributionExtensionPoint,
 } from '@eclipse-sirius/sirius-components-core';
@@ -50,9 +51,15 @@ export class CapellaExtensionRegistryMergeStrategy
     existingWorkbenchViewContributions: DataExtension<any>,
     newWorkbenchViewContributions: DataExtension<any>
   ): DataExtension<any> {
+    const replacements = new Set(
+      (newWorkbenchViewContributions.data as WorkbenchViewContribution[]).map((contribution) => contribution.id)
+    );
     return {
       identifier: `capella_${workbenchViewContributionExtensionPoint.identifier}`,
-      data: [...existingWorkbenchViewContributions.data, ...newWorkbenchViewContributions.data],
+      data: [
+        ...existingWorkbenchViewContributions.data.filter((contribution) => !replacements.has(contribution.id)),
+        ...newWorkbenchViewContributions.data,
+      ],
     };
   }
 }
