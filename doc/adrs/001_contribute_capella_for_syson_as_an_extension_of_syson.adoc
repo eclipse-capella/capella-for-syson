@@ -1,6 +1,6 @@
 :author: Gwendal Daniel
 :date: 2026-07-20
-:status: proposed
+:status: accepted
 :consulted: Stéphane Bégaudeau, Mélanie Bats
 :informed: Thibault Béziers La Fosse, Arnaud Dieumegard
 :deciders: Stéphane Bégaudeau, Mélanie Bats
@@ -60,8 +60,6 @@ As long as each extension is encapsulating the previous one we are fine, the las
 It will also require all extensions to not perform anything on the frontend unless the backend has validated it. 
 For example, a button can only be displayed if the backend says it.
 
-- We need to see how we can override the frontend jar of SysON.
-Should it be removed from the self-contained jar of SysON by default?
 - Adding custom data structure in the database will bring multiple issues to keep the database schema of SysON aligned with the database schema of the extension (which can be used on top of every SysON version, every x version, etc).
 
 === A self-contained jar with frontend module federation
@@ -150,24 +148,20 @@ The host application and the extensions will most likely use the same database t
 This will create migration/update issues as soon as extension create custom tables that reference host tables.
 This is not an issue at the moment with Capella for SysON, but this is something to keep in mind, we can probably provide some guidelines on how to use the database to limit the issue (we can check how it is done for WordPress or Django plugins)
 
-We will need to define how we want the application to behave when "downgrading" from SysON with Capella for SysON to SysON.
-As mentioned above, splitting the extension in two to still give access to the Arcadia library when Capella is not activated is a first step, but we also need to define what we do with broken representations, projects we know we can't open safely (e.g. a project with a Capella nature without the Arcadia library available).
-Depending on the outcome of these discussions, we may need to implement the decided behavior in SysON and/or Sirius Web.
+The application stores the Arcadia library using Sirius Web's library mechanism, so it remains available when Capella for SysON is deactivated. Capella-specific menus and representations are no longer available in that case.
+We still need to define what we do with broken representations and projects we can't open safely (e.g. a project with a Capella nature without the Arcadia library available).
 
 
 == More Information
 
 === Implementation
 
-1. Find and implement a solution to override how SysON serves its frontend artifacts.
-2. Create an `@AutoConfiguration` in Capella for SysON that takes care of loading the Capella services on application startup.
-3. Update Capella for SysON's build to make it an single jar that doesn't embed SysON or its dependencies (like it was done for EasyMod).
-4. Make SysON serve the Capella for SysON frontend instead of its own.
-5. Use Sirius Web's libraries to store the Arcadia library
-6. Ensure the presence of Capella customization are only visible when the backend says so (e.g. using capabilities).
-
-We will also find a way to ease the development of Capella for SysON, especially to start a SysON server with the Capella for SysON extensions easily.
-This may be done via a standalone maven module used for development only, or a `CapellaForSysONApplication` not packaged in the final product.
+1. SysON serves the Capella for SysON frontend when configured with `spring.web.resources.static-locations=classpath:/static/capella-for-syson/`.
+2. An `@AutoConfiguration` in Capella for SysON loads the Capella services on application startup. The `CapellaForSysONBeanDefinitionRegistryPostProcessor` removes selected SysON beans that must be replaced or disabled.
+3. Capella for SysON's build produces a single shaded JAR that does not embed SysON or its dependencies.
+4. The Arcadia library is stored using Sirius Web's library mechanism and initialized when it is not already available.
+5. Capella customizations are loaded through the extension when it is active.
+6. The standalone `capella-application` reuses the extension artifact for development and integration testing.
 
 
 === References
