@@ -80,6 +80,7 @@ import { CapellaFooter } from './extensions/CapellaFooter';
 import { CapellaNavigationBarIcon } from './extensions/CapellaNavigationBarIcon';
 import './fonts.css';
 import './ReactFlow.css';
+import './semanticBrowser.css';
 import { capellaTheme } from './theme/capellaTheme';
 import './variables.css';
 
