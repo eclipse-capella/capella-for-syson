@@ -55,8 +55,8 @@ public class LABViewDescriptionProvider implements IViewDescriptionProvider {
         var colorPalette = ViewFactory.eINSTANCE.createColorPalette();
 
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_BACKGROUND_COLOR, "#ADC8EC"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_BORDER_COLOR, "#494997"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_LABEL_COLOR, BLACK_COLOR));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_BORDER_COLOR, "#1C2A3F"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_LABEL_COLOR, "#1C2A3F"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTION_BACKGROUND_COLOR, "#CBE5AC"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTION_BORDER_COLOR, "#046866"));
@@ -67,7 +67,7 @@ public class LABViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_BORDER_COLOR, "#18340E"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.FUNCTIONAL_CHAIN_LABEL_COLOR, BLACK_COLOR));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BACKGROUND_COLOR, "#D0F1FE"));
-        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BORDER_COLOR, "#494997"));
+        colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_BORDER_COLOR, "#1C2A3F"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.ACTOR_LABEL_COLOR, BLACK_COLOR));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_PORT_BACKGROUND_COLOR, "#FFFFFF"));
         colorPalette.getColors().add(this.createFixedColor(LABViewConstants.COMPONENT_PORT_BORDER_COLOR, "#1C2A3F"));
