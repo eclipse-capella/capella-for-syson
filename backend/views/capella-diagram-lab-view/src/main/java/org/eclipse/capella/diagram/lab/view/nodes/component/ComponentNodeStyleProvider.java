@@ -41,7 +41,7 @@ public class ComponentNodeStyleProvider {
                 .background(this.colorProvider.getColor(LABViewConstants.COMPONENT_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(LABViewConstants.COMPONENT_BORDER_COLOR))
                 .borderRadius(0)
-                .borderSize(1)
+                .borderSize(2)
                 .build();
     }
 
@@ -50,7 +50,7 @@ public class ComponentNodeStyleProvider {
                 .background(this.colorProvider.getColor(LABViewConstants.ACTOR_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(LABViewConstants.ACTOR_BORDER_COLOR))
                 .borderRadius(0)
-                .borderSize(1)
+                .borderSize(2)
                 .build();
     }
 }

@@ -138,6 +138,7 @@ public class LABPackageNodeDescriptionProvider extends AbstractPackageNodeDescri
         SysMLPackageNodeStyleDescription nodeStyleDescription = SysMLCustomnodesFactory.eINSTANCE.createSysMLPackageNodeStyleDescription();
         nodeStyleDescription.setBorderColor(this.colorProvider.getColor(LABViewConstants.PACKAGE_BORDER_COLOR));
         nodeStyleDescription.setBorderRadius(0);
+        nodeStyleDescription.setBorderSize(2);
         nodeStyleDescription.setBackground(this.colorProvider.getColor(LABViewConstants.PACKAGE_BACKGROUND_COLOR));
         nodeStyleDescription.setChildrenLayoutStrategy(new FreeFormLayoutStrategyDescriptionBuilder().build());
         return nodeStyleDescription;

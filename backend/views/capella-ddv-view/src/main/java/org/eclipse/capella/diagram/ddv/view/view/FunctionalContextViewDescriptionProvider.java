@@ -52,7 +52,7 @@ public class FunctionalContextViewDescriptionProvider implements IViewDescriptio
 
         colorPalette.getColors().add(this.createFixedColor(DDVViewConstants.COMPONENT_BACKGROUND_COLOR, "#7A8CC8"));
         colorPalette.getColors().add(this.createFixedColor(DDVViewConstants.COMPONENT_BORDER_COLOR, "#1C2A3F"));
-        colorPalette.getColors().add(this.createFixedColor(DDVViewConstants.COMPONENT_LABEL_COLOR, "#FFFFFF"));
+        colorPalette.getColors().add(this.createFixedColor(DDVViewConstants.COMPONENT_LABEL_COLOR, "#1C2A3F"));
         colorPalette.getColors().add(this.createFixedColor(DDVViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(DDVViewConstants.ROOT_FUNCTION_BACKGROUND_COLOR, "#CBE5AC"));
         colorPalette.getColors().add(this.createFixedColor(DDVViewConstants.ROOT_FUNCTION_BORDER_COLOR, "#046866"));

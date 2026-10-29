@@ -55,6 +55,7 @@ import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
@@ -128,6 +129,28 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     protected abstract IRepresentationDescriptionProvider getRepresentationDescriptionProvider();
 
     protected abstract IJavaServiceProvider getJavaServiceProvider();
+
+    @Test
+    public void eachNonBorderNodeHasDefaultBorderSizeOfTwo() {
+        var nodeDescriptions = EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class).toList();
+        var borderNodeDescriptions = new HashSet<NodeDescription>();
+        nodeDescriptions.forEach(nodeDescription -> {
+            borderNodeDescriptions.addAll(nodeDescription.getBorderNodesDescriptions());
+            borderNodeDescriptions.addAll(nodeDescription.getReusedBorderNodeDescriptions());
+        });
+
+        SoftAssertions softly = new SoftAssertions();
+        nodeDescriptions.stream()
+                .filter(Predicate.not(this.isCompartment()))
+                .filter(Predicate.not(borderNodeDescriptions::contains))
+                .forEach(nodeDescription -> softly.assertThat(nodeDescription.getStyle())
+                        .as("Default style of node '%s' should have a border size of 2", nodeDescription.getName())
+                        .isNotNull()
+                        .extracting(NodeStyleDescription::getBorderSize)
+                        .isEqualTo(2));
+
+        softly.assertAll();
+    }
 
     @Test
     @DisplayName("Every reused Node Description has a container")

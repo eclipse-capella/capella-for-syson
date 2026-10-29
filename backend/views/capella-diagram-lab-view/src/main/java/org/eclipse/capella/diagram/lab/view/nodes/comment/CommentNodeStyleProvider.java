@@ -39,7 +39,7 @@ public class CommentNodeStyleProvider {
         SysMLNoteNodeStyleDescription noteStyle = SysMLCustomnodesFactory.eINSTANCE.createSysMLNoteNodeStyleDescription();
         noteStyle.setBorderColor(this.colorProvider.getColor(LABViewConstants.COMMENT_BORDER_COLOR));
         noteStyle.setBorderRadius(0);
-        noteStyle.setBorderSize(1);
+        noteStyle.setBorderSize(2);
         noteStyle.setBackground(this.colorProvider.getColor(LABViewConstants.COMMENT_BACKGROUND_COLOR));
         noteStyle.setChildrenLayoutStrategy(new FreeFormLayoutStrategyDescriptionBuilder().build());
         return noteStyle;

@@ -45,7 +45,7 @@ public class FunctionNodeStyleProvider {
         return this.diagramBuilderHelper.newRectangularNodeStyleDescription()
                 .background(this.colorProvider.getColor(SABViewConstants.FUNCTION_BACKGROUND_COLOR))
                 .borderColor(this.colorProvider.getColor(SABViewConstants.FUNCTION_BORDER_COLOR))
-                .borderRadius(0)
+                .borderRadius(8)
                 .borderSize(2)
                 .build();
     }
