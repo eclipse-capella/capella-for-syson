@@ -85,10 +85,12 @@ public class CapellaDetailsViewDescriptionProvider implements IEditingContextPro
 
     public static final String CAPELLA_DETAILS_VIEW = "Capella Details View";
 
+    public static final String SOURCE_ID = UUID.nameUUIDFromBytes(CAPELLA_DETAILS_VIEW.getBytes()).toString();
+
     @Override
     public void preProcess(IEditingContext editingContext) {
         if (editingContext instanceof EditingContext siriusWebEditingContext) {
-            var resource = new JSONResourceFactory().createResourceFromPath(UUID.nameUUIDFromBytes(CAPELLA_DETAILS_VIEW.getBytes()).toString());
+            var resource = new JSONResourceFactory().createResourceFromPath(SOURCE_ID);
             resource.eAdapters().add(new ResourceMetadataAdapter(CAPELLA_DETAILS_VIEW, true));
             View view = ViewFactory.eINSTANCE.createView();
             resource.getContents().add(view);
