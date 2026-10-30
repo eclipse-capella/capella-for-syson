@@ -16,20 +16,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.eclipse.capella.application.configuration.template.CapellaProjectTemplateProvider;
+import org.eclipse.capella.model.transverse.services.CapellaProjectService;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IRepresentationDescriptionSearchService;
 import org.eclipse.sirius.components.trees.description.TreeDescription;
 import org.eclipse.sirius.components.view.emf.IViewRepresentationDescriptionSearchService;
 import org.eclipse.sirius.components.view.emf.tree.ITreeIdProvider;
-import org.eclipse.sirius.web.application.UUIDParser;
 import org.eclipse.sirius.web.application.views.explorer.services.api.IExplorerTreeDescriptionProvider;
-import org.eclipse.sirius.web.projects.domain.Nature;
-import org.eclipse.sirius.web.projects.domain.Project;
-import org.eclipse.sirius.web.projects.domain.services.api.IProjectSearchService;
-import org.eclipse.sirius.web.projects.semanticdata.domain.ProjectSemanticData;
-import org.eclipse.sirius.web.projects.semanticdata.domain.services.api.IProjectSemanticDataSearchService;
-import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
 
 /**
@@ -44,16 +37,13 @@ public class CapellaExplorerContributionProvider implements IExplorerTreeDescrip
 
     private final IViewRepresentationDescriptionSearchService viewRepresentationDescriptionSearchService;
 
-    private final IProjectSearchService projectSearchService;
-
-    private final IProjectSemanticDataSearchService projectSemanticDataSearchService;
+    private final CapellaProjectService capellaProjectService;
 
     public CapellaExplorerContributionProvider(IRepresentationDescriptionSearchService representationDescriptionSearchService,
-            IViewRepresentationDescriptionSearchService viewRepresentationDescriptionSearchService, IProjectSearchService projectSearchService, IProjectSemanticDataSearchService projectSemanticDataSearchService) {
+            IViewRepresentationDescriptionSearchService viewRepresentationDescriptionSearchService, CapellaProjectService capellaProjectService) {
         this.representationDescriptionSearchService = Objects.requireNonNull(representationDescriptionSearchService);
         this.viewRepresentationDescriptionSearchService = Objects.requireNonNull(viewRepresentationDescriptionSearchService);
-        this.projectSearchService = Objects.requireNonNull(projectSearchService);
-        this.projectSemanticDataSearchService = Objects.requireNonNull(projectSemanticDataSearchService);
+        this.capellaProjectService = Objects.requireNonNull(capellaProjectService);
     }
 
     @Override
@@ -63,7 +53,7 @@ public class CapellaExplorerContributionProvider implements IExplorerTreeDescrip
 
     private Optional<TreeDescription> getCapellaExplorerTreeDescription(IEditingContext editingContext) {
         Optional<TreeDescription> result = Optional.empty();
-        if (this.isCapellaProject(editingContext.getId())) {
+        if (this.capellaProjectService.isCapellaProject(editingContext.getId())) {
             result = this.representationDescriptionSearchService
                     .findAll(editingContext).values().stream()
                     .filter(TreeDescription.class::isInstance)
@@ -83,22 +73,6 @@ public class CapellaExplorerContributionProvider implements IExplorerTreeDescrip
             }
         }
         return false;
-    }
-
-    private boolean isCapellaProject(String editingContextId) {
-        return new UUIDParser().parse(editingContextId)
-                .flatMap(semanticDataId -> this.projectSemanticDataSearchService.findBySemanticDataId(AggregateReference.to(semanticDataId)))
-                .map(ProjectSemanticData::getProject)
-                .map(AggregateReference::getId)
-                .flatMap(this.projectSearchService::findById)
-                .filter(this::isCapella)
-                .isPresent();
-    }
-
-    private boolean isCapella(Project project) {
-        return project.getNatures().stream()
-                .map(Nature::name)
-                .anyMatch(CapellaProjectTemplateProvider.CAPELLA_NATURE::equals);
     }
 
 }

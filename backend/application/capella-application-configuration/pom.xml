@@ -40,6 +40,11 @@
 			<version>2026.9.4</version>
 		</dependency>
 		<dependency>
+			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-common-view</artifactId>
+			<version>2026.9.4</version>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.sirius</groupId>
 			<artifactId>sirius-components-tests</artifactId>
 			<version>${sirius.web.version}</version>
