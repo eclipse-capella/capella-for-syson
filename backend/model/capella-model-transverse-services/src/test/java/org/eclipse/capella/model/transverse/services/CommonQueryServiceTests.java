@@ -14,15 +14,19 @@ package org.eclipse.capella.model.transverse.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
-import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.FeatureTyping;
+import org.eclipse.syson.sysml.SysmlFactory;
+import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
@@ -33,6 +37,68 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class CommonQueryServiceTests extends AbstractSemanticTests {
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
+
+    @ParameterizedTest
+    @EnumSource(value = FeatureDirectionKind.class, names = { "IN", "OUT" })
+    public void getFunctionPortExchangeItemsShouldReturnSingleAndMultipleBindings(FeatureDirectionKind direction) {
+        var creationService = new CommonCreationService();
+        var updateService = new CommonUpdateService();
+        var function = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var port = creationService.createFunctionPort(function, direction);
+        var interfaces = this.capellaModel.getLogicalArchitecturePerspective().getInterfacesPackage().getElement();
+        var firstItem = creationService.createNewExchangeItem(interfaces);
+        var nestedPackage = SysmlFactory.eINSTANCE.createPackage();
+        new MetamodelMutationElementService().addChildInParent(interfaces, nestedPackage);
+        var secondItem = creationService.createNewExchangeItem(nestedPackage);
+
+        assertThat(this.commonQueryService.getFunctionPortExchangeItems(port)).isEmpty();
+
+        updateService.setFunctionPortExchangeItems(port, firstItem);
+        assertThat(this.commonQueryService.getFunctionPortExchangeItems(port)).containsExactly(firstItem);
+
+        updateService.setFunctionPortExchangeItems(port, List.of(firstItem, secondItem));
+        assertThat(this.commonQueryService.getFunctionPortExchangeItems(port)).containsExactly(firstItem, secondItem);
+    }
+
+    @Test
+    public void getFunctionPortExchangeItemsWhenPortIsReferenceUsageShouldReturnBindings() {
+        var function = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var port = SysmlFactory.eINSTANCE.createReferenceUsage();
+        port.setDirection(FeatureDirectionKind.OUT);
+        new MetamodelMutationElementService().addChildInParent(function, port);
+        new ArcadiaLibraryServices().typeWithExchangeItem(port);
+        var item = new CommonCreationService().createNewExchangeItem(this.capellaModel.getLogicalArchitecturePerspective().getInterfacesPackage().getElement());
+        new CommonUpdateService().setFunctionPortExchangeItems(port, item);
+
+        assertThat(this.commonQueryService.getFunctionPortExchangeItems(port)).containsExactly(item);
+        assertThat(this.commonQueryService.getFunctionPortExchangeItems(item)).isEmpty();
+        assertThat(this.commonQueryService.getFunctionPortExchangeItems(function)).isEmpty();
+    }
+
+    @Test
+    public void getFunctionPortExchangeItemsShouldIgnoreUnrelatedValuesAndOtherPerspectives() {
+        var creationService = new CommonCreationService();
+        var function = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var port = creationService.createFunctionPort(function, FeatureDirectionKind.IN);
+        var item = creationService.createNewExchangeItem(this.capellaModel.getLogicalArchitecturePerspective().getInterfacesPackage().getElement());
+        var otherPerspectiveItem = creationService.createNewExchangeItem(this.capellaModel.getSystemAnalysisPerspective().getInterfacesPackage().getElement());
+        var outsideInterfacesItem = creationService.createNewExchangeItem(function.getOwner());
+        var literalValue = SysmlFactory.eINSTANCE.createFeatureValue();
+        literalValue.getOwnedRelatedElement().add(SysmlFactory.eINSTANCE.createLiteralBoolean());
+        port.getOwnedRelationship().add(literalValue);
+        for (var referencedFeature : List.of(function, otherPerspectiveItem, outsideInterfacesItem, item, item)) {
+            var value = SysmlFactory.eINSTANCE.createFeatureValue();
+            var expression = SysmlFactory.eINSTANCE.createFeatureReferenceExpression();
+            var membership = SysmlFactory.eINSTANCE.createMembership();
+            membership.setMemberElement(referencedFeature);
+            expression.getOwnedRelationship().add(membership);
+            value.getOwnedRelatedElement().add(expression);
+            port.getOwnedRelationship().add(value);
+        }
+
+        assertThat(this.commonQueryService.getFunctionPortExchangeItems(port)).containsExactly(item);
+        assertThat(port.getOwnedRelationship()).contains(literalValue);
+    }
 
     @Test
     public void getRequirementsShouldIncludeNativeAndArcadiaRequirementsFromTheSamePerspective() {
