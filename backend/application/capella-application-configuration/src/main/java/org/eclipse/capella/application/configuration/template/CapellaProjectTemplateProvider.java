@@ -14,6 +14,7 @@ package org.eclipse.capella.application.configuration.template;
 
 import java.util.List;
 
+import org.eclipse.capella.model.transverse.services.CapellaProjectService;
 import org.eclipse.sirius.web.application.project.services.api.IProjectTemplateProvider;
 import org.eclipse.sirius.web.application.project.services.api.ProjectTemplate;
 import org.eclipse.sirius.web.application.project.services.api.ProjectTemplateNature;
@@ -30,12 +31,10 @@ public class CapellaProjectTemplateProvider implements IProjectTemplateProvider 
 
     public static final String CAPELLA_TEMPLATE_ID = "capella-template";
 
-    public static final String CAPELLA_NATURE = "siriusWeb://nature?kind=capella";
-
     @Override
     public List<ProjectTemplate> getProjectTemplates() {
         return List.of(new ProjectTemplate(CAPELLA_TEMPLATE_ID, "Capella", "/images/logo_capella.png",
-                List.of(new ProjectTemplateNature(CAPELLA_NATURE)),
+                List.of(new ProjectTemplateNature(CapellaProjectService.CAPELLA_NATURE)),
                 List.of(new ProjectTemplateRequiredLibrary("capella", "arcadia", "0.0.1"))));
     }
 }
