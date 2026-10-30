@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +61,7 @@ public class LABDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(new RelatedElementsToolProvider().createDiagramToolSection())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentNodeTool(cache),
