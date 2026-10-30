@@ -44,6 +44,20 @@ public class ElementCreationTests extends AbstractSemanticTests {
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
+    public void createDescribesToArcadiaPortShouldBePossible() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        var requirement = this.commonCreationService.createRequirement(perspective.getElement());
+        var component = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
+        var port = this.commonCreationService.createComponentPort(component, FeatureDirectionKind.IN);
+
+        var describes = this.commonCreationService.createDescribes(requirement, port);
+
+        assertThat(describes).isNotNull();
+        assertThat(this.commonQueryService.getDescribesSource(describes)).isSameAs(requirement);
+        assertThat(this.commonQueryService.getDescribesTarget(describes)).isSameAs(port);
+    }
+
+    @Test
     public void createComponentShouldCreateNonActorComponentInParent() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component = this.commonCreationService.createComponent(parent);
