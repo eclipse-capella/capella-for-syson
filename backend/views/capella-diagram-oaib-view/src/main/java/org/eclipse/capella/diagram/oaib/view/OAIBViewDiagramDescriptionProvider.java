@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oaib.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionEdgeDescriptionProvider;
@@ -76,6 +77,7 @@ public class OAIBViewDiagramDescriptionProvider implements IRepresentationDescri
         providers.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
         providers.forEach(provider -> provider.link(diagramDescription, cache));
         diagramDescription.setPalette(new OAIBDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache));
+        new RelatedElementsToolProvider().addNodeToolSections(diagramDescription);
         return diagramDescription;
     }
 }
