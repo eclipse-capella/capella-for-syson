@@ -12,8 +12,6 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view.nodes.requirement;
 
-import java.util.List;
-
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.describes.DescribesToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
@@ -72,8 +70,7 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
                             .initialDirectEditLabelExpression(ServiceMethod.<DiagramQueryLabelService, Element>of0(DiagramQueryLabelService::getDefaultInitialDirectEditLabel).aqlSelf())
                             .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of1(DiagramMutationLabelService::directEditNode).aqlSelf("newLabel")).build()).build())
                     .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool()).build());
-            nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(
-                    List.of(new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewDescribesTool(cache))));
+            nodeDescription.getEdgeTools().add(new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewDescribesTool(cache));
             String documentationCompartmentName = this.nameGenerator.getCompartmentName(SysmlPackage.eINSTANCE.getRequirementUsage(),
                     SysmlPackage.eINSTANCE.getElement_Documentation());
             cache.getNodeDescription(documentationCompartmentName)

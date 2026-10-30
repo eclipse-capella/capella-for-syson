@@ -12,6 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityToolProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessToolProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementToolProvider;
@@ -44,6 +45,7 @@ public class OAIBDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(new RelatedElementsToolProvider().createDiagramToolSection())
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(
                         new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),

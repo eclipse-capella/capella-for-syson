@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oaib.view.edges.describes;
 
 import java.util.ArrayList;
 
+import java.util.List;
 import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessNodeDescriptionProvider;
@@ -25,6 +26,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
+import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.ServiceMethod;
 
 /**
@@ -44,14 +46,33 @@ public class DescribesToolProvider {
     }
 
     public EdgeTool createNewDescribesTool(IViewDiagramElementFinder cache) {
-        var targetDescriptions = new ArrayList<DiagramElementDescription>();
-        cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targetDescriptions::add);
-        cache.getNodeDescription(OperationalProcessNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targetDescriptions::add);
-        cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targetDescriptions::add);
-        cache.getEdgeDescription(InteractionEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(targetDescriptions::add);
         return this.diagramBuilderHelper.newEdgeTool()
                 .name("New Describes")
-                .targetElementDescriptions(targetDescriptions.toArray(new DiagramElementDescription[0]))
+                .targetElementDescriptions(this.getTargetDescriptions(cache).toArray(DiagramElementDescription[]::new))
+                .palette(this.diagramBuilderHelper.newNodePalette()
+                        .nodeTools(this.createNewDescribesAction())
+                        .build())
+                .build();
+    }
+
+    /**
+     * Returns the descriptions representing Arcadia usages that can be described.
+     *
+     * @param cache the diagram element descriptions
+     * @return the targets shared by the creation tool and the edge mapping
+     */
+    public List<DiagramElementDescription> getTargetDescriptions(IViewDiagramElementFinder cache) {
+        List<DiagramElementDescription> targets = new ArrayList<>();
+        cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targets::add);
+        cache.getNodeDescription(OperationalProcessNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targets::add);
+        cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targets::add);
+        cache.getEdgeDescription(InteractionEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME).ifPresent(targets::add);
+        return targets;
+    }
+
+    private NodeTool createNewDescribesAction() {
+        return this.diagramBuilderHelper.newNodeTool()
+                .name("New Describes")
                 .iconURLsExpression("/icons/full/obj16/Describes.svg")
                 .body(this.viewBuilderHelper.newChangeContext()
                         .expression(ServiceMethod.of1(CommonCreationService::createDescribes)

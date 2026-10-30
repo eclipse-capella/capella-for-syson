@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.oabd.view.edges.describes;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.capella.diagram.oabd.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oabd.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -41,7 +43,7 @@ public class DescribesToolProvider {
     }
 
     public EdgeTool createNewDescribesTool(IViewDiagramElementFinder cache) {
-        List<DiagramElementDescription> targetDiagramElementDescriptions = new ArrayList<>(cache.getNodeDescriptions());
+        List<DiagramElementDescription> targetDiagramElementDescriptions = this.getTargetDescriptions(cache);
         var edgeToolBuilder = this.diagramBuilderHelper.newEdgeTool()
                 .name("New Describes")
                 .targetElementDescriptions(targetDiagramElementDescriptions.toArray(new DiagramElementDescription[0]))
@@ -51,5 +53,18 @@ public class DescribesToolProvider {
                         .build());
 
         return edgeToolBuilder.build();
+    }
+
+    /**
+     * Returns the descriptions representing Arcadia usages that can be described.
+     *
+     * @param cache the diagram element descriptions
+     * @return the targets shared by the creation tool and the edge mapping
+     */
+    public List<DiagramElementDescription> getTargetDescriptions(IViewDiagramElementFinder cache) {
+        List<DiagramElementDescription> targets = new ArrayList<>();
+        cache.getNodeDescription(OperationalActivityNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targets::add);
+        cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(targets::add);
+        return targets;
     }
 }

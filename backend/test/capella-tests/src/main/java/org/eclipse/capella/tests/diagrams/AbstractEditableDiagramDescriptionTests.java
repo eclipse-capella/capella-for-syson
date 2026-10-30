@@ -18,9 +18,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.SoftAssertions;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.components.view.diagram.NodeTool;
+import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
+import org.eclipse.syson.util.SysMLMetamodelHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +34,55 @@ import org.junit.jupiter.api.Test;
  * @author gdaniel
  */
 public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends AbstractDiagramDescriptionTests {
+
+    protected void assertDescribesTargets(String... expectedTargetNames) {
+        var describes = this.diagramDescription.getEdgeDescriptions().stream()
+                .filter(edge -> "DescribesEdgeDescription".equals(edge.getName()))
+                .findFirst().orElseThrow();
+        assertThat(describes.getTargetDescriptions()).extracting(DiagramElementDescription::getName)
+                .containsExactlyInAnyOrder(expectedTargetNames);
+        assertThat(describes.getSourceDescriptions()).extracting(DiagramElementDescription::getName)
+                .containsExactly("RequirementNodeDescription");
+        var requirement = (NodeDescription) describes.getSourceDescriptions().getFirst();
+        assertThat(requirement.getEdgeTools()).singleElement().satisfies(tool ->
+                assertThat(tool.getTargetElementDescriptions()).containsExactlyElementsOf(describes.getTargetDescriptions()));
+    }
+
+    @Test
+    @DisplayName("Diagram palette offers direct and recursive population tools")
+    public void diagramHasContainedElementsTools() {
+        assertThat(this.diagramDescription.getPalette().getToolSections()).flatExtracting(section -> section.getNodeTools())
+                .extracting(NodeTool::getName)
+                .contains("Show all contained elements", "Show all contained elements recursively");
+    }
+
+    @Test
+    @DisplayName("Component and function palettes offer ports only when the diagram describes border nodes")
+    public void nodePalettesHaveRelatedElementsTools() {
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(node -> SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage()).equals(node.getDomainType())
+                        || SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getActionUsage()).equals(node.getDomainType()))
+                .forEach(node -> {
+                    assertThat(node.getPalette()).as("Palette of %s", node.getName()).isNotNull();
+                    var tools = node.getPalette().getToolSections().stream().flatMap(section -> section.getNodeTools().stream()).map(NodeTool::getName).toList();
+                    if (!node.getBorderNodesDescriptions().isEmpty() || !node.getReusedBorderNodeDescriptions().isEmpty()) {
+                        assertThat(tools).contains("Show all ports");
+                    } else {
+                        assertThat(tools).doesNotContain("Show all ports");
+                    }
+                });
+    }
+
+    @Test
+    public void endpointPalettesHaveConnectedElementsTool() {
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(node -> node.getPalette() != null)
+                .filter(node -> this.diagramDescription.getEdgeDescriptions().stream()
+                        .anyMatch(edge -> edge.getSourceDescriptions().contains(node) || edge.getTargetDescriptions().contains(node))
+                        || !node.getBorderNodesDescriptions().isEmpty() || !node.getReusedBorderNodeDescriptions().isEmpty())
+                .forEach(node -> assertThat(node.getPalette().getToolSections()).flatExtracting(section -> section.getNodeTools())
+                        .extracting(NodeTool::getName).contains("Show all connected elements"));
+    }
 
     @Test
     @DisplayName("Each EdgeDescription has reconnect tools")
