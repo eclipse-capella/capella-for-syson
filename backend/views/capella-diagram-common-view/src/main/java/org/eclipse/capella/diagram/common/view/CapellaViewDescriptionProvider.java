@@ -38,6 +38,10 @@ public class CapellaViewDescriptionProvider implements IEditingContextProcessor 
                 .toList();
     }
 
+    public boolean isCapellaView(View view) {
+        return this.views.contains(view);
+    }
+
     @Override
     public void preProcess(IEditingContext editingContext) {
         if (editingContext instanceof EditingContext siriusWebEditingContext) {

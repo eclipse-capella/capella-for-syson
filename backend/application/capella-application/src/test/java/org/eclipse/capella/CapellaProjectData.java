@@ -318,6 +318,8 @@ public class CapellaProjectData {
 
         public static final String ROOT_FUNCTION_ACT_ID_5 = "43d85e5c-b822-47ee-ba9c-4dc9a5a66e71";
 
+        public static final String SEND_DATA_FUNCTION_ID = "1d1f4487-dc3a-4132-b788-23dfcb89c522";
+
         public static final String STRUCTURE_PAC_ID = "2c0356db-7873-4418-9695-25d464cad4f8";
 
         public static final String STRUCTURE_PAC_ID_2 = "a00fc07c-bc6e-499b-ac3d-f2598ab505f0";
