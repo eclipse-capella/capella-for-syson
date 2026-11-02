@@ -26,6 +26,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
+import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.ServiceMethod;
 
 /**
@@ -56,14 +57,22 @@ public class AnnotatingToolProvider {
         cache.getEdgeDescription(ComponentExchangeEdgeDescriptionProvider.EDGE_DESCRIPTION_NAME)
                 .ifPresent(targetDiagramElementDescriptions::add);
 
-        var edgeToolBuilder = this.diagramBuilderHelper.newEdgeTool()
+        return this.diagramBuilderHelper.newEdgeTool()
+                .name("Link to Element")
+                .targetElementDescriptions(targetDiagramElementDescriptions.toArray(new DiagramElementDescription[0]))
+                .palette(this.diagramBuilderHelper.newNodePalette()
+                        .nodeTools(this.createLinkCommentAction())
+                        .build())
+                .build();
+    }
+
+    private NodeTool createLinkCommentAction() {
+        return this.diagramBuilderHelper.newNodeTool()
                 .name("Link to Element")
                 .iconURLsExpression("/icons/full/obj16/Annotation.svg")
-                .targetElementDescriptions(targetDiagramElementDescriptions.toArray(new DiagramElementDescription[0]))
                 .body(this.viewBuilderHelper.newChangeContext()
                         .expression(ServiceMethod.of1(LARepresentationMutationService::createCommentLink).aql(EdgeDescription.SEMANTIC_EDGE_SOURCE, EdgeDescription.SEMANTIC_EDGE_TARGET))
-                        .build());
-
-        return edgeToolBuilder.build();
+                        .build())
+                .build();
     }
 }

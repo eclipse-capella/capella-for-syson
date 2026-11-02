@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
+
 import org.eclipse.capella.diagram.sab.view.nodes.actor.SystemActorToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.functionalchain.FunctionalChainToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementToolProvider;
@@ -45,6 +47,7 @@ public class SABDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(new RelatedElementsToolProvider().createDiagramToolSection())
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(
                         new SystemActorToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewSystemActorNodeTool(cache),
