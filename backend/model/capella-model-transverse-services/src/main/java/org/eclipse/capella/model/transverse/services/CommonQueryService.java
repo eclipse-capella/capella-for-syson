@@ -453,8 +453,8 @@ public class CommonQueryService {
                 .stream()
                 .flatMap(List::stream)
                 .filter(documentation -> ARCADIA_DESCRIPTION.equals(documentation.getDeclaredName()))
-                .map(Documentation::getBody)
                 .findFirst()
+                .map(Documentation::getBody)
                 .orElse("");
     }
 
