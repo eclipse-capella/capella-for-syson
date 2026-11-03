@@ -23,7 +23,11 @@ import java.util.UUID;
 
 import org.eclipse.sirius.components.collaborative.diagrams.dto.InvokeSingleClickOnDiagramElementToolInput;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.InvokeSingleClickOnDiagramElementToolSuccessPayload;
+import org.eclipse.sirius.components.collaborative.diagrams.dto.InvokeSingleClickOnTwoDiagramElementsToolInput;
+import org.eclipse.sirius.components.collaborative.diagrams.dto.InvokeSingleClickOnTwoDiagramElementsToolSuccessPayload;
+import org.eclipse.sirius.components.diagrams.tests.graphql.ConnectorPaletteQueryRunner;
 import org.eclipse.sirius.components.diagrams.tests.graphql.InvokeSingleClickOnDiagramElementToolMutationRunner;
+import org.eclipse.sirius.components.diagrams.tests.graphql.InvokeSingleClickOnTwoDiagramElementsToolMutationRunner;
 import org.eclipse.sirius.components.diagrams.tests.graphql.PaletteQueryRunner;
 import org.springframework.stereotype.Service;
 
@@ -40,9 +44,16 @@ public class ToolTester {
 
     private final PaletteQueryRunner paletteQueryRunner;
 
-    public ToolTester(InvokeSingleClickOnDiagramElementToolMutationRunner invokeSingleClickOnDiagramElementToolMutationRunner, PaletteQueryRunner paletteQueryRunner) {
+    private final ConnectorPaletteQueryRunner connectorPaletteQueryRunner;
+
+    private final InvokeSingleClickOnTwoDiagramElementsToolMutationRunner invokeSingleClickOnTwoDiagramElementsToolMutationRunner;
+
+    public ToolTester(InvokeSingleClickOnDiagramElementToolMutationRunner invokeSingleClickOnDiagramElementToolMutationRunner, PaletteQueryRunner paletteQueryRunner,
+            ConnectorPaletteQueryRunner connectorPaletteQueryRunner, InvokeSingleClickOnTwoDiagramElementsToolMutationRunner invokeSingleClickOnTwoDiagramElementsToolMutationRunner) {
         this.invokeSingleClickOnDiagramElementToolMutationRunner = Objects.requireNonNull(invokeSingleClickOnDiagramElementToolMutationRunner);
         this.paletteQueryRunner = Objects.requireNonNull(paletteQueryRunner);
+        this.connectorPaletteQueryRunner = Objects.requireNonNull(connectorPaletteQueryRunner);
+        this.invokeSingleClickOnTwoDiagramElementsToolMutationRunner = Objects.requireNonNull(invokeSingleClickOnTwoDiagramElementsToolMutationRunner);
     }
 
     public void invokeDiagramTool(String editingContextId, String representationId, String toolLabel) {
@@ -67,6 +78,23 @@ public class ToolTester {
         assertThat(messages).isEmpty();
     }
 
+    public void invokeConnectorTool(String editingContextId, String representationId, String sourceId, String targetId, String toolLabel) {
+        var palette = this.connectorPaletteQueryRunner.run(Map.of(
+                "editingContextId", editingContextId,
+                "representationId", representationId,
+                "sourceDiagramElementId", sourceId,
+                "targetDiagramElementId", targetId)).data();
+        List<String> toolIds = JsonPath.read(palette, "$.data.viewer.editingContext.representation.description.connectorPalette.paletteEntries[?(@.label == '" + toolLabel + "')].id");
+        assertThat(toolIds).as("The connector tool '%s' should be available", toolLabel).hasSize(1);
+        var input = new InvokeSingleClickOnTwoDiagramElementsToolInput(UUID.randomUUID(), editingContextId, representationId,
+                sourceId, targetId, 0, 0, 0, 0, toolIds.getFirst(), List.of());
+        var result = this.invokeSingleClickOnTwoDiagramElementsToolMutationRunner.run(input).data();
+        String typename = JsonPath.read(result, "$.data.invokeSingleClickOnTwoDiagramElementsTool.__typename");
+        assertThat(typename).withFailMessage(result).isEqualTo(InvokeSingleClickOnTwoDiagramElementsToolSuccessPayload.class.getSimpleName());
+        List<String> messages = JsonPath.read(result, "$.data.invokeSingleClickOnTwoDiagramElementsTool.messages[*].body");
+        assertThat(messages).isEmpty();
+    }
+
     private String getToolId(String editingContextId, String representationId, String diagramElementId, String toolLabel) {
         Map<String, Object> variables = Map.of(
                 "editingContextId", editingContextId,
@@ -76,6 +104,14 @@ public class ToolTester {
         var result = this.paletteQueryRunner.run(variables).data();
         List<String> toolIds = JsonPath.read(result,
                 "$.data.viewer.editingContext.representation.description.palette.paletteEntries[?(@.label == '" + toolLabel + "')].id");
+        if (toolIds.isEmpty()) {
+            toolIds = JsonPath.read(result,
+                    "$.data.viewer.editingContext.representation.description.palette.paletteEntries[*].tools[?(@.label == '" + toolLabel + "')].id");
+        }
+        if (toolIds.isEmpty()) {
+            toolIds = JsonPath.read(result,
+                    "$.data.viewer.editingContext.representation.description.palette.quickAccessTools[?(@.label == '" + toolLabel + "')].id");
+        }
         assertThat(toolIds).as("The tool '%s' should be available", toolLabel).hasSize(1);
         return toolIds.getFirst();
     }

@@ -13,19 +13,13 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.edges.describes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentNodeDescriptionProvider;
-import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
-import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.ServiceMethod;
@@ -64,32 +58,13 @@ public class DescribesEdgeDescriptionProvider extends AbstractEdgeDescriptionPro
 
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
-        var optEdgeDescription = cache.getEdgeDescription(this.getEdgeDescriptionName());
-        if (optEdgeDescription.isPresent()) {
-            EdgeDescription edgeDescription = optEdgeDescription.get();
+        cache.getEdgeDescription(EDGE_DESCRIPTION_NAME).ifPresent(edgeDescription -> {
             diagramDescription.getEdgeDescriptions().add(edgeDescription);
-
-            // Get specific node descriptions for allocation sources and targets
-            List<NodeDescription> nodeDescriptions = this.getSourceAndTargetNodes(cache);
-
-            // Add only NodeDescriptions (not EdgeDescriptions!) as sources and targets
-            nodeDescriptions.forEach(nodeDescription -> {
-                edgeDescription.getSourceDescriptions().add(nodeDescription);
-                edgeDescription.getTargetDescriptions().add(nodeDescription);
-            });
-        }
-    }
-
-    /**
-     * Get the list of NodeDescriptions that can be sources or targets of an allocation edge.
-     * This is explicit to avoid adding duplicate or invalid descriptions.
-     */
-    private List<NodeDescription> getSourceAndTargetNodes(IViewDiagramElementFinder cache) {
-        var nodes = new ArrayList<NodeDescription>();
-        cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodes::add);
-        cache.getNodeDescription(FunctionNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodes::add);
-        cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodes::add);
-        return nodes;
+            cache.getNodeDescription(RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME)
+                    .ifPresent(edgeDescription.getSourceDescriptions()::add);
+            edgeDescription.getTargetDescriptions().addAll(
+                    new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).getTargetDescriptions(cache));
+        });
     }
 
     private String getEdgeDescriptionName() {
