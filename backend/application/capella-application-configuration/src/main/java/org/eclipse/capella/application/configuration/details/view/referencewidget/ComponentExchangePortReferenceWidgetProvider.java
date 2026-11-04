@@ -28,7 +28,6 @@ import org.eclipse.sirius.components.representations.IStatus;
 import org.eclipse.sirius.components.representations.Success;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
-import org.eclipse.sirius.components.widget.reference.ReferenceWidgetComponent;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
@@ -98,11 +97,19 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
     }
 
     @Override
-    public IStatus handleItemRemoved(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        Object owner = variableManager.getVariables().get(VariableManager.SELF);
-        if (owner instanceof InterfaceUsage interfaceUsage) {
-            variableManager.get(ReferenceWidgetComponent.ITEM_VARIABLE, Feature.class)
-                    .ifPresent(feature -> this.commonUpdateService.deleteFeaturesFromReference(interfaceUsage, "", referenceDescription.getReferenceNameExpression(), null, List.of(feature)));
+    public IStatus handleAdd(ReferenceWidgetDescription referenceDescription, EObject owner, List<Object> newValues) {
+        return new Failure("Adding values to this reference is not supported.");
+    }
+
+    @Override
+    public IStatus handleSet(ReferenceWidgetDescription referenceDescription, EObject owner, Object newValue) {
+        return new Failure("Setting this reference is not supported.");
+    }
+
+    @Override
+    public IStatus handleRemove(ReferenceWidgetDescription referenceDescription, EObject owner, Object value) {
+        if (owner instanceof InterfaceUsage interfaceUsage && value instanceof Feature feature) {
+            this.commonUpdateService.deleteFeaturesFromReference(interfaceUsage, "", referenceDescription.getReferenceNameExpression(), null, List.of(feature));
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
@@ -114,8 +121,7 @@ public class ComponentExchangePortReferenceWidgetProvider implements ICapellaRef
     }
 
     @Override
-    public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
-        Object owner = variableManager.getVariables().get(VariableManager.SELF);
+    public IStatus handleClear(ReferenceWidgetDescription referenceDescription, EObject owner) {
         if (owner instanceof FlowUsage flowUsage) {
             Optional.ofNullable(flowUsage.getPayloadFeature()).ifPresent(this.commonDeletionService::delete);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());

@@ -14,83 +14,141 @@ package org.eclipse.capella.application.configuration.details.view.referencewidg
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.Optional;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.widget.reference.api.IReferenceWidgetAddElementHandler;
 import org.eclipse.sirius.components.collaborative.widget.reference.api.IReferenceWidgetClearHandler;
+import org.eclipse.sirius.components.collaborative.widget.reference.api.IReferenceWidgetRemoveHandler;
+import org.eclipse.sirius.components.collaborative.widget.reference.api.IReferenceWidgetSetElementHandler;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.forms.description.FormDescription;
 import org.eclipse.sirius.components.representations.Failure;
 import org.eclipse.sirius.components.representations.IStatus;
-import org.eclipse.sirius.components.representations.Success;
+import org.eclipse.sirius.components.view.emf.form.api.IViewFormDescriptionSearchService;
+import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
 import org.eclipse.sirius.components.widget.reference.ReferenceWidget;
-import org.eclipse.sirius.components.widget.reference.ReferenceValue;
-import org.eclipse.sirius.web.application.views.details.services.DetailsViewReferenceWidgetAddElementHandler;
-import org.eclipse.sirius.web.application.views.details.services.DetailsViewReferenceWidgetClearHandler;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 /**
- * Routes Arcadia reference additions and clearing through their converted callbacks instead of EMF references.
- * The reference name prefix identifies virtual Capella references; ordinary Details widgets retain Sirius Web handling.
+ * Resolves reference action inputs and delegates virtual reference editing to the matching Capella provider.
  *
  * @author tbezierslafosse
  */
 @Service
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class CapellaReferenceWidgetHandler implements IReferenceWidgetAddElementHandler, IReferenceWidgetClearHandler {
+public class CapellaReferenceWidgetHandler implements IReferenceWidgetAddElementHandler, IReferenceWidgetSetElementHandler,
+        IReferenceWidgetRemoveHandler, IReferenceWidgetClearHandler {
+
+    private static final String CANNOT_BE_EDITED_STATUS_MESSAGE = "This reference cannot be edited";
 
     private final IObjectSearchService objectSearchService;
 
-    private final DetailsViewReferenceWidgetAddElementHandler addElementHandler;
+    private final IViewFormDescriptionSearchService viewFormDescriptionSearchService;
 
-    private final DetailsViewReferenceWidgetClearHandler clearHandler;
+    private final List<ICapellaReferenceWidgetProvider> capellaReferenceWidgetProviders;
 
-    public CapellaReferenceWidgetHandler(IObjectSearchService objectSearchService, DetailsViewReferenceWidgetAddElementHandler addElementHandler,
-            DetailsViewReferenceWidgetClearHandler clearHandler) {
+    public CapellaReferenceWidgetHandler(IObjectSearchService objectSearchService, IViewFormDescriptionSearchService viewFormDescriptionSearchService,
+            List<ICapellaReferenceWidgetProvider> capellaReferenceWidgetProviders) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
-        this.addElementHandler = Objects.requireNonNull(addElementHandler);
-        this.clearHandler = Objects.requireNonNull(clearHandler);
+        this.viewFormDescriptionSearchService = Objects.requireNonNull(viewFormDescriptionSearchService);
+        this.capellaReferenceWidgetProviders = Objects.requireNonNull(capellaReferenceWidgetProviders);
     }
 
     @Override
-    public boolean canHandle(FormDescription formDescription) {
-        return this.addElementHandler.canHandle(formDescription);
+    public boolean canHandle(IEditingContext editingContext, FormDescription formDescription, ReferenceWidget referenceWidget) {
+        return referenceWidget.getReferenceName().startsWith(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX);
     }
 
     @Override
-    public IStatus add(IEditingContext editingContext, FormDescription formDescription, ReferenceWidget referenceWidget, List<String> newValueIds) {
-        if (!referenceWidget.getReferenceName().startsWith(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX)) {
-            return this.addElementHandler.add(editingContext, formDescription, referenceWidget, newValueIds);
-        }
-        IStatus status = new Failure("This reference cannot be edited.");
-        if (!referenceWidget.isReadOnly() && referenceWidget.getSetHandler() != null) {
-            if (newValueIds.isEmpty()) {
-                status = new Success();
-            } else {
-                var ids = Stream.concat(referenceWidget.getReferenceValues().stream().map(ReferenceValue::getId), newValueIds.stream()).distinct().toList();
-                List<Object> values = ids.stream().flatMap(id -> this.objectSearchService.getObject(editingContext, id).stream()).toList();
-                if (values.size() == ids.size()) {
-                    status = referenceWidget.getSetHandler().apply(values);
-                } else {
-                    status = new Failure("The referenced elements could not be found.");
-                }
+    public IStatus add(IEditingContext editingContext, FormDescription formDescription, ReferenceWidget widget, List<String> newValueIds) {
+        var description = this.findDescription(editingContext, widget).filter(candidate -> widget.isSelectable() && candidate.getAdd() != null);
+        var owner = this.objectSearchService.getObject(editingContext, widget.getOwnerId())
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast);
+        IStatus status = new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE);
+        if (description.isPresent() && owner.isPresent() && !widget.isReadOnly()) {
+            var ids = newValueIds.stream().distinct().toList();
+            var values = ids.stream()
+                    .flatMap(id -> this.objectSearchService.getObject(editingContext, id).stream())
+                    .toList();
+            // Reject the whole selection if any ID is missing
+            if (values.size() == ids.size()) {
+                status = this.capellaReferenceWidgetProviders.stream()
+                        .filter(provider -> provider.canHandle(description.get()))
+                        .findFirst()
+                        .map(provider -> provider.handleAdd(description.get(), owner.get(), values))
+                        .orElse(new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE));
             }
         }
         return status;
     }
 
     @Override
-    public IStatus clear(IEditingContext editingContext, FormDescription formDescription, ReferenceWidget referenceWidget) {
-        if (!referenceWidget.getReferenceName().startsWith(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX)) {
-            return this.clearHandler.clear(editingContext, formDescription, referenceWidget);
-        }
-        IStatus status = new Failure("This reference cannot be edited.");
-        if (!referenceWidget.isReadOnly() && referenceWidget.getSetHandler() != null) {
-            status = referenceWidget.getSetHandler().apply(List.of());
+    public IStatus set(IEditingContext editingContext, FormDescription formDescription, ReferenceWidget widget, String newValueId) {
+        var description = this.findDescription(editingContext, widget).filter(candidate -> widget.isSelectable() && candidate.getSet() != null);
+        var owner = this.objectSearchService.getObject(editingContext, widget.getOwnerId())
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast);
+        var value = this.objectSearchService.getObject(editingContext, newValueId);
+        IStatus status = new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE);
+        if (description.isPresent() && owner.isPresent() && !widget.isReadOnly()) {
+            status = new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE);
+            if (value.isPresent()) {
+                status = this.capellaReferenceWidgetProviders.stream()
+                        .filter(provider -> provider.canHandle(description.get()))
+                        .findFirst()
+                        .map(provider -> provider.handleSet(description.get(), owner.get(), value.get()))
+                        .orElse(new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE));
+            }
         }
         return status;
+    }
+
+    @Override
+    public IStatus remove(IEditingContext editingContext, FormDescription formDescription, ReferenceWidget widget, String itemId) {
+        var description = this.findDescription(editingContext, widget).filter(candidate -> widget.isRemovable() && candidate.getRemove() != null);
+        var owner = this.objectSearchService.getObject(editingContext, widget.getOwnerId())
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast);
+        var value = this.objectSearchService.getObject(editingContext, itemId);
+        IStatus status = new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE);
+        if (description.isPresent() && owner.isPresent() && !widget.isReadOnly()) {
+            status = new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE);
+            if (value.isPresent()) {
+                status = this.capellaReferenceWidgetProviders.stream()
+                        .filter(provider -> provider.canHandle(description.get()))
+                        .findFirst()
+                        .map(provider -> provider.handleRemove(description.get(), owner.get(), value.get()))
+                        .orElse(new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE));
+            }
+        }
+        return status;
+    }
+
+    @Override
+    public IStatus clear(IEditingContext editingContext, FormDescription formDescription, ReferenceWidget widget) {
+        var description = this.findDescription(editingContext, widget).filter(candidate -> widget.getClearButton() != null && candidate.getClearButton() != null);
+        var owner = this.objectSearchService.getObject(editingContext, widget.getOwnerId())
+                .filter(EObject.class::isInstance)
+                .map(EObject.class::cast);
+        IStatus status = new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE);
+        if (description.isPresent() && owner.isPresent() && !widget.isReadOnly()) {
+            status = this.capellaReferenceWidgetProviders.stream()
+                    .filter(provider -> provider.canHandle(description.get()))
+                    .findFirst()
+                    .map(provider -> provider.handleClear(description.get(), owner.get()))
+                    .orElse(new Failure(CANNOT_BE_EDITED_STATUS_MESSAGE));
+        }
+        return status;
+    }
+
+    private Optional<ReferenceWidgetDescription> findDescription(IEditingContext editingContext, ReferenceWidget widget) {
+        return this.viewFormDescriptionSearchService.findFormElementDescriptionById(editingContext, widget.getDescriptionId())
+                .filter(ReferenceWidgetDescription.class::isInstance)
+                .map(ReferenceWidgetDescription.class::cast);
     }
 }

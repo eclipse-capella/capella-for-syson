@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.Failure;
 import org.eclipse.sirius.components.representations.IStatus;
@@ -65,7 +66,17 @@ public class IsRealizedByReferenceWidgetProvider implements ICapellaReferenceWid
     }
 
     @Override
-    public IStatus handleItemRemoved(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
+    public IStatus handleAdd(ReferenceWidgetDescription referenceDescription, EObject owner, List<Object> newValues) {
+        return new Failure("Adding values to this reference is not supported.");
+    }
+
+    @Override
+    public IStatus handleSet(ReferenceWidgetDescription referenceDescription, EObject owner, Object newValue) {
+        return new Failure("Setting this reference is not supported.");
+    }
+
+    @Override
+    public IStatus handleRemove(ReferenceWidgetDescription referenceDescription, EObject owner, Object value) {
         // Cannot be edited
         return new Failure(ERROR_MSG);
     }
@@ -76,7 +87,7 @@ public class IsRealizedByReferenceWidgetProvider implements ICapellaReferenceWid
     }
 
     @Override
-    public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
+    public IStatus handleClear(ReferenceWidgetDescription referenceDescription, EObject owner) {
         // Cannot be edited
         return new Failure(ERROR_MSG);
     }

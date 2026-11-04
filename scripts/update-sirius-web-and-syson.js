@@ -19,7 +19,7 @@ let newSysonVersion = process.argv[3];
 
 if (!newSiriusWebVersion) {
   console.log("Use this script like this:");
-  console.log("node scripts/update-sirius-web.js 2024.7.1");
+  console.log("node scripts/update-sirius-web-and-syson.js 2026.9.5 2026.9.6");
   process.exit(1);
 }
 

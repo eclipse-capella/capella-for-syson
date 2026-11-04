@@ -97,6 +97,9 @@ public class CapellaReferenceWidgetPropertiesConverter extends ReferenceWidgetPr
                     .referenceNameProvider(variableManager -> ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + referenceNameProvider.apply(variableManager))
                     .isContainmentProvider(variableManager -> this.isContainment(interpreter, variableManager, viewReferenceWidgetDescription))
                     .isManyProvider(variableManager -> this.isMany(interpreter, variableManager, viewReferenceWidgetDescription))
+                    .selectableProvider(variableManager -> this.isSelectable(interpreter, variableManager, viewReferenceWidgetDescription))
+                    .removableProvider(variableManager -> viewReferenceWidgetDescription.getRemove() != null
+                            && this.isActionEnabled(interpreter, variableManager, viewReferenceWidgetDescription.getRemove().getPreconditionExpression()))
                     .ownerIdProvider(variableManager -> this.getOwnerId(interpreter, viewReferenceWidgetDescription, variableManager))
                     .styleProvider(this.getStyleProvider(viewReferenceWidgetDescription, interpreter))
                     .diagnosticsProvider(variableManager -> List.of())
@@ -105,6 +108,18 @@ public class CapellaReferenceWidgetPropertiesConverter extends ReferenceWidgetPr
         } else {
             super.convert(referenceWidgetDescriptionBuilder, viewReferenceWidgetDescription, interpreter);
         }
+    }
+
+    private boolean isSelectable(AQLInterpreter interpreter, VariableManager variableManager, ReferenceWidgetDescription description) {
+        // Virtual references get their multiplicity from the Capella provider, not an EReference.
+        if (this.isMany(interpreter, variableManager, description)) {
+            return description.getAdd() != null && this.isActionEnabled(interpreter, variableManager, description.getAdd().getPreconditionExpression());
+        }
+        return description.getSet() != null && this.isActionEnabled(interpreter, variableManager, description.getSet().getPreconditionExpression());
+    }
+
+    private boolean isActionEnabled(AQLInterpreter interpreter, VariableManager variableManager, String expression) {
+        return expression == null || expression.isBlank() || interpreter.evaluateExpression(variableManager.getVariables(), expression).asBoolean().orElse(false);
     }
 
     private Function<VariableManager, Boolean> getReadOnlyValueProvider(AQLInterpreter interpreter, String expression) {

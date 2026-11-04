@@ -13,9 +13,6 @@
 package org.eclipse.capella.application.configuration.details.view;
 
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_PORT;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
@@ -25,7 +22,6 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.A
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 import org.eclipse.capella.application.configuration.details.view.referencewidget.AllocatedExchangeItemsReferenceWidgetProvider;
@@ -41,26 +37,16 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.IsRealizedByReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService;
-import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
-import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
-import org.eclipse.sirius.components.collaborative.forms.services.api.IPropertiesDescriptionRegistry;
-import org.eclipse.sirius.components.collaborative.forms.services.api.IPropertiesDescriptionRegistryConfigurer;
-import org.eclipse.sirius.components.core.api.IFeedbackMessageService;
-import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
-import org.eclipse.sirius.components.emf.services.IDAdapter;
-import org.eclipse.sirius.components.emf.services.api.IEMFEditingContext;
+import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IEditingContextProcessor;
+import org.eclipse.sirius.components.emf.ResourceMetadataAdapter;
+import org.eclipse.sirius.components.emf.services.JSONResourceFactory;
 import org.eclipse.sirius.components.forms.components.SelectComponent;
-import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.view.ChangeContext;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.ViewFactory;
-import org.eclipse.sirius.components.view.emf.ViewConverterResult;
 import org.eclipse.sirius.components.view.emf.form.ViewFormDescriptionConverter;
 import org.eclipse.sirius.components.view.form.CheckboxDescription;
 import org.eclipse.sirius.components.view.form.FormDescription;
@@ -77,14 +63,11 @@ import org.eclipse.sirius.components.view.form.WidgetDescription;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceFactory;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
 import org.eclipse.sirius.components.widget.reference.ReferenceWidgetComponent;
-import org.eclipse.syson.form.services.FormMutationElementService;
-import org.eclipse.syson.form.services.FormQueryElementService;
-import org.eclipse.syson.form.services.api.IDetailsViewHelpTextProvider;
+import org.eclipse.sirius.web.application.editingcontext.EditingContext;
 import org.eclipse.syson.form.services.aql.FormMutationAQLService;
 import org.eclipse.syson.form.services.aql.FormQueryAQLService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.SysmlPackage;
-import org.eclipse.syson.sysml.metamodel.services.MetamodelQueryElementService;
 import org.eclipse.syson.util.AQLConstants;
 import org.eclipse.syson.util.AQLUtils;
 import org.eclipse.syson.util.ServiceMethod;
@@ -93,58 +76,24 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Provides custom Details view for Capella elements.
+ * Reference action definitions expose controls; their Capella providers perform the semantic updates.
  *
  * @author frouene
  */
 @Configuration
-public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegistryConfigurer {
+public class CapellaDetailsViewDescriptionProvider implements IEditingContextProcessor {
 
     public static final String CAPELLA_DETAILS_VIEW = "Capella Details View";
 
-    private final ViewFormDescriptionConverter converter;
-
-    private final List<ComposedAdapterFactory.Descriptor> composedAdapterFactoryDescriptors;
-
-    private final IFeedbackMessageService feedbackMessageService;
-
-    private final IReadOnlyObjectPredicate readOnlyObjectPredicate;
-
-    private final List<IDetailsViewHelpTextProvider> detailsViewHelpTextProviders;
-
-    public CapellaPropertiesConfigurer(ViewFormDescriptionConverter converter, List<ComposedAdapterFactory.Descriptor> composedAdapterFactoryDescriptors,
-            IFeedbackMessageService feedbackMessageService, IReadOnlyObjectPredicate readOnlyObjectPredicate, List<IDetailsViewHelpTextProvider> detailsViewHelpTextProviders) {
-        this.converter = Objects.requireNonNull(converter);
-        this.composedAdapterFactoryDescriptors = Objects.requireNonNull(composedAdapterFactoryDescriptors);
-        this.feedbackMessageService = Objects.requireNonNull(feedbackMessageService);
-        this.readOnlyObjectPredicate = Objects.requireNonNull(readOnlyObjectPredicate);
-        this.detailsViewHelpTextProviders = Objects.requireNonNull(detailsViewHelpTextProviders);
-    }
-
     @Override
-    public void addPropertiesDescriptions(IPropertiesDescriptionRegistry registry) {
-        // Build the actual FormDescription that will be used in Detail view.
-        FormDescription viewFormDescription = this.createDetailsView();
-
-        // The FormDescription must be part of View inside a proper EMF Resource to be correctly handled
-        URI uri = URI.createURI(IEMFEditingContext.RESOURCE_SCHEME + ":///" + UUID.nameUUIDFromBytes(CapellaPropertiesConfigurer.class.getCanonicalName().getBytes()));
-        Resource resource = new XMIResourceImpl(uri);
-        View view = org.eclipse.sirius.components.view.ViewFactory.eINSTANCE.createView();
-
-        view.eAllContents().forEachRemaining(eObject -> eObject.eAdapters().add(new IDAdapter(UUID.nameUUIDFromBytes(EcoreUtil.getURI(eObject).toString().getBytes()))));
-
-        resource.getContents().add(view);
-        view.getDescriptions().add(viewFormDescription);
-
-        // Convert the View-based FormDescription and register the result into the system
-        FormQueryElementService formQueryElementService = new FormQueryElementService(this.composedAdapterFactoryDescriptors, this.readOnlyObjectPredicate, new MetamodelQueryElementService(),
-                this.detailsViewHelpTextProviders);
-        AQLInterpreter interpreter = new AQLInterpreter(List.of(CommonQueryService.class, CommonCreationService.class, CommonUpdateService.class, ArcadiaTraceabilityLabelService.class),
-                List.of(new FormQueryAQLService(formQueryElementService),
-                        new FormMutationAQLService(new FormMutationElementService(this.feedbackMessageService, new MetamodelQueryElementService(), formQueryElementService))),
-                List.of(SysmlPackage.eINSTANCE));
-        ViewConverterResult viewConverterResult = this.converter.convert(viewFormDescription, List.of(), interpreter);
-        if (viewConverterResult.representationDescription() instanceof org.eclipse.sirius.components.forms.description.FormDescription formDescription) {
-            formDescription.getPageDescriptions().forEach(registry::add);
+    public void preProcess(IEditingContext editingContext) {
+        if (editingContext instanceof EditingContext siriusWebEditingContext) {
+            var resource = new JSONResourceFactory().createResourceFromPath(UUID.nameUUIDFromBytes(CAPELLA_DETAILS_VIEW.getBytes()).toString());
+            resource.eAdapters().add(new ResourceMetadataAdapter(CAPELLA_DETAILS_VIEW, true));
+            View view = ViewFactory.eINSTANCE.createView();
+            resource.getContents().add(view);
+            view.getDescriptions().add(this.createDetailsView());
+            siriusWebEditingContext.getViews().add(view);
         }
     }
 
@@ -154,6 +103,8 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         form.setName(CAPELLA_DETAILS_VIEW);
         form.setDomainType(domainType);
         form.setTitleExpression(CAPELLA_DETAILS_VIEW);
+        // Prevent the form from being available as a standalone representation.
+        form.setPreconditionExpression(AQLConstants.AQL_FALSE);
 
         PageDescription pageCore = FormFactory.eINSTANCE.createPageDescription();
         pageCore.setName("Capella-DetailsView-Core");
@@ -213,11 +164,9 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         refAllocatedPortsWidget.setReferenceNameExpression(AllocatedFunctionPortsReferenceWidgetProvider.FEATURE_NAME);
         refAllocatedPortsWidget.setLabelExpression("Allocated Function Ports");
 
-        ChangeContext setInvolvedFunctionalExchangesOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setInvolvedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(CommonUpdateService::setArcadiaReferenceFeature)
-                .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT_PORT), AQLUtils.aqlString(AllocatedFunctionPortsReferenceWidgetProvider.FEATURE_NAME),
-                        ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getItemUsage().getName())));
-        refAllocatedPortsWidget.getBody().add(setInvolvedFunctionalExchangesOperation);
+        refAllocatedPortsWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        refAllocatedPortsWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        refAllocatedPortsWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
 
         return List.of(radioDescription, refAllocatedPortsWidget);
     }
@@ -266,9 +215,9 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         realizesWidget.setReferenceNameExpression(ARCADIA_REALIZES);
         realizesWidget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getRealizesWidgetLabelValue).aqlSelf());
 
-        ChangeContext setRealizesOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setRealizesOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setRealizes).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
-        realizesWidget.getBody().add(setRealizesOperation);
+        realizesWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        realizesWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        realizesWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
         realizesWidgetIf.getChildren().add(realizesWidget);
 
         return realizesWidgetIf;
@@ -279,16 +228,12 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         widgetIf.setName("IsRealizedByWidgetIf");
         widgetIf.setPredicateExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::hasIsRealizedByWidget).aqlSelf());
 
-        var emptyChangeContext = ViewFactory.eINSTANCE.createChangeContext();
-        emptyChangeContext.setExpression(AQLConstants.AQL_SELF);
-
         var widget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
         widget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + IsRealizedByReferenceWidgetProvider.WIDGET_NAME);
         widget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
         widget.setReferenceNameExpression(ARCADIA_IS_REALIZED_BY);
         widget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getIsRealizedByWidgetLabelValue).aqlSelf());
         widget.setIsEnabledExpression(AQLConstants.AQL_FALSE);
-        widget.getBody().add(emptyChangeContext);
         widgetIf.getChildren().add(widget);
         return widgetIf;
     }
@@ -326,50 +271,37 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
     }
 
     private Collection<? extends FormElementDescription> createFunctionalChainWidgets() {
-        // @technical-debt
-        // This reference widget depends on InvolvedFunctionalExchangesReferenceWidgetProvider to work properly. We
-        // implemented
-        // CapellaReferenceWidgetPropertiesConverter and CapellaReferenceWidgetBehaviorConverter to be able to create
-        // a custom capella reference widget.
         ReferenceWidgetDescription refInvolvedFunctionalExchangesWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
         refInvolvedFunctionalExchangesWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + InvolvedFunctionalExchangesReferenceWidgetProvider.WIDGET_NAME);
         refInvolvedFunctionalExchangesWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
         refInvolvedFunctionalExchangesWidget.setReferenceNameExpression(ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES);
         refInvolvedFunctionalExchangesWidget.setLabelExpression("Involved functional exchanges");
 
-        ChangeContext setInvolvedFunctionalExchangesOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setInvolvedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(CommonUpdateService::setArcadiaReferenceFeature)
-                .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN), AQLUtils.aqlString(InvolvedFunctionalExchangesReferenceWidgetProvider.FEATURE_NAME),
-                        ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getFlowUsage().getName())));
-        refInvolvedFunctionalExchangesWidget.getBody().add(setInvolvedFunctionalExchangesOperation);
+        refInvolvedFunctionalExchangesWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        refInvolvedFunctionalExchangesWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        refInvolvedFunctionalExchangesWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
 
-        ChangeContext involvedFunctionChangeContext = ViewFactory.eINSTANCE.createChangeContext();
-        involvedFunctionChangeContext.setExpression(AQLConstants.AQL_SELF);
         ReferenceWidgetDescription refInvolvedFunctionWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
         refInvolvedFunctionWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + InvolvedFunctionsWidgetProvider.WIDGET_NAME);
         refInvolvedFunctionWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
         refInvolvedFunctionWidget.setIsEnabledExpression("false");
         refInvolvedFunctionWidget.setReferenceNameExpression("involvedFunctions");
         refInvolvedFunctionWidget.setLabelExpression("Involved functions");
-        refInvolvedFunctionWidget.getBody().add(involvedFunctionChangeContext);
 
         return List.of(refInvolvedFunctionalExchangesWidget, refInvolvedFunctionWidget);
     }
 
     private Collection<? extends FormElementDescription> createFunctionalExchangeWidgets() {
-        // @technical-debt
-
         // Exchange Item PayLoad Widget
-
         ReferenceWidgetDescription payloadWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
         payloadWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + ExchangedItemPayloadReferenceWidgetProvider.WIDGET_NAME);
         payloadWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
         payloadWidget.setReferenceNameExpression(ExchangedItemPayloadReferenceWidgetProvider.PAYLOAD_FEATURE);
         payloadWidget.setLabelExpression("Exchanged Items");
 
-        ChangeContext setPayloadOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setPayloadOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setFunctionalExchangePayload).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
-        payloadWidget.getBody().add(setPayloadOperation);
+        payloadWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        payloadWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        payloadWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
 
         // Source Widget
         ReferenceWidgetDescription sourceWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
@@ -379,12 +311,6 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         sourceWidget.setLabelExpression("Source Function");
         sourceWidget.setIsEnabledExpression("false");
 
-        // We need to set an operation to avoid an NPE during the widget rendering.
-        ChangeContext setSourceOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setSourceOperation.setExpression(AQLConstants.AQL_SELF);
-        sourceWidget.getBody().add(setSourceOperation);
-        // no operation as this widget is currently read-only
-
         // Target Widget
         ReferenceWidgetDescription targetWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
         targetWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + FunctionalExchangeFunctionsReferenceWidgetProvider.WIDGET_NAME);
@@ -392,11 +318,6 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         targetWidget.setReferenceNameExpression(FunctionalExchangeFunctionsReferenceWidgetProvider.TARGET_FEATURE);
         targetWidget.setLabelExpression("Target Function");
         targetWidget.setIsEnabledExpression("false");
-        // We need to set an operation to avoid an NPE during the widget rendering.
-        ChangeContext setTargetOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setTargetOperation.setExpression(AQLConstants.AQL_SELF);
-        targetWidget.getBody().add(setTargetOperation);
-        // no operation as this widget is currently read-only
 
         return List.of(payloadWidget, sourceWidget, targetWidget);
     }
@@ -411,13 +332,6 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         sourceWidget.setReferenceNameExpression(ComponentExchangePortReferenceWidgetProvider.SOURCE_PORT_FEATURE);
         sourceWidget.setLabelExpression("Source Port");
         sourceWidget.setIsEnabledExpression("false");
-        ChangeContext setSourceOperation = ViewFactory.eINSTANCE.createChangeContext();
-        //        setSourceOperation
-        //                .setExpression(
-        //                        ServiceMethod.of2(CommonUpdateService::setComponentExchangeEnd).aqlSelf("true",ReferenceWidgetComponent.NEW_VALUE));
-        setSourceOperation.setExpression(AQLConstants.AQL_SELF);
-        // no operation as this widget is currently read-only
-        sourceWidget.getBody().add(setSourceOperation);
 
         // Target Widget
         ReferenceWidgetDescription targetWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
@@ -426,13 +340,6 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         targetWidget.setReferenceNameExpression(ComponentExchangePortReferenceWidgetProvider.TARGET_PORT_FEATURE);
         targetWidget.setLabelExpression("Target Port");
         targetWidget.setIsEnabledExpression("false");
-        ChangeContext setTargetOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setTargetOperation.setExpression(AQLConstants.AQL_SELF);
-        // no operation as this widget is currently read-only
-        //        setTargetOperation
-        //                .setExpression(
-        //                        ServiceMethod.of1(CommonUpdateService::setFunctionalExchangePayload).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
-        targetWidget.getBody().add(setTargetOperation);
 
         // Allocated exchange items Widget
         ReferenceWidgetDescription allocatedExchangeWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
@@ -440,11 +347,9 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         allocatedExchangeWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
         allocatedExchangeWidget.setReferenceNameExpression(AllocatedExchangeItemsReferenceWidgetProvider.FEATURE_NAME);
         allocatedExchangeWidget.setLabelExpression("Allocated Exchange Items");
-        ChangeContext setAllocatedExchangeItemsOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setAllocatedExchangeItemsOperation.setExpression(ServiceMethod.of4(CommonUpdateService::setArcadiaReferenceFeature)
-                .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE), AQLUtils.aqlString(AllocatedExchangeItemsReferenceWidgetProvider.FEATURE_NAME),
-                        ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getItemUsage().getName())));
-        allocatedExchangeWidget.getBody().add(setAllocatedExchangeItemsOperation);
+        allocatedExchangeWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        allocatedExchangeWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        allocatedExchangeWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
 
         // Allocated functional exchanges Widget
         ReferenceWidgetDescription allocatedFunctionalExchangesWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
@@ -452,11 +357,9 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
         allocatedFunctionalExchangesWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
         allocatedFunctionalExchangesWidget.setReferenceNameExpression(AllocatedFunctionalExchangesReferenceWidgetProvider.FEATURE_NAME);
         allocatedFunctionalExchangesWidget.setLabelExpression("Allocated Functional Exchange");
-        ChangeContext setAllocatedFunctionalExchangesOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setAllocatedFunctionalExchangesOperation.setExpression(ServiceMethod.of4(CommonUpdateService::setArcadiaReferenceFeature)
-                .aqlSelf(AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT_EXCHANGE), AQLUtils.aqlString(AllocatedFunctionalExchangesReferenceWidgetProvider.FEATURE_NAME),
-                        ReferenceWidgetComponent.NEW_VALUE, AQLUtils.aqlString(SysmlPackage.eINSTANCE.getFlowUsage().getName())));
-        allocatedFunctionalExchangesWidget.getBody().add(setAllocatedFunctionalExchangesOperation);
+        allocatedFunctionalExchangesWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        allocatedFunctionalExchangesWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        allocatedFunctionalExchangesWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
 
         return List.of(sourceWidget, targetWidget, allocatedExchangeWidget, allocatedFunctionalExchangesWidget);
     }
@@ -491,21 +394,16 @@ public class CapellaPropertiesConfigurer implements IPropertiesDescriptionRegist
 
         checkboxIsHuman.getBody().add(setIsHumanChangeContext);
 
-        // @technical-debt
-        // This reference widget depends on AllocatedFunctionReferenceWidgetProvider to work properly. We implemented
-        // CapellaReferenceWidgetPropertiesConverter and CapellaReferenceWidgetBehaviorConverter to be able to create
-        // a custom capella reference widget.
+        // Virtual Arcadia references require custom property conversion and action handlers.
         ReferenceWidgetDescription refWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
         refWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + AllocatedFunctionReferenceWidgetProvider.NAME);
         refWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
         refWidget.setReferenceNameExpression("allocatedFunctions");
         refWidget.setLabelExpression("Allocated Functions");
 
-        ChangeContext setNewAllocatedFunctionOperation = ViewFactory.eINSTANCE.createChangeContext();
-        setNewAllocatedFunctionOperation.setExpression(
-                ServiceMethod.of1(CommonUpdateService::setPerformAction).aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
-
-        refWidget.getBody().add(setNewAllocatedFunctionOperation);
+        refWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        refWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        refWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
 
         return List.of(checkboxIsActor, checkboxIsHuman, refWidget);
     }
