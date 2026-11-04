@@ -111,8 +111,8 @@ public class ArcadiaTraceabilityLabelServiceTests extends AbstractSemanticTests 
         var description = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
         assertThat(provider.getReferenceValue(description, null, variables)).isEqualTo(List.of(realizer));
         assertThat(provider.getReferenceOptions(description, null, variables)).isEmpty();
-        assertThat(provider.handleItemRemoved(description, null, variables)).isInstanceOf(Failure.class);
-        assertThat(provider.handleClearReference(description, null, variables)).isInstanceOf(Failure.class);
+        assertThat(provider.handleRemove(description, realized, realizer)).isInstanceOf(Failure.class);
+        assertThat(provider.handleClear(description, realized)).isInstanceOf(Failure.class);
         assertThat(provider.getReferenceValue(description, null, variables)).isEqualTo(List.of(realizer));
         updateService.deleteReference(realized, ARCADIA_IS_REALIZED_BY);
         assertThat(this.service.hasIsRealizedByWidget(SysmlFactory.eINSTANCE.createActionUsage())).isFalse();

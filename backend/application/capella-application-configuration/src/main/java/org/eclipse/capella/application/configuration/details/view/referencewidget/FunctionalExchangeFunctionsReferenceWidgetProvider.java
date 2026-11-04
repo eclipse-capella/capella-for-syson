@@ -88,7 +88,17 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
     }
 
     @Override
-    public IStatus handleItemRemoved(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
+    public IStatus handleAdd(ReferenceWidgetDescription referenceDescription, EObject owner, List<Object> newValues) {
+        return new Failure("Adding values to this reference is not supported.");
+    }
+
+    @Override
+    public IStatus handleSet(ReferenceWidgetDescription referenceDescription, EObject owner, Object newValue) {
+        return new Failure("Setting this reference is not supported.");
+    }
+
+    @Override
+    public IStatus handleRemove(ReferenceWidgetDescription referenceDescription, EObject owner, Object value) {
         // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
         // reference a function parameter typed by an ExchangeItem.
         return new Failure(ERROR_MSG);
@@ -100,7 +110,7 @@ public class FunctionalExchangeFunctionsReferenceWidgetProvider implements ICape
     }
 
     @Override
-    public IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
+    public IStatus handleClear(ReferenceWidgetDescription referenceDescription, EObject owner) {
         // Not implemented yet : It is not clear what we should do on source or target feature. Indeed, they should
         // reference a function parameter typed by an ExchangeItem.
         return new Failure(ERROR_MSG);

@@ -15,13 +15,14 @@ package org.eclipse.capella.application.configuration.details.view.referencewidg
 import java.util.List;
 
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.IStatus;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.view.widget.reference.ReferenceWidgetDescription;
 
 /**
- * An interface for services providing content for reference widgets.
+ * Provides content and editing behavior for virtual Capella reference widgets.
  *
  * @author fbarbin
  */
@@ -39,7 +40,11 @@ public interface ICapellaReferenceWidgetProvider {
 
     List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager);
 
-    IStatus handleItemRemoved(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager);
+    IStatus handleAdd(ReferenceWidgetDescription referenceDescription, EObject owner, List<Object> newValues);
 
-    IStatus handleClearReference(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager childVariableManager);
+    IStatus handleSet(ReferenceWidgetDescription referenceDescription, EObject owner, Object newValue);
+
+    IStatus handleRemove(ReferenceWidgetDescription referenceDescription, EObject owner, Object value);
+
+    IStatus handleClear(ReferenceWidgetDescription referenceDescription, EObject owner);
 }
