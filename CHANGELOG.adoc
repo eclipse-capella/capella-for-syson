@@ -23,7 +23,7 @@ Methods that delete elements (like `delete`, `deleteCapabilityInvolvement`, etc)
 === Dependency update
 
 - [releng] Update Sirius Web to `2026.11.0`, SysON to `2026.11.0`, and Apollo Client to `3.14.1`.
-- [releng] Bump to `2026.9.5`
+- [releng] Bump to `2026.11.0`
 
 === Bug fixes
 
