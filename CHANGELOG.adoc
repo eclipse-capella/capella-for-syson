@@ -1,5 +1,39 @@
 = Changelog
 
+== 2026.12.0
+
+=== Pitches
+
+
+
+=== Architectural decision records
+
+
+
+=== Deprecation warning
+
+
+
+=== Breaking changes
+
+
+
+=== Dependency update
+
+
+
+=== Bug fixes
+
+
+
+=== New Features
+
+
+
+=== Improvements
+
+
+
 == 2026.11.0
 
 === Pitches
@@ -22,8 +56,8 @@ Methods that delete elements (like `delete`, `deleteCapabilityInvolvement`, etc)
 
 === Dependency update
 
-- [releng] Update Sirius Web to `2026.9.5`, SysON to `2026.9.6`, and Apollo Client to `3.14.1`.
-- [releng] Bump to `2026.9.5`
+- [releng] Update Sirius Web to `2026.11.0`, SysON to `2026.11.0`, and Apollo Client to `3.14.1`.
+- [releng] Bump to `2026.11.0`
 
 === Bug fixes
 
