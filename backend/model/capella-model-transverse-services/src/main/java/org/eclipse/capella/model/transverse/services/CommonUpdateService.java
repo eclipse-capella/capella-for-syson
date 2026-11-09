@@ -13,9 +13,11 @@
 package org.eclipse.capella.model.transverse.services;
 
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_DESCRIPTION;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_ELEMENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_REALIZED_BY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZES;
@@ -183,6 +185,13 @@ public class CommonUpdateService {
         this.addFeatureReferenceValue(newCapability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
                 ARCADIA_INVOLVED_COMPONENTS, component, SysmlPackage.eINSTANCE.getPartUsage());
         return newCapability;
+    }
+
+    public PartUsage setComponentActor(PartUsage component, boolean newValue) {
+        if (this.commonQueryService.canEditComponentActor(component)) {
+            this.setBooleanAttribute(component, ARCADIA_PREFIX + ARCADIA_COMPONENT, ARCADIA_IS_ACTOR, newValue);
+        }
+        return component;
     }
 
     public Usage setBooleanAttribute(Usage usage, String prefix, String attributeName, boolean newValue) {

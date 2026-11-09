@@ -633,6 +633,12 @@ public class CommonQueryService {
         return false;
     }
 
+    public boolean canEditComponentActor(Element element) {
+        return this.getArcadiaPerspective(element)
+                .filter(perspective -> perspective == ArcadiaEngineeringPerspective.OperationalAnalysis || perspective == ArcadiaEngineeringPerspective.SystemAnalysis)
+                .isEmpty();
+    }
+
     public Boolean isComponentHumanActor(EObject eObject) {
         if (eObject instanceof PartUsage partUsage) {
             return this.isActor().test(partUsage) && this.isHuman().test(partUsage);

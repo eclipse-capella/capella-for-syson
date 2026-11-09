@@ -14,7 +14,6 @@ package org.eclipse.capella.application.configuration.details.view;
 
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_REALIZED_BY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
@@ -370,15 +369,11 @@ public class CapellaDetailsViewDescriptionProvider implements IEditingContextPro
         CheckboxDescription checkboxIsActor = FormFactory.eINSTANCE.createCheckboxDescription();
         checkboxIsActor.setName("CheckboxIsActorWidget");
         checkboxIsActor.setLabelExpression("Is Actor");
+        checkboxIsActor.setIsEnabledExpression(ServiceMethod.of0(CommonQueryService::canEditComponentActor).aqlSelf());
         checkboxIsActor.setValueExpression(ServiceMethod.of0(CommonQueryService::isComponentActor).aqlSelf());
         ChangeContext setIsActorChangeContext = ViewFactory.eINSTANCE.createChangeContext();
-        setIsActorChangeContext.setExpression(ServiceMethod.of3(CommonUpdateService::setBooleanAttribute)
-                .aqlSelf(
-                        AQLUtils.aqlString(ARCADIA_PREFIX + ARCADIA_COMPONENT), // qualified type
-                        AQLUtils.aqlString(ARCADIA_IS_ACTOR), // attribute name
-                        ReferenceWidgetComponent.NEW_VALUE // newValue
-
-                ));
+        setIsActorChangeContext.setExpression(ServiceMethod.of1(CommonUpdateService::setComponentActor)
+                .aqlSelf(ReferenceWidgetComponent.NEW_VALUE));
         checkboxIsActor.getBody().add(setIsActorChangeContext);
 
         CheckboxDescription checkboxIsHuman = FormFactory.eINSTANCE.createCheckboxDescription();
