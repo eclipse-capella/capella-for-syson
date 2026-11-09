@@ -17,12 +17,12 @@ import java.util.List;
 import org.eclipse.capella.diagram.oab.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;
-import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.compartment.OABCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.compartment.OABCompartmentNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.diagram.oab.view.services.OABDiagramService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -58,7 +58,7 @@ public class OABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .domainType(domainType)
                 .name(DESCRIPTION_NAME)
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(CommonQueryService::isStructurePackage).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(OABDiagramService::canCreateOABDiagram).aqlSelf())
                 .toolbar(toolbar)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
