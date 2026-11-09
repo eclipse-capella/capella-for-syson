@@ -14,6 +14,7 @@ package org.eclipse.capella.model.services.operational.analysis;
 
 import java.util.Objects;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Diagram;
@@ -68,7 +69,7 @@ public class OARepresentationReconnectToolServices {
      */
     private Feature reconnectFunctionalExchangeToFunction(FlowUsage functionalExchange, Feature function, boolean isSource, IEditingContext editingContext, Diagram diagram) {
         Feature result = function;
-        if (this.commonQueryService.isFunctionalExchange(functionalExchange) && this.commonQueryService.isOperationalAnalysisPerspective(functionalExchange)
+        if (this.commonQueryService.isFunctionalExchange(functionalExchange) && this.commonQueryService.isInPerspective(functionalExchange, ArcadiaEngineeringPerspective.OperationalAnalysis)
                 && this.commonQueryService.isOperationalActivity(function) && this.getFunctionalExchangePort(functionalExchange, isSource) instanceof Feature port) {
             result = port;
             var otherPort = this.getFunctionalExchangePort(functionalExchange, !isSource);

@@ -21,6 +21,7 @@ import static org.eclipse.capella.model.transverse.services.CommonNamingService.
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonNamingService;
@@ -116,7 +117,7 @@ public class OAMutationService {
     public ActionUsage createOperationalActivityOA(Element parent) {
         ActionUsage activity = null;
         if (this.commonQueryService.isOperationalActivity(parent)
-                || this.commonQueryService.isComponent(parent) && this.commonQueryService.isOperationalAnalysisPerspective(parent)) {
+                || this.commonQueryService.isComponent(parent) && this.commonQueryService.isInPerspective(parent, ArcadiaEngineeringPerspective.OperationalAnalysis)) {
             activity = this.commonCreationService.createFunction(parent);
             if (activity != null) {
                 this.commonNamingService.setElementDefaultDeclaredName(activity, OPERATIONAL_ACTIVITY_DEFAULT_DECLAREDNAME_PREFIX);

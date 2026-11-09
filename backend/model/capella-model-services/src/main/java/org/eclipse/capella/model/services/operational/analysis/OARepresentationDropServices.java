@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
@@ -132,7 +133,7 @@ public class OARepresentationDropServices {
 
     public Element dropIntoDiagramFromExplorer(Element droppedElement, Object selectedNode, IEditingContext editingContext, DiagramContext diagramContext,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        if (droppedElement instanceof RequirementUsage requirement && !this.commonQueryService.isOperationalAnalysisPerspective(requirement)) {
+        if (droppedElement instanceof RequirementUsage requirement && !this.commonQueryService.isInPerspective(requirement, ArcadiaEngineeringPerspective.OperationalAnalysis)) {
             LOGGER.atWarn().log("Ignoring drop of requirement {} outside Operational Analysis perspective", requirement.getElementId());
         } else if (droppedElement instanceof ActionUsage activity && this.commonQueryService.isOperationalActivity(activity)) {
             if (this.objectSearchService.getObject(editingContext, diagramContext.diagram().getTargetObjectId())
@@ -304,7 +305,7 @@ public class OARepresentationDropServices {
     }
 
     private boolean isOperationalComponent(PartUsage component) {
-        return this.commonQueryService.isComponent(component) && this.commonQueryService.isOperationalAnalysisPerspective(component);
+        return this.commonQueryService.isComponent(component) && this.commonQueryService.isInPerspective(component, ArcadiaEngineeringPerspective.OperationalAnalysis);
     }
 
     private Optional<Node> getDisplayedParentView(Element droppedElement, DiagramContext diagramContext) {
