@@ -15,6 +15,7 @@ package org.eclipse.capella.model.services.operational.analysis;
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -91,7 +92,7 @@ public class OAQueryService {
 
     public List<FlowUsage> getFunctionalExchangesOA(EObject eObject) {
         return this.commonQueryService.getFunctionalExchanges(eObject).stream()
-                .filter(this.commonQueryService::isOperationalAnalysisPerspective)
+                .filter(functionalExchange -> this.commonQueryService.isInPerspective(functionalExchange, ArcadiaEngineeringPerspective.OperationalAnalysis))
                 .toList();
     }
 }

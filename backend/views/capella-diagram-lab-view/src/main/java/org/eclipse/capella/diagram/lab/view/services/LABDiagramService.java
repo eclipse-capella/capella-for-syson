@@ -15,12 +15,16 @@ package org.eclipse.capella.diagram.lab.view.services;
 
 import java.util.Objects;
 
-import org.eclipse.capella.diagram.customization.services.api.IDiagramFilterService;
 import org.eclipse.capella.diagram.customization.filters.ShowFunctionsDiagramFilter;
+import org.eclipse.capella.diagram.customization.services.api.IDiagramFilterService;
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 
 /**
  * A Service class specific to the LAB Diagram. This class is intended to be used for services specific to the view
@@ -30,10 +34,29 @@ import org.eclipse.syson.sysml.SysmlPackage;
  */
 public class LABDiagramService {
 
+    private final CommonQueryService commonQueryService;
+
     private final IDiagramFilterService diagramFilterService;
 
     public LABDiagramService(IDiagramFilterService diagramFilterService) {
+        this.commonQueryService = new CommonQueryService();
         this.diagramFilterService = Objects.requireNonNull(diagramFilterService);
+    }
+
+    /**
+     * Returns {@code true} if a LAB diagram can be created on {@code self}.
+     * <p>
+     * LAB diagrams can be created on the structure package, its sub-packages, or any component of the <i>logical architecture</i> perspective.
+     *
+     * @param self
+     *         the element to check
+     * @return {@code true} if the diagram can be created, {@code false} otherwise
+     */
+    public boolean canCreateLABDiagram(Element self) {
+        return this.commonQueryService.isInPerspective(self, ArcadiaEngineeringPerspective.LogicalArchitecture)
+                && (this.commonQueryService.isComponent(self)
+                || this.commonQueryService.isStructurePackage(self)
+                || this.isStructureSubPackage(self));
     }
 
     public boolean isFunctionHidden(Object self, DiagramContext diagramContext) {
@@ -61,5 +84,10 @@ public class LABDiagramService {
         }
         // For other elements, use default behavior (not hidden)
         return false;
+    }
+
+    private boolean isStructureSubPackage(Element self) {
+        return self instanceof Package
+                && EMFUtils.getFirstAncestor(Package.class, self, this.commonQueryService::isStructurePackage).isPresent();
     }
 }

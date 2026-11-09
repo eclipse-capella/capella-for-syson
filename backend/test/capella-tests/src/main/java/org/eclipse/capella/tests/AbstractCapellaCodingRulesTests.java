@@ -26,6 +26,7 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.capella.tests.diagrams.IDiagramTests;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
 import org.eclipse.sirius.components.annotations.Builder;
 import org.eclipse.sirius.components.annotations.Immutable;
@@ -257,7 +259,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     }
 
     /**
-     * Checks that semantic test methods follow the naming convention.
+     * Checks that semantic test methods follow the naming convention, excluding classes implementing {@link IDiagramTests}.
      * <p>
      * The naming convention is {@code <operation>[<operationContext][When<context>]Should<outcome>}. {@code operationContext} is usually used to add information on the operation being tested (e.g.
      * {@code deleteComponentExchange} when the {@code delete} operation is tested on a component exchange). {@code When} is usually used to provide additional contextual information, (e.g.
@@ -293,6 +295,9 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 .areDeclaredInClassesThat()
                 .areAssignableTo(AbstractSemanticTests.class)
                 .and()
+                .areDeclaredInClassesThat()
+                .areNotAssignableTo(IDiagramTests.class)
+                .and()
                 .arePublic()
                 .and()
                 .areAnnotatedWith(Test.class)
@@ -300,6 +305,30 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 .andShould()
                 .notBeAnnotatedWith(DisplayName.class)
                 .because("test method names should follow <operation>[When][<context>]Should<outcome> and should be used as their display names")
+                .allowEmptyShould(true);
+
+        rule.check(this.getTestClasses());
+    }
+
+    /**
+     * Checks that diagram test methods follow the semantic test naming convention using their corresponding service's public methods.
+     * <p>
+     * The service must be the unique production class in the module whose simple name matches the test class name without the {@code Tests} suffix, independently of its package.
+     */
+    @Test
+    public void diagramTestMethodsShouldFollowNamingConvention() {
+        ArchRule rule = ArchRuleDefinition.methods()
+                .that()
+                .areDeclaredInClassesThat()
+                .areAssignableTo(IDiagramTests.class)
+                .and()
+                .arePublic()
+                .and()
+                .areAnnotatedWith(Test.class)
+                .should(this.followDiagramTestNamingConvention())
+                .andShould()
+                .notBeAnnotatedWith(DisplayName.class)
+                .because("diagram test method names should follow <operation>[When][<context>]Should<outcome> using their corresponding service's operations")
                 .allowEmptyShould(true);
 
         rule.check(this.getTestClasses());
@@ -499,6 +528,28 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
             @Override
             public boolean test(JavaMethod javaMethod) {
                 return !(javaMethod.getRawReturnType().isAnnotatedWith(Builder.class) || javaMethod.getRawReturnType().getSimpleName().endsWith("Builder"));
+            }
+        };
+    }
+
+    private ArchCondition<JavaMethod> followDiagramTestNamingConvention() {
+        return new ArchCondition<>("follow the test method naming convention for the corresponding service") {
+            @Override
+            public void check(JavaMethod testMethod, ConditionEvents events) {
+                String serviceClassName = testMethod.getOwner().getSimpleName().replaceFirst("Tests$", "");
+                List<JavaClass> serviceClasses = AbstractCapellaCodingRulesTests.this.getClasses().stream()
+                        .filter(javaClass -> javaClass.getSimpleName().equals(serviceClassName))
+                        .toList();
+                if (serviceClasses.size() != 1) {
+                    events.add(SimpleConditionEvent.violated(testMethod, testMethod.getOwner().getName()
+                            + " must have exactly one corresponding service class named " + serviceClassName + " in the module, but found " + serviceClasses.size()));
+                } else {
+                    Set<String> testableMethodNames = serviceClasses.getFirst().getMethods().stream()
+                            .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
+                            .map(JavaMethod::getName)
+                            .collect(Collectors.toSet());
+                    AbstractCapellaCodingRulesTests.this.followNamingConvention(testableMethodNames).check(testMethod, events);
+                }
             }
         };
     }

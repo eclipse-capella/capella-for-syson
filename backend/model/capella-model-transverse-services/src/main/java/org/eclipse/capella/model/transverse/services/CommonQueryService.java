@@ -525,7 +525,7 @@ public class CommonQueryService {
     public boolean isOperationalActivity(EObject eObject) {
         return eObject instanceof Element element
                 && this.isFunction(element)
-                && this.isOperationalAnalysisPerspective(element);
+                && this.isInPerspective(element, ArcadiaEngineeringPerspective.OperationalAnalysis);
     }
 
     public Boolean isFunctionalChain(EObject eObject) {
@@ -544,16 +544,27 @@ public class CommonQueryService {
                 && STRUCTURE_PACKAGE.equals(packageElt.getDeclaredName());
     }
 
-    public boolean isOperationalAnalysisPerspective(Element element) {
+    /**
+     * Checks whether {@code element} belongs to {@code perspective}.
+     * <p>
+     * This method checks if the provided {@code element} is directly or indirectly contaiuned in the provided {@code perspective}.
+     *
+     * @param element
+     *         the element to check
+     * @param perspective
+     *         the perspective to check
+     * @return {@code true} if the element belongs to the perspective, {@code false} otherwise
+     */
+    public boolean isInPerspective(Element element, ArcadiaEngineeringPerspective perspective) {
         return this.getArcadiaPerspective(element)
-                        .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
-                        .isPresent();
+                .filter(perspective::equals)
+                .isPresent();
     }
 
     public boolean isOperationalAnalysisCapabilitiesPackage(Object element) {
         return element instanceof Package packageElt
                 && CAPABILITIES_PACKAGE.equals(packageElt.getDeclaredName())
-                && this.isOperationalAnalysisPerspective(packageElt);
+                && this.isInPerspective(packageElt, ArcadiaEngineeringPerspective.OperationalAnalysis);
     }
 
     public boolean isFunctionsPackage(Object element) {
