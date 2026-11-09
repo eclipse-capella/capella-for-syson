@@ -561,10 +561,9 @@ public class CommonQueryService {
                 .isPresent();
     }
 
-    public boolean isOperationalAnalysisCapabilitiesPackage(Object element) {
+    public boolean isCapabilitiesPackage(Object element) {
         return element instanceof Package packageElt
-                && CAPABILITIES_PACKAGE.equals(packageElt.getDeclaredName())
-                && this.isInPerspective(packageElt, ArcadiaEngineeringPerspective.OperationalAnalysis);
+                && CAPABILITIES_PACKAGE.equals(packageElt.getDeclaredName());
     }
 
     public boolean isFunctionsPackage(Object element) {

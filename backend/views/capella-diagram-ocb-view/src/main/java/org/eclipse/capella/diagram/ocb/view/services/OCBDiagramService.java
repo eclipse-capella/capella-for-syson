@@ -10,29 +10,48 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.ocb.view;
+package org.eclipse.capella.diagram.ocb.view.services;
 
 import java.util.Objects;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.diagrams.Node;
+import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.Package;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 
 /**
  * Evaluates OCB tool availability for semantic sources and graphical connector targets.
  *
  * @author tbezierslafosse
  */
-public class OCBViewQueryService {
+public class OCBDiagramService {
 
     private final IObjectSearchService objectSearchService;
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
-    public OCBViewQueryService(IObjectSearchService objectSearchService) {
+    public OCBDiagramService(IObjectSearchService objectSearchService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
+    }
+
+    /**
+     * Returns {@code true} if an OCB diagram can be created on {@code self}.
+     * <p>
+     * OCB diagrams can be created on the capabilities package or its sub-packages in the <i>operational analysis</i> perspective.
+     *
+     * @param self
+     *         the element to check
+     * @return {@code true} if the diagram can be created, {@code false} otherwise
+     */
+    public boolean canCreateOCBDiagram(Element self) {
+        return this.commonQueryService.isInPerspective(self, ArcadiaEngineeringPerspective.OperationalAnalysis)
+                && (this.commonQueryService.isCapabilitiesPackage(self)
+                || this.isCapabilitiesSubPackage(self));
     }
 
     /**
@@ -81,5 +100,10 @@ public class OCBViewQueryService {
                     .orElse(null);
         }
         return semanticElement;
+    }
+
+    private boolean isCapabilitiesSubPackage(Element self) {
+        return self instanceof Package
+                && EMFUtils.getFirstAncestor(Package.class, self, this.commonQueryService::isCapabilitiesPackage).isPresent();
     }
 }
