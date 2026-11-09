@@ -15,10 +15,14 @@ package org.eclipse.capella.diagram.oaib.view;
 import java.util.Objects;
 
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
+import org.eclipse.capella.model.services.operational.analysis.OARepresentationQueryService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
+import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.diagrams.Node;
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Feature;
 
 /**
@@ -34,8 +38,17 @@ public class OAIBViewQueryService {
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
-    public OAIBViewQueryService(IObjectSearchService objectSearchService) {
+    private final OARepresentationQueryService representationQueryService;
+
+    public OAIBViewQueryService(IObjectSearchService objectSearchService, IIdentityService identityService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
+        this.representationQueryService = new OARepresentationQueryService(identityService);
+    }
+
+    public Object getOperationalActivityGraphicalParent(ActionUsage activity, Object selectedNode, DiagramContext diagramContext) {
+        return this.commonQueryService.getParentFunction(activity)
+                .flatMap(parent -> this.representationQueryService.findView(parent, diagramContext))
+                .orElse(selectedNode);
     }
 
     /**
