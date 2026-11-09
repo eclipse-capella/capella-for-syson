@@ -55,7 +55,7 @@ public class EntityComponentNodeDescriptionProvider extends AbstractNodeDescript
                 .name(this.getNodeDescriptionName())
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubComponents).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::allNestedComponents).aqlSelf())
                 .style(new ComponentNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createComponentEntityNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
