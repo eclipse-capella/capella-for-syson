@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.ocb.view;
 
 import java.util.List;
+
 import org.eclipse.capella.diagram.ocb.view.edges.componentexchange.CommunicationMeanComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.generalization.GeneralizationEdgeDescriptionProvider;
@@ -22,7 +23,7 @@ import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescrip
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.compartment.OCBCompartmentNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.diagram.ocb.view.services.OCBDiagramService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -58,7 +59,7 @@ public class OCBViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .domainType(domainType)
                 .name(DESCRIPTION_NAME)
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(CommonQueryService::isOperationalAnalysisCapabilitiesPackage).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(OCBDiagramService::canCreateOCBDiagram).aqlSelf())
                 .toolbar(toolbar)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();

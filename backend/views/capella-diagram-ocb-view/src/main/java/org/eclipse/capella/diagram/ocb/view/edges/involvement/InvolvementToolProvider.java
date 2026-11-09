@@ -12,8 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view.edges.involvement;
 
-import org.eclipse.capella.diagram.ocb.view.OCBViewQueryService;
 import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
+import org.eclipse.capella.diagram.ocb.view.services.OCBDiagramService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.description.EdgeDescription;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -42,7 +42,7 @@ public class InvolvementToolProvider {
         var participantDescription = cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).orElse(null);
         return this.diagramBuilderHelper.newEdgeTool()
                 .name("New Involvement")
-                .preconditionExpression(ServiceMethod.of2(OCBViewQueryService::canCreateInvolvement)
+                .preconditionExpression(ServiceMethod.of2(OCBDiagramService::canCreateInvolvement)
                         .aqlSelf(EdgeDescription.SEMANTIC_EDGE_TARGET, "editingContext"))
                 .targetElementDescriptions(participantDescription)
                 .iconURLsExpression("/icons/full/obj16/Describes.svg")

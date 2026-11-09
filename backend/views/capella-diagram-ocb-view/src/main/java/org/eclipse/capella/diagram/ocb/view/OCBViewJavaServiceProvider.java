@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.ocb.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.ocb.view.services.OCBDiagramService;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
@@ -21,8 +22,8 @@ import org.eclipse.capella.model.services.operational.analysis.OARepresentationM
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationQueryService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
-import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
@@ -69,7 +70,6 @@ public class OCBViewJavaServiceProvider implements IJavaServiceProvider {
                     CommonUpdateService.class,
                     CommonQueryService.class,
                     TransverseRepresentationMutationService.class,
-                    OCBViewQueryService.class,
                     DiagramMutationAQLService.class,
                     DiagramQueryAQLService.class,
                     DiagramMutationLabelService.class,
@@ -79,7 +79,8 @@ public class OCBViewJavaServiceProvider implements IJavaServiceProvider {
                     ModelMutationAQLService.class,
                     ModelQueryAQLService.class,
                     TreeQueryAQLService.class,
-                    ViewLabelService.class);
+                    ViewLabelService.class,
+                    OCBDiagramService.class);
         }
         return List.of();
     }
