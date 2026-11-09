@@ -40,6 +40,8 @@ An OAB diagram can be created on a component, the structure package, or any of i
 - https://github.com/eclipse-capella/capella-for-syson/issues/183[#183] [enh] Add requirement node to MCB diagram.
 - https://github.com/eclipse-capella/capella-for-syson/issues/79[#79] [ocb] Fix the precondition of the OCB diagram.
 An OCB diagram can be created on the capabilities package or any of its sub-packages in the _Operational Analysis_ perspective.
+- https://github.com/eclipse-capella/capella-for-syson/issues/79[#79] [oabd] Fix the precondition of the OABD diagram.
+An OABD diagram can be created on any function of the _Operational Analysis_ perspective (i.e. operational activity).
 
 
 == 2026.11.0
