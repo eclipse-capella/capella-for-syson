@@ -1,0 +1,156 @@
+:author: Jérôme Gout
+:date: 2026-10-21
+:status: proposed
+:consulted: none
+:informed: none
+:deciders: Jérôme Gout
+:pitch: none
+:issue: https://github.com/eclipse-capella/capella-for-syson/issues/292
+
+= ADR-003 - Improve Functional Chain styling in SAB and LAB diagrams
+
+== Context and Problem Statement
+
+System Architecture Blank (SAB) and Logical Architecture Blank (LAB) diagrams use conditional styles to color Functional Chains and their involved Functions and Functional Exchanges.
+These conditions repeatedly invoke `TransverseRepresentationQueryService.getFunctionalChainIndexInDiagram` and `getImpliedInFunctionalChainIndex` while rendering individual elements.
+The queries reconstruct the represented chain list and resolve semantic objects multiple times during the same refresh.
+Profiling an In-Flight Entertainment LAB identified these repeated lookups as a rendering bottleneck.
+
+The required behavior is a consistent automatic style for each represented chain and its involved elements.
+Elements involved in several represented chains use an overlap style.
+Removing a chain during normal diagram use should preserve the colors of the remaining chains.
+Keeping the same chain color across processor disposal and reopening is not required, provided that the new color is consistently applied to its involved elements.
+
+We need to reduce repeated lookups with minimal changes to the product and without introducing a separate persistence mechanism for graphical allocations.
+
+== Decision Drivers
+
+* Compute chain membership once per diagram post-processing pass instead of repeating inverse searches in conditional styles.
+* Keep automatic colors consistent across a chain, its Functions, and its Functional Exchanges.
+* Preserve surviving chain colors during normal use of an active diagram.
+* Preserve explicitly customized properties independently.
+* Reuse Sirius Web rendering and representation persistence without changing the database schema or semantic model.
+* Keep the implementation shared by SAB and LAB and contained in the existing diagram customization module.
+* Document exceptional cases without introducing infrastructure to preserve historical allocations in every situation.
+
+== Considered Options
+
+=== Diagram post-processing with colors recovered from the active processor (selected)
+
+An `IDiagramPostProcessor` computes the chain-to-color mapping and element memberships for the rendered diagram.
+During a refresh, it retrieves the previous diagram from the active representation event processor and reuses the observable automatic colors of surviving chains.
+New chains receive the first available palette color.
+
+When no processor is active, the mapping is initialized deterministically from the currently represented chains and palette.
+There is no additional database lookup to recover previous colors.
+The resulting diagram is saved through normal Sirius Web persistence.
+
+=== Diagram post-processing with complete color reassignment on every refresh
+
+The mapping is recomputed from the ordered chain identifiers and palette on every pass, without accessing the previous diagram.
+This is simpler but removing or adding a chain can change the colors of surviving chains during normal use.
+It does not meet the selected stability requirement for an active diagram.
+This approach is rejected.
+
+=== Diagram post-processing with persistent allocation state
+
+A dedicated table stores chain allocation slots independently of rendered styles.
+This requires migrations, allocation persistence coordinated with diagram persistence, and integration with representation lifecycle operations and undo/redo.
+It provides stronger historical allocation guarantees but adds disproportionate product infrastructure for the required behavior.
+This approach is rejected.
+
+=== Keep the conditional styles and optimize their repeated queries
+
+Conditional styles could retain their current structure and share cached query results.
+This would require defining an appropriate cache scope and invalidation contract across rendering and changes to the represented chains.
+The post-processor provides a natural scope for a single computation over the rendered diagram instead.
+
+== Decision Outcome
+
+We will compute Functional Chain styles in a shared diagram post-processor, recover surviving chain colors only from the active processor's previous diagram, and use native diagram persistence.
+We accept that reopening a diagram without an active processor can assign different colors, provided that the new automatic mapping is applied consistently.
+
+The scope is diagram styling.
+The implementation must not introduce an allocation table, a separate allocation history, a persistence decorator, a cross-refresh cache, or semantic color attributes.
+
+== Consequences
+
+=== Advantages
+
+* Chain and membership lookups are shared within a post-processing pass.
+* Surviving chain colors can remain stable after deletion during normal diagram use.
+* Previous diagram access uses an existing in-memory object, without a full copy or an additional database read.
+* Sirius Web persists the styled diagram through its existing representation lifecycle.
+* SAB and LAB share the styling orchestration without changing their synchronization strategies or tools.
+* Reopening does not require reconstructing historical color allocations.
+
+=== Drawbacks
+
+* Color stability is scoped to the lifetime of the active processor and to automatic colors that remain observable.
+Reopening without an active processor, changing the palette, or renewing semantic identifiers can change assignments.
+* An explicit customization can hide the previous automatic color.
+Recovering that hidden allocation or reserving its original color is not guaranteed.
+No additional storage is introduced to address this limitation.
+* Preserving a customized property can intentionally make an element differ from its chain's automatic color.
+Customizing a chain node does not automatically propagate that customization to its involved elements.
+* More chains than palette entries share colors.
+Overlap must therefore be determined from distinct chain identities, not from color equality.
+* Previous diagram access depends on Sirius Web refresh ordering and must be revalidated when upgrading Sirius Web.
+* The performance gain must be measured after removing the expensive conditional styles.
+Moving work into a post-processor alone is not evidence of an improvement.
+
+== More Information
+
+=== Implementation
+
+Implement the orchestration in `backend/views/capella-diagram-customization`, restricted to SAB and LAB descriptions.
+Reuse existing semantic queries and style values where applicable.
+Do not introduce a dependency from the customization module back to SAB or LAB view modules.
+
+For each pass:
+
+. Identify and deduplicate represented chains by semantic identifier.
+A hidden chain still contributes while its view remains in the diagram; removing its view removes its contribution.
+. Query `IRepresentationEventProcessorRegistry` for the active processor and inspect its previous `Diagram`, if available.
+Index observable automatic chain colors by semantic identifier and retain assignments only for surviving chains.
+Do not use `IRepresentationSearchService` as a fallback for previous colors.
+. Assign new chains the first unused color in palette order, using a canonical chain identifier order for simultaneous additions.
+Once all colors are used, choose by modulo of the palette size using the current canonical chain order, without recoloring surviving chains.
+A shared color is available again only when no surviving chain uses it.
+. Without an active processor, initialize all assignments by canonical chain identifier order and palette-size modulo.
+. Traverse each represented chain's involved exchanges and their endpoint Functions through semantic references, including references reachable in the editing context's ResourceSet.
+Do not restrict membership to exchanges that currently have graphical views.
+Deduplicate membership per chain before detecting overlaps.
+. Apply base, single-chain, or overlap styles to all relevant views, including nested Functions.
+Preserve each explicitly customized property and retain identifiers, labels, endpoints, topology, and layout.
+. Return the resulting diagram for normal Sirius Web persistence.
+Resolution and membership maps are local to the pass.
+
+Remove the repeated conditional-style queries only when their replacement is connected.
+Check other callers before deleting historical query methods.
+Keep existing SAB/LAB Functional Exchange synchronization strategies unchanged.
+
+=== Decision Details
+
+The previous diagram is needed because the renderer recomputes non-customized styles from the node description before invoking the post-processor.
+A color applied by the previous post-processing pass is therefore not necessarily present in the newly rendered node.
+Comparing that node with its description's default color cannot reliably identify a newly added chain.
+Do not mark automatic assignments as user customizations merely to preserve them.
+
+With Sirius Web/SysON `2026.9.2`, the active processor exposes the previous diagram during refresh, before replacing it with the post-processed result.
+At initial processor construction, the processor is not yet registered; this is the initialization case and triggers color reassignment.
+A browser reload does not necessarily dispose the server-side processor, so it does not necessarily trigger reassignment.
+
+Direct calls to `DiagramCreationService.create()` do not execute post-processors in this version.
+The standard diagram opening path performs a refresh before publication.
+An isolated creation call can therefore temporarily retain base styles.
+
+Integration experiments verified previous-diagram access during refresh and preservation of customized properties with the native renderer and persistence.
+They establish feasibility, not completion of SAB/LAB behavior or a measured gain for the future implementation.
+
+Validation must cover deletion with surviving colors unchanged, reuse of a released color, palette overflow, distinct-chain overlap, hidden chains, nested views, cross-resource references, per-property customization, reset, and initialization without an active processor.
+After reopening without a processor, assert coherent automatic styles rather than preservation of historical colors.
+Measure the complete refresh: the `doRender` timer in the inspected version excludes post-processing.
+
+Revisit this decision if users require stable allocations across reopening, recovery of fully customized automatic colors, or if Sirius Web changes its processor lifecycle.
+These are documented limits, not prerequisites for introducing a new allocation infrastructure.

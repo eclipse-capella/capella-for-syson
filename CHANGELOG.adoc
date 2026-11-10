@@ -44,6 +44,7 @@ A LAB diagram can be created on a component, the structure package, or any of it
 === Architectural decision records
 
 - [ADR-002] Define perspective and diagram service boundaries
+- [ADR-003] Improve Functional Chain styling in SAB and LAB diagrams
 
 === Deprecation warning
 
