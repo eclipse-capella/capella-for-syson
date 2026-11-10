@@ -38,6 +38,17 @@ public abstract class AbstractArcadiaElement<T extends Element> {
         return this.element;
     }
 
+    protected <E extends Element> E getOwnedElement(Class<E> type) {
+        Optional<E> optionalOwnedElement = this.element.getOwnedElement().stream()
+                .filter(type::isInstance)
+                .map(type::cast)
+                .findFirst();
+        if (optionalOwnedElement.isEmpty()) {
+            fail("Could not find ownedElement of type '" + type.getSimpleName() + "' in '" + this.element.getDeclaredName() + "'");
+        }
+        return optionalOwnedElement.get();
+    }
+
     protected <E extends Element> E getOwnedElement(String name, Class<E> type) {
         Optional<E> optionalOwnedElement = this.element.getOwnedElement().stream()
                 .filter(type::isInstance)

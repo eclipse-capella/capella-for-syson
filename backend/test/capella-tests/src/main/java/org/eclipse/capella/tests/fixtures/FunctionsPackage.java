@@ -28,6 +28,10 @@ public final class FunctionsPackage extends AbstractArcadiaElement<Package> {
     }
 
     public RootFunction getRootFunction() {
-        return new RootFunction(this.getOwnedElement("Root Function", ActionUsage.class));
+        // The root element is resolved by type rather than by name: depending on the
+        // architecture it is named "Root Function" (System/Logical/Physical/EPBS) or
+        // "Root Activity" (Operational Analysis), but a Functions package only ever owns
+        // a single root ActionUsage.
+        return new RootFunction(this.getOwnedElement(ActionUsage.class));
     }
 }
