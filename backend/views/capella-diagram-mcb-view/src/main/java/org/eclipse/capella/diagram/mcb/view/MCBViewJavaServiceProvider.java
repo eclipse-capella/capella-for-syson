@@ -24,6 +24,7 @@ import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.diagram.services.DiagramMutationExposeService;
 import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
 import org.eclipse.syson.diagram.services.aql.DiagramQueryAQLService;
+import org.eclipse.capella.diagram.mcb.view.services.MCBDiagramService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class MCBViewJavaServiceProvider implements IJavaServiceProvider {
                 .findFirst();
         if (optDescription.isPresent()) {
             return List.of(SAQueryService.class,
+                    MCBDiagramService.class,
                     CommonQueryService.class,
                     CommonCreationService.class,
                     CommonDeletionService.class,

@@ -19,10 +19,8 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.S
 
 import java.util.List;
 
-import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
@@ -68,23 +66,6 @@ public class SAQueryService {
                 && !this.commonQueryService.isComponentActor(partUsage)
                 && !this.isSystemOfInterest(partUsage)
                 && this.isInSystemAnalysisStructure(partUsage);
-    }
-
-    /**
-     * Checks whether the context is the System Analysis Capabilities package or one of its nested packages.
-     *
-     * @param element
-     *         the diagram context
-     * @return whether the context belongs to the System Analysis Capabilities package
-     */
-    public boolean isSystemAnalysisCapabilitiesPackage(Object element) {
-        if (element instanceof Package packageElt
-                && this.commonQueryService.getArcadiaPerspective(packageElt).filter(ArcadiaEngineeringPerspective.SystemAnalysis::equals).isPresent()) {
-            return this.commonQueryService.getCapabilitiesPackage(packageElt)
-                    .filter(capabilitiesPackage -> EcoreUtil.isAncestor(capabilitiesPackage, packageElt))
-                    .isPresent();
-        }
-        return false;
     }
 
     private List<PartUsage> getSystemOfInterestCandidates(EObject eObject) {
