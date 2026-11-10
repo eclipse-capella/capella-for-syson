@@ -12,8 +12,10 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -33,6 +35,7 @@ import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortDefinition;
 import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.eclipse.syson.util.SysONEContentAdapter;
 import org.junit.jupiter.api.Disabled;
@@ -77,40 +80,6 @@ public class SAQueryServiceTests {
     }
 
     @Test
-    public void isSystemAnalysisStructurePackageShouldAcceptOnlySystemAnalysisStructure() {
-        var componentType = this.createArcadiaComponentType();
-        var systemAnalysis = this.createPackage("System Analysis");
-        var systemAnalysisStructure = this.createPackage("Structure");
-        this.addOwnedMember(systemAnalysis, systemAnalysisStructure);
-        this.addOwnedMember(systemAnalysisStructure, this.createComponent("system", componentType));
-
-        var logicalArchitecture = this.createPackage("Logical Architecture");
-        var logicalArchitectureStructure = this.createPackage("Structure");
-        this.addOwnedMember(logicalArchitecture, logicalArchitectureStructure);
-        this.addOwnedMember(logicalArchitectureStructure, this.createComponent("system", componentType));
-
-        assertTrue(this.saQueryService.isSystemAnalysisStructurePackage(systemAnalysisStructure));
-        assertFalse(this.saQueryService.isSystemAnalysisStructurePackage(logicalArchitectureStructure));
-        assertFalse(this.saQueryService.isSystemAnalysisStructurePackage(systemAnalysis));
-    }
-
-    @Test
-    public void isSystemAnalysisStructurePackageShouldNotDependOnSystemOfInterestCount() {
-        var componentType = this.createArcadiaComponentType();
-        var systemAnalysis = this.createPackage("System Analysis");
-
-        var emptyStructure = this.createPackage("Structure");
-        this.addOwnedMember(systemAnalysis, emptyStructure);
-        assertTrue(this.saQueryService.isSystemAnalysisStructurePackage(emptyStructure));
-
-        var duplicateStructure = this.createPackage("Structure");
-        this.addOwnedMember(systemAnalysis, duplicateStructure);
-        this.addOwnedMember(duplicateStructure, this.createComponent("system", componentType));
-        this.addOwnedMember(duplicateStructure, this.createComponent("system", componentType));
-        assertTrue(this.saQueryService.isSystemAnalysisStructurePackage(duplicateStructure));
-    }
-
-    @Test
     public void getSystemOfInterestShouldReturnOnlyOneSystemFromSystemAnalysisStructure() {
         var root = SysmlFactory.eINSTANCE.createPackage();
         var arcadia = this.createPackage("Arcadia");
@@ -143,7 +112,8 @@ public class SAQueryServiceTests {
         assertEquals(1, systems.size());
         assertTrue(systems.contains(firstSystem));
         assertTrue(this.saQueryService.getSystemOfInterest(logicalArchitectureStructure).isEmpty());
-        assertTrue(this.saQueryService.isSystemAnalysisStructurePackage(systemAnalysisStructure));
+        assertInstanceOf(Package.class, systemAnalysisStructure);
+        assertThat(EMFUtils.getFirstAncestor(Package.class, systemAnalysisStructure, this.commonQueryService::isStructurePackage)).isPresent();
     }
 
     @Test
@@ -166,21 +136,6 @@ public class SAQueryServiceTests {
 
         assertEquals(1, systems.size());
         assertTrue(systems.contains(system));
-    }
-
-    @Test
-    public void isSystemAnalysisStructurePackageShouldIgnoreNestedSystemNamedComponents() {
-        var componentType = this.createArcadiaComponentType();
-        var systemAnalysis = this.createPackage("System Analysis");
-        var systemAnalysisStructure = this.createPackage("Structure");
-        this.addOwnedMember(systemAnalysis, systemAnalysisStructure);
-
-        var system = this.createComponent("system", componentType);
-        this.addOwnedMember(systemAnalysisStructure, system);
-        this.addOwnedMember(system, this.createComponent("system", componentType));
-
-        assertTrue(this.saQueryService.isSystemAnalysisStructurePackage(systemAnalysisStructure));
-        assertEquals(List.of(system), this.saQueryService.getSystemOfInterest(systemAnalysisStructure));
     }
 
     @Test

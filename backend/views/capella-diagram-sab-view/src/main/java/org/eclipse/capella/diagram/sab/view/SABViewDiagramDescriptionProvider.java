@@ -27,7 +27,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementNodeDes
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.compartment.SABCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.compartment.SABCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDescriptionProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.diagram.sab.view.services.SABDiagramService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -66,7 +66,7 @@ public class SABViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .name(DESCRIPTION_NAME)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(SAQueryService::isSystemAnalysisStructurePackage).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(SABDiagramService::canCreateSABDiagram).aqlSelf())
                 .toolbar(toolbar)
                 .build();
 

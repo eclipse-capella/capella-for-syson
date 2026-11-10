@@ -70,12 +70,6 @@ public class SAQueryService {
                 && this.isInSystemAnalysisStructure(partUsage);
     }
 
-    public boolean isSystemAnalysisStructurePackage(Object element) {
-        return element instanceof Package packageElt
-                && STRUCTURE_PACKAGE.equals(packageElt.getDeclaredName())
-                && this.isSystemAnalysisPerspectivePackage(packageElt);
-    }
-
     /**
      * Checks whether the context is the System Analysis Capabilities package or one of its nested packages.
      *
@@ -91,14 +85,6 @@ public class SAQueryService {
                     .isPresent();
         }
         return false;
-    }
-
-    private boolean isSystemAnalysisPerspectivePackage(Package packageElt) {
-        return this.commonQueryService.getArcadiaPerspectivePackage(packageElt)
-                .map(Package::getDeclaredName)
-                .flatMap(ArcadiaEngineeringPerspective::fromLabel)
-                .filter(ArcadiaEngineeringPerspective.SystemAnalysis::equals)
-                .isPresent();
     }
 
     private List<PartUsage> getSystemOfInterestCandidates(EObject eObject) {
