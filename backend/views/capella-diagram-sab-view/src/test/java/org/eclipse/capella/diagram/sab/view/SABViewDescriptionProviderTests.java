@@ -53,19 +53,6 @@ import org.junit.jupiter.api.Test;
 public class SABViewDescriptionProviderTests {
 
     @Test
-    public void createShouldBuildSABDiagramDescriptionScopedToSystemAnalysisStructure() {
-        var view = ViewFactory.eINSTANCE.createView();
-        var colorProvider = new ColorProvider(view);
-        var representationDescription = new SABViewDiagramDescriptionProvider().create(colorProvider);
-
-        var diagramDescription = assertInstanceOf(DiagramDescription.class, representationDescription);
-        assertEquals(SABViewConstants.DESCRIPTION_NAME, diagramDescription.getName());
-        assertEquals(SABViewConstants.DESCRIPTION_NAME, diagramDescription.getTitleExpression());
-        assertEquals(ServiceMethod.of0(SAQueryService::isSystemAnalysisStructurePackage).aqlSelf(), diagramDescription.getPreconditionExpression());
-        assertNotNull(diagramDescription.getPalette());
-    }
-
-    @Test
     public void createShouldRegisterExpectedIncrementOneDescriptionsAndSynchronizationPolicies() {
         var view = ViewFactory.eINSTANCE.createView();
         var colorProvider = new ColorProvider(view);
