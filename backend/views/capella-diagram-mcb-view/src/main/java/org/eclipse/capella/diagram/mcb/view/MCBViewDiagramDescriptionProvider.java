@@ -17,9 +17,9 @@ import java.util.List;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.compartment.MCBCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.compartment.MCBCompartmentItemNodeDescriptionProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
 import org.eclipse.syson.diagram.common.view.ViewDiagramElementFinder;
+import org.eclipse.capella.diagram.mcb.view.services.MCBDiagramService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -52,7 +52,7 @@ public class MCBViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPackage()))
                 .name(DESCRIPTION_NAME)
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(SAQueryService::isSystemAnalysisCapabilitiesPackage).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(MCBDiagramService::canCreateMCBDiagram).aqlSelf())
                 .toolbar(toolbar)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();

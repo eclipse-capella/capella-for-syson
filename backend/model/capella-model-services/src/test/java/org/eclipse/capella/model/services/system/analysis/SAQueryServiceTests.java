@@ -14,7 +14,6 @@ package org.eclipse.capella.model.services.system.analysis;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -53,31 +52,6 @@ public class SAQueryServiceTests {
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
-
-    @Test
-    public void isSystemAnalysisCapabilitiesPackageShouldAcceptCapabilitiesAndNestedPackages() {
-        var systemAnalysis = this.createPackage("System Analysis");
-        var capabilities = this.createPackage("Capabilities");
-        var nestedPackage = this.createPackage("Nested");
-        this.addOwnedMember(systemAnalysis, capabilities);
-        this.addOwnedMember(capabilities, nestedPackage);
-
-        assertTrue(this.saQueryService.isSystemAnalysisCapabilitiesPackage(capabilities));
-        assertTrue(this.saQueryService.isSystemAnalysisCapabilitiesPackage(nestedPackage));
-    }
-
-    @Test
-    public void isSystemAnalysisCapabilitiesPackageShouldRejectOtherContexts() {
-        var systemAnalysis = this.createPackage("System Analysis");
-        var data = this.createPackage("Data");
-        this.addOwnedMember(systemAnalysis, data);
-        var operationalAnalysis = this.createPackage("Operational Analysis");
-        var operationalCapabilities = this.createPackage("Capabilities");
-        this.addOwnedMember(operationalAnalysis, operationalCapabilities);
-
-        assertFalse(this.saQueryService.isSystemAnalysisCapabilitiesPackage(data));
-        assertFalse(this.saQueryService.isSystemAnalysisCapabilitiesPackage(operationalCapabilities));
-    }
 
     @Test
     public void getSystemOfInterestShouldReturnOnlyOneSystemFromSystemAnalysisStructure() {
