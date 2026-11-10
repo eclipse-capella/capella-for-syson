@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view.nodes.activity;
 
-import org.eclipse.capella.diagram.oaib.view.OAIBViewQueryService;
+import org.eclipse.capella.diagram.oaib.view.services.OAIBDiagramService;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -49,7 +49,7 @@ public class OperationalActivityToolProvider {
                         .children(this.diagramBuilderHelper.newCreateView()
                                 .containmentKind(NodeContainmentKind.CHILD_NODE)
                                 .elementDescription(nodeDescription)
-                                .parentViewExpression(ServiceMethod.of2(OAIBViewQueryService::getOperationalActivityGraphicalParent)
+                                .parentViewExpression(ServiceMethod.of2(OAIBDiagramService::getOperationalActivityGraphicalParent)
                                         .aqlSelf("selectedNode", DiagramContext.DIAGRAM_CONTEXT))
                                 .semanticElementExpression(AQLConstants.AQL_SELF)
                                 .variableName("newInstanceView")

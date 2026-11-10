@@ -18,6 +18,8 @@
 
 - https://github.com/eclipse-capella/capella-for-syson/issues/79[#79] [ocb] Fix the precondition of the OCB diagram.
 The class `OCBViewQueryService` has been renamed `OCBDiagramService` and moved to `org.eclipse.capella.diagram.ocb.view.services` to follow the patterns of other diagram services.
+- https://github.com/eclipse-capella/capella-for-syson/issues/79[#79] [oaib] Fix the precondition of the OAIB diagram.
+The class `OAIBViewQueryService` has been renamed `OAIBDiagramService` and moved to `org.eclipse.capella.diagram.oaib.view.services` to follow the patterns of other diagram services.
 
 === Dependency update
 
@@ -42,6 +44,8 @@ An OAB diagram can be created on a component, the structure package, or any of i
 An OCB diagram can be created on the capabilities package or any of its sub-packages in the _Operational Analysis_ perspective.
 - https://github.com/eclipse-capella/capella-for-syson/issues/79[#79] [oabd] Fix the precondition of the OABD diagram.
 An OABD diagram can be created on any function of the _Operational Analysis_ perspective (i.e. operational activity).
+- https://github.com/eclipse-capella/capella-for-syson/issues/79[#79] [oaib] Fix the precondition of the OAIB diagram.
+An OAIB diagram can be created on any function of the _Operational Analysis_ perspective (i.e. operational activity).
 
 
 == 2026.11.0
