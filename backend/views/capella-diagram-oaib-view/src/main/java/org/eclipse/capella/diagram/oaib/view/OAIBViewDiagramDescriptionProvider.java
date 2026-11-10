@@ -14,14 +14,14 @@ package org.eclipse.capella.diagram.oaib.view;
 
 import java.util.List;
 
-import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.compartment.OAIBCompartmentItemNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.compartment.OAIBCompartmentNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.diagram.oaib.view.services.OAIBDiagramService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -57,7 +57,7 @@ public class OAIBViewDiagramDescriptionProvider implements IRepresentationDescri
                 .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getActionUsage()))
                 .name(DESCRIPTION_NAME)
                 .titleExpression(DESCRIPTION_NAME)
-                .preconditionExpression(ServiceMethod.of0(CommonQueryService::isOperationalActivity).aqlSelf())
+                .preconditionExpression(ServiceMethod.of0(OAIBDiagramService::canCreateOAIBDiagram).aqlSelf())
                 .toolbar(toolbar)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();

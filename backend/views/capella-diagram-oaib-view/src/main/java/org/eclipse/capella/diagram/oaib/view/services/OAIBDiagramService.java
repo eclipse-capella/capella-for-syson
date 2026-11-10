@@ -10,7 +10,7 @@
  * Contributors:
  *     Obeo - initial API and implementation
  *******************************************************************************/
-package org.eclipse.capella.diagram.oaib.view;
+package org.eclipse.capella.diagram.oaib.view.services;
 
 import java.util.Objects;
 
@@ -23,6 +23,7 @@ import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.components.core.api.IObjectSearchService;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.syson.sysml.ActionUsage;
+import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 
 /**
@@ -30,7 +31,7 @@ import org.eclipse.syson.sysml.Feature;
  *
  * @author tbezierslafosse
  */
-public class OAIBViewQueryService {
+public class OAIBDiagramService {
 
     private final IObjectSearchService objectSearchService;
 
@@ -40,9 +41,22 @@ public class OAIBViewQueryService {
 
     private final OARepresentationQueryService representationQueryService;
 
-    public OAIBViewQueryService(IObjectSearchService objectSearchService, IIdentityService identityService) {
+    public OAIBDiagramService(IObjectSearchService objectSearchService, IIdentityService identityService) {
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.representationQueryService = new OARepresentationQueryService(identityService);
+    }
+
+    /**
+     * Returns {@code true} if an OAIB diagram can be created on {@code self}.
+     * <p>
+     * OAIB diagrams can be created on any function of the <i>operational analysis</i> perspective (i.e. operational activities).
+     *
+     * @param self
+     *         the element to check
+     * @return {@code true} if the diagram can be created, {@code false} otherwise
+     */
+    public boolean canCreateOAIBDiagram(Element self) {
+        return this.commonQueryService.isOperationalActivity(self);
     }
 
     public Object getOperationalActivityGraphicalParent(ActionUsage activity, Object selectedNode, DiagramContext diagramContext) {
