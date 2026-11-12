@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.lab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.common.view.diagram.services.ShowRelatedElementsService;
 import org.eclipse.capella.diagram.lab.view.services.LABDiagramSemanticCandidatesService;
 import org.eclipse.capella.diagram.lab.view.services.LABDiagramService;
 import org.eclipse.capella.model.services.logical.architecture.LAMutationService;
@@ -81,6 +82,7 @@ public class LABViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramQueryElementService.class,
                     DiagramQueryLabelService.class,
                     DiagramMutationExposeService.class,
+                    ShowRelatedElementsService.class,
                     ViewLabelService.class,
                     LABDiagramService.class,
                     LABDiagramSemanticCandidatesService.class);

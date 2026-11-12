@@ -16,6 +16,8 @@ package org.eclipse.capella.diagram.lab.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.comment.CommentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.comment.CommentToolProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentNodeDescriptionProvider;
@@ -32,6 +34,7 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.DropTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
@@ -59,6 +62,7 @@ public class LABDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewComponentNodeTool(cache),
@@ -68,6 +72,12 @@ public class LABDiagramPaletteProvider {
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache),
                         new CommentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewCommentNodeTool(cache))
                 .build();
+    }
+
+    private DiagramToolSection createRelatedElementsToolSection() {
+        DiagramToolSection relatedElementToolSection = new RelatedElementsToolSectionProvider().createDiagramToolSection();
+        relatedElementToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        return relatedElementToolSection;
     }
 
     public DropTool createDropFromExplorerTool() {

@@ -12,11 +12,12 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view;
 
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.actor.SystemActorToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.functionalchain.FunctionalChainToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementToolProvider;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Node;
@@ -24,8 +25,10 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.DropTool;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide the minimal palette for the SAB diagram.
@@ -45,12 +48,19 @@ public class SABDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(
                         new SystemActorToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewSystemActorNodeTool(cache),
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache),
                         new FunctionalChainToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewFunctionalChainNodeTool(cache))
                 .build();
+    }
+
+    private DiagramToolSection createRelatedElementsToolSection() {
+        DiagramToolSection relatedElementToolSection = new RelatedElementsToolSectionProvider().createDiagramToolSection();
+        relatedElementToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        return relatedElementToolSection;
     }
 
     public DropTool createDropFromExplorerTool() {

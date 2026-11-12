@@ -12,14 +12,18 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view;
 
-import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
-import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentToolProvider;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityToolProvider;
+import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
+import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentToolProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.requirement.RequirementToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Node;
@@ -27,13 +31,12 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.DropTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Palette for OCB diagram.
@@ -53,6 +56,7 @@ public class OCBDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewEntityComponentNodeTool(cache),
@@ -60,6 +64,12 @@ public class OCBDiagramPaletteProvider {
                         new CapabilityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewCapabilityNodeTool(cache),
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
                 .build();
+    }
+
+    private DiagramToolSection createRelatedElementsToolSection() {
+        DiagramToolSection relatedElementToolSection = new RelatedElementsToolSectionProvider().createDiagramToolSection();
+        relatedElementToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        return relatedElementToolSection;
     }
 
     public DropTool createDropFromExplorerTool() {

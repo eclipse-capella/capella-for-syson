@@ -14,9 +14,10 @@ package org.eclipse.capella.diagram.sfbd.view;
 
 import java.util.List;
 
+import org.eclipse.capella.common.view.diagram.services.ShowRelatedElementsService;
 import org.eclipse.capella.diagram.sfbd.view.services.SFBDDiagramService;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.services.system.analysis.SAMutationService;
+import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -54,7 +55,8 @@ public class SFBDViewJavaServiceProvider implements IJavaServiceProvider {
                     TransverseRepresentationReconnectToolServices.class,
                     ViewLabelService.class,
                     SAQueryService.class,
-                    SFBDDiagramService.class);
+                    SFBDDiagramService.class,
+                    ShowRelatedElementsService.class);
         }
         return List.of();
     }
