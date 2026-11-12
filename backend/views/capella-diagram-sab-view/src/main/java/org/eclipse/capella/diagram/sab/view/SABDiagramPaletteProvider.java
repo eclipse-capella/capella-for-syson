@@ -12,11 +12,11 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view;
 
+import org.eclipse.capella.diagram.common.view.RelatedElementsToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.actor.SystemActorToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.functionalchain.FunctionalChainToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementToolProvider;
 import org.eclipse.capella.model.services.system.analysis.SARepresentationDropServices;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Node;
@@ -26,6 +26,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
 import org.eclipse.sirius.components.view.diagram.DropTool;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide the minimal palette for the SAB diagram.
@@ -45,6 +46,7 @@ public class SABDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(new RelatedElementsToolProvider().createDiagramToolSection())
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(
                         new SystemActorToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewSystemActorNodeTool(cache),

@@ -18,6 +18,7 @@ import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Checks the structure of the Missions Capabilities Blank diagram.
@@ -39,5 +40,11 @@ public class MCBDiagramDescriptionTests extends AbstractEditableDiagramDescripti
     @Override
     protected IJavaServiceProvider getJavaServiceProvider() {
         return new MCBViewJavaServiceProvider();
+    }
+
+    @Disabled("Disabled until MCB has a diagram palette")
+    @Override
+    public void diagramHasRelatedElementsTools() {
+        super.diagramHasRelatedElementsTools();
     }
 }

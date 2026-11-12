@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.mcb.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.common.view.services.ShowRelatedElementsService;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
@@ -34,7 +35,9 @@ public class MCBViewJavaServiceProvider implements IJavaServiceProvider {
                 .filter(desc -> MCBViewDiagramDescriptionProvider.DESCRIPTION_NAME.equals(desc.getName()))
                 .findFirst();
         if (optDescription.isPresent()) {
-            return List.of(SAQueryService.class);
+            return List.of(
+                    ShowRelatedElementsService.class,
+                    SAQueryService.class);
         }
         return List.of();
     }

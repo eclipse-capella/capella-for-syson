@@ -15,11 +15,16 @@ package org.eclipse.capella.tests.diagrams;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Objects;
+import java.util.Optional;
+
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.SoftAssertions;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.EdgePalette;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +34,20 @@ import org.junit.jupiter.api.Test;
  * @author gdaniel
  */
 public abstract non-sealed class AbstractEditableDiagramDescriptionTests extends AbstractDiagramDescriptionTests {
+
+    @Test
+    public void diagramHasRelatedElementsTools() {
+        Optional<DiagramToolSection> relatedElementsToolSection = Optional.empty();
+        if (this.diagramDescription.getPalette() != null) {
+            relatedElementsToolSection = this.diagramDescription.getPalette().getToolSections().stream()
+                    .filter(toolSection -> Objects.equals(toolSection.getName(), "Related Elements"))
+                    .findFirst();
+        }
+        assertThat(relatedElementsToolSection).as("DiagramDescription should have a Related Elements tool section").isPresent();
+        assertThat(relatedElementsToolSection.get().getNodeTools())
+                .map(NodeTool::getName)
+                .contains("Show all contained elements");
+    }
 
     @Test
     public void eachEdgeHasReconnectTools() {
