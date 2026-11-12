@@ -12,10 +12,13 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.mcb.view;
 
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DropToolBuilder;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 
 /**
  * Diagram-level creation tools for MCB.
@@ -29,9 +32,16 @@ public class MCBDiagramPaletteProvider {
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         var tools = new MCBNodeToolProvider();
         return this.diagramBuilders.newDiagramPalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .nodeTools(tools.createActorTool(cache), tools.createMissionTool(cache), tools.createCapabilityTool(cache), tools.createRequirementTool(cache))
                 .dropTool(new DropToolBuilder().build()) // To be added later
                 .build();
+    }
+
+    private DiagramToolSection createRelatedElementsToolSection() {
+        DiagramToolSection relatedElementToolSection = new RelatedElementsToolSectionProvider().createDiagramToolSection();
+        relatedElementToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        return relatedElementToolSection;
     }
 
 }

@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oaib.view;
 
 import java.util.List;
 
+import org.eclipse.capella.common.view.diagram.services.ShowRelatedElementsService;
 import org.eclipse.capella.diagram.oaib.view.services.OAIBDiagramService;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
@@ -59,7 +60,8 @@ public class OAIBViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramMutationAQLService.class,
                     DiagramQueryAQLService.class,
                     ViewLabelService.class,
-                    OAIBDiagramService.class);
+                    OAIBDiagramService.class,
+                    ShowRelatedElementsService.class);
         }
         return List.of();
     }

@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.sab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.common.view.diagram.services.ShowRelatedElementsService;
 import org.eclipse.capella.diagram.sab.view.services.SABDiagramSemanticCandidatesService;
 import org.eclipse.capella.diagram.sab.view.services.SABDiagramService;
 import org.eclipse.capella.model.services.system.analysis.SAMutationService;
@@ -71,7 +72,8 @@ public class SABViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramQueryAQLService.class,
                     ViewLabelService.class,
                     SABDiagramService.class,
-                    SABDiagramSemanticCandidatesService.class);
+                    SABDiagramSemanticCandidatesService.class,
+                    ShowRelatedElementsService.class);
         }
         return List.of();
     }

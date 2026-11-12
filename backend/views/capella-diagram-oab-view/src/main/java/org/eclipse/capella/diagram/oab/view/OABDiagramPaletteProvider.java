@@ -12,12 +12,16 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oab.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentToolProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.requirement.RequirementToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.diagrams.Node;
@@ -25,13 +29,12 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.DropTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Provide Palette for OAB diagram.
@@ -51,12 +54,19 @@ public class OABDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(new EntityComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewEntityComponentNodeTool(cache),
                         new EntityComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewActorComponentNodeTool(cache),
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
                 .build();
+    }
+
+    private DiagramToolSection createRelatedElementsToolSection() {
+        DiagramToolSection relatedElementToolSection = new RelatedElementsToolSectionProvider().createDiagramToolSection();
+        relatedElementToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        return relatedElementToolSection;
     }
 
     public DropTool createDropFromExplorerTool() {

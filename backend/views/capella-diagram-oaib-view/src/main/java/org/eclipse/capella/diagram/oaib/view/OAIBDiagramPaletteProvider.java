@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view;
 
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.activity.OperationalActivityToolProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.process.OperationalProcessToolProvider;
 import org.eclipse.capella.diagram.oaib.view.nodes.requirement.RequirementToolProvider;
@@ -23,6 +25,7 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.DropTool;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 import org.eclipse.syson.util.ServiceMethod;
@@ -44,12 +47,19 @@ public class OAIBDiagramPaletteProvider {
 
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .dropTool(this.createDropFromExplorerTool())
                 .nodeTools(
                         new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache),
                         new OperationalProcessToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalProcessNodeTool(cache),
                         new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
                 .build();
+    }
+
+    private DiagramToolSection createRelatedElementsToolSection() {
+        DiagramToolSection relatedElementToolSection = new RelatedElementsToolSectionProvider().createDiagramToolSection();
+        relatedElementToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        return relatedElementToolSection;
     }
 
     private DropTool createDropFromExplorerTool() {

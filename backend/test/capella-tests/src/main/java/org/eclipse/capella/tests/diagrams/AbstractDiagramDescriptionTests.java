@@ -13,6 +13,8 @@
 
 package org.eclipse.capella.tests.diagrams;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -53,14 +55,18 @@ import org.eclipse.sirius.components.view.diagram.ArrowStyle;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeDescription;
+import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
+import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
+import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
+import org.eclipse.syson.util.SysMLMetamodelHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -233,6 +239,45 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
         this.diagramDescription.getEdgeDescriptions().stream()
             .filter(edgeDescription -> DESCRIBES_EDGE_DESCRIPTION_NAME.equals(edgeDescription.getName()))
                 .forEach(this::assertRequirementDescribesEdgePresentation);
+    }
+
+    @Test
+    public void diagramWithUnsynchronizedNodesHasAShowAllContainedElementsTool() {
+        boolean hasUnsynchronizedNode = this.diagramDescription.getNodeDescriptions().stream()
+                // Requirements are never part of the all contained tree, so we exclude them to ensure there are other nodes that are unsynchronized on the diagram.
+                .filter(nodeDescription -> !Objects.equals(SysMLMetamodelHelper.toEClass(nodeDescription.getDomainType()), SysmlPackage.eINSTANCE.getRequirementUsage()))
+                .anyMatch(nodeDescription -> nodeDescription.getSynchronizationPolicy() == SynchronizationPolicy.UNSYNCHRONIZED);
+        if (hasUnsynchronizedNode) {
+            Optional<DiagramToolSection> optionalRelatedElementsToolSection = Optional.ofNullable(this.diagramDescription.getPalette())
+                    .stream()
+                    .flatMap(diagramPalette -> diagramPalette.getToolSections().stream())
+                    .filter(toolSection -> Objects.equals(toolSection.getName(), "Related Elements"))
+                    .findFirst();
+            assertThat(optionalRelatedElementsToolSection).as("DiagramDescription should have a 'Related Elements' tool section").isPresent();
+            assertThat(optionalRelatedElementsToolSection.get().getNodeTools())
+                    .as("DiagramDescription should have a 'Show all contained elements'")
+                    .anyMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements"));
+        }
+    }
+
+    @Test
+    public void diagramWithoutUnsynchronizedNodeHasNoShowAllContainedElementsTool() {
+        boolean hasUnsynchronizedNode = this.diagramDescription.getNodeDescriptions().stream()
+                // Requirements are never part of the all contained tree, so we exclude them to ensure there are other nodes that are unsynchronized on the diagram.
+                .filter(nodeDescription -> !Objects.equals(SysMLMetamodelHelper.toEClass(nodeDescription.getDomainType()), SysmlPackage.eINSTANCE.getRequirementUsage()))
+                .anyMatch(nodeDescription -> nodeDescription.getSynchronizationPolicy() == SynchronizationPolicy.UNSYNCHRONIZED);
+        if (!hasUnsynchronizedNode) {
+            Optional<DiagramToolSection> optionalRelatedElementsToolSection = Optional.ofNullable(this.diagramDescription.getPalette())
+                    .stream()
+                    .flatMap(diagramPalette -> diagramPalette.getToolSections().stream())
+                    .filter(toolSection -> Objects.equals(toolSection.getName(), "Related Elements"))
+                    .findFirst();
+            if (optionalRelatedElementsToolSection.isPresent()) {
+                assertThat(optionalRelatedElementsToolSection.get().getNodeTools())
+                        .as("DiagramDescription should have a 'Show all contained elements'")
+                        .noneMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements"));
+            }
+        }
     }
 
     private void assertRequirementCompartmentPresentation(NodeDescription requirementNodeDescription) {
