@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.ocb.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.ocb.view.services.OCBDiagramSemanticCandidatesService;
 import org.eclipse.capella.diagram.ocb.view.services.OCBDiagramService;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
@@ -80,7 +81,8 @@ public class OCBViewJavaServiceProvider implements IJavaServiceProvider {
                     ModelQueryAQLService.class,
                     TreeQueryAQLService.class,
                     ViewLabelService.class,
-                    OCBDiagramService.class);
+                    OCBDiagramService.class,
+                    OCBDiagramSemanticCandidatesService.class);
         }
         return List.of();
     }

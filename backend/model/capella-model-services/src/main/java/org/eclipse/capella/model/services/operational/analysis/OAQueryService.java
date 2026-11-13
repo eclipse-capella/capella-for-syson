@@ -54,6 +54,12 @@ public class OAQueryService {
         return valid;
     }
 
+    public List<PartUsage> getComponents(Element self) {
+        return this.commonQueryService.getComponents(self).stream()
+                .filter(component -> this.commonQueryService.isInPerspective(component, ArcadiaEngineeringPerspective.OperationalAnalysis))
+                .toList();
+    }
+
     /**
      * Returns the component source of a component exchange.
      * <p>

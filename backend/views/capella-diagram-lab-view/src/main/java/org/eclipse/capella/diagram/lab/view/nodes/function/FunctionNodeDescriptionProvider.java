@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.diagram.lab.view.services.LABDiagramSemanticCandidatesService;
 import org.eclipse.capella.diagram.lab.view.services.LABDiagramService;
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -53,7 +53,7 @@ public class FunctionNodeDescriptionProvider extends AbstractNodeDescriptionProv
                 .domainType(domainType)
                 .insideLabel(new FunctionLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .name(this.getNodeDescriptionName())
-                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::getSubFunctions).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(LABDiagramSemanticCandidatesService::getFunctionCandidates).aqlSelf())
                 .style(functionNodeStyleProvider.createFunctionNodeStyle())
                 .conditionalStyles(functionNodeStyleProvider.createFunctionConditionalNodeStyles())
                 .userResizable(UserResizableDirection.BOTH)

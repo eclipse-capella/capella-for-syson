@@ -13,15 +13,12 @@
 package org.eclipse.capella.model.services.operational.analysis;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
-import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
-import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,11 +36,7 @@ public class OAQueryServiceTests {
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
-    private final DiagramMutationElementService diagramMutationElementService = mock(DiagramMutationElementService.class);
-
     private final CommonCreationService commonCreationService = new CommonCreationService();
-
-    private final MetamodelMutationElementService metamodelMutationElementService = new MetamodelMutationElementService();
 
     @Test
     @DisplayName("GIVEN OA packages and nested entities, WHEN resolving component/requirements packages and sub-components, THEN only expected typed components are returned")
@@ -60,7 +53,7 @@ public class OAQueryServiceTests {
         assertThat(this.commonQueryService.getStructurePackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.structurePackage());
         assertThat(this.commonQueryService.getRequirementsPackage(nestedTypedComponent)).isPresent().get().isSameAs(oaPackages.requirementsPackage());
 
-        assertThat(this.commonQueryService.getSubComponents(oaPackages.operationalAnalysisPackage())).containsExactly(componentA);
+        assertThat(this.commonQueryService.getSubComponents(oaPackages.structurePackage())).containsExactly(componentA);
         assertThat(this.commonQueryService.getSubComponents(componentA)).containsExactly(nestedTypedComponent);
     }
 
