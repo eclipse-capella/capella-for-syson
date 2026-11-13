@@ -58,7 +58,6 @@ import org.eclipse.sirius.components.tables.renderer.TableRenderer;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
-import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.impl.ActionUsageImpl;
@@ -311,9 +310,11 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
     }
 
     private boolean canCreate(VariableManager variableManager) {
-        return variableManager.get(VariableManager.SELF, Object.class)
-                .filter(Package.class::isInstance)
-                .isPresent();
+        return false;
+        // The function table has been de-activated for the moment, see #228 for more information.
+        //        return variableManager.get(VariableManager.SELF, Object.class)
+        //                .filter(Package.class::isInstance)
+        //                .isPresent();
     }
 
     private List<ColumnDescription> getColumnDescriptions() {
