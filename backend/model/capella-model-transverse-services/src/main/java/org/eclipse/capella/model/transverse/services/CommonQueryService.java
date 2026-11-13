@@ -788,15 +788,19 @@ public class CommonQueryService {
         return List.of();
     }
 
-    public List<ActionUsage> getSubFunctions(EObject eObject) {
-        List<ActionUsage> subFunctions = new ArrayList<>();
-        if (eObject instanceof PartUsage partUsage) {
-            subFunctions.addAll(this.getAllocatedFunctions(partUsage));
-        } else if (eObject instanceof ActionUsage actionUsage) {
-            subFunctions.addAll(actionUsage.getNestedAction().stream().filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_FUNCTION))
-                    .toList());
+    public List<ActionUsage> getSubFunctions(Element parent) {
+        List<ActionUsage> result = List.of();
+        if (parent instanceof Package packageElement) {
+            result = packageElement.getMember().stream()
+                    .filter(this::isFunction)
+                    .map(ActionUsage.class::cast)
+                    .toList();
+        } else if (this.isFunction(parent)) {
+            result = ((ActionUsage) parent).getNestedAction().stream()
+                    .filter(this::isFunction)
+                    .toList();
         }
-        return subFunctions;
+        return result;
     }
 
     /**
@@ -949,19 +953,20 @@ public class CommonQueryService {
                 .toList();
     }
 
-    public List<PartUsage> getSubComponents(EObject eObject) {
-        List<Element> allPartUsage = new ArrayList<>();
-        if (eObject instanceof Package pkg) {
-            Optional<Package> optionalStructurePackage = this.getStructurePackage(pkg);
-            allPartUsage = optionalStructurePackage.map(Package::getMember).orElse(new BasicEList<>());
-        } else if (this.isComponent(eObject) && eObject instanceof PartUsage partUsage) {
-            allPartUsage = partUsage.getMember();
+    public List<PartUsage> getSubComponents(Element parent) {
+        List<PartUsage> result = List.of();
+        if (parent instanceof Package packageParent) {
+            result = packageParent.getMember().stream()
+                    .filter(this::isComponent)
+                    .map(PartUsage.class::cast)
+                    .toList();
+        } else if (this.isComponent(parent)) {
+            result = ((PartUsage) parent).getMember().stream()
+                    .filter(this::isComponent)
+                    .map(PartUsage.class::cast)
+                    .toList();
         }
-        return allPartUsage.stream()
-                .filter(PartUsage.class::isInstance)
-                .map(PartUsage.class::cast)
-                .filter(this.isTypedWith(ARCADIA_PREFIX + ARCADIA_COMPONENT))
-                .toList();
+        return result;
     }
 
     public Optional<PartUsage> getParentComponent(EObject element) {
@@ -974,21 +979,6 @@ public class CommonQueryService {
             parent = Optional.of(parentComponent);
         }
         return parent;
-    }
-
-    /**
-     * Retrieve component node candidates for the LAB diagram. At diagram root (Structure Package), return all reachable components so nested components can be displayed directly. Inside a represented
-     * component node, keep the direct-subcomponents behavior.
-     *
-     * @param eObject
-     *         the current semantic context.
-     * @return component candidates for node display.
-     */
-    public List<PartUsage> allNestedComponents(EObject eObject) {
-        if (eObject instanceof Package) {
-            return this.getComponents(eObject);
-        }
-        return this.getSubComponents(eObject);
     }
 
     /**

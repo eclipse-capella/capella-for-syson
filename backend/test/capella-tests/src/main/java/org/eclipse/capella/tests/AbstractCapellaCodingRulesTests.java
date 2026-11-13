@@ -170,6 +170,28 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
     }
 
     /**
+     * Checks that public methods in semantic candidate service classes end follow the naming conventions.
+     * <p>
+     * Services returning semantic candidates should be suffixed with {@code Candidate(s)} to ensure they do not clash with semantic-level services (e.g. {@code getComponentCandidates} doesn't clash
+     * with {@code getComponents}). Clashing service names can cause unexpected errors when invoked via the AQL interpreter.
+     */
+    @Test
+    public void semanticCandidatesServicesShouldFollowNamingConvention() {
+        ArchRule rule = ArchRuleDefinition.methods()
+                .that()
+                .arePublic()
+                .and()
+                .areDeclaredInClassesThat()
+                .haveSimpleNameEndingWith("DiagramSemanticCandidatesService")
+                .should()
+                .haveNameMatching(".*Candidates?")
+                .because("semantic candidate service methods should avoid name conflicts with semantic-level services")
+                .allowEmptyShould(true);
+
+        rule.check(this.getClasses());
+    }
+
+    /**
      * Checks that semantic query and mutation services do not access representation-level information, such as the editing context or diagram elements.
      * <p>
      * Services that require these arguments need to be declared in {@code XXXRepresentationQueryService} or {@code XXXRepresentationMutationService}. Note that representation services are harder to

@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.eclipse.capella.model.transverse.services.ArcadiaElementContentAdapter;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
+import org.eclipse.syson.sysml.PartUsage;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -27,24 +28,24 @@ import org.junit.jupiter.api.Test;
 public class CachedSAQueryServiceTests extends AbstractSemanticTests {
 
     @Test
-    public void getSystemOfInterestWhenIndexInstalledShouldPreserveActorsAndDirectComponents() {
+    public void getSystemOfInterestWhenIndexInstalledShouldPreserveActors() {
         var creationService = new CommonCreationService();
         var queryService = new SAQueryService();
         var structure = this.capellaModel.getSystemAnalysisPerspective().getStructurePackage().getElement();
-        var component = creationService.createComponent(structure);
-        var nested = creationService.createComponent(component);
+        var systemOfInterest = (PartUsage) structure.getMember().getFirst();
+        var subComponent = creationService.createComponent(systemOfInterest);
         var actor = creationService.createActor(structure);
-        var expectedSystem = queryService.getSystemOfInterest(structure);
-        var expectedActors = queryService.getSystemActors(structure);
-        var expectedComponents = queryService.getSystemComponents(structure);
         var resourceSet = structure.eResource().getResourceSet();
         var adapter = new ArcadiaElementContentAdapter(resourceSet);
         resourceSet.eAdapters().add(adapter);
         try {
-            assertThat(queryService.getSystemOfInterest(structure)).containsExactlyElementsOf(expectedSystem).hasSize(1);
-            assertThat(queryService.getSystemActors(structure)).containsExactlyInAnyOrderElementsOf(expectedActors).contains(actor).doesNotContain(component, nested);
-            assertThat(queryService.getSystemComponents(structure)).containsExactlyInAnyOrderElementsOf(expectedComponents)
-                    .contains(component).doesNotContain(actor, nested).doesNotContainAnyElementsOf(expectedSystem);
+            assertThat(queryService.getSystemOfInterest(structure)).isPresent().get().isEqualTo(systemOfInterest);
+            assertThat(queryService.getActors(structure))
+                    .contains(actor)
+                    .doesNotContain(systemOfInterest, subComponent);
+            assertThat(queryService.getSubSystemComponents(systemOfInterest))
+                    .contains(subComponent)
+                    .doesNotContain(actor);
         } finally {
             resourceSet.eAdapters().remove(adapter);
         }

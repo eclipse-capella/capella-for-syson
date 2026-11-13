@@ -20,7 +20,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortNod
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestLabelProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeStyleProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.diagram.sab.view.services.SABDiagramSemanticCandidatesService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -58,7 +58,7 @@ public class SystemComponentNodeDescriptionProvider extends AbstractNodeDescript
                 .name(NODE_DESCRIPTION_NAME)
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getSystemComponents).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(SABDiagramSemanticCandidatesService::getSystemComponentCandidates).aqlSelf())
                 .style(new SystemOfInterestNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
