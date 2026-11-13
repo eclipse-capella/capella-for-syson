@@ -15,10 +15,13 @@ package org.eclipse.capella.model.services.logical.architecture;
 
 import java.util.List;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.Annotation;
 import org.eclipse.syson.sysml.Comment;
+import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 
 /**
@@ -62,6 +65,12 @@ public class LAQueryService {
         return allAnnotations.stream()
                 .filter(Annotation.class::isInstance)
                 .map(Annotation.class::cast)
+                .toList();
+    }
+
+    public List<PartUsage> getComponents(Element self) {
+        return this.commonQueryService.getComponents(self).stream()
+                .filter(component -> this.commonQueryService.isInPerspective(component, ArcadiaEngineeringPerspective.LogicalArchitecture))
                 .toList();
     }
 
