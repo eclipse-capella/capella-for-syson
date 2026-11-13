@@ -306,7 +306,7 @@ public class ElementModificationTests extends AbstractSemanticTests {
         PartUsage thirdComponent = this.commonCreationService.createComponent(parent);
         PortUsage thirdPort = this.commonCreationService.createComponentPort(thirdComponent, FeatureDirectionKind.OUT);
         this.commonCreationService.createComponentExchange(firstPort, secondPort);
-        this.commonCreationService.createComponentExchange(secondPort, thirdPort);
+        this.commonCreationService.createComponentExchange(thirdPort, secondPort);
 
         this.commonUpdateService.setFeatureDirection(firstPort, FeatureDirectionKind.IN);
 
@@ -327,9 +327,9 @@ public class ElementModificationTests extends AbstractSemanticTests {
         PartUsage fourthComponent = this.commonCreationService.createComponent(parent);
         PortUsage fourthPort = this.commonCreationService.createComponentPort(fourthComponent, FeatureDirectionKind.IN);
         this.commonCreationService.createComponentExchange(firstPort, secondPort);
-        this.commonCreationService.createComponentExchange(secondPort, thirdPort);
+        this.commonCreationService.createComponentExchange(thirdPort, secondPort);
         this.commonCreationService.createComponentExchange(thirdPort, fourthPort);
-        this.commonCreationService.createComponentExchange(fourthPort, firstPort);
+        this.commonCreationService.createComponentExchange(firstPort, fourthPort);
 
         this.commonUpdateService.setFeatureDirection(firstPort, FeatureDirectionKind.IN);
 

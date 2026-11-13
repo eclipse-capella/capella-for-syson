@@ -1065,13 +1065,21 @@ public class CommonQueryService {
     public boolean canCreateFunctionalExchange(Feature source, Feature target) {
         var sourceFunction = EMFUtils.getFirstAncestor(ActionUsage.class, source, this::isFunction);
         var targetFunction = EMFUtils.getFirstAncestor(ActionUsage.class, target, this::isFunction);
-        return sourceFunction.isPresent() && targetFunction.isPresent() && !sourceFunction.equals(targetFunction);
+        boolean validFunctions = sourceFunction.isPresent() && targetFunction.isPresent();
+        boolean validSource = !this.isFunctionPort(source) || this.isOutFeature(source);
+        boolean validTarget = !this.isFunctionPort(target) || this.isInFeature(target);
+        return validFunctions && validSource && validTarget;
     }
 
     public boolean canCreateComponentExchange(Feature source, Feature target) {
         var sourceComponent = EMFUtils.getFirstAncestor(PartUsage.class, source, this::isComponent);
         var targetComponent = EMFUtils.getFirstAncestor(PartUsage.class, target, this::isComponent);
-        return sourceComponent.isPresent() && targetComponent.isPresent() && !sourceComponent.equals(targetComponent);
+        boolean validComponents = sourceComponent.isPresent() && targetComponent.isPresent();
+        // source is valid if not a port (e.g., a component), or not "IN".
+        boolean validSource = !this.isComponentPort(source) || !this.isInFeature(source);
+        // target is valid if not a port (e.g., a component), or not "OUT".
+        boolean validTarget = !this.isComponentPort(target) || !this.isOutFeature(target);
+        return validComponents && validSource && validTarget;
     }
 
     public Optional<Package> getStructurePackage(Element element) {

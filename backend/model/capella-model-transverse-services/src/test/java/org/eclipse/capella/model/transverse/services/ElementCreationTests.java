@@ -201,25 +201,32 @@ public class ElementCreationTests extends AbstractSemanticTests {
     }
 
     @Test
-    public void createComponentExchangeWhenEndpointsAreTheSameComponentShouldNotCreateComponentExchangeAndPorts() {
+    public void createComponentExchangeWhenEndpointsAreTheSameComponentShouldCreateExchangeAndPorts() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component1 = this.commonCreationService.createComponent(parent);
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(component1, component1);
 
-        assertThat(componentExchange).isNull();
-        assertThat(component1.getNestedPort()).isEmpty();
+        assertThat(componentExchange).isNotNull();
+        var sourcePort = this.commonQueryService.getComponentExchangeSource(componentExchange);
+        var targetPort = this.commonQueryService.getComponentExchangeTarget(componentExchange);
+        assertThat(sourcePort.getDirection()).isEqualTo(FeatureDirectionKind.OUT);
+        assertThat(targetPort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+        assertThat(sourcePort).isNotEqualTo(targetPort);
+        assertThat(component1.getNestedPort()).containsExactlyInAnyOrder(sourcePort, targetPort);
     }
 
     @Test
-    public void createComponentExchangeWhenEndpointPortsBelongToSameComponentShouldNotCreateComponentExchange() {
+    public void createComponentExchangeWhenEndpointPortsBelongToSameComponentShouldConnectProvidedPorts() {
         Package parent = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
         PartUsage component1 = this.commonCreationService.createComponent(parent);
         PortUsage port1 = this.commonCreationService.createComponentPort(component1, FeatureDirectionKind.OUT);
         PortUsage port2 = this.commonCreationService.createComponentPort(component1, FeatureDirectionKind.IN);
         InterfaceUsage componentExchange = this.commonCreationService.createComponentExchange(port1, port2);
 
-        assertThat(componentExchange).isNull();
-        assertThat(component1.getNestedPort()).hasSize(2);
+        assertThat(componentExchange).isNotNull();
+        assertThat(this.commonQueryService.getComponentExchangeSource(componentExchange)).isEqualTo(port1);
+        assertThat(this.commonQueryService.getComponentExchangeTarget(componentExchange)).isEqualTo(port2);
+        assertThat(component1.getNestedPort()).containsExactlyInAnyOrder(port1, port2);
     }
 
     @Test
@@ -286,25 +293,32 @@ public class ElementCreationTests extends AbstractSemanticTests {
     }
 
     @Test
-    public void createFunctionalExchangeWhenEndpointsAreTheSameFunctionShouldNotCreateFunctionalExchangeAndPorts() {
+    public void createFunctionalExchangeWhenEndpointsAreTheSameFunctionShouldCreateExchangeAndPorts() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(function1, function1);
 
-        assertThat(functionalExchange).isNull();
-        assertThat(function1.getNestedItem()).isEmpty();
+        assertThat(functionalExchange).isNotNull();
+        var sourcePort = (ItemUsage) this.commonQueryService.getFunctionalExchangeSource(functionalExchange);
+        var targetPort = (ItemUsage) this.commonQueryService.getFunctionalExchangeTarget(functionalExchange);
+        assertThat(sourcePort.getDirection()).isEqualTo(FeatureDirectionKind.OUT);
+        assertThat(targetPort.getDirection()).isEqualTo(FeatureDirectionKind.IN);
+        assertThat(sourcePort).isNotEqualTo(targetPort);
+        assertThat(function1.getNestedItem()).containsExactlyInAnyOrder(sourcePort, targetPort);
     }
 
     @Test
-    public void createFunctionalExchangeWhenEndpointPortsBelongToSameFunctionShouldNotCreateFunctionalExchange() {
+    public void createFunctionalExchangeWhenEndpointPortsBelongToSameFunctionShouldConnectProvidedPorts() {
         ActionUsage rootFunction = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage function1 = this.commonCreationService.createFunction(rootFunction);
         ItemUsage port1 = this.commonCreationService.createFunctionPort(function1, FeatureDirectionKind.OUT);
         ItemUsage port2 = this.commonCreationService.createFunctionPort(function1, FeatureDirectionKind.IN);
         FlowUsage functionalExchange = this.commonCreationService.createFunctionalExchange(port1, port2);
 
-        assertThat(functionalExchange).isNull();
-        assertThat(function1.getNestedItem()).hasSize(2);
+        assertThat(functionalExchange).isNotNull();
+        assertThat(this.commonQueryService.getFunctionalExchangeSource(functionalExchange)).isEqualTo(port1);
+        assertThat(this.commonQueryService.getFunctionalExchangeTarget(functionalExchange)).isEqualTo(port2);
+        assertThat(function1.getNestedItem()).containsExactlyInAnyOrder(port1, port2);
     }
 
     @Test
