@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oab.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.oab.view.services.OABDiagramSemanticCandidatesService;
 import org.eclipse.capella.diagram.oab.view.services.OABDiagramService;
 import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.services.operational.analysis.OAQueryService;
@@ -78,7 +79,8 @@ public class OABViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramQueryLabelService.class,
                     DiagramMutationExposeService.class,
                     ViewLabelService.class,
-                    OABDiagramService.class);
+                    OABDiagramService.class,
+                    OABDiagramSemanticCandidatesService.class);
         }
         return List.of();
     }

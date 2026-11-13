@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
-import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.diagram.oab.view.services.OABDiagramSemanticCandidatesService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -55,7 +55,7 @@ public class EntityComponentNodeDescriptionProvider extends AbstractNodeDescript
                 .name(this.getNodeDescriptionName())
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(CommonQueryService::allNestedComponents).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(OABDiagramSemanticCandidatesService::getComponentCandidates).aqlSelf())
                 .style(new ComponentNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createComponentEntityNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)

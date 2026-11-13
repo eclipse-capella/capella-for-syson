@@ -32,7 +32,7 @@ import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionPortNodeDescr
 import org.eclipse.capella.diagram.sab.view.nodes.functionalchain.FunctionalChainNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.system.SystemOfInterestNodeDescriptionProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.diagram.sab.view.services.SABDiagramSemanticCandidatesService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.ViewFactory;
 import org.eclipse.sirius.components.view.diagram.DeleteView;
@@ -126,7 +126,7 @@ public class SABViewDescriptionProviderTests {
 
         var componentDescription = this.getNodeDescription(diagramDescription, SystemComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME);
 
-        assertEquals(ServiceMethod.of0(SAQueryService::getSystemComponents).aqlSelf(), componentDescription.getSemanticCandidatesExpression());
+        assertEquals(ServiceMethod.of0(SABDiagramSemanticCandidatesService::getSystemComponentCandidates).aqlSelf(), componentDescription.getSemanticCandidatesExpression());
         assertEquals(SynchronizationPolicy.UNSYNCHRONIZED, componentDescription.getSynchronizationPolicy());
         assertTrue(componentDescription.getReusedChildNodeDescriptions().stream()
                 .anyMatch(childDescription -> SystemComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME.equals(childDescription.getName())));

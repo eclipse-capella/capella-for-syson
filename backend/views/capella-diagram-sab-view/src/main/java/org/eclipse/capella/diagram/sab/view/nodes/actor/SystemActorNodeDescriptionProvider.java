@@ -12,11 +12,13 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.actor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionNodeDescriptionProvider;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
-import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.diagram.sab.view.services.SABDiagramSemanticCandidatesService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -24,10 +26,8 @@ import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Node description for system actors in SAB.
@@ -56,7 +56,7 @@ public class SystemActorNodeDescriptionProvider extends AbstractNodeDescriptionP
                 .name(NODE_DESCRIPTION_NAME)
                 .defaultHeightExpression(COMPONENT_DEFAULT_HEIGHT)
                 .defaultWidthExpression(COMPONENT_DEFAULT_WIDTH)
-                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getSystemActors).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(SABDiagramSemanticCandidatesService::getActorCandidates).aqlSelf())
                 .style(new SystemActorNodeStyleProvider(this.diagramBuilderHelper, this.colorProvider).createNodeStyle())
                 .userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)

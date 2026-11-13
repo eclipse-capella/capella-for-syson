@@ -296,6 +296,8 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
 
     private boolean hasChildren(VariableManager variableManager) {
         return variableManager.get(VariableManager.SELF, EObject.class)
+                .filter(this.commonQueryService::isFunction)
+                .map(ActionUsage.class::cast)
                 .map(function -> !this.commonQueryService.getSubFunctions(function).isEmpty())
                 .orElse(false);
     }

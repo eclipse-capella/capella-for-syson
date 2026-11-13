@@ -49,7 +49,7 @@ public class SystemActorNodeDescriptionProvider extends AbstractNodeDescriptionP
                 .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage()))
                 .defaultWidthExpression("180").defaultHeightExpression("70").userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
-                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getSystemActors).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getActors).aqlSelf())
                 .insideLabel(new SystemActorLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .style(this.diagramBuilderHelper.newRectangularNodeStyleDescription().background(this.colorProvider.getColor(MCBViewConstants.ACTOR_BACKGROUND_COLOR))
                         .borderColor(this.colorProvider.getColor(MCBViewConstants.ACTOR_BORDER_COLOR)).borderRadius(0).borderSize(2).build())
