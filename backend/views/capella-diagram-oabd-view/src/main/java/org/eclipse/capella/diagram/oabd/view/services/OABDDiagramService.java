@@ -32,10 +32,11 @@ public class OABDDiagramService {
     /**
      * Returns {@code true} if an OABD diagram can be created on {@code self}.
      * <p>
-     * OABD diagrams can be created on any function of the <i>operational analysis</i> perspective (i.e. operational activities).
+     * OABD diagrams can be created on any function of the <i>operational analysis</i> perspective (i.e. operational
+     * activities).
      *
      * @param self
-     *         the element to check
+     *            the element to check
      * @return {@code true} if the diagram can be created, {@code false} otherwise
      */
     public boolean canCreateOABDDiagram(Element self) {
