@@ -56,6 +56,7 @@ public class OABDViewDiagramDescriptionProvider implements IRepresentationDescri
                 .titleExpression(DESCRIPTION_NAME)
                 .preconditionExpression(ServiceMethod.of0(OABDDiagramService::canCreateOABDDiagram).aqlSelf())
                 .toolbar(toolbar)
+                .layoutOption(DiagramLayoutOption.AUTO_UNTIL_MANUAL)
                 .arrangeLayoutDirection(ArrangeLayoutDirection.UP)
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
