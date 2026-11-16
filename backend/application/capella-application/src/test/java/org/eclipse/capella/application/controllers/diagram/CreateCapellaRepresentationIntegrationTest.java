@@ -17,17 +17,17 @@ import static org.eclipse.sirius.components.diagrams.tests.DiagramEventPayloadCo
 
 import com.jayway.jsonpath.JsonPath;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
-import java.time.Duration;
 
 import org.eclipse.capella.AbstractIntegrationTests;
+import org.eclipse.capella.CapellaProjectData;
 import org.eclipse.capella.GivenCapellaServer;
 import org.eclipse.capella.application.configuration.dto.CreateCapellaRepresentationInput;
-import org.eclipse.capella.CapellaProjectData;
 import org.eclipse.capella.tests.graphql.CreateCapellaRepresentationMutationRunner;
-import org.eclipse.sirius.components.collaborative.dto.CreateRepresentationSuccessPayload;
 import org.eclipse.sirius.components.collaborative.diagrams.dto.DiagramEventInput;
+import org.eclipse.sirius.components.collaborative.dto.CreateRepresentationSuccessPayload;
 import org.eclipse.sirius.components.diagrams.tests.graphql.DiagramEventSubscriptionRunner;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +77,11 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
     }
 
     @Test
+    public void createSFBDRepresentationShouldReturnMetadata() {
+        this.assertRepresentationCreation("SFBD", "SFBD - System Function Break Down");
+    }
+
+    @Test
     public void createMCBRepresentationShouldOpenAnEmptyDiagramOnSystemAnalysisCapabilities() {
         var representationId = this.assertRepresentationCreation("MCB", "MCB - Missions Capabilities Blank");
         var input = new DiagramEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId);
@@ -105,6 +110,21 @@ public class CreateCapellaRepresentationIntegrationTest extends AbstractIntegrat
         List<String> messages = JsonPath.read(result, "$.data.createCapellaRepresentation.messages[*].body");
         assertThat(typename).isEqualTo("ErrorPayload");
         assertThat(messages).contains("No diagram description found for unknown");
+    }
+
+    @Test
+    public void createSFBDRepresentationShouldOpenAnEmptyDiagramOnSystemAnalysisRootFunction() {
+        var representationId = this.assertRepresentationCreation("SFBD", "SFBD - System Function Break Down");
+        var input = new DiagramEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, representationId);
+
+        StepVerifier.create(this.diagramEventSubscriptionRunner.run(input).flux())
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> {
+                    assertThat(diagram.getTargetObjectId()).isEqualTo(CapellaProjectData.SemanticIds.CAPELLA_MODEL_SYSTEM_ANALYSIS_FUNCTIONS_ROOT_FUNCTION_ID);
+                    assertThat(diagram.getNodes()).isEmpty();
+                    assertThat(diagram.getEdges()).isEmpty();
+                }))
+                .thenCancel()
+                .verify(Duration.ofSeconds(10));
     }
 
     private String assertRepresentationCreation(String descriptionId, String expectedLabel) {
