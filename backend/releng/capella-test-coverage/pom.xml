@@ -86,6 +86,11 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.capella</groupId>
+			<artifactId>capella-diagram-sfbd-view</artifactId>
+			<version>2026.11.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.capella</groupId>
 			<artifactId>capella-table-view</artifactId>
 			<version>2026.11.0</version>
 		</dependency>

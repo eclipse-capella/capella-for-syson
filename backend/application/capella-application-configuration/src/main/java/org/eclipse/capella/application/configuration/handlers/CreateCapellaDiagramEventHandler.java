@@ -12,8 +12,9 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.handlers;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.capella.application.configuration.dto.CreateCapellaRepresentationInput;
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
@@ -46,11 +47,9 @@ import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.metamodel.util.ElementUtil;
 import org.springframework.stereotype.Service;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import reactor.core.publisher.Sinks;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Handler used to create a new Capella diagram.
@@ -86,6 +85,10 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
     private static final String SAB_REPRESENTATION_DESCRIPTION_ID = "SAB";
 
     private static final String SAB_REPRESENTATION_NAME = "SAB - System Analysis Blank";
+
+    private static final String SFBD_REPRESENTATION_DESCRIPTION_ID = "SFBD";
+
+    private static final String SFBD_REPRESENTATION_NAME = "SFBD - System Function Break Down";
 
     private final IRepresentationDescriptionSearchService representationDescriptionSearchService;
 
@@ -196,6 +199,8 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
             case OCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.OperationalAnalysis, CommonQueryService.CAPABILITIES_PACKAGE);
             case MCB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, CommonQueryService.CAPABILITIES_PACKAGE);
             case SAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, CommonQueryService.STRUCTURE_PACKAGE);
+            case SFBD_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.SystemAnalysis, CommonQueryService.FUNCTIONS_PACKAGE)
+                    .flatMap(this.commonQueryService::getRootFunction);
             case LAB_REPRESENTATION_DESCRIPTION_ID -> this.getPackageInArchitecture(editingContext, ArcadiaEngineeringPerspective.LogicalArchitecture, CommonQueryService.STRUCTURE_PACKAGE);
             default -> Optional.empty();
         };
@@ -239,6 +244,7 @@ public class CreateCapellaDiagramEventHandler implements IEditingContextEventHan
             case OCB_REPRESENTATION_DESCRIPTION_ID -> OCB_REPRESENTATION_NAME;
             case MCB_REPRESENTATION_DESCRIPTION_ID -> MCB_REPRESENTATION_NAME;
             case SAB_REPRESENTATION_DESCRIPTION_ID -> SAB_REPRESENTATION_NAME;
+            case SFBD_REPRESENTATION_DESCRIPTION_ID -> SFBD_REPRESENTATION_NAME;
             case LAB_REPRESENTATION_DESCRIPTION_ID -> LAB_REPRESENTATION_NAME;
             default -> "";
         };

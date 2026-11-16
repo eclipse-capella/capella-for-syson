@@ -19,6 +19,7 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.S
 
 import java.util.List;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.Element;
@@ -66,6 +67,12 @@ public class SAQueryService {
                 && !this.commonQueryService.isComponentActor(partUsage)
                 && !this.isSystemOfInterest(partUsage)
                 && this.isInSystemAnalysisStructure(partUsage);
+    }
+
+    public boolean isSystemFunction(EObject eObject) {
+        return eObject instanceof Element element
+                && this.commonQueryService.isFunction(element)
+                && this.commonQueryService.isInPerspective(element, ArcadiaEngineeringPerspective.SystemAnalysis);
     }
 
     private List<PartUsage> getSystemOfInterestCandidates(EObject eObject) {

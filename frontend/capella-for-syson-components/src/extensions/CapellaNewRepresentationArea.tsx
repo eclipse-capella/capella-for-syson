@@ -212,6 +212,20 @@ export const CapellaNewRepresentationArea = ({ editingContextId, readOnly }: Cap
                   </ListItemIcon>
                   <ListItemText primary={'MCB'} secondary={'Missions Capabilities Blank'} />
                 </ListItemButton>
+                <ListItemButton
+                  className={classes.item}
+                  dense
+                  disableGutters
+                  key={'sfbd-representation'}
+                  data-testid={'sfbd-representation'}
+                  onClick={() => {
+                    onCreateRepresentation('SFBD');
+                  }}>
+                  <ListItemIcon>
+                    <Collections fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary={'SFBD'} secondary={'System Function Break Down'} />
+                </ListItemButton>
               </>
             )}
           </List>
