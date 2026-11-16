@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.oabd.view.edges.containedin;
 
 import java.util.Objects;
 
+import org.eclipse.capella.model.services.operational.analysis.OAMutationService;
 import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -46,8 +47,14 @@ public class ContainedInPaletteProvider {
     }
 
     public EdgePalette createEdgePalette() {
+        var deleteTool = this.diagramBuilderHelper.newDeleteTool()
+                .name("Remove contained in relation")
+                .body(this.viewBuilderHelper.newChangeContext()
+                        .expression(ServiceMethod.of0(OAMutationService::moveOAToRootActivity).aqlSelf())
+                        .build());
         return this.diagramBuilderHelper.newEdgePalette()
                 .edgeReconnectionTools(this.createEdgeReconnectionTools())
+                .deleteTool(deleteTool.build())
                 .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealEdgeToolSection())
                 .build();
     }

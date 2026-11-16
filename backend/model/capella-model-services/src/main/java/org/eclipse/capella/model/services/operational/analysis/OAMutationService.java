@@ -19,11 +19,13 @@ import static org.eclipse.capella.model.transverse.services.CommonNamingService.
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.OPERATIONAL_PROCESS_DEFAULT_DECLAREDNAME_PREFIX;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonMoveService;
 import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -49,6 +51,8 @@ public class OAMutationService {
 
     private final CommonNamingService commonNamingService;
 
+    private final CommonMoveService commonMoveService;
+
     private final OAQueryService oaQueryService;
 
     public OAMutationService() {
@@ -56,6 +60,7 @@ public class OAMutationService {
         this.commonQueryService = new CommonQueryService();
         this.commonDeletionService = new CommonDeletionService();
         this.commonNamingService = new CommonNamingService();
+        this.commonMoveService = new CommonMoveService();
         this.oaQueryService = new OAQueryService();
     }
 
@@ -130,5 +135,25 @@ public class OAMutationService {
         ActionUsage process = this.commonCreationService.createFunctionalChain(parent, selectedObjects);
         this.commonNamingService.setElementDefaultDeclaredName(process, OPERATIONAL_PROCESS_DEFAULT_DECLAREDNAME_PREFIX);
         return process;
+    }
+
+    /**
+     * Returns self. If self is an OperationalActivity, moves self under the root OperationalActivity.
+     *
+     * @param self
+     *            The element to move
+     * @return The element passed as input
+     */
+    public Element moveOAToRootActivity(Element self) {
+        if (this.commonQueryService.isOperationalActivity(self)) {
+            var targetParentFunctionsPackage = this.commonQueryService.getFunctionsPackage(self);
+            if (targetParentFunctionsPackage.isPresent()) {
+                Optional<ActionUsage> rootActivity = this.commonQueryService.getRootFunction(targetParentFunctionsPackage.get());
+                if (rootActivity.isPresent()) {
+                    this.commonMoveService.moveSemanticElement(self, rootActivity.get());
+                }
+            }
+        }
+        return self;
     }
 }

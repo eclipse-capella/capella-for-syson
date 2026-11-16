@@ -201,4 +201,18 @@ public class OAMutationServiceTests extends AbstractSemanticTests {
         assertThat(operationalProcessOA2.getDeclaredName()).isEqualTo(OPERATIONAL_PROCESS_DEFAULT_DECLAREDNAME_PREFIX + WHITE_SPACE + "2");
     }
 
+    @Test
+    public void moveOAToRootActivityShouldMoveValidElements() {
+        ActionUsage oaRootActivity = this.capellaModel.getOperationalAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        ActionUsage subFunction1 = this.commonCreationService.createFunction(oaRootActivity);
+
+        ActionUsage subSubFunction1 = this.commonCreationService.createFunction(subFunction1);
+
+        this.oaMutationService.moveOAToRootActivity(subSubFunction1);
+
+        assertThat(subSubFunction1.getOwner()).isEqualTo(oaRootActivity);
+        assertThat(subSubFunction1.getOwnedElement()).isEmpty();
+
+    }
+
 }
