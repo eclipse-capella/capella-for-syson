@@ -12,10 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sfbd.view;
 
+import java.util.List;
+
+import org.eclipse.capella.diagram.sfbd.view.nodes.function.SystemFunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sfbd.view.services.SFBDDiagramService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
+import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
+import org.eclipse.sirius.components.view.builder.providers.IDiagramElementDescriptionProvider;
 import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescriptionProvider;
 import org.eclipse.sirius.components.view.diagram.ArrangeLayoutDirection;
 import org.eclipse.sirius.components.view.diagram.DiagramLayoutOption;
@@ -51,9 +56,17 @@ public class SFBDViewDiagramDescriptionProvider implements IRepresentationDescri
                 .style(this.diagramBuilderHelper.newDiagramStyleDescription().build())
                 .build();
 
-        diagramDescription.setPalette(this.diagramBuilderHelper.newDiagramPalette()
-                .dropTool(this.diagramBuilderHelper.newDropTool().build())
-                .build());
+        var cache = new DefaultViewDiagramElementFinder();
+        var diagramElementDescriptionProviders = List.of(
+                new SystemFunctionNodeDescriptionProvider(colorProvider)
+        );
+
+        diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
+        diagramElementDescriptionProviders.forEach(provider -> provider.link(diagramDescription, cache));
+
+        var palette = new SFBDDiagramPaletteProvider(this.diagramBuilderHelper).createDiagramPalette(cache);
+        diagramDescription.setPalette(palette);
+
         return diagramDescription;
     }
 }
