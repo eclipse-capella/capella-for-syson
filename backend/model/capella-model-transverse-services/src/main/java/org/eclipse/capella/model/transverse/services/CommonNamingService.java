@@ -55,6 +55,8 @@ public class CommonNamingService {
 
     public static final String OPERATIONAL_ACTIVITY_DEFAULT_DECLAREDNAME_PREFIX = "OA";
 
+    public static final String SYSTEM_FUNCTION_DEFAULT_DECLAREDNAME_PREFIX = "SF";
+
     public static final String FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX = "FunctionalChain";
 
     public static final String COMPONENT_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX = "CE";

@@ -18,10 +18,12 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.P
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.STRUCTURE_PACKAGE;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
@@ -73,6 +75,27 @@ public class SAQueryService {
         return eObject instanceof Element element
                 && this.commonQueryService.isFunction(element)
                 && this.commonQueryService.isInPerspective(element, ArcadiaEngineeringPerspective.SystemAnalysis);
+    }
+
+    public List<ActionUsage> getSystemFunctions(EObject context) {
+        if (!(context instanceof ActionUsage activity)) {
+            return List.of();
+        }
+
+        List<ActionUsage> activities = this.commonQueryService.getDescendants(activity, this::isSystemFunction).stream()
+                .map(ActionUsage.class::cast)
+                .collect(Collectors.toList());
+
+        boolean isRootFunction = this.commonQueryService.getFunctionsPackage(activity)
+                .flatMap(this.commonQueryService::getRootFunction)
+                .map(rootFunction -> rootFunction == activity)
+                .orElse(false);
+
+        if (!isRootFunction) {
+            activities.addFirst(activity);
+        }
+
+        return activities;
     }
 
     private List<PartUsage> getSystemOfInterestCandidates(EObject eObject) {

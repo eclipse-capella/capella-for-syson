@@ -12,12 +12,16 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.system.analysis;
 
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.SYSTEM_FUNCTION_DEFAULT_DECLAREDNAME_PREFIX;
+
 import java.util.Optional;
 
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
-import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
+import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
@@ -39,12 +43,15 @@ public class SAMutationService {
 
     private final CommonDeletionService commonDeletionService;
 
+    private final CommonNamingService commonNamingService;
+
     public SAMutationService() {
         this.saQueryService = new SAQueryService();
         this.commonQueryService = new CommonQueryService();
         this.commonCreationService = new CommonCreationService();
         this.commonUpdateService = new CommonUpdateService();
         this.commonDeletionService = new CommonDeletionService();
+        this.commonNamingService = new CommonNamingService();
     }
 
     public PartUsage createActorSA(Element parent) {
@@ -81,5 +88,17 @@ public class SAMutationService {
             this.commonDeletionService.deletePerformedActionUsage(previousParentPartUsage, function);
             this.commonUpdateService.setPerformAction(targetComponent, function);
         }
+    }
+
+    public ActionUsage createSystemFunctionSA(Element parent) {
+        ActionUsage activity = null;
+        if (this.saQueryService.isSystemFunction(parent)
+                || this.commonQueryService.isComponent(parent) && this.commonQueryService.isInPerspective(parent, ArcadiaEngineeringPerspective.SystemAnalysis)) {
+            activity = this.commonCreationService.createFunction(parent);
+            if (activity != null) {
+                this.commonNamingService.setElementDefaultDeclaredName(activity, SYSTEM_FUNCTION_DEFAULT_DECLAREDNAME_PREFIX);
+            }
+        }
+        return activity;
     }
 }

@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.capella.diagram.sfbd.view.services.SFBDDiagramService;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.model.services.system.analysis.SAMutationService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -46,6 +47,7 @@ public class SFBDViewJavaServiceProvider implements IJavaServiceProvider {
                     DiagramQueryLabelService.class,
                     DiagramMutationAQLService.class,
                     DiagramQueryAQLService.class,
+                    SAMutationService.class,
                     CommonCreationService.class,
                     CommonDeletionService.class,
                     CommonQueryService.class,
