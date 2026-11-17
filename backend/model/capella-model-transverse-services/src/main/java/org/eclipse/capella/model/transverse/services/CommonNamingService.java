@@ -39,6 +39,8 @@ public class CommonNamingService {
 
     public static final String ACTOR_DEFAULT_DECLAREDNAME_PREFIX = "A";
 
+    public static final String CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX = "C";
+
     public static final String COMMUNICATION_MEAN_DEFAULT_DECLAREDNAME_PREFIX = "CommunicationMean";
 
     public static final String OPERATIONAL_ACTOR_DEFAULT_DECLAREDNAME_PREFIX = "OA";

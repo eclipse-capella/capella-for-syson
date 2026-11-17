@@ -394,8 +394,8 @@ public class ElementCreationTests extends AbstractSemanticTests {
     @Test
     public void setCapabilityGeneralisationSourceShouldRejectComponentsWithoutModifyingTheGeneralization() {
         var perspective = this.capellaModel.getOperationalAnalysisPerspective();
-        var sourceCapability = this.commonCreationService.createOperationalCapability(perspective.getElement());
-        var targetCapability = this.commonCreationService.createOperationalCapability(perspective.getElement());
+        var sourceCapability = this.commonCreationService.createCapability(perspective.getElement());
+        var targetCapability = this.commonCreationService.createCapability(perspective.getElement());
         var component = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
         this.commonCreationService.createCapabilityGeneralization(sourceCapability, targetCapability);
         var generalization = sourceCapability.getOwnedRelationship().stream()
@@ -414,8 +414,8 @@ public class ElementCreationTests extends AbstractSemanticTests {
     @Test
     public void setCapabilityGeneralisationTargetShouldRejectComponentsWithoutModifyingTheGeneralization() {
         var perspective = this.capellaModel.getOperationalAnalysisPerspective();
-        var sourceCapability = this.commonCreationService.createOperationalCapability(perspective.getElement());
-        var targetCapability = this.commonCreationService.createOperationalCapability(perspective.getElement());
+        var sourceCapability = this.commonCreationService.createCapability(perspective.getElement());
+        var targetCapability = this.commonCreationService.createCapability(perspective.getElement());
         var component = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
         this.commonCreationService.createCapabilityGeneralization(sourceCapability, targetCapability);
         var generalization = sourceCapability.getOwnedRelationship().stream()

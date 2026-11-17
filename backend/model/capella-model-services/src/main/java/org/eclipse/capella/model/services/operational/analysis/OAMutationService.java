@@ -112,7 +112,7 @@ public class OAMutationService {
     }
 
     public OccurrenceUsage createOperationalCapabilityOA(Element parent) {
-        var capability = this.commonCreationService.createOperationalCapability(parent);
+        var capability = this.commonCreationService.createCapability(parent);
         if (capability != null) {
             this.commonNamingService.setElementDefaultDeclaredName(capability, OPERATIONAL_CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX);
         }

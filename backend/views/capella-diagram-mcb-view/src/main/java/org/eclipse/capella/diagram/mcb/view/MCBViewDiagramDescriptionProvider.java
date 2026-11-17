@@ -15,6 +15,7 @@ package org.eclipse.capella.diagram.mcb.view;
 import java.util.List;
 
 import org.eclipse.capella.diagram.mcb.view.nodes.actor.SystemActorNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.nodes.capability.CapabilityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.compartment.MCBCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.compartment.MCBCompartmentItemNodeDescriptionProvider;
@@ -61,7 +62,7 @@ public class MCBViewDiagramDescriptionProvider implements IRepresentationDescrip
         var cache = new ViewDiagramElementFinder();
         var providers = List.of(new SystemActorNodeDescriptionProvider(colorProvider), new MCBCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(), SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new MCBCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(), SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
-                new RequirementNodeDescriptionProvider(colorProvider));
+                new RequirementNodeDescriptionProvider(colorProvider), new CapabilityNodeDescriptionProvider(colorProvider));
         providers.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
         providers.forEach(provider -> provider.link(diagramDescription, cache));
         diagramDescription.setPalette(new MCBDiagramPaletteProvider().createDiagramPalette(cache));
