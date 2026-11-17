@@ -15,6 +15,8 @@
 
 Capella for SysON provides a web-based implementation of Capella and the Arcadia methodology on top of SysON, Sirius Web, and SysML v2 technologies.
 
+Learn more about the project: (Capella for SysON)[https://mbse-capella.org/capella-for-syson.html].
+
 This repository contains the source code of the project published under the Eclipse Public License v2.0.
 
 ## Repository Structure
