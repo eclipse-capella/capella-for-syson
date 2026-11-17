@@ -38,6 +38,24 @@ public class CommonQueryServiceTests extends AbstractSemanticTests {
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
+    @Test
+    public void getMissionsShouldReturnMissionsRegardlessOfPerspectiveIncludingNestedPackages() {
+        var creationService = new CommonCreationService();
+        var capabilitiesPackage = this.capellaModel.getSystemAnalysisPerspective().getCapabilitiesPackage().getElement();
+        var mission = creationService.createMission(capabilitiesPackage);
+        var subPackage = SysmlFactory.eINSTANCE.createPackage();
+        var mutationService = new MetamodelMutationElementService();
+        mutationService.addChildInParent(capabilitiesPackage, subPackage);
+        var nestedMission = creationService.createMission(subPackage);
+        var capability = creationService.createCapability(capabilitiesPackage);
+        var unrelatedOccurrence = SysmlFactory.eINSTANCE.createOccurrenceUsage();
+        mutationService.addChildInParent(capabilitiesPackage, unrelatedOccurrence);
+        var otherPerspectiveMission = creationService.createMission(this.capellaModel.getOperationalAnalysisPerspective().getCapabilitiesPackage().getElement());
+
+        assertThat(this.commonQueryService.getMissions(capabilitiesPackage)).containsExactlyInAnyOrder(mission, nestedMission, otherPerspectiveMission);
+        assertThat(this.commonQueryService.getCapabilities(capabilitiesPackage)).contains(capability).doesNotContain(mission, nestedMission);
+    }
+
     @ParameterizedTest
     @EnumSource(value = FeatureDirectionKind.class, names = { "IN", "OUT" })
     public void getFunctionPortExchangeItemsShouldReturnSingleAndMultipleBindings(FeatureDirectionKind direction) {

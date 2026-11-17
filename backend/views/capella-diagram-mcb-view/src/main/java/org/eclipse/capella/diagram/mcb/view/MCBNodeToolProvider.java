@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.mcb.view;
 
 import org.eclipse.capella.diagram.mcb.view.nodes.capability.CapabilityNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.nodes.mission.MissionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.diagrams.Node;
@@ -48,6 +49,10 @@ public class MCBNodeToolProvider {
     public NodeTool createCapabilityTool(IViewDiagramElementFinder cache) {
         return this.createTool(cache, CapabilityNodeDescriptionProvider.NODE_DESCRIPTION_NAME, "New Capability", "Capability",
                 ServiceMethod.of0(CommonCreationService::createCapability).aqlSelf());
+    }
+
+    public NodeTool createMissionTool(IViewDiagramElementFinder cache) {
+        return this.createTool(cache, MissionNodeDescriptionProvider.NODE_DESCRIPTION_NAME, "New Mission", "Mission", ServiceMethod.of0(CommonCreationService::createMission).aqlSelf());
     }
 
     private NodeTool createTool(IViewDiagramElementFinder cache, String descriptionName, String name, String icon, String expression) {

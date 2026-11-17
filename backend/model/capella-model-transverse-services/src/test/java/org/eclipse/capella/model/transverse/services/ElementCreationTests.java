@@ -28,6 +28,8 @@ import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.Subsetting;
+import org.eclipse.syson.sysml.SysmlFactory;
+import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -42,6 +44,54 @@ public class ElementCreationTests extends AbstractSemanticTests {
     private final CommonUpdateService commonUpdateService = new CommonUpdateService();
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
+
+    @Test
+    public void createMissionShouldCreateNamedMissionsInTheCapabilitiesPackage() {
+        var perspective = this.capellaModel.getSystemAnalysisPerspective();
+        var capabilitiesPackage = perspective.getCapabilitiesPackage().getElement();
+
+        var firstMission = this.commonCreationService.createMission(capabilitiesPackage);
+        var secondMission = this.commonCreationService.createMission(perspective.getStructurePackage().getElement());
+
+        assertThat(firstMission.getOwner()).isSameAs(capabilitiesPackage);
+        assertThat(secondMission.getOwner()).isSameAs(capabilitiesPackage);
+        assertThat(this.commonQueryService.getArcadiaType(firstMission)).contains("Arcadia::Mission");
+        assertThat(firstMission.getDeclaredName()).isEqualTo("M 1");
+        assertThat(secondMission.getDeclaredName()).isEqualTo("M 2");
+    }
+
+    @Test
+    public void createMissionShouldKeepTheSelectedCapabilitiesSubPackage() {
+        var capabilitiesPackage = this.capellaModel.getSystemAnalysisPerspective().getCapabilitiesPackage().getElement();
+        var subPackage = SysmlFactory.eINSTANCE.createPackage();
+        new MetamodelMutationElementService().addChildInParent(capabilitiesPackage, subPackage);
+
+        var mission = this.commonCreationService.createMission(subPackage);
+
+        assertThat(mission.getOwner()).isSameAs(subPackage);
+        assertThat(mission.getDeclaredName()).isEqualTo("M 1");
+        assertThat(this.commonQueryService.getArcadiaType(mission)).contains("Arcadia::Mission");
+    }
+
+    @Test
+    public void createMissionShouldUseTheCapabilitiesPackageRegardlessOfPerspective() {
+        var capabilitiesPackage = this.capellaModel.getOperationalAnalysisPerspective().getCapabilitiesPackage().getElement();
+
+        var mission = this.commonCreationService.createMission(capabilitiesPackage);
+
+        assertThat(mission.getOwner()).isSameAs(capabilitiesPackage);
+        assertThat(this.commonQueryService.getArcadiaType(mission)).contains("Arcadia::Mission");
+        assertThat(mission.getDeclaredName()).isEqualTo("M 1");
+    }
+
+    @Test
+    public void createMissionShouldRejectDetachedContextsWithoutChangingThem() {
+        var parent = SysmlFactory.eINSTANCE.createPackage();
+
+        assertThat(this.commonCreationService.createMission(parent)).isNull();
+
+        assertThat(parent.getOwnedElement()).isEmpty();
+    }
 
     @Test
     public void createDescribesToArcadiaPortShouldBePossible() {

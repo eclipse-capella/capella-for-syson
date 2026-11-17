@@ -20,6 +20,7 @@ import static org.eclipse.capella.model.transverse.services.CommonNamingService.
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTION_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.MISSION_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
@@ -28,11 +29,13 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.A
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_MISSION;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.List;
 import java.util.Optional;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.AllocationUsage;
 import org.eclipse.syson.sysml.Element;
@@ -316,6 +319,23 @@ public class CommonCreationService {
                     this.arcadiaLibraryServices.typeWithArcadiaCapability(capability);
                     this.commonNamingService.setElementDefaultDeclaredName(capability, CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX);
                     return capability;
+                })
+                .orElse(null);
+    }
+
+    public OccurrenceUsage createMission(Element parent) {
+        return this.commonQueryService.getCapabilitiesPackage(parent)
+                .map(capabilitiesPackage -> {
+                    Package container = capabilitiesPackage;
+                    if (parent instanceof Package pkg && EcoreUtil.isAncestor(capabilitiesPackage, pkg)) {
+                        container = pkg;
+                    }
+                    var mission = SysmlFactory.eINSTANCE.createOccurrenceUsage();
+                    this.metamodelMutationElementService.addChildInParent(container, mission);
+                    this.metamodelMutationElementService.initialize(mission);
+                    this.arcadiaLibraryServices.typeWithLibrary(mission, ARCADIA_PREFIX + ARCADIA_MISSION, SysmlPackage.eINSTANCE.getOccurrenceDefinition());
+                    this.commonNamingService.setElementDefaultDeclaredName(mission, MISSION_DEFAULT_DECLAREDNAME_PREFIX);
+                    return mission;
                 })
                 .orElse(null);
     }

@@ -49,6 +49,8 @@ public class CommonNamingService {
 
     public static final String OPERATIONAL_CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX = "OC";
 
+    public static final String MISSION_DEFAULT_DECLAREDNAME_PREFIX = "M";
+
     public static final String OPERATIONAL_PROCESS_DEFAULT_DECLAREDNAME_PREFIX = "OperationalProcess";
 
     public static final String OPERATIONAL_ACTIVITY_DEFAULT_DECLAREDNAME_PREFIX = "OA";

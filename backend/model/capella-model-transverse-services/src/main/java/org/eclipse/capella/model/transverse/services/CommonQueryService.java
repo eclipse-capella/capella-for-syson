@@ -92,6 +92,8 @@ public class CommonQueryService {
 
     public static final String ARCADIA_CAPABILITY = "Capability";
 
+    public static final String ARCADIA_MISSION = "Mission";
+
     public static final String ARCADIA_ACTOR = "Actor";
 
     public static final String ARCADIA_FUNCTION = "Function";
@@ -1138,6 +1140,12 @@ public class CommonQueryService {
     public List<ItemUsage> getExchangeItems(EObject eObject) {
         return this.typeQueryService.getElements(eObject, SysmlPackage.eINSTANCE.getItemUsage(), ARCADIA_PREFIX + ARCADIA_EXCHANGE_ITEM).stream()
                 .map(ItemUsage.class::cast)
+                .toList();
+    }
+
+    public List<OccurrenceUsage> getMissions(EObject context) {
+        return this.typeQueryService.getElements(context, SysmlPackage.eINSTANCE.getOccurrenceUsage(), ARCADIA_PREFIX + ARCADIA_MISSION).stream()
+                .map(OccurrenceUsage.class::cast)
                 .toList();
     }
 
