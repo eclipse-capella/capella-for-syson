@@ -29,7 +29,7 @@ public class MCBDiagramPaletteProvider {
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         var tools = new MCBNodeToolProvider();
         return this.diagramBuilders.newDiagramPalette()
-                .nodeTools(tools.createRequirementTool(cache))
+                .nodeTools(tools.createActorTool(cache), tools.createRequirementTool(cache))
                 .dropTool(new DropToolBuilder().build()) // To be added later
                 .build();
     }

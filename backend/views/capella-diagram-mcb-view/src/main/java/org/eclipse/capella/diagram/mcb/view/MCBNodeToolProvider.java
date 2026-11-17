@@ -35,6 +35,10 @@ public class MCBNodeToolProvider {
 
     private final ViewBuilders viewBuilders = new ViewBuilders();
 
+    public NodeTool createActorTool(IViewDiagramElementFinder cache) {
+        return this.createTool(cache, "SystemActorNodeDescription", "New System Actor", "SystemActor", ServiceMethod.of0(CommonCreationService::createActor).aqlSelf());
+    }
+
     public NodeTool createRequirementTool(IViewDiagramElementFinder cache) {
         return this.createTool(cache, RequirementNodeDescriptionProvider.NODE_DESCRIPTION_NAME, "New Requirement", "Requirement",
                 ServiceMethod.of0(CommonCreationService::createRequirement).aqlSelf());
