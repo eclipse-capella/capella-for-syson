@@ -55,6 +55,9 @@ public class MCBViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.ACTOR_BACKGROUND_COLOR, "#D0F1FE"));
         colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.ACTOR_BORDER_COLOR, "#494997"));
         colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.ACTOR_LABEL_COLOR, "#000000"));
+        colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.CAPABILITY_BACKGROUND_COLOR, "#F7DA74"));
+        colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.CAPABILITY_BORDER_COLOR, "#5B4040"));
+        colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.CAPABILITY_LABEL_COLOR, "#000000"));
         return colorPalette;
     }
 

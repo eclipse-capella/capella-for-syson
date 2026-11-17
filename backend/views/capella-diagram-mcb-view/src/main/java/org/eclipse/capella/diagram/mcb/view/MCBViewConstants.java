@@ -25,6 +25,12 @@ public class MCBViewConstants {
 
     public static final String ACTOR_LABEL_COLOR = "ACTOR_LABEL";
 
+    public static final String CAPABILITY_BACKGROUND_COLOR = "CAPABILITY_BACKGROUND_COLOR";
+
+    public static final String CAPABILITY_BORDER_COLOR = "CAPABILITY_BORDER_COLOR";
+
+    public static final String CAPABILITY_LABEL_COLOR = "CAPABILITY_LABEL_COLOR";
+
     public static final String REQUIREMENT_BACKGROUND_COLOR = "REQUIREMENT_BACKGROUND_COLOR";
 
     public static final String REQUIREMENT_BORDER_COLOR = "REQUIREMENT_BORDER_COLOR";

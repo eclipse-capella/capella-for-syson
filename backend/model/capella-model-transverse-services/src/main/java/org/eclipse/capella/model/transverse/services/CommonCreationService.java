@@ -13,6 +13,7 @@
 package org.eclipse.capella.model.transverse.services;
 
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.ACTOR_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_PORT_DEFAULT_DECLAREDNAME_PREFIX;
@@ -306,13 +307,14 @@ public class CommonCreationService {
         return null;
     }
 
-    public OccurrenceUsage createOperationalCapability(Element parent) {
+    public OccurrenceUsage createCapability(Element parent) {
         return this.commonQueryService.getCapabilitiesPackage(parent)
                 .map(capabilitiesPackage -> {
                     var capability = SysmlFactory.eINSTANCE.createOccurrenceUsage();
                     this.metamodelMutationElementService.addChildInParent(capabilitiesPackage, capability);
                     this.metamodelMutationElementService.initialize(capability);
                     this.arcadiaLibraryServices.typeWithArcadiaCapability(capability);
+                    this.commonNamingService.setElementDefaultDeclaredName(capability, CAPABILITY_DEFAULT_DECLAREDNAME_PREFIX);
                     return capability;
                 })
                 .orElse(null);

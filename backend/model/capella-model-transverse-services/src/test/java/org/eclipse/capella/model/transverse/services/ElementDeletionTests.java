@@ -145,7 +145,7 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     @Test
     public void deleteCapabilityInvolvementShouldRemoveTheLastInvolvedComponentReference() {
         var perspective = this.capellaModel.getOperationalAnalysisPerspective();
-        var capability = this.commonCreationService.createOperationalCapability(perspective.getElement());
+        var capability = this.commonCreationService.createCapability(perspective.getElement());
         var component = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
         this.commonCreationService.createCapabilityInvolvement(capability, component);
 
