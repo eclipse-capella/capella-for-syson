@@ -17,10 +17,10 @@ import static org.eclipse.capella.model.transverse.services.CommonNamingService.
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.COMPONENT_PORT_DEFAULT_DECLAREDNAME_PREFIX;
-import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTION_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.MISSION_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.PACKAGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
@@ -41,7 +41,6 @@ import org.eclipse.syson.sysml.AllocationUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
-import org.eclipse.syson.sysml.Flow;
 import org.eclipse.syson.sysml.FlowUsage;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.ItemUsage;
@@ -49,12 +48,12 @@ import org.eclipse.syson.sysml.Namespace;
 import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
-import org.eclipse.syson.sysml.PayloadFeature;
 import org.eclipse.syson.sysml.PortUsage;
 import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,9 +195,11 @@ public class CommonCreationService {
     public ActionUsage createFunction(Element parent) {
         ActionUsage actionUsage = null;
         Optional<Element> optionalParent = Optional.ofNullable(parent)
-                .filter(this.commonQueryService::isFunction)
+                .filter(element -> this.commonQueryService.isFunction(element) || this.commonQueryService.isFunctionSubPackage(element))
                 .or(() -> this.commonQueryService.getFunctionsPackage(parent)
-                        .flatMap(this.commonQueryService::getRootFunction));
+                        .flatMap(this.commonQueryService::getRootFunction))
+                .or(() -> this.commonQueryService.getFunctionsPackage(parent)
+                        .filter(functionsPackage -> functionsPackage.equals(parent)));
         if (optionalParent.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalParent.get(), actionUsage);
@@ -340,31 +341,39 @@ public class CommonCreationService {
                 .orElse(null);
     }
 
+    public Package createPackage(Element parent) {
+        Package pkg = SysmlFactory.eINSTANCE.createPackage();
+        this.metamodelMutationElementService.addChildInParent(parent, pkg);
+        this.metamodelMutationElementService.initialize(pkg);
+        this.commonNamingService.setElementDefaultDeclaredName(pkg, PACKAGE_DEFAULT_DECLAREDNAME_PREFIX);
+        return pkg;
+    }
+
     public ActionUsage createFunctionalChain(Element container, List<Object> selectedObjects) {
-        ActionUsage actionUsage = null;
-        List<Element> selectedElements = selectedObjects.stream()
+        var selectedElements = selectedObjects.stream()
                 .filter(Element.class::isInstance)
                 .map(Element.class::cast)
                 .toList();
-        Optional<Namespace> optionalCommonAncestor = this.commonQueryService.findClosestCommonAncestor(selectedElements,
+        var commonAncestor = this.commonQueryService.findClosestCommonAncestor(selectedElements,
                 candidate -> this.commonQueryService.isFunction(candidate) || this.commonQueryService.isFunctionsPackage(candidate));
-        if (optionalCommonAncestor.isPresent()) {
+        Element parent = container;
+        if (commonAncestor.isPresent()) {
+            parent = commonAncestor.get();
+        }
+        ActionUsage actionUsage = null;
+        if (this.commonQueryService.isFunction(parent) || this.commonQueryService.isFunctionsPackage(parent)
+                || this.commonQueryService.isFunctionSubPackage(parent)) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
-            this.metamodelMutationElementService.addChildInParent(optionalCommonAncestor.get(), actionUsage);
+            this.metamodelMutationElementService.addChildInParent(parent, actionUsage);
             this.arcadiaLibraryServices.typeWithArcadiaFunctionalChain(actionUsage);
             this.metamodelMutationElementService.initialize(actionUsage);
-
-            this.commonNamingService.setElementDefaultDeclaredName(actionUsage, FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX);
-            this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
-                    SysmlPackage.eINSTANCE.getFlowUsage().getName());
+            this.commonNamingService.setElementDefaultDeclaredName(actionUsage, ARCADIA_FUNCTIONAL_CHAIN);
+            if (commonAncestor.isPresent()) {
+                this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
+                        SysmlPackage.eINSTANCE.getFlowUsage().getName());
+            }
         }
         return actionUsage;
-    }
-
-    public PayloadFeature createPayloadFeature(Flow flow) {
-        PayloadFeature payloadFeature = SysmlFactory.eINSTANCE.createPayloadFeature();
-        this.metamodelMutationElementService.addChildInParent(flow, payloadFeature);
-        return payloadFeature;
     }
 
     private Optional<PartUsage> findAllocatingComponent(Element parent) {
@@ -373,6 +382,10 @@ public class CommonCreationService {
             allocatingComponent = Optional.of((PartUsage) parent);
         } else if (this.commonQueryService.isFunction(parent)) {
             allocatingComponent = this.commonQueryService.getAllocatingComponent((ActionUsage) parent);
+        } else if (parent instanceof Package) {
+            allocatingComponent = EMFUtils.getAncestors(ActionUsage.class, parent, this.commonQueryService::isFunction).stream()
+                    .findFirst()
+                    .flatMap(this.commonQueryService::getAllocatingComponent);
         }
         return allocatingComponent;
     }

@@ -16,6 +16,7 @@ package org.eclipse.capella.diagram.lab.view.nodes.packagenode;
 import org.eclipse.capella.diagram.lab.view.LABDescriptionNameGenerator;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.services.logical.architecture.LARepresentationMutationService;
+import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
@@ -62,7 +63,7 @@ public class PackageToolProvider {
 
         cache.getNodeDescription(NAME_GENERATOR.getNodeName(SysmlPackage.eINSTANCE.getPackage())).ifPresent(nodeDescription -> {
             nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of0(LARepresentationMutationService::createPackage).aqlSelf())
+                    .expression(ServiceMethod.of0(CommonCreationService::createPackage).aqlSelf())
                     .children(
                             this.diagramBuilderHelper.newCreateView()
                                     .containmentKind(NodeContainmentKind.CHILD_NODE)

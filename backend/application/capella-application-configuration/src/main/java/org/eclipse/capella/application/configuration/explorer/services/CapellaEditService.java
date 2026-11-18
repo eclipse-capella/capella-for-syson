@@ -12,18 +12,14 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.explorer.services;
 
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
-import org.eclipse.emf.ecore.EObject;
+import org.eclipse.capella.model.transverse.services.api.ICapellaCapableEditingContextPredicate;
 import org.eclipse.sirius.components.core.api.ChildCreationDescription;
 import org.eclipse.sirius.components.core.api.IEditServiceDelegate;
 import org.eclipse.sirius.components.core.api.IEditingContext;
@@ -44,24 +40,26 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     public static final String ID_PREFIX = "CapellaEditService-";
 
-    private static final String DATA = "Data";
-
     private final CommonQueryService commonQueryService;
 
     private final SysMLv2EditService sysMLv2EditService;
 
-    private final CommonCreationService commonCreationService;
+    private final CapellaChildCreationService childCreationService;
 
     private final CommonDeletionService commonDeletionService;
 
     private final IObjectSearchService objectSearchService;
 
-    public CapellaEditService(SysMLv2EditService sysMLv2EditService, IObjectSearchService objectSearchService) {
+    private final ICapellaCapableEditingContextPredicate capellaCapableEditingContextPredicate;
+
+    public CapellaEditService(SysMLv2EditService sysMLv2EditService, IObjectSearchService objectSearchService,
+            ICapellaCapableEditingContextPredicate capellaCapableEditingContextPredicate) {
         this.sysMLv2EditService = Objects.requireNonNull(sysMLv2EditService);
-        this.commonCreationService = new CommonCreationService();
+        this.childCreationService = new CapellaChildCreationService();
         this.commonDeletionService = new CommonDeletionService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
         this.commonQueryService = new CommonQueryService();
+        this.capellaCapableEditingContextPredicate = Objects.requireNonNull(capellaCapableEditingContextPredicate);
     }
 
     @Override
@@ -74,30 +72,12 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     @Override
     public List<ChildCreationDescription> getChildCreationDescriptions(IEditingContext editingContext, String containerId, String referenceKind) {
-        var optionalContainer = this.objectSearchService.getObject(editingContext, containerId)
-                .filter(EObject.class::isInstance)
-                .map(EObject.class::cast);
-
-        List<ChildCreationDescription> childCreationDescriptions = new ArrayList<>();
-        if (optionalContainer.isPresent()) {
-            EObject container = optionalContainer.get();
-            if (this.commonQueryService.isArcadiaElement(container)) {
-                // To implement specific children creation description for Arcadia elements.
-
-            } else if (container instanceof org.eclipse.syson.sysml.Package pkg) {
-                String packageName = pkg.getDeclaredName();
-                if (DATA.equals(packageName)) {
-                    // We add the entry for Exchange Items
-                    List<String> iconURL = List.of("/icons/full/obj16/ExchangeItem.svg");
-                    ChildCreationDescription childCreationDescription = new ChildCreationDescription(ID_PREFIX +
-                            ARCADIA_EXCHANGE_ITEM, ARCADIA_EXCHANGE_ITEM, iconURL);
-                    childCreationDescriptions.add(childCreationDescription);
-                }
-            } else {
-                childCreationDescriptions = this.sysMLv2EditService.getChildCreationDescriptions(editingContext, containerId, referenceKind);
-            }
+        var container = this.objectSearchService.getObject(editingContext, containerId).orElse(null);
+        if (this.capellaCapableEditingContextPredicate.test(editingContext.getId())
+                && container instanceof Element element && this.commonQueryService.getArcadiaPerspective(element).isPresent()) {
+            return new ArcadiaChildCreationDescriptionSwitch().doSwitch(element);
         }
-        return childCreationDescriptions;
+        return this.sysMLv2EditService.getChildCreationDescriptions(editingContext, containerId, referenceKind);
     }
 
     @Override
@@ -112,16 +92,17 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     @Override
     public Optional<Object> createChild(IEditingContext editingContext, Object object, String childCreationDescriptionId) {
-        Optional<Object> value = Optional.empty();
-        if (childCreationDescriptionId.startsWith(ID_PREFIX) && object instanceof Element container) {
-            String arcadiaType = childCreationDescriptionId.substring(ID_PREFIX.length());
-            if (ARCADIA_EXCHANGE_ITEM.equals(arcadiaType)) {
-                value = Optional.ofNullable(this.commonCreationService.createNewExchangeItem(container));
+        Optional<Object> result = Optional.empty();
+        if (this.capellaCapableEditingContextPredicate.test(editingContext.getId())
+                && object instanceof Element container && this.commonQueryService.getArcadiaPerspective(container).isPresent()) {
+            if (childCreationDescriptionId.startsWith(ID_PREFIX)) {
+                String type = childCreationDescriptionId.substring(ID_PREFIX.length());
+                result = Optional.ofNullable(this.childCreationService.createCapellaChild(container, type));
             }
-        } else {
-            value = this.sysMLv2EditService.createChild(editingContext, object, childCreationDescriptionId);
+        } else if (!childCreationDescriptionId.startsWith(ID_PREFIX)) {
+            result = this.sysMLv2EditService.createChild(editingContext, object, childCreationDescriptionId);
         }
-        return value;
+        return result;
     }
 
     @Override

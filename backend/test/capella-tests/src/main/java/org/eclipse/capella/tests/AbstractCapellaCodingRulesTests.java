@@ -317,6 +317,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
         Stream<JavaClass> perspectiveSpecificServiceJavaClasses = this.getPerspectiveSpecificServiceClasses();
 
         Set<String> testableMethodNames = Stream.concat(Stream.of(
+                transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.AbstractArcadiaSwitch"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonQueryService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.ArcadiaElementNameService"),
                 transverseServiceClasses.get("org.eclipse.capella.model.transverse.services.CommonCreationService"),
@@ -328,6 +329,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                         perspectiveSpecificServiceJavaClasses,
                         this.getClasses().stream()
                                 .filter(javaClass -> javaClass.getName().equals("org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService")
+                                        || javaClass.getName().equals("org.eclipse.capella.application.configuration.explorer.services.CapellaChildCreationService")
                                         || javaClass.getName().equals("org.eclipse.capella.common.view.services.CapellaImagePathsService"))))
                 .flatMap(serviceClass -> serviceClass.getMethods().stream())
                 .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))

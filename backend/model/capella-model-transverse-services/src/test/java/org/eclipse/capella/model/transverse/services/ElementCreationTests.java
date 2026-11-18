@@ -46,6 +46,76 @@ public class ElementCreationTests extends AbstractSemanticTests {
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
+    public void createPackageShouldInitializeNamedPackagesUnderSelectedOwner() {
+        var owner = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var first = this.commonCreationService.createPackage(owner);
+        var second = this.commonCreationService.createPackage(owner);
+        var nested = this.commonCreationService.createPackage(first);
+        assertThat(first.getOwner()).isSameAs(owner);
+        assertThat(second.getOwner()).isSameAs(owner);
+        assertThat(nested.getOwner()).isSameAs(first);
+        assertThat(first.getDeclaredName()).isEqualTo("Package 1");
+        assertThat(second.getDeclaredName()).isEqualTo("Package 2");
+        assertThat(first.getElementId()).isNotBlank();
+        assertThat(nested.getElementId()).isNotBlank().isNotEqualTo(first.getElementId());
+    }
+
+    @Test
+    public void createFunctionInPackageShouldKeepParentFunctionAllocation() {
+        var structure = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var component = this.commonCreationService.createComponent(structure);
+        var parent = this.commonCreationService.createFunction(component);
+        var pkg = this.commonCreationService.createPackage(parent);
+        var child = this.commonCreationService.createFunction(pkg);
+        assertThat(this.commonQueryService.getAllocatingComponent(child)).contains(component);
+        assertThat(child.getOwner()).isSameAs(pkg);
+    }
+
+    @Test
+    public void createFunctionalChainOutsideFunctionsShouldNotBeCreated() {
+        var structure = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var originalChildren = List.copyOf(structure.getOwnedRelationship());
+        assertThat(this.commonCreationService.createFunctionalChain(structure, List.of())).isNull();
+        assertThat(structure.getOwnedRelationship()).containsExactlyElementsOf(originalChildren);
+    }
+
+    @Test
+    public void createPackageUnderFunctionShouldUseSelectedOwner() {
+        var root = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+
+        var pkg = this.commonCreationService.createPackage(root);
+
+        assertThat(pkg.getOwner()).isSameAs(root);
+        assertThat(pkg.getDeclaredName()).startsWith("Package");
+    }
+
+    @Test
+    public void createFunctionInPackageShouldUseSelectedOwner() {
+        var root = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var pkg = this.commonCreationService.createPackage(root);
+
+        var function = this.commonCreationService.createFunction(pkg);
+
+        assertThat(function.getOwner()).isSameAs(pkg);
+        assertThat(this.commonQueryService.isFunction(function)).isTrue();
+    }
+
+    @Test
+    public void createFunctionalChainWhenEmptyShouldUseSelectedFunctionContainer() {
+        var functions = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage();
+        var root = functions.getRootFunction().getElement();
+        var pkg = this.commonCreationService.createPackage(root);
+
+        for (var container : List.of(functions.getElement(), root, pkg)) {
+            var chain = this.commonCreationService.createFunctionalChain(container, List.of());
+
+            assertThat(chain.getOwner()).isSameAs(container);
+            assertThat(this.commonQueryService.isFunctionalChain(chain)).isTrue();
+            assertThat(this.commonQueryService.getInvolvedFunctionalExchanges(chain)).isEmpty();
+        }
+    }
+
+    @Test
     public void createMissionShouldCreateNamedMissionsInTheCapabilitiesPackage() {
         var perspective = this.capellaModel.getSystemAnalysisPerspective();
         var capabilitiesPackage = perspective.getCapabilitiesPackage().getElement();

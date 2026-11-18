@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.functionalchain;
 
+import java.util.List;
+
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -21,6 +23,7 @@ import org.eclipse.sirius.components.view.diagram.DialogDescription;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.sirius.components.view.diagram.SelectionDialogTreeDescription;
+import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.util.AQLConstants;
 import org.eclipse.syson.util.ServiceMethod;
 
@@ -47,7 +50,7 @@ public class FunctionalChainToolProvider {
                 .dialogDescription(this.createFunctionalExchangesDialogDescription());
         cache.getNodeDescription(FunctionalChainNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             nodeToolBuilder.body(this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of1(CommonCreationService::createFunctionalChain).aqlSelf("selectedObjects"))
+                    .expression(ServiceMethod.<CommonCreationService, Element, List<Object>> of1(CommonCreationService::createFunctionalChain).aqlSelf("selectedObjects"))
                     .children(this.diagramBuilderHelper.newCreateView()
                             .containmentKind(NodeContainmentKind.CHILD_NODE)
                             .elementDescription(nodeDescription)

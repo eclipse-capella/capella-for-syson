@@ -135,6 +135,12 @@ public class CommonQueryService {
 
     public static final String FUNCTIONS_PACKAGE = "Functions";
 
+    public static final String FUNCTION_PACKAGE = "FunctionPackage";
+
+    public static final String PACKAGE = "Package";
+
+    public static final String DATA_PACKAGE = "Data";
+
     public static final String INTERFACES_PACKAGE = "Interfaces";
 
     public static final String REQUIREMENTS_PACKAGE = "Requirements";
@@ -552,6 +558,13 @@ public class CommonQueryService {
                 && STRUCTURE_PACKAGE.equals(packageElt.getDeclaredName());
     }
 
+    public boolean isStructureSubPackage(Element element) {
+        return element instanceof Package
+                && this.getStructurePackage(element)
+                    .filter(root -> root != element && EcoreUtil.isAncestor(root, element))
+                    .isPresent();
+    }
+
     /**
      * Checks whether {@code element} belongs to {@code perspective}.
      * <p>
@@ -577,6 +590,21 @@ public class CommonQueryService {
     public boolean isFunctionsPackage(Object element) {
         return element instanceof Package packageElt
                 && FUNCTIONS_PACKAGE.equals(packageElt.getDeclaredName());
+    }
+
+    public boolean isFunctionSubPackage(Element element) {
+        return element instanceof Package && this.getFunctionsPackage(element)
+                .filter(root -> root != element && EcoreUtil.isAncestor(root, element)).isPresent();
+    }
+
+    public boolean isDataPackage(Object element) {
+        return element instanceof Package packageElt
+                && DATA_PACKAGE.equals(packageElt.getDeclaredName());
+    }
+
+    public boolean isInterfacesPackage(Object element) {
+        return element instanceof Package packageElt
+                && INTERFACES_PACKAGE.equals(packageElt.getDeclaredName());
     }
 
     public boolean isRequirementsPackage(Object element) {

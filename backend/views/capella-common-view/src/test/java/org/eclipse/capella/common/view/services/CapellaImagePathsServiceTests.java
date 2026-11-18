@@ -99,16 +99,20 @@ public class CapellaImagePathsServiceTests extends AbstractSemanticTests {
         nestedPackage.setDeclaredName("Nested");
         mutationService.addChildInParent(model.getStructurePackage().getElement(), nestedPackage);
 
+        var functionPackage = new CommonCreationService().createPackage(model.getFunctionsPackage().getRootFunction().getElement());
+        functionPackage.setDeclaredName("Nested functions");
+
         var expectedIcons = Map.ofEntries(
-                Map.entry(model.getStructurePackage().getElement(), "LogicalComponentPkg"),
-                Map.entry(model.getFunctionsPackage().getElement(), "LogicalFunctionPkg"),
+                Map.entry(functionPackage, "FunctionPkg"),
+                Map.entry(model.getStructurePackage().getElement(), "ComponentPkg"),
+                Map.entry(model.getFunctionsPackage().getElement(), "FunctionPkg"),
                 Map.entry(model.getCapabilitiesPackage().getElement(), "CapabilitiesPkg"),
                 Map.entry(model.getInterfacesPackage().getElement(), "InterfacesPkg"),
                 Map.entry(model.getDataPackage().getElement(), "DataPkg"),
                 Map.entry(model.getRequirementsPackage().getElement(), "RequirementsPkg"),
                 Map.entry(nativeRequirement, "Requirement"),
                 Map.entry(nativeAction, "ActionUsage"),
-                Map.entry(nestedPackage, "Package"));
+                Map.entry(nestedPackage, "ComponentPkg"));
         assertThat(expectedIcons).allSatisfy((element, icon) ->
                 assertThat(this.service.getImagePaths(element)).as(element.getDeclaredName()).containsExactly("/icons/full/obj16/" + icon + ".svg"));
     }
