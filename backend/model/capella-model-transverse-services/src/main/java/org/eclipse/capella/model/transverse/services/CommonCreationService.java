@@ -19,6 +19,7 @@ import static org.eclipse.capella.model.transverse.services.CommonNamingService.
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTIONAL_EXCHANGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTION_DEFAULT_DECLAREDNAME_PREFIX;
+import static org.eclipse.capella.model.transverse.services.CommonNamingService.PACKAGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
@@ -51,6 +52,7 @@ import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.Usage;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,7 +194,8 @@ public class CommonCreationService {
     public ActionUsage createFunction(Element parent) {
         ActionUsage actionUsage = null;
         Optional<Element> optionalParent = Optional.ofNullable(parent)
-                .filter(this.commonQueryService::isFunction)
+                .filter(element -> this.commonQueryService.isFunction(element) || this.commonQueryService.isFunctionPackage(element)
+                        && this.commonQueryService.getFunctionsPackage(element).filter(element::equals).isEmpty())
                 .or(() -> this.commonQueryService.getFunctionsPackage(parent)
                         .flatMap(this.commonQueryService::getRootFunction));
         if (optionalParent.isPresent()) {
@@ -318,14 +321,33 @@ public class CommonCreationService {
                 .orElse(null);
     }
 
+    /**
+     * Creates an initialized SysML package in the selected semantic owner.
+     *
+     * @param parent the semantic owner
+     * @return the initialized package
+     */
+    public Package createPackage(Element parent) {
+        Package pkg = SysmlFactory.eINSTANCE.createPackage();
+        this.metamodelMutationElementService.addChildInParent(parent, pkg);
+        this.metamodelMutationElementService.initialize(pkg);
+        this.commonNamingService.setElementDefaultDeclaredName(pkg, PACKAGE_DEFAULT_DECLAREDNAME_PREFIX);
+        return pkg;
+    }
+
     public ActionUsage createFunctionalChain(Element container, List<Object> selectedObjects) {
         ActionUsage actionUsage = null;
         List<Element> selectedElements = selectedObjects.stream()
                 .filter(Element.class::isInstance)
                 .map(Element.class::cast)
                 .toList();
-        Optional<Namespace> optionalCommonAncestor = this.commonQueryService.findClosestCommonAncestor(selectedElements,
-                candidate -> this.commonQueryService.isFunction(candidate) || this.commonQueryService.isFunctionsPackage(candidate));
+        Optional<Namespace> optionalCommonAncestor;
+        if (selectedObjects.isEmpty() && (this.commonQueryService.isFunction(container) || this.commonQueryService.isFunctionPackage(container))) {
+            optionalCommonAncestor = Optional.of((Namespace) container);
+        } else {
+            optionalCommonAncestor = this.commonQueryService.findClosestCommonAncestor(selectedElements,
+                    candidate -> this.commonQueryService.isFunction(candidate) || this.commonQueryService.isFunctionsPackage(candidate));
+        }
         if (optionalCommonAncestor.isPresent()) {
             actionUsage = SysmlFactory.eINSTANCE.createActionUsage();
             this.metamodelMutationElementService.addChildInParent(optionalCommonAncestor.get(), actionUsage);
@@ -351,6 +373,10 @@ public class CommonCreationService {
             allocatingComponent = Optional.of((PartUsage) parent);
         } else if (this.commonQueryService.isFunction(parent)) {
             allocatingComponent = this.commonQueryService.getAllocatingComponent((ActionUsage) parent);
+        } else if (parent instanceof Package) {
+            allocatingComponent = EMFUtils.getAncestors(ActionUsage.class, parent, this.commonQueryService::isFunction).stream()
+                    .findFirst()
+                    .flatMap(this.commonQueryService::getAllocatingComponent);
         }
         return allocatingComponent;
     }

@@ -132,6 +132,8 @@ public class CommonQueryService {
 
     public static final String FUNCTIONS_PACKAGE = "Functions";
 
+    public static final String DATA_PACKAGE = "Data";
+
     public static final String INTERFACES_PACKAGE = "Interfaces";
 
     public static final String REQUIREMENTS_PACKAGE = "Requirements";
@@ -569,6 +571,21 @@ public class CommonQueryService {
     public boolean isFunctionsPackage(Object element) {
         return element instanceof Package packageElt
                 && FUNCTIONS_PACKAGE.equals(packageElt.getDeclaredName());
+    }
+
+    public boolean isFunctionPackage(Element element) {
+        return element instanceof Package && this.getFunctionsPackage(element)
+                .filter(root -> EMFUtils.getAncestors(Element.class, element, null).contains(root)).isPresent();
+    }
+
+    public boolean isDataPackage(Object element) {
+        return element instanceof Package packageElt
+                && DATA_PACKAGE.equals(packageElt.getDeclaredName());
+    }
+
+    public boolean isInterfacesPackage(Object element) {
+        return element instanceof Package packageElt
+                && INTERFACES_PACKAGE.equals(packageElt.getDeclaredName());
     }
 
     public boolean isRequirementsPackage(Object element) {

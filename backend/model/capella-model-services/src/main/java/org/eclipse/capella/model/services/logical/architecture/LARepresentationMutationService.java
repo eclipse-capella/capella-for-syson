@@ -13,14 +13,12 @@
  *******************************************************************************/
 package org.eclipse.capella.model.services.logical.architecture;
 
-import static org.eclipse.capella.model.transverse.services.CommonNamingService.PACKAGE_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX;
 
 import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.syson.sysml.Annotation;
 import org.eclipse.syson.sysml.Comment;
 import org.eclipse.syson.sysml.Element;
-import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.RequirementUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.sysml.metamodel.services.ElementInitializerSwitch;
@@ -60,22 +58,6 @@ public class LARepresentationMutationService {
 
         this.commonNamingService.setElementDefaultDeclaredName(requirementUsage, REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX);
         return requirementUsage;
-    }
-
-    /**
-     * Creates a new SysML Package as a child of the given parent.
-     *
-     * @param parent
-     *         the parent element
-     * @return the newly created Package
-     */
-    public Package createPackage(Element parent) {
-        Package pkg = SysmlFactory.eINSTANCE.createPackage();
-        this.metamodelMutationElementService.addChildInParent(parent, pkg);
-        this.elementInitializerSwitch.doSwitch(pkg);
-
-        this.commonNamingService.setElementDefaultDeclaredName(pkg, PACKAGE_DEFAULT_DECLAREDNAME_PREFIX);
-        return pkg;
     }
 
     public Comment createComment(Element parent) {
