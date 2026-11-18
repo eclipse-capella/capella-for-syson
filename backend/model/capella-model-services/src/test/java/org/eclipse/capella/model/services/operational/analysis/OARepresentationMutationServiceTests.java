@@ -17,7 +17,6 @@ import static org.mockito.Mockito.mock;
 
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
-import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.diagram.services.DiagramMutationElementService;
 import org.eclipse.syson.sysml.InterfaceUsage;
 import org.eclipse.syson.sysml.Package;
@@ -46,19 +45,18 @@ public class OARepresentationMutationServiceTests {
 
     private final OAMutationService oaMutationService = new OAMutationService();
 
-    private final OARepresentationMutationService oaRepresentationMutationService = new OARepresentationMutationService(
-            new TransverseRepresentationMutationService());
+    private final OARepresentationMutationService oaRepresentationMutationService = new OARepresentationMutationService();
 
     @Test
     @DisplayName("GIVEN OA structure package, WHEN creating actor and human actor entities, THEN names, typing and actor flags are correct")
-    public void testCreateEntityComponent() {
+    public void testCreateComponentOA() {
         Package root = this.fixture.createRootPackage();
         this.fixture.createArcadiaComponentAttributes(root);
 
         OATestModelFixture.OperationalAnalysisPackages oaPackages = this.fixture.createOperationalAnalysisPackages(root);
 
-        PartUsage entity = this.oaRepresentationMutationService.createEntityComponent(oaPackages.structurePackage(), false);
-        PartUsage humanActorEntity = this.oaRepresentationMutationService.createEntityComponent(oaPackages.structurePackage(), true);
+        PartUsage entity = this.oaRepresentationMutationService.createComponentOA(oaPackages.structurePackage(), false);
+        PartUsage humanActorEntity = this.oaRepresentationMutationService.createComponentOA(oaPackages.structurePackage(), true);
 
         assertThat(oaPackages.structurePackage().getOwnedElement()).contains(entity, humanActorEntity);
 

@@ -25,7 +25,6 @@ import org.eclipse.capella.model.transverse.services.ArcadiaLibraryServices;
 import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
-import org.eclipse.capella.model.transverse.services.TransverseRepresentationMutationService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
@@ -51,7 +50,7 @@ public class OARepresentationMutationService {
 
     private final CommonNamingService commonNamingService;
 
-    public  OARepresentationMutationService(TransverseRepresentationMutationService transverseRepresentationMutationService) {
+    public OARepresentationMutationService() {
         this.commonUpdateService = new CommonUpdateService();
         this.elementInitializerSwitch = new ElementInitializerSwitch();
         this.commonQueryService = new CommonQueryService();
@@ -60,7 +59,7 @@ public class OARepresentationMutationService {
         this.commonNamingService = new CommonNamingService();
     }
 
-    public PartUsage createEntityComponent(Element parent, boolean isActor) {
+    public PartUsage createComponentOA(Element parent, boolean isActor) {
         PartUsage partUsage = null;
         if (parent instanceof PartUsage parentComponent && this.commonQueryService.isComponentHumanActor(parentComponent)) {
             return null;

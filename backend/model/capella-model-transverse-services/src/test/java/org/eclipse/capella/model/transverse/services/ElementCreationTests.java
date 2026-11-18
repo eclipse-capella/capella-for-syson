@@ -44,6 +44,89 @@ public class ElementCreationTests extends AbstractSemanticTests {
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
+    public void isDataPackageShouldRecognizeOnlyDataPackages() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        assertThat(this.commonQueryService.isDataPackage(perspective.getDataPackage().getElement())).isTrue();
+        assertThat(this.commonQueryService.isDataPackage(perspective.getInterfacesPackage().getElement())).isFalse();
+        var function = this.commonCreationService.createFunction(perspective.getFunctionsPackage().getRootFunction().getElement());
+        function.setDeclaredName(CommonQueryService.DATA_PACKAGE);
+        assertThat(this.commonQueryService.isDataPackage(function)).isFalse();
+    }
+
+    @Test
+    public void isInterfacesPackageShouldRecognizeOnlyInterfacesPackages() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        assertThat(this.commonQueryService.isInterfacesPackage(perspective.getInterfacesPackage().getElement())).isTrue();
+        assertThat(this.commonQueryService.isInterfacesPackage(perspective.getDataPackage().getElement())).isFalse();
+        var function = this.commonCreationService.createFunction(perspective.getFunctionsPackage().getRootFunction().getElement());
+        function.setDeclaredName(CommonQueryService.INTERFACES_PACKAGE);
+        assertThat(this.commonQueryService.isInterfacesPackage(function)).isFalse();
+    }
+
+    @Test
+    public void createPackageShouldInitializeNamedPackagesUnderSelectedOwner() {
+        var owner = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var first = this.commonCreationService.createPackage(owner);
+        var second = this.commonCreationService.createPackage(owner);
+        var nested = this.commonCreationService.createPackage(first);
+        assertThat(first.getOwner()).isSameAs(owner);
+        assertThat(second.getOwner()).isSameAs(owner);
+        assertThat(nested.getOwner()).isSameAs(first);
+        assertThat(first.getDeclaredName()).isEqualTo("Package 1");
+        assertThat(second.getDeclaredName()).isEqualTo("Package 2");
+        assertThat(first.getElementId()).isNotBlank();
+        assertThat(nested.getElementId()).isNotBlank().isNotEqualTo(first.getElementId());
+    }
+
+    @Test
+    public void isFunctionPackageShouldRecognizeRootAndRenamedDescendantsOnly() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        var root = perspective.getFunctionsPackage().getElement();
+        var pkg = this.commonCreationService.createPackage(perspective.getFunctionsPackage().getRootFunction().getElement());
+        pkg.setDeclaredName("Renamed");
+        assertThat(this.commonQueryService.isFunctionPackage(root)).isTrue();
+        assertThat(this.commonQueryService.isFunctionPackage(pkg)).isTrue();
+        assertThat(this.commonQueryService.isFunctionPackage(perspective.getStructurePackage().getElement())).isFalse();
+        assertThat(this.commonQueryService.isFunctionPackage(perspective.getFunctionsPackage().getRootFunction().getElement())).isFalse();
+        var unrelated = org.eclipse.syson.sysml.SysmlFactory.eINSTANCE.createPackage();
+        unrelated.setDeclaredName("Functions");
+        assertThat(this.commonQueryService.isFunctionPackage(unrelated)).isFalse();
+    }
+
+    @Test
+    public void createFunctionInPackageShouldKeepParentFunctionAllocation() {
+        var structure = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var component = this.commonCreationService.createComponent(structure);
+        var parent = this.commonCreationService.createFunction(component);
+        var pkg = this.commonCreationService.createPackage(parent);
+        var child = this.commonCreationService.createFunction(pkg);
+        assertThat(this.commonQueryService.getAllocatingComponent(child)).contains(component);
+        assertThat(child.getOwner()).isSameAs(pkg);
+    }
+
+    @Test
+    public void createFunctionalChainWhenEmptyAndOutsideFunctionsShouldNotBeCreated() {
+        var structure = this.capellaModel.getLogicalArchitecturePerspective().getStructurePackage().getElement();
+        var originalChildren = List.copyOf(structure.getOwnedRelationship());
+        assertThat(this.commonCreationService.createFunctionalChain(structure, List.of())).isNull();
+        assertThat(structure.getOwnedRelationship()).containsExactlyElementsOf(originalChildren);
+    }
+
+    @Test
+    public void createPackageShouldOwnFunctionsAndEmptyChains() {
+        var root = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var pkg = this.commonCreationService.createPackage(root);
+        assertThat(pkg.getOwner()).isSameAs(root);
+        assertThat(pkg.getDeclaredName()).startsWith("Package");
+        var function = this.commonCreationService.createFunction(pkg);
+        assertThat(function.getOwner()).isSameAs(pkg);
+        assertThat(this.commonQueryService.isFunction(function)).isTrue();
+        var chain = this.commonCreationService.createFunctionalChain(pkg, List.of());
+        assertThat(chain.getOwner()).isSameAs(pkg);
+        assertThat(this.commonQueryService.isFunctionalChain(chain)).isTrue();
+    }
+
+    @Test
     public void createDescribesToArcadiaPortShouldBePossible() {
         var perspective = this.capellaModel.getLogicalArchitecturePerspective();
         var requirement = this.commonCreationService.createRequirement(perspective.getElement());
