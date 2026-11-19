@@ -26,6 +26,7 @@ The method `SAQueryService#isSystemAnalysisStructurePackage` has been replaced w
 === Dependency update
 
 - [releng] Update Sirius Web to `2026.11.1` and SysON to `2026.11.1`.
+- [releng] Bump to `2026.11.1`
 
 
 === Bug fixes
