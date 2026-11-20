@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.lab.view.nodes.comment;
 
 import java.util.Objects;
 
-import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.lab.view.edges.annotating.AnnotatingToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

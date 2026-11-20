@@ -14,6 +14,7 @@ package org.eclipse.capella.model.transverse.services;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -804,6 +805,22 @@ public class CommonQueryService {
         }
         return result;
     }
+
+    public Set<ActionUsage> getSubFunctionsRecursively(Element parent) {
+        Set<ActionUsage> result = new LinkedHashSet<>();
+        return this.getSubFunctionsRecursively(parent, result);
+    }
+
+    private Set<ActionUsage> getSubFunctionsRecursively(Element parent, Set<ActionUsage> result) {
+        for (ActionUsage subFunction : this.getSubFunctions(parent)) {
+            if (result.add(subFunction)) {
+                this.getSubFunctionsRecursively(subFunction, result);
+            }
+        }
+        return result;
+    }
+
+
 
     /**
      * Retrieve the parent functions of the given function.

@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sfbd.view;
 
-import org.eclipse.capella.diagram.common.view.IViewDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.services.api.IDiagramViewDescriptionProvider;
 import org.eclipse.sirius.components.view.ColorPalette;
 import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.View;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
  * @author adieumegard
  */
 @Service
-public class SFBDViewDescriptionProvider implements IViewDescriptionProvider {
+public class SFBDViewDescriptionProvider implements IDiagramViewDescriptionProvider {
     @Override
     public String getViewDiagramId() {
         return "SystemFunctionBreakDown";

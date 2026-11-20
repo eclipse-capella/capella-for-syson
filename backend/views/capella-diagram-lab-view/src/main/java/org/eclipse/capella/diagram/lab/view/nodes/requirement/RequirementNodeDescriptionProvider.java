@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.lab.view.nodes.requirement;
 
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.LABDescriptionNameGenerator;
 import org.eclipse.capella.diagram.lab.view.LABViewDiagramDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;

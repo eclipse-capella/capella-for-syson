@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.ocb.view.nodes.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.services.OCBDiagramSemanticCandidatesService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;

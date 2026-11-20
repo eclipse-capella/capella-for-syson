@@ -13,7 +13,7 @@
 
 package org.eclipse.capella.diagram.ddv.view;
 
-import org.eclipse.capella.diagram.common.view.ColorProvider;
+import org.eclipse.capella.common.view.diagram.services.ColorProvider;
 import org.eclipse.capella.diagram.ddv.view.view.FunctionalContextViewDiagramDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.FunctionalContextViewJavaServiceProvider;
 import org.eclipse.capella.tests.diagrams.AbstractReadOnlyDiagramDescriptionTests;

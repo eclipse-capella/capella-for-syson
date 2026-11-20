@@ -16,7 +16,7 @@ package org.eclipse.capella.diagram.lab.view.nodes.packagenode;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.lab.view.LABDescriptionNameGenerator;
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
 import org.eclipse.capella.diagram.lab.view.nodes.requirement.RequirementNodeDescriptionProvider;

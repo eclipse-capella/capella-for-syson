@@ -15,7 +15,7 @@ package org.eclipse.capella.diagram.ocb.view.nodes.capability;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.capella.diagram.common.view.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.generalization.GeneralizationToolProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.involvement.InvolvementToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;

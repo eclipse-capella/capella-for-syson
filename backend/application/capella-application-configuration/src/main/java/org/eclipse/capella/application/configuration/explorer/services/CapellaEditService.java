@@ -20,7 +20,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -51,7 +52,7 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     private final SysMLv2EditService sysMLv2EditService;
 
-    private final CapellaImagePathsService capellaImagePathsService;
+    private final ICapellaImagePathsService capellaImagePathsService;
 
     private final CommonCreationService commonCreationService;
 

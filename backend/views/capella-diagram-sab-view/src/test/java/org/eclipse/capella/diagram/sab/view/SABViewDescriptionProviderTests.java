@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.ColorProvider;
+import org.eclipse.capella.common.view.diagram.services.ColorProvider;
 import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.functionalexchange.FunctionalExchangeEdgeDescriptionProvider;

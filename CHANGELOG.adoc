@@ -22,8 +22,16 @@ The class `OCBViewQueryService` has been renamed `OCBDiagramService` and moved t
 The class `OAIBViewQueryService` has been renamed `OAIBDiagramService` and moved to `org.eclipse.capella.diagram.oaib.view.services` to follow the patterns of other diagram services.
 - https://github.com/eclipse-capella/capella-for-syson/issues/79[#79] [sab] Fix the precondition of the SAB diagram.
 The method `SAQueryService#isSystemAnalysisStructurePackage` has been replaced with `SABDiagramService#canCreateSABDiagram`.
+- https://github.com/eclipse-capella/capella-for-syson/issues/403[#403] [services] Rename `capella-diagram-common-view` module to `capella-common-view`.
+This module can be used to store any services/view-related class that can be shared across multiple representations.
+The interface `IViewDescriptionProvider` has been renamed to `IDiagramViewDescriptionProvider` to better reflect its scope.
+The class `CapellaViewDescriptionProvider` has been renamed to `CapellaDiagramViewDescriptionProvider` to better reflect its scope.
+The class `CapellaImagePathsService` has been moved to `capella-common-view`.
 
 === Dependency update
+
+- [releng] Update Sirius Web to `2026.11.2`, SysON to `2026.11.2`, and React to `19.2.8`.
+- [releng] Bump to `2026.11.2`
 
 
 === Bug fixes
@@ -62,6 +70,8 @@ An MCB diagram can be created on the capabilities package or any of its sub-pack
 Semantic candidate expressions used by the view DSL to retrieve components and functions are now defined in a dedicated diagram-level service (`XXXDiagramSemanticCandidatesService`).
 Perspective query services now redefine common query services and restrict their result to elements of the perspective, for example, `LAQueryService#getComponents` returns the components in the LA perspective.
 - https://github.com/eclipse-capella/capella-for-syson/issues/186[#186] [enh] Add System Function nodes to SFBD diagram.
+- https://github.com/eclipse-capella/capella-for-syson/issues/228[#228] [table] Fix function table precondition and semantic candidates.
+- [releng] Add missing coverage checks.
 
 == 2026.11.0
 
