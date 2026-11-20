@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.edges.functionalexchange;
 
-import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionPortNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
