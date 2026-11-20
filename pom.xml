@@ -17,7 +17,7 @@
 
 	<groupId>org.eclipse.capella</groupId>
 	<artifactId>capella-for-syson</artifactId>
-	<version>2026.11.0</version>
+	<version>2026.11.1</version>
 
 	<name>capella-for-syson</name>
 	<description>Capella for SysON</description>
