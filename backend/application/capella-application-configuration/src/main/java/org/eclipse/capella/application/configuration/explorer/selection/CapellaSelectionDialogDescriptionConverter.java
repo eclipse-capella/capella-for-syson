@@ -19,7 +19,7 @@ import java.util.Set;
 
 import org.eclipse.capella.application.configuration.explorer.selection.api.ICapellaSelectionTreeService;
 import org.eclipse.capella.application.configuration.explorer.selection.api.ICapellaTreeDescriptionConverter;
-import org.eclipse.capella.diagram.common.view.CapellaViewDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.services.CapellaDiagramViewDescriptionProvider;
 import org.eclipse.sirius.components.interpreter.AQLInterpreter;
 import org.eclipse.sirius.components.representations.IRepresentationDescription;
 import org.eclipse.sirius.components.representations.RepresentationVariables;
@@ -51,10 +51,10 @@ public class CapellaSelectionDialogDescriptionConverter implements IDialogDescri
 
     private final ICapellaTreeDescriptionConverter treeDescriptionConverter;
 
-    private final CapellaViewDescriptionProvider viewDescriptionProvider;
+    private final CapellaDiagramViewDescriptionProvider viewDescriptionProvider;
 
     public CapellaSelectionDialogDescriptionConverter(SelectionDialogDescriptionConverter defaultConverter, ICapellaSelectionTreeService treeService,
-            ICapellaTreeDescriptionConverter treeDescriptionConverter, CapellaViewDescriptionProvider viewDescriptionProvider) {
+            ICapellaTreeDescriptionConverter treeDescriptionConverter, CapellaDiagramViewDescriptionProvider viewDescriptionProvider) {
         this.defaultConverter = Objects.requireNonNull(defaultConverter);
         this.treeService = Objects.requireNonNull(treeService);
         this.treeDescriptionConverter = Objects.requireNonNull(treeDescriptionConverter);

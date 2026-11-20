@@ -14,8 +14,8 @@ package org.eclipse.capella.diagram.sab.view.nodes.function;
 
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.diagram.common.view.nodes.ImageNodeStyleDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.ImageNodeStyleDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.SABViewConstants;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

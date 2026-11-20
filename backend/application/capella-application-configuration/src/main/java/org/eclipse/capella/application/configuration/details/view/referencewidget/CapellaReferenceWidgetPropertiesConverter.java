@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.components.core.api.ILabelService;
@@ -57,11 +57,11 @@ public class CapellaReferenceWidgetPropertiesConverter extends ReferenceWidgetPr
 
     private final List<ICapellaReferenceWidgetProvider> capellaReferenceWidgetProviders;
 
-    private final CapellaImagePathsService capellaImagePathsService;
+    private final ICapellaImagePathsService capellaImagePathsService;
 
     public CapellaReferenceWidgetPropertiesConverter(IIdentityService identityService, IReadOnlyObjectPredicate readOnlyObjectPredicate, ILabelService labelService,
             IEMFKindService emfKindService, List<ICapellaReferenceWidgetProvider> capellaReferenceWidgetProviders,
-            CapellaImagePathsService capellaImagePathsService) {
+            ICapellaImagePathsService capellaImagePathsService) {
         super(identityService, readOnlyObjectPredicate, labelService, emfKindService);
         this.identityService = Objects.requireNonNull(identityService);
         this.readOnlyObjectPredicate = Objects.requireNonNull(readOnlyObjectPredicate);
