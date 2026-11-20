@@ -24,6 +24,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
+import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.table.view.providers.CellIconURLsProvider;
 import org.eclipse.capella.table.view.providers.CellOptionIdProvider;
@@ -44,6 +46,7 @@ import org.eclipse.sirius.components.core.api.IIdentityService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.sirius.components.emf.tables.CursorBasedNavigationServices;
 import org.eclipse.sirius.components.representations.IRepresentationDescription;
+import org.eclipse.sirius.components.representations.RepresentationVariables;
 import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.components.tables.ColumnFilter;
 import org.eclipse.sirius.components.tables.descriptions.ColumnDescription;
@@ -58,7 +61,6 @@ import org.eclipse.sirius.components.tables.renderer.TableRenderer;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.Feature;
-import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.impl.ActionUsageImpl;
@@ -74,7 +76,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
 
     public static final String TABLE_DESCRIPTION_ID = "function_table_description";
 
-    public static final String DESCRIPTION_NAME = "Logical Architecture Function Table";
+    public static final String DESCRIPTION_NAME = "Function Table";
 
     public static final int ROW_INITIAL_HEIGHT = 45;
 
@@ -101,12 +103,14 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
 
     private final ILabelService labelService;
 
+    private final ICapellaImagePathsService capellaImagePathsService;
+
     private final CommonQueryService commonQueryService;
 
-    public FunctionTableRepresentationDescriptionProvider(IIdentityService identityService,
-            ILabelService labelService) {
+    public FunctionTableRepresentationDescriptionProvider(IIdentityService identityService, ILabelService labelService, ICapellaImagePathsService capellaImagePathsService) {
         this.identityService = Objects.requireNonNull(identityService);
         this.labelService = Objects.requireNonNull(labelService);
+        this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
         this.commonQueryService = new CommonQueryService();
     }
 
@@ -118,7 +122,8 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
                 .map(Objects::toString)
                 .orElse(null);
 
-        Function<VariableManager, List<String>> headerIconURLsProvider = variableManager -> List.of("icons/full/obj16/_Function-wip-base with font.svg");
+        Function<VariableManager, List<String>> headerIconURLsProvider = variableManager -> this.capellaImagePathsService.getImagePaths(
+                variableManager.get(RepresentationVariables.SELF.name(), Object.class).orElse(null));
 
         Function<VariableManager, String> headerIndexLabelProvider = variableManager -> "";
 
@@ -156,7 +161,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
     }
 
     private PaginatedData getSemanticElements(VariableManager variableManager, IEditingContext editingContext) {
-        var self = variableManager.get(VariableManager.SELF, EObject.class).orElse(null);
+        var self = variableManager.get(RepresentationVariables.SELF.name(), Element.class).orElse(null);
         var cursor = variableManager.get(TableRenderer.PAGINATION_CURSOR, EObject.class).orElse(null);
         var direction = variableManager.get(TableRenderer.PAGINATION_DIRECTION, String.class).orElse(null);
         var size = variableManager.get(TableRenderer.PAGINATION_SIZE, Integer.class).orElse(0);
@@ -166,11 +171,20 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
         List<String> activeRowFilterIds = variableManager.get(TableRenderer.ACTIVE_ROW_FILTER_IDS, List.class).orElse(List.of());
         boolean expandAll = variableManager.get(TableRenderer.EXPAND_ALL, Boolean.class).orElse(false);
 
-        List<ActionUsage> actionUsages = this.commonQueryService.getFunctions(self);
+        Optional<ArcadiaEngineeringPerspective> optionalArcadiaEngineeringPerspective = this.commonQueryService.getArcadiaPerspective(self);
+        List<ActionUsage> functions;
+        if (optionalArcadiaEngineeringPerspective.isPresent()) {
+            ArcadiaEngineeringPerspective arcadiaEngineeringPerspective = optionalArcadiaEngineeringPerspective.get();
+            functions = this.commonQueryService.getSubFunctionsRecursively(self).stream()
+                    .filter(function -> this.commonQueryService.isInPerspective(function, arcadiaEngineeringPerspective))
+                    .toList();
+        } else {
+            functions = List.of();
+        }
 
         Predicate<EObject> predicate = eObject -> {
-            if (this.isFunction(eObject, actionUsages)) {
-                boolean isAllAncestorsExpanded = this.isAllAncestorsExpanded(eObject, expandedIds, expandAll);
+            if (this.isFunction(eObject, functions)) {
+                boolean isAllAncestorsExpanded = this.isAllAncestorsExpanded(eObject, expandedIds, expandAll, functions);
                 boolean matchesGlobalFilter = this.matchesGlobal(eObject, globalFilter);
                 boolean matchesRowFilters = this.matchesRow(eObject, activeRowFilterIds);
                 boolean matchesColumnFilters = this.matchesColumn(eObject, columnFilters);
@@ -182,8 +196,7 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
             return false;
         };
 
-        return new CursorBasedNavigationServices().collect(self, cursor, direction, size,
-                predicate);
+        return new CursorBasedNavigationServices().collect(self, cursor, direction, size, predicate);
     }
 
     private boolean isFunction(EObject eObject, List<ActionUsage> laPackageFunctions) {
@@ -191,20 +204,25 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
                 && laPackageFunctions.contains(eObject);
     }
 
-    private boolean isAllAncestorsExpanded(EObject predicate,
-            List<String> expandedIds, boolean expandAll) {
-
-        Optional<ActionUsage> functionParent = this.commonQueryService.getParentFunction(predicate);
-
-        if (functionParent.isEmpty()) {
-            return true;
+    private boolean isAllAncestorsExpanded(EObject candidate, List<String> expandedIds, boolean expandAll, List<ActionUsage> functions) {
+        final boolean result;
+        Optional<ActionUsage> optionalParentFunction = this.commonQueryService.getParentFunction(candidate);
+        if (optionalParentFunction.isEmpty()) {
+            // The function doesn't have a parent function, so we assume all its ancestors are expanded
+            result = true;
+        } else {
+            ActionUsage parentFunction = optionalParentFunction.get();
+            if (!functions.contains(parentFunction)) {
+                // The parent function is not part of the functions displayed in the table (this can be the case when the table is created on non-top-level functions)
+                result = true;
+            } else {
+                String parentFunctionEntityId = this.identityService.getId(parentFunction);
+                result = (!expandedIds.isEmpty()
+                        && expandedIds.contains(parentFunctionEntityId) || expandAll)
+                        && this.isAllAncestorsExpanded(parentFunction, expandedIds, expandAll, functions);
+            }
         }
-
-        String parentFunctionEntityId = this.identityService.getId(functionParent.get());
-
-        return (!expandedIds.isEmpty()
-                && expandedIds.contains(parentFunctionEntityId) || expandAll)
-                && this.isAllAncestorsExpanded(functionParent.get(), expandedIds, expandAll);
+        return result;
     }
 
     private boolean matchesGlobal(EObject eObject, String globalFilter) {
@@ -313,8 +331,8 @@ public class FunctionTableRepresentationDescriptionProvider implements IEditingC
     }
 
     private boolean canCreate(VariableManager variableManager) {
-        return variableManager.get(VariableManager.SELF, Object.class)
-                .filter(Package.class::isInstance)
+        return variableManager.get(RepresentationVariables.SELF.name(), EObject.class)
+                .filter(element -> this.commonQueryService.isFunctionsPackage(element) || this.commonQueryService.isFunction(element))
                 .isPresent();
     }
 
