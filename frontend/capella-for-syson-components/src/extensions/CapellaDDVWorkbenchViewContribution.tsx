@@ -32,7 +32,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import { SxProps, Theme } from '@mui/material/styles';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, JSX, useEffect, useImperativeHandle, useState } from 'react';
 import {
   CapellaDDVWorkbenchViewContributionState,
   GQLGetRepresentationDescriptionsQueryData,

@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ddv.view.view.edges.functionalexchange;
 
-import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ddv.view.view.nodes.function.RootFunctionNodeDescriptionProvider;
 import org.eclipse.capella.model.services.functional.context.DDVQueryService;

@@ -14,11 +14,11 @@ package org.eclipse.capella.diagram.oaib.view.nodes.activity;
 
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.diagram.oaib.view.OAIBViewConstants;
 import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
-import org.eclipse.capella.diagram.oaib.view.OAIBViewConstants;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.core.api.IEditingContext;

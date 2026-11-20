@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.IReferencingElementsTreeDescriptionProvider;
-import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.sirius.components.collaborative.api.IRepresentationSearchService;
@@ -53,7 +54,7 @@ public class ReferencingElementsTreeDescriptionProvider implements IReferencingE
 
     private final ILabelService labelService;
 
-    private final CapellaImagePathsService capellaImagePathsService;
+    private final ICapellaImagePathsService capellaImagePathsService;
 
     private final SemanticBrowserService semanticBrowserService;
 

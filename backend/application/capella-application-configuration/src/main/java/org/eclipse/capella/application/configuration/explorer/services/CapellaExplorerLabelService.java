@@ -18,7 +18,8 @@ import java.util.Objects;
 
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerFragment;
 import org.eclipse.capella.application.configuration.explorer.services.api.ICapellaExplorerLabelService;
-import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.core.api.ILabelService;
 import org.eclipse.sirius.components.core.api.IReadOnlyObjectPredicate;
@@ -38,7 +39,7 @@ public class CapellaExplorerLabelService implements IExplorerLabelServiceDelegat
 
     private final IReadOnlyObjectPredicate readOnlyObjectPredicate;
 
-    private final CapellaImagePathsService capellaImagePathsService;
+    private final ICapellaImagePathsService capellaImagePathsService;
 
     private final ILabelService labelService;
 

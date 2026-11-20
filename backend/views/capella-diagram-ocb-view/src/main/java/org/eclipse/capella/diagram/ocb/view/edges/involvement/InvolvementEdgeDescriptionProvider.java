@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view.edges.involvement;
 
-import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.component.ComponentNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
