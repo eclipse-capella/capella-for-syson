@@ -29,15 +29,21 @@ double checkCoverage(String module) {
 record ModuleCoverage(String moduleName, double expectedCoverage) {}
 var moduleCoverageData = List.of(
   new ModuleCoverage("capella-application", 37.0),
-  new ModuleCoverage("capella-application-configuration", 32.0),
-  new ModuleCoverage("capella-model-services", 15.0),
-  new ModuleCoverage("capella-common-view", 70.0),
-  new ModuleCoverage("capella-diagram-customization", 68),
-  new ModuleCoverage("capella-diagram-lab-view", 94.0),
+  new ModuleCoverage("capella-application-configuration", 56.0),
+  new ModuleCoverage("capella-model-services", 58.0),
+  new ModuleCoverage("capella-model-transverse-services", 84.0),
+  new ModuleCoverage("capella-common-view", 71.0),
+  new ModuleCoverage("capella-diagram-customization", 90.0),
+  new ModuleCoverage("capella-diagram-lab-view", 96.0),
   new ModuleCoverage("capella-diagram-oab-view", 98.0),
-  new ModuleCoverage("capella-diagram-sab-view", 91.0),
-  new ModuleCoverage("capella-ddv-view", 67.0),
-  new ModuleCoverage("capella-table-view", 25.0),
+  new ModuleCoverage("capella-diagram-oabd-view", 99.0),
+  new ModuleCoverage("capella-diagram-oaib-view", 97.0),
+  new ModuleCoverage("capella-diagram-ocb-view", 95.0),
+  new ModuleCoverage("capella-diagram-mcb-view", 99.0),
+  new ModuleCoverage("capella-diagram-sab-view", 99.0),
+  new ModuleCoverage("capella-diagram-sfbd-view", 99.0),
+  new ModuleCoverage("capella-ddv-view", 68.0),
+  new ModuleCoverage("capella-table-view", 61.0),
   new ModuleCoverage("capella-form-view", 37.0)
 );
 
@@ -49,7 +55,7 @@ void display(String module, double coverage, double expected) {
 System.out.format("%-45s%10s%10s%35s%n", "Module", "Coverage", "Expected", "Status");
 
 double global = checkCoverage("");
-double expectedGlobalCoverage = 53.0;
+double expectedGlobalCoverage = 80.0;
 boolean isValidCoverage = global >= expectedGlobalCoverage;
 display("total", global, expectedGlobalCoverage);
 
