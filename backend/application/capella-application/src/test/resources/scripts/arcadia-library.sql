@@ -2242,7 +2242,6 @@ INSERT INTO document (
   true);
 
 INSERT INTO library (
-  id,
   namespace,
   name,
   version,
@@ -2251,7 +2250,6 @@ INSERT INTO library (
   created_on,
   last_modified_on
 ) VALUES (
-  '76744e4a-9af6-4a20-8fca-835a0c6b20bf',
   'capella',
   'arcadia',
   '0.0.1',

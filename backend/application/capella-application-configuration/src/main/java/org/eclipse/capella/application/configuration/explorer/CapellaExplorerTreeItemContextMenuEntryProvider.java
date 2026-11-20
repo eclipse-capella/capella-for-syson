@@ -38,6 +38,7 @@ import org.eclipse.sirius.web.application.views.explorer.services.ExplorerTreeIt
 import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.RepresentationMetadata;
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.services.api.ISemanticDataSearchService;
 import org.eclipse.sirius.web.library.domain.Library;
+import org.eclipse.sirius.web.library.domain.LibraryId;
 import org.eclipse.sirius.web.library.domain.services.api.ILibrarySearchService;
 import org.springframework.data.jdbc.core.mapping.AggregateReference;
 import org.springframework.stereotype.Service;
@@ -87,6 +88,7 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
             paletteEntries.addAll(this.getRepresentationContextMenuEntries(emfEditingContext, treeItem));
             paletteEntries.addAll(this.getLibraryRelatedEntries(emfEditingContext, treeItem));
             paletteEntries.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.EXPAND_ALL, this.messageService.treeToolExpandAll(), List.of(), false, List.of()));
+            paletteEntries.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.COLLAPSE_ALL, this.messageService.treeToolCollapseAll(), List.of(), false, List.of()));
         }
         return new Palette("", List.of(), paletteEntries);
     }
@@ -96,8 +98,6 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
                 .filter(Resource.class::isInstance)
                 .map(Resource.class::cast);
         if (optionalResource.isPresent()) {
-            var resource = optionalResource.get();
-
             List<IPaletteEntry> entries = new ArrayList<>();
             entries.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.NEW_ROOT_OBJECT, this.messageService.treeToolNewObject(), List.of(), false, List.of()));
             entries.add(new SingleClickTreeItemTool(ExplorerTreeItemContextMenuEntryProvider.DOWNLOAD_DOCUMENT, this.messageService.treeToolDownload(), List.of(), false, List.of()));
@@ -170,7 +170,7 @@ public class CapellaExplorerTreeItemContextMenuEntryProvider implements ITreeIte
                 .flatMap(Collection::stream)
                 .map(AggregateReference::getId)
                 .toList();
-        return this.librarySearchService.findByNamespaceAndNameAndVersion(libraryMetadataAdapter.getNamespace(), libraryMetadataAdapter.getName(), libraryMetadataAdapter.getVersion())
+        return this.librarySearchService.findById(new LibraryId(libraryMetadataAdapter.getNamespace(), libraryMetadataAdapter.getName(), libraryMetadataAdapter.getVersion()))
                 .map(Library::getSemanticData)
                 .map(AggregateReference::getId)
                 .map(editingContextDependencies::contains)

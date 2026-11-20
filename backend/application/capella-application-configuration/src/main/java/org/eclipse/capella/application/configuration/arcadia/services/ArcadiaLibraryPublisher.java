@@ -29,6 +29,7 @@ import org.eclipse.sirius.emfjson.resource.JsonResourceFactoryImpl;
 import org.eclipse.sirius.web.application.editingcontext.services.EPackageEntry;
 import org.eclipse.sirius.web.application.editingcontext.services.api.IResourceToDocumentService;
 import org.eclipse.sirius.web.domain.boundedcontexts.semanticdata.services.api.ISemanticDataCreationService;
+import org.eclipse.sirius.web.library.domain.LibraryId;
 import org.eclipse.sirius.web.library.domain.services.api.ILibrarySearchService;
 import org.eclipse.syson.application.libraries.SysONLibraryLoader;
 import org.eclipse.syson.application.libraries.SysONLibraryLoadingDefinition;
@@ -59,7 +60,7 @@ public class ArcadiaLibraryPublisher implements IArcadiaLibraryPublisher {
 
     @Override
     public void publish(PublishArcadiaLibraryCommand command) {
-        if (this.librarySearchService.existsByNamespaceAndNameAndVersion(command.namespace(), command.name(), command.version())) {
+        if (this.librarySearchService.existsById(new LibraryId(command.namespace(), command.name(), command.version()))) {
             return;
         }
 
