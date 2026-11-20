@@ -55,9 +55,8 @@ export class PlaywrightProject {
             id: crypto.randomUUID(),
             name,
             templateId: 'capella-template',
-            // This is a temporary fix to hardcode the Arcadia library as a dependency of the created project
-            // This will most likely have to change once sirius-web#6743 is fixed.
-            libraryIds: ['capella-arcadia@0.0.1'],
+            // We can pass an empty array here: the template requires the arcadia library, which will be added by the backend anyways
+            libraryIds: [],
           },
         },
       },
