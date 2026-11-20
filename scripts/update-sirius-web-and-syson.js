@@ -114,6 +114,6 @@ const gitAddCommand = `git add .`;
 console.log(gitAddCommand);
 childProcess.execSync(gitAddCommand, {stdio: "inherit"});
 
-const gitCommitCommand = `git commit -s -m "[releng] Switch to Sirius Web ${newSiriusWebVersion} and Syson ${newSysonVersion}"`;
+const gitCommitCommand = `git commit -s -m "[releng] Switch to Sirius Web ${newSiriusWebVersion} and SysON ${newSysonVersion}"`;
 console.log(gitCommitCommand);
 childProcess.execSync(gitCommitCommand, {stdio: "inherit"});

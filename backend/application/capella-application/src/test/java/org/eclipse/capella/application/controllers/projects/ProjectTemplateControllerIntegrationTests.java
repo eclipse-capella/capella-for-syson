@@ -44,6 +44,8 @@ import org.eclipse.sirius.components.graphql.tests.api.IExecuteEditingContextFun
 import org.eclipse.sirius.web.application.library.services.LibraryMetadataAdapter;
 import org.eclipse.sirius.web.application.project.dto.CreateProjectInput;
 import org.eclipse.sirius.web.application.project.services.api.IProjectEditingContextService;
+import org.eclipse.sirius.web.library.domain.Library;
+import org.eclipse.sirius.web.library.domain.LibraryId;
 import org.eclipse.sirius.web.library.domain.services.api.ILibrarySearchService;
 import org.eclipse.sirius.web.tests.graphql.CreateProjectExecutor;
 import org.eclipse.sirius.web.tests.services.api.IGivenInitialServerState;
@@ -96,9 +98,11 @@ public class ProjectTemplateControllerIntegrationTests extends AbstractIntegrati
     @GivenCapellaServer
     @DisplayName("Given a Capella project to create from a template with Arcadia dependency, when the mutation is performed, then the project is created")
     public void createCapellaProjectFromTemplate(CapturedOutput capturedOutput) {
-        var optionalArcadiaLibrary = this.librarySearchService.findByNamespaceAndNameAndVersion("capella", "arcadia", "0.0.1");
+        var optionalArcadiaLibrary = this.librarySearchService.findById(new LibraryId("capella", "arcadia", "0.0.1"));
         assertThat(optionalArcadiaLibrary).isPresent();
-        var input = new CreateProjectInput(UUID.randomUUID(), "capella", CapellaProjectTemplateProvider.CAPELLA_TEMPLATE_ID, List.of(optionalArcadiaLibrary.get().getId().toString()));
+        Library arcadiaLibrary = optionalArcadiaLibrary.get();
+        var input = new CreateProjectInput(UUID.randomUUID(), "capella", CapellaProjectTemplateProvider.CAPELLA_TEMPLATE_ID,
+                List.of(new LibraryId(arcadiaLibrary.getNamespace(), arcadiaLibrary.getName(), arcadiaLibrary.getVersion())));
         String projectId = this.createProjectExecutor.execute(input, capturedOutput).getProjectId();
 
         var optionalEditingContextId = this.projectEditingContextService.getEditingContextId(projectId);
@@ -112,8 +116,8 @@ public class ProjectTemplateControllerIntegrationTests extends AbstractIntegrati
         BiFunction<IEditingContext, IInput, IPayload> checkEditingContextFunction = (editingContext, executeEditingContextFunctionInput) -> {
             if (editingContext instanceof IEMFEditingContext emfEditingContext) {
                 ResourceSet resourceSet = emfEditingContext.getDomain().getResourceSet();
-                assertThat(getLibraryResource(resourceSet, "capella", "arcadia")).isPresent();
-                Optional<Resource> optionalProjectResource = getResourceWithName(resourceSet, "capella.sysml");
+                assertThat(this.getLibraryResource(resourceSet, "capella", "arcadia")).isPresent();
+                Optional<Resource> optionalProjectResource = this.getResourceWithName(resourceSet, "capella.sysml");
                 assertThat(optionalProjectResource).isPresent();
                 Resource projectResource = optionalProjectResource.get();
 

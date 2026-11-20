@@ -25,6 +25,9 @@ The method `SAQueryService#isSystemAnalysisStructurePackage` has been replaced w
 
 === Dependency update
 
+- [releng] Update Sirius Web to `2026.11.2`, SysON to `2026.11.2`, and React to `19.2.8`.
+- [releng] Bump to `2026.11.2`
+
 
 === Bug fixes
 
