@@ -16,7 +16,7 @@ package org.eclipse.capella.diagram.oab.view.nodes.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationQueryService;
 import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

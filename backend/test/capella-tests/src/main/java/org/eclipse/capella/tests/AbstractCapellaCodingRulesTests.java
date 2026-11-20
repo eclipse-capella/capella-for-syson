@@ -253,7 +253,7 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 .doNotHaveFullyQualifiedName("org.eclipse.capella.model.transverse.services.CapellaDeleteService")
                 .and()
                 // View description providers need to attach an IDAdapter to each view element: this is done once when the application starts.
-                .areNotAssignableTo("org.eclipse.capella.diagram.common.view.IViewDescriptionProvider")
+                .areNotAssignableTo("org.eclipse.capella.diagram.common.view.IDiagramViewDescriptionProvider")
                 .should()
                 .callMethodWhere(this.isCallToEAllContentsMethod())
                 .because("all-contents traversal can cause performance issues")

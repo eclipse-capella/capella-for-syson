@@ -13,8 +13,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
-import org.eclipse.capella.diagram.common.view.ColorProvider;
-import org.eclipse.capella.diagram.common.view.IViewDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.services.ColorProvider;
+import org.eclipse.capella.common.view.diagram.services.api.IDiagramViewDescriptionProvider;
 import org.eclipse.sirius.components.view.ColorPalette;
 import org.eclipse.sirius.components.view.FixedColor;
 import org.eclipse.sirius.components.view.View;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
  * @author frouene
  */
 @Service
-public class LABViewDescriptionProvider implements IViewDescriptionProvider {
+public class LABViewDescriptionProvider implements IDiagramViewDescriptionProvider {
 
     private static final String BLACK_COLOR = "#000000";
 

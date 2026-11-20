@@ -12,8 +12,13 @@
  *******************************************************************************/
 package org.eclipse.capella.application.configuration.details.view.semanticbrowser;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.eclipse.capella.application.configuration.details.view.semanticbrowser.api.ICurrentElementTreeDescriptionProvider;
-import org.eclipse.capella.application.configuration.label.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.CapellaImagePathsService;
+import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -30,10 +35,6 @@ import org.eclipse.sirius.components.representations.VariableManager;
 import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.RepresentationMetadata;
 import org.eclipse.sirius.web.domain.boundedcontexts.representationdata.services.api.IRepresentationMetadataSearchService;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Provides the definition of the tree widget for the "Current Element" panel in the Semantic Browser view. It displays two broad
@@ -65,7 +66,7 @@ public class CurrentElementTreeDescriptionProvider implements ICurrentElementTre
 
     private final ILabelService labelService;
 
-    private final CapellaImagePathsService capellaImagePathsService;
+    private final ICapellaImagePathsService capellaImagePathsService;
 
     private final CommonQueryService commonQueryService;
 

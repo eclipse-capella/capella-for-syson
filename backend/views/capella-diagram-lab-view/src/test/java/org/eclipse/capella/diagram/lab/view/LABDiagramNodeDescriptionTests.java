@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view;
 
-import org.eclipse.capella.diagram.common.view.ColorProvider;
+import org.eclipse.capella.common.view.diagram.services.ColorProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.component.ComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.tests.diagrams.AbstractDiagramNodeDescriptionTests;
