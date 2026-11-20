@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oab.view;
 
-import org.eclipse.capella.diagram.common.view.ColorProvider;
+import org.eclipse.capella.common.view.diagram.services.ColorProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.activity.OperationalActivityNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oab.view.nodes.component.EntityComponentNodeDescriptionProvider;
 import org.eclipse.capella.tests.diagrams.AbstractDiagramNodeDescriptionTests;

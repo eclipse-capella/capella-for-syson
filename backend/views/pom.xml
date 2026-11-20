@@ -17,7 +17,7 @@
 
 	<groupId>org.eclipse.capella</groupId>
     <artifactId>capella-views-root</artifactId>
-	<version>2026.11.0</version>
+	<version>2026.11.2</version>
 
     <name>capella-views-root</name>
     <description>Capella Views Root</description>
@@ -32,7 +32,7 @@
 	</distributionManagement>
 
 	<modules>
-		<module>capella-diagram-common-view</module>
+        <module>capella-common-view</module>
         <module>capella-diagram-customization</module>
 		<module>capella-diagram-lab-view</module>
         <module>capella-diagram-oab-view</module>

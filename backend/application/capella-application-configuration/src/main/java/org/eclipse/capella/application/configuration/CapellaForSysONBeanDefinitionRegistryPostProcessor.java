@@ -15,7 +15,6 @@ package org.eclipse.capella.application.configuration;
 import java.util.List;
 import java.util.Objects;
 
-import org.eclipse.sirius.web.application.library.services.ProjectLibrariesImporter;
 import org.eclipse.syson.application.expressions.services.ExpressionsPaletteToolsProvider;
 import org.eclipse.syson.application.sysmlv2.SysMLv2ProjectTemplatesProvider;
 import org.slf4j.Logger;
@@ -43,7 +42,6 @@ public class CapellaForSysONBeanDefinitionRegistryPostProcessor implements BeanD
 
     private static final List<Class<?>> EXCLUDED_BEAN_CLASSES = List.of(
             SysMLv2ProjectTemplatesProvider.class, // Replaced by CapellaForSysONSysMLv2ProjectTemplatesProvider
-            ProjectLibrariesImporter.class, // Replaced with CapellaForSysONProjectLibrariesImporter
             ExpressionsPaletteToolsProvider.class // Removed: we don't want to add expressions via the palette
     );
 

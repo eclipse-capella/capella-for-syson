@@ -16,7 +16,7 @@ package org.eclipse.capella.diagram.lab.view.nodes.component;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.nodes.function.FunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.services.LABDiagramSemanticCandidatesService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

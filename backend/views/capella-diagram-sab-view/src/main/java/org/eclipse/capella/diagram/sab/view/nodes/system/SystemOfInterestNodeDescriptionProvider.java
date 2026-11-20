@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sab.view.nodes.system;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.component.SystemComponentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.function.FunctionNodeDescriptionProvider;

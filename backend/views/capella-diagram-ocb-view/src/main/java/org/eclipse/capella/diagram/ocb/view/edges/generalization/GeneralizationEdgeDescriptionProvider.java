@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.ocb.view.edges.generalization;
 
-import org.eclipse.capella.diagram.common.view.edges.AbstractEdgeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.edges.AbstractEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.ocb.view.nodes.capability.CapabilityNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;

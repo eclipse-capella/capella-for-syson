@@ -12,9 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oab.view.nodes.requirement;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
@@ -24,6 +23,7 @@ import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.DescriptionNameGenerator;
 import org.eclipse.syson.util.IDescriptionNameGenerator;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**

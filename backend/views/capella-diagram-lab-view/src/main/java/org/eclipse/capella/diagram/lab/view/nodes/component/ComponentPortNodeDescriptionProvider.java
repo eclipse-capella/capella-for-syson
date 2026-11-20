@@ -12,11 +12,12 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.component;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
-import org.eclipse.capella.diagram.common.view.nodes.ImageNodeStyleDescriptionProvider;
+import java.util.List;
+
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.ImageNodeStyleDescriptionProvider;
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
-import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.ConditionalNodeStyle;
@@ -26,9 +27,8 @@ import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.util.ServiceMethod;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
-
-import java.util.List;
 
 /**
  * Component port node description.

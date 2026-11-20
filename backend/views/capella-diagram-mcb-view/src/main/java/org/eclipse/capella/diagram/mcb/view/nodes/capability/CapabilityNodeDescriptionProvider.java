@@ -12,7 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.mcb.view.nodes.capability;
 
-import org.eclipse.capella.diagram.common.view.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
