@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.sab.view.nodes.actor;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.componentport.ComponentPortToolProvider;
@@ -31,6 +33,7 @@ import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
@@ -73,6 +76,7 @@ public class SystemActorPaletteProvider {
         return this.diagramBuilderHelper.newNodePalette()
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
+                .toolSections(this.createRelatedElementsToolSection())
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .nodeTools(
@@ -82,6 +86,12 @@ public class SystemActorPaletteProvider {
                         new ComponentPortToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOutputComponentPortNodeTool(cache),
                         new ComponentPortToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInOutComponentPortNodeTool(cache))
                 .build();
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        nodeToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        return nodeToolSection;
     }
 
     private DropNodeTool createDropFromDiagramTool(IViewDiagramElementFinder cache) {

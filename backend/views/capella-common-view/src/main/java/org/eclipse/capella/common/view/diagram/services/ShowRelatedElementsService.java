@@ -67,17 +67,22 @@ public class ShowRelatedElementsService {
      */
     public Element showAllContainedElements(Element self, IEditingContext editingContext, DiagramContext diagramContext, Node selectedNode,
             Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
-        List<Element> containedElements = this.getContainedElements(self, selectedNode, editingContext, diagramContext);
+        List<Element> containedElements = this.getContainedElements(self, selectedNode, editingContext, diagramContext, convertedNodes);
         for (Element containedElement : containedElements) {
-            if (selectedNode == null) {
-                this.diagramMutationElementService.createView(containedElement, editingContext, diagramContext, null, convertedNodes);
-            }
+            this.diagramMutationElementService.createView(containedElement, editingContext, diagramContext, selectedNode, convertedNodes);
         }
         return self;
     }
 
-    private List<Element> getContainedElements(Element self, Node selectedNode, IEditingContext editingContext, DiagramContext diagramContext) {
+    private List<Element> getContainedElements(Element self, Node selectedNode, IEditingContext editingContext, DiagramContext diagramContext,
+            Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
         List<Element> result = new ArrayList<>();
+
+        VariableManager variableManager = new VariableManager();
+        variableManager.put(RepresentationVariables.SELF.name(), self);
+        variableManager.put(CoreVariables.EDITING_CONTEXT.name(), editingContext);
+        variableManager.put(DiagramContext.DIAGRAM_CONTEXT, diagramContext);
+
         if (selectedNode == null) {
             // There is no selected node: we are looking for the contained element on the diagram.
             // We retrieve them by iterating the semantic candidates of the top-level node descriptions.
@@ -86,10 +91,6 @@ public class ShowRelatedElementsService {
                     .map(DiagramDescription.class::cast);
             if (optionalDiagramDescription.isPresent()) {
                 DiagramDescription diagramDescription = optionalDiagramDescription.get();
-                VariableManager variableManager = new VariableManager();
-                variableManager.put(RepresentationVariables.SELF.name(), self);
-                variableManager.put(CoreVariables.EDITING_CONTEXT.name(), editingContext);
-                variableManager.put(DiagramContext.DIAGRAM_CONTEXT, diagramContext);
                 for (NodeDescription nodeDescription : diagramDescription.getNodeDescriptions()) {
                     List<Element> elements = nodeDescription.getSemanticElementsProvider().apply(variableManager.createChild())
                             .stream()
@@ -102,8 +103,32 @@ public class ShowRelatedElementsService {
                     result.addAll(elements);
                 }
             }
-
+        } else {
+            Optional<NodeDescription> optionalNodeDescription = convertedNodes.values().stream()
+                    .filter(nodeDescription -> Objects.equals(nodeDescription.getId(), selectedNode.getDescriptionId()))
+                    .findFirst();
+            if (optionalNodeDescription.isPresent()) {
+                NodeDescription nodeDescription = optionalNodeDescription.get();
+                List<NodeDescription> childNodeDescriptions = this.getAllChildNodeDescriptions(nodeDescription, convertedNodes);
+                for (NodeDescription childNodeDescription : childNodeDescriptions) {
+                    List<Element> elements = childNodeDescription.getSemanticElementsProvider().apply(variableManager.createChild())
+                            .stream()
+                            .filter(Element.class::isInstance)
+                            .map(Element.class::cast)
+                            .toList();
+                    result.addAll(elements);
+                }
+            }
         }
+        return result;
+    }
+
+    private List<NodeDescription> getAllChildNodeDescriptions(NodeDescription nodeDescription, Map<org.eclipse.sirius.components.view.diagram.NodeDescription, NodeDescription> convertedNodes) {
+        List<NodeDescription> result = new ArrayList<>();
+        result.addAll(nodeDescription.getChildNodeDescriptions());
+        result.addAll(convertedNodes.values().stream()
+                .filter(convertedNode -> nodeDescription.getReusedChildNodeDescriptionIds().contains(convertedNode.getId()))
+                .toList());
         return result;
     }
 
