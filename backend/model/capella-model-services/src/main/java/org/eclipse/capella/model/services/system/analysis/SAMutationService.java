@@ -19,6 +19,7 @@ import java.util.Optional;
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
+import org.eclipse.capella.model.transverse.services.CommonMoveService;
 import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
@@ -43,6 +44,8 @@ public class SAMutationService {
 
     private final CommonDeletionService commonDeletionService;
 
+    private final CommonMoveService commonMoveService;
+
     private final CommonNamingService commonNamingService;
 
     public SAMutationService() {
@@ -51,6 +54,7 @@ public class SAMutationService {
         this.commonCreationService = new CommonCreationService();
         this.commonUpdateService = new CommonUpdateService();
         this.commonDeletionService = new CommonDeletionService();
+        this.commonMoveService = new CommonMoveService();
         this.commonNamingService = new CommonNamingService();
     }
 
@@ -100,5 +104,25 @@ public class SAMutationService {
             }
         }
         return activity;
+    }
+
+    /**
+     * Returns self. If self is a SystemFunction, moves self under the root SystemFunction.
+     *
+     * @param self
+     *            The element to move
+     * @return The element passed as input
+     */
+    public Element moveSFToRootFunction(Element self) {
+        if (this.saQueryService.isSystemFunction(self)) {
+            var targetParentFunctionsPackage = this.commonQueryService.getFunctionsPackage(self);
+            if (targetParentFunctionsPackage.isPresent()) {
+                Optional<ActionUsage> rootFunction = this.commonQueryService.getRootFunction(targetParentFunctionsPackage.get());
+                if (rootFunction.isPresent()) {
+                    this.commonMoveService.moveSemanticElement(self, rootFunction.get());
+                }
+            }
+        }
+        return self;
     }
 }

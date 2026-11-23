@@ -144,18 +144,22 @@ public class TransverseRepresentationReconnectToolServices {
 
     public ActionUsage reconnectContainedIn(ActionUsage edgeSemanticElement, ActionUsage newReconnectionTarget, Diagram diagram, IEditingContext editingContext) {
         var previousParent = this.commonQueryService.getParentFunction(edgeSemanticElement).orElse(null);
-        var diagramRoot = this.objectSearchService.getObject(editingContext, diagram.getTargetObjectId())
-                .filter(ActionUsage.class::isInstance)
-                .map(ActionUsage.class::cast)
-                .orElse(null);
+        if (previousParent != newReconnectionTarget) {
+            var diagramRoot = this.objectSearchService.getObject(editingContext, diagram.getTargetObjectId())
+                    .filter(ActionUsage.class::isInstance)
+                    .map(ActionUsage.class::cast)
+                    .orElse(null);
 
-        this.moveService.moveSemanticElement(newReconnectionTarget, previousParent);
-        this.moveService.moveSemanticElement(edgeSemanticElement, diagramRoot);
+            this.moveService.moveSemanticElement(newReconnectionTarget, previousParent);
+            this.moveService.moveSemanticElement(edgeSemanticElement, diagramRoot);
+        }
         return newReconnectionTarget;
     }
 
     public ActionUsage reconnectContainedInTarget(ActionUsage edgeSemanticElement, ActionUsage newReconnectionTarget) {
-        this.moveService.moveSemanticElement(edgeSemanticElement, newReconnectionTarget);
+        if (edgeSemanticElement != newReconnectionTarget) {
+            this.moveService.moveSemanticElement(edgeSemanticElement, newReconnectionTarget);
+        }
         return newReconnectionTarget;
     }
 }

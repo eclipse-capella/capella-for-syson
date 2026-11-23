@@ -12,13 +12,16 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sfbd.view.nodes.function;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.diagram.sfbd.view.edges.containedin.ContainedInToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
+import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
@@ -62,5 +65,9 @@ public class SystemFunctionPaletteProvider {
                 .labelEditTool(labelEditTool.build())
                 .nodeTools(new SystemFunctionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewSystemFunctionNodeTool(cache))
                 .build();
+    }
+
+    public List<EdgeTool> createEdgeTools(IViewDiagramElementFinder cache) {
+        return List.of(new ContainedInToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewContainedInTool(cache));
     }
 }

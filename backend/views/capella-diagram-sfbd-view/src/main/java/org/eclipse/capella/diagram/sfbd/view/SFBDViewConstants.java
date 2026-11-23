@@ -25,9 +25,13 @@ public class SFBDViewConstants {
 
     public static final String FUNCTION_LABEL_COLOR = "FUNCTION_LABEL_COLOR";
 
+    public static final String DESCRIBES_BACKGROUND_COLOR = "DESCRIBES_BACKGROUND_COLOR";
+
     public static final String REQUIREMENT_BACKGROUND_COLOR = "REQUIREMENT_BACKGROUND_COLOR";
 
     public static final String REQUIREMENT_BORDER_COLOR = "REQUIREMENT_BORDER_COLOR";
 
     public static final String REQUIREMENT_LABEL_COLOR = "REQUIREMENT_LABEL_COLOR";
+
+    public static final String CONTAINED_IN_COLOR = "CONTAINED_IN_COLOR";
 }

@@ -14,6 +14,8 @@ package org.eclipse.capella.diagram.sfbd.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.sfbd.view.edges.containedin.ContainedInEdgeDescriptionProvider;
+import org.eclipse.capella.diagram.sfbd.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.sfbd.view.nodes.function.SystemFunctionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sfbd.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sfbd.view.nodes.requirement.compartment.SFBDCompartmentItemNodeDescriptionProvider;
@@ -66,7 +68,9 @@ public class SFBDViewDiagramDescriptionProvider implements IRepresentationDescri
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new SFBDCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
                         SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
-                new RequirementNodeDescriptionProvider(colorProvider)
+                new RequirementNodeDescriptionProvider(colorProvider),
+                new ContainedInEdgeDescriptionProvider(colorProvider),
+                new DescribesEdgeDescriptionProvider(colorProvider)
         );
 
         diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);

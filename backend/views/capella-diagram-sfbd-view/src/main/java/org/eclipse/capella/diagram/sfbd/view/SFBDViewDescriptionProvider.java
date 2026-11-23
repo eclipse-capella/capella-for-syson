@@ -51,9 +51,11 @@ public class SFBDViewDescriptionProvider implements IDiagramViewDescriptionProvi
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.FUNCTION_BACKGROUND_COLOR, "#CBE5AC"));
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.FUNCTION_BORDER_COLOR, "#046866"));
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.FUNCTION_LABEL_COLOR, "#046866"));
+        colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.REQUIREMENT_BACKGROUND_COLOR, "#D8C3D6"));
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.REQUIREMENT_BORDER_COLOR, "#72496E"));
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.REQUIREMENT_LABEL_COLOR, "#72496E"));
+        colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.CONTAINED_IN_COLOR, "#888888"));
         return colorPalette;
     }
 

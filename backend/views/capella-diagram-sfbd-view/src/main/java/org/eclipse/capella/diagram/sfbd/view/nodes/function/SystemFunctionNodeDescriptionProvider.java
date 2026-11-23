@@ -56,6 +56,7 @@ public class SystemFunctionNodeDescriptionProvider extends AbstractNodeDescripti
             diagramDescription.getNodeDescriptions().add(node);
             SystemFunctionPaletteProvider systemFunctionPaletteProvider = new SystemFunctionPaletteProvider(this.diagramBuilderHelper, this.viewBuilderHelper, this.nodeDeleteFromDiagramToolProvider);
             node.setPalette(systemFunctionPaletteProvider.createNodePalette(node, cache));
+            node.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(systemFunctionPaletteProvider.createEdgeTools(cache)));
         });
     }
 }
