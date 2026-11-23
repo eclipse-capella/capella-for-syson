@@ -476,6 +476,11 @@ public class CommonQueryService {
         return false;
     }
 
+    public boolean isMission(EObject eObject) {
+        return eObject instanceof OccurrenceUsage occurrenceUsage
+                && this.checkType(occurrenceUsage, ARCADIA_PREFIX + ARCADIA_MISSION);
+    }
+
     public Boolean isCapability(EObject eObject) {
         return eObject instanceof OccurrenceUsage occurrenceUsage
                 && this.checkType(occurrenceUsage, ARCADIA_PREFIX + ARCADIA_CAPABILITY);

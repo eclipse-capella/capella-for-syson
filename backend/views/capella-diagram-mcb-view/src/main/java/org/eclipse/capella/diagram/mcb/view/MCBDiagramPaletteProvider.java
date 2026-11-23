@@ -12,10 +12,15 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.mcb.view;
 
+import org.eclipse.capella.diagram.mcb.view.services.MCBRepresentationDropService;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
+import org.eclipse.sirius.components.core.api.variables.CoreVariables;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
-import org.eclipse.sirius.components.view.builder.generated.diagram.DropToolBuilder;
+import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramPalette;
+import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
+import org.eclipse.syson.util.ServiceMethod;
 
 /**
  * Diagram-level creation tools for MCB.
@@ -30,7 +35,12 @@ public class MCBDiagramPaletteProvider {
         var tools = new MCBNodeToolProvider();
         return this.diagramBuilders.newDiagramPalette()
                 .nodeTools(tools.createActorTool(cache), tools.createMissionTool(cache), tools.createCapabilityTool(cache), tools.createRequirementTool(cache))
-                .dropTool(new DropToolBuilder().build()) // To be added later
+                .dropTool(this.diagramBuilders.newDropTool().name("Drop from Explorer")
+                        .body(new ViewBuilders().newChangeContext()
+                                .expression(ServiceMethod.of3(MCBRepresentationDropService::dropIntoDiagramFromExplorer)
+                                        .aqlSelf(CoreVariables.EDITING_CONTEXT.name(), DiagramContext.DIAGRAM_CONTEXT, ViewDiagramDescriptionConverter.CONVERTED_NODES_VARIABLE))
+                                .build())
+                        .build())
                 .build();
     }
 

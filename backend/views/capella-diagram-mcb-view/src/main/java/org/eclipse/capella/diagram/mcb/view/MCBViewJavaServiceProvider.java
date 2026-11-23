@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.mcb.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.mcb.view.services.MCBRepresentationDropService;
 import org.eclipse.capella.model.services.system.analysis.SAQueryService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
@@ -47,6 +48,7 @@ public class MCBViewJavaServiceProvider implements IJavaServiceProvider {
         if (optDescription.isPresent()) {
             return List.of(SAQueryService.class,
                     MCBDiagramService.class,
+                    MCBRepresentationDropService.class,
                     CommonQueryService.class,
                     CommonCreationService.class,
                     CommonDeletionService.class,

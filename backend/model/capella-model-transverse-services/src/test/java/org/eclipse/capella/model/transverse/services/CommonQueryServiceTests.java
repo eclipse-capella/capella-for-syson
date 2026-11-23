@@ -39,6 +39,19 @@ public class CommonQueryServiceTests extends AbstractSemanticTests {
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
+    public void isMissionShouldRecognizeOnlyArcadiaMissions() {
+        var creationService = new CommonCreationService();
+        var capabilities = this.capellaModel.getSystemAnalysisPerspective().getCapabilitiesPackage().getElement();
+        var mission = creationService.createMission(capabilities);
+        var capability = creationService.createCapability(capabilities);
+
+        assertThat(this.commonQueryService.isMission(mission)).isTrue();
+        assertThat(this.commonQueryService.isMission(capability)).isFalse();
+        assertThat(this.commonQueryService.isMission(SysmlFactory.eINSTANCE.createOccurrenceUsage())).isFalse();
+        assertThat(this.commonQueryService.isMission(capabilities)).isFalse();
+    }
+
+    @Test
     public void getMissionsShouldReturnMissionsRegardlessOfPerspectiveIncludingNestedPackages() {
         var creationService = new CommonCreationService();
         var capabilitiesPackage = this.capellaModel.getSystemAnalysisPerspective().getCapabilitiesPackage().getElement();
