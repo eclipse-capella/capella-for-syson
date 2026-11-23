@@ -1,0 +1,27 @@
+= PFBD — Physical Function Breakdown
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Decompose the functions of the physical architecture into a hierarchy.
+It answers the question: How is the behavior of the physical solution organized?
+
+== Position in Arcadia
+
+Physical Architecture.
+
+== Main concepts
+
+* *Physical Function*: A function in the physical architecture.
+* *Function containment*: The relationship organizing functions and sub-functions.
+
+== Related diagrams
+
+* xref:features/pa-pdfb.adoc[]
+* xref:features/pa-pab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

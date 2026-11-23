@@ -1,0 +1,2 @@
+{product} is an open source initiative bringing the Arcadia methodology to web-based modeling with SysML v2.
+It combines the structured engineering approach of Arcadia with SysML v2 models and graphical views inspired by Capella.

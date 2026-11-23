@@ -1,0 +1,14 @@
+= Frequently Asked Questions
+
+Find answers to common questions about {product}, its modeling approach, and its use in your engineering activities.
+
+[cols="1*^", %noheader, frame=none, grid=none]
+|===
+a|image::travel_explore.svg[xref=user-manual:faq/faq.adoc]
+
+**FAQ**
+
+Find answers to common questions.
+
+xref:user-manual:faq/faq.adoc[Explore the FAQ]
+|===

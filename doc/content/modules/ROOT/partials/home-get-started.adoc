@@ -1,0 +1,31 @@
+= Getting started with {product}
+
+Find out what you need to access {product}, set up the application, and explore the modeling environment.
+
+[cols="3*^", %noheader, frame=none, grid=none]
+|===
+a|image::person_play.svg[xref=installation-guide:requirements.adoc]
+
+**Check the prerequisites**
+
+Requirements for accessing or installing {product}.
+
+xref:installation-guide:requirements.adoc[Read the prerequisites]
+
+a|image::explore.svg[xref=installation-guide:index.adoc]
+
+**Install {product}**
+
+Set up {product} with SysON.
+
+xref:installation-guide:index.adoc[Install {product}]
+
+a|image::travel_explore.svg[xref=user-manual:index.adoc]
+
+**Explore the modeling environment**
+
+Get familiar with the modeling environment.
+
+xref:user-manual:index.adoc[Open the user manual]
+
+|===

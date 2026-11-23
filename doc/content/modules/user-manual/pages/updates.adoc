@@ -1,0 +1,6 @@
+= Release notes and updates
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+Review changes to {product} and the compatibility information relevant to your modeling environment.
+
+include::user-manual:partial$nav-updates.adoc[]

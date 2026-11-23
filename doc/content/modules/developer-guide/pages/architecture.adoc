@@ -1,0 +1,74 @@
+= Source code overview
+
+{product} combines a Java backend with a React frontend, using SysON and Sirius Web.
+The {source-code-url}[source repository] contains both an executable application and an extension packaged for use with SysON.
+This page gives entry points into the existing code.
+
+== Backend modules
+
+The root `pom.xml` lists the Maven modules.
+
+[cols="2,3",options="header"]
+|===
+|Location |Content
+
+|`backend/model/capella-model-transverse-services/`
+|Services shared by the Capella features, including Arcadia type queries, element creation, updates, and deletion.
+
+|`backend/model/capella-model-services/`
+|Services grouped by engineering perspective, including diagram interactions.
+
+|`backend/model/capella-model-edit/`
+|Icons used to present Arcadia model elements.
+
+|`backend/views/`
+|Diagram, table, form, and contextual view contributions.
+Diagram modules include `capella-diagram-sab-view`, `capella-diagram-lab-view`, and the Operational Analysis views.
+
+|`backend/application/capella-application-configuration/`
+|Spring configuration, project templates, explorer and Details view contributions, GraphQL operations, and Arcadia library initialization.
+
+|`backend/application/capella-frontend/`
+|Maven module carrying the built frontend resources.
+
+|`backend/application/capella-extension/`
+|Assembly of the Capella modules into an extension JAR.
+
+|`backend/application/capella-application/`
+|Executable application, local application properties, and backend integration tests.
+
+|`backend/test/capella-tests/`
+|Shared Java test fixtures and utilities.
+|===
+
+== Frontend workspaces
+
+The root `package.json` declares the `frontend/*` npm workspaces.
+
+* `frontend/capella-for-syson/` assembles the application.
+Its `src/index.tsx` registers frontend contributions, including the navigation, diagram menu, onboarding area, and contextual view.
+* `frontend/capella-for-syson-components/` exports Capella components and extension contributions.
+Its `src/index.ts` lists the package exports, and `src/extensions/` contains the components and GraphQL hooks.
+
+The frontend hooks for diagram filters and contextual views correspond to the operations described in xref:api/api.adoc[].
+
+== Arcadia resources
+
+The `backend/application/capella-application-configuration/src/main/resources/arcadia/` directory contains the bundled library and default model structure.
+The `configuration/arcadia/services/` Java package contains the library initialization and publication services.
+The `configuration/template/` package contains the Capella project template providers.
+
+For the definitions of Arcadia concepts in SysML v2, refer to the public https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library project].
+The xref:user-manual:features/arcadia-library.adoc[user documentation] describes how the application uses the library.
+
+== Application and extension packaging
+
+The `capella-extension` POM assembles the Capella dependencies with Maven Shade.
+The executable `capella-application` depends on that extension and the SysON host dependencies.
+Its `ide` profile supports development with the module dependencies available to the IDE.
+
+`CapellaForSysONAutoConfiguration` registers the Capella packages through Spring Boot auto-configuration.
+The extension's SysON and Sirius Web dependencies use the versions and scopes declared in the POMs.
+Consult the `syson.version` and `sirius.web.version` properties in `backend/releng/capella-parent/pom.xml` when checking compatibility.
+
+Use xref:index.adoc[the development setup] to run the application locally, or xref:installation-guide:how-tos/install.adoc[the installation guide] to load the extension into SysON.

@@ -1,0 +1,114 @@
+= Frequently Asked Questions
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+Find answers about Capella-specific modeling, integration, and resources.
+For shared application concepts and operations, refer to the https://doc.mbse-syson.org/syson/main/user-manual/index.html[SysON user manual].
+
+== General questions
+
+.*What is {product}?*
+[%collapsible%open]
+====
+{product} combines the Arcadia engineering approach with SysML v2 models and Capella-inspired views.
+See xref:user-manual:what-is.adoc[the product overview].
+====
+
+.*How is {product} related to SysON?*
+[%collapsible%open]
+====
+{product} is an extension of SysON.
+Your modeling environment must include the extension and its frontend configuration.
+See xref:installation-guide:how-tos/install.adoc[the installation guide].
+====
+
+.*What license applies to {product}?*
+[%collapsible%open]
+====
+See xref:product-legal:index.adoc[the project license information].
+====
+
+== Features and capabilities
+
+.*Where are the Arcadia concepts and their SysML v2 definitions specified?*
+[%collapsible%open]
+====
+The https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library] defines the concepts used by the application.
+See xref:user-manual:features/sysmlv2-overview.adoc[Arcadia and SysML v2] for its role in modeling.
+====
+
+.*Which project template should I choose?*
+[%collapsible%open]
+====
+Use `Capella` for a system model and `Capella-Library` to prepare reusable model content.
+See xref:user-manual:features/homepage.adoc[the Capella project templates].
+====
+
+.*Are all Capella diagram types and features provided?*
+[%collapsible%open]
+====
+Use the xref:user-manual:key-features.adoc[feature and diagram matrices] to check availability and scope.
+Entries marked *Not yet available* identify capabilities absent from the application.
+====
+
+.*Why are some Toy Catapult steps marked Coming soon?*
+[%collapsible%open]
+====
+The tutorial presents the complete modeling path from Operational Analysis to Logical Architecture.
+The marked steps use representations that are not yet available.
+See xref:user-manual:hands-on/tutorials/toy-catapult.adoc[the tutorial] and its availability notes.
+====
+
+== Integration with other tools
+
+.*How can I transform an existing Capella model into SysML v2?*
+[%collapsible%open]
+====
+The Capella SysML v2 Bridge is a separate transformation project with its own supported elements and output format.
+See xref:user-manual:integration/capella.adoc[Capella Desktop and {product}] to prepare and review an exchange.
+====
+
+.*Where are import/export and automation documented?*
+[%collapsible%open]
+====
+Use xref:user-manual:integration/interoperability.adoc[the interoperability guide] for Arcadia library dependencies and links to shared SysON exchange operations.
+Developers can use xref:developer-guide:api/api.adoc[the API guide].
+====
+
+== Troubleshooting
+
+.*Why are the Capella project templates or frontend missing?*
+[%collapsible%open]
+====
+Ask the person responsible for your environment to check the extension and frontend configuration described in xref:installation-guide:how-tos/install.adoc[the installation guide].
+====
+
+.*Where do I report a modeling problem?*
+[%collapsible%open]
+====
+See xref:user-manual:contribute.adoc[the reporting guidance] for the project issue tracker and the Capella-specific information to include.
+For access or deployment problems, see xref:user-manual:support.adoc[].
+====
+
+== Extend {product}
+
+.*How can I request another modeling capability?*
+[%collapsible%open]
+====
+Describe the Arcadia engineering activity and the modeling result you need.
+Consult the xref:user-manual:key-features.adoc[feature matrix] and follow xref:user-manual:contribute.adoc[the enhancement-request guidance].
+====
+
+== Additional resources
+
+.*Where can I find release and compatibility information?*
+[%collapsible%open]
+====
+See xref:user-manual:release-notes/release-notes.adoc[the release notes] and xref:user-manual:cycle.adoc[version publications].
+Coordinate the extension and SysON versions with the person responsible for deployment.
+====
+
+.*Where can I find examples and methodological guidance?*
+[%collapsible%open]
+====
+Start with xref:user-manual:hands-on/tutorials/toy-catapult.adoc[the Toy Catapult tutorial] and xref:user-manual:resources.adoc[the project and Arcadia references].
+====

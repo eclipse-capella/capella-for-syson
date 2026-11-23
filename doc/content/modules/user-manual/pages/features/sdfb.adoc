@@ -1,0 +1,32 @@
+= SDFB — System Data Flow Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the functions of the system and its actors together with their functional exchanges.
+It answers the question: What flows between the system functions?
+
+== Position in Arcadia
+
+System Analysis.
+
+== Main concepts
+
+* *System Function*: A function participating in the functional description.
+* *Function Port*: An input or output endpoint of a Functional Exchange.
+* *Functional Exchange*: Information, material, or energy exchanged between functions.
+* *Functional Chain*: A grouping of exchanges and functions that contribute to a behavior.
+
+== Related diagrams
+
+* xref:features/sfbd.adoc[]
+* xref:features/sab.adoc[]
+* xref:features/common-fcd.adoc[]
+
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] includes this diagram in its complete modeling path and marks the corresponding step as coming soon.
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

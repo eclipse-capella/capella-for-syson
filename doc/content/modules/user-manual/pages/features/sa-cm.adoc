@@ -1,0 +1,30 @@
+= CM — Contextual Mission
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Focus on one mission, the capabilities associated with it, and the actors involved.
+It answers the question: Which capabilities and actors contribute to this mission?
+
+== Position in Arcadia
+
+System Analysis.
+
+== Main concepts
+
+* *Mission*: The purpose selected for examination.
+* *Capability*: A capability contributing to the mission.
+* *Actor*: An external participant involved in the context.
+* *Capability exploitation*: The relationship associating a mission with a capability.
+
+== Related diagrams
+
+* xref:features/sa-mb.adoc[]
+* xref:features/mcb.adoc[]
+* xref:features/sa-cc.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

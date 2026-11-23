@@ -1,0 +1,194 @@
+= Properties by element type
+:page-feature-status: experimental
+
+When an Arcadia element is selected, the *Capella* page of the Details view displays the properties of its type.
+This page lists them for each type of element.
+For the Details view itself, see xref:features/editor.adoc#capella-properties[the project editor].
+
+== Properties of all Arcadia elements
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Name
+|The name of the element.
+
+|Description
+|A rich-text description of the element.
+
+|Status
+|The xref:features/editor.adoc#review-status[review status] of the element.
+|===
+
+== Traceability properties
+
+Elements that can realize elements of the previous perspective, or be realized by elements of the next perspective, display two additional properties.
+Their labels name the type of the related elements in the related perspective.
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Realized _elements_
+|The elements of the previous perspective realized by the selected element.
+Editable.
+
+|Realizing _elements_
+|The elements of the next perspective that realize the selected element.
+Read-only: edit the realization from the realizing element.
+|===
+
+[cols="1,2,2",options="header"]
+|===
+|Element |Realized |Realizing
+
+|Operational Activity
+|-
+|Realizing System Functions
+
+|System Function
+|Realized Operational Activities
+|Realizing Logical Functions
+
+|Logical Function
+|Realized System Functions
+|Realizing Physical Functions
+
+|Physical Function
+|Realized Logical Functions
+|-
+
+|Operational Entity
+|-
+|Realizing System Components
+
+|System Component
+|Realized Operational Entities
+|Realizing Logical Components
+
+|Logical Component
+|Realized System Components
+|Realizing Physical Components
+
+|Physical Component
+|Realized Logical Components
+|Realizing Configuration Items
+
+|Configuration Item
+|Realized Physical Components
+|-
+
+|Capability (System Analysis)
+|Realized Operational Capabilities
+|Realizing Capability Realizations
+
+|Functional Exchange (System Analysis)
+|Realized Interactions
+|Realizing Functional Exchanges
+
+|Functional Chain (System Analysis)
+|Realized Operational Processes
+|Realizing Functional Chains
+
+|Component Exchange (System Analysis)
+|Realized Communication Means
+|Realizing Component Exchanges
+
+|Function Port (Logical Architecture)
+|Realized Function Input Ports or Realized Function Output Ports
+|Realizing Function Input Ports or Realizing Function Output Ports
+|===
+
+The same pattern applies to the other levels: for example, a Logical Architecture Functional Exchange realizes System Analysis Functional Exchanges.
+
+== Specific properties
+
+=== Components and actors
+
+Applies to Operational Entities and Actors, System Components, Logical Components, Physical Components, and the actors of each perspective.
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Is Actor
+|Whether the component is an actor, outside the system.
+
+|Is Human
+|Whether the actor or entity is a human.
+
+|Allocated Functions
+|The functions performed by the component.
+|===
+
+=== Component ports
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Direction
+|`in`, `out`, or `inout`.
+Changing the direction updates the opposite port of the connected exchanges.
+
+|Allocated Function Ports
+|The function ports allocated to this component port.
+|===
+
+=== Function ports
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Direction
+|`in` for an input port, `out` for an output port.
+|===
+
+=== Functional exchanges and interactions
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Source Function
+|The function at the origin of the exchange.
+
+|Target Function
+|The function at the end of the exchange.
+
+|Exchanged Items
+|The Exchange Items carried by the exchange.
+|===
+
+=== Component exchanges and communication means
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Source Port, Target Port
+|The component ports connected by the exchange.
+
+|Allocated Exchange Items
+|The Exchange Items carried by the exchange.
+
+|Allocated Functional Exchange
+|The functional exchanges allocated to the component exchange.
+|===
+
+=== Functional chains and operational processes
+
+[cols="1,3",options="header"]
+|===
+|Property |Description
+
+|Involved functions
+|The functions traversed by the chain.
+
+|Involved functional exchanges
+|The functional exchanges traversed by the chain.
+|===
+
+For the other SysML v2 properties of an element, use the other pages of the Details view, described in the https://doc.mbse-syson.org/syson/main/user-manual/features/details.html[SysON Details view documentation].

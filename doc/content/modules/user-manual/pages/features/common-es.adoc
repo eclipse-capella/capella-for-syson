@@ -1,0 +1,30 @@
+= ES — Exchange Scenario
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe a scenario through the exchanges of components and actors.
+It answers the question: How do architecture participants exchange information during this scenario?
+
+== Position in Arcadia
+
+Scenario viewpoint alongside an architecture description.
+
+== Main concepts
+
+* *Component or Actor lifeline*: An architecture participant in the scenario.
+* *Exchange message*: An exchange between represented participants.
+* *Message ordering*: The order of the interactions in the scenario.
+
+== Related diagrams
+
+* xref:features/common-fs.adoc[]
+* xref:features/common-is.adoc[]
+* xref:features/sab.adoc[]
+* xref:features/lab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

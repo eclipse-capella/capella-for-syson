@@ -1,0 +1,78 @@
+= Best practices guides
+
+Use these practices when describing an Arcadia system model in {product}.
+They adapt the methodological recommendations of Capella Desktop to the web modeling environment.
+
+== Choose the engineering perspective
+
+Identify the operational or system question before choosing a diagram.
+Use the xref:features/features.adoc[diagram catalogue] to find the view that serves that question.
+The xref:key-features.adoc[feature matrix] identifies the capabilities provided by the application.
+
+Work from the need to the solution:
+
+. In Operational Analysis, describe what the users need to accomplish, without referring to the system.
+. In System Analysis, define what the system must do for them, with the system seen as a black box.
+. In Logical Architecture, define how the system works, independently of technological choices.
+. In Physical Architecture, define how the system is built.
+
+Create the elements explicitly in each perspective, and relate them with realizations.
+See the xref:glossary.adoc[Arcadia glossary] for the concepts of each perspective.
+
+== Distinguish decomposition, allocation, and realization
+
+* Decomposition organizes activities, functions, or components into a hierarchy.
+* Allocation associates a function with the component that performs it.
+* Realization relates elements across engineering perspectives.
+
+Use these relationships to express their engineering meaning.
+The xref:concepts.adoc[key concepts] and xref:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] provide examples.
+
+== Describe the functional analysis before the interfaces
+
+* Break functions down until each leaf function can be allocated to a single component or actor.
+* Connect leaf functions with Functional Exchanges, between their output and input Function Ports.
+* Allocate each leaf function, then connect the components with Component Exchanges and allocate the Functional Exchanges to them.
+* Describe what each exchange carries with Exchange Items.
+
+Use the xref:features/model-analysis.adoc[System Architecture Model] dashboard to find unallocated functions, unallocated functional exchanges, and ports without exchanges.
+
+== Reuse model elements across views
+
+Before creating an element, check in the explorer that it does not already exist.
+Two elements created in different packages or perspectives are different, even when they have the same name.
+
+Drop an existing element from the explorer when another diagram needs to show it.
+For example, use the same Logical Components in several LABs to describe complementary aspects of the architecture.
+Give each diagram a name that identifies its engineering purpose.
+
+== Keep diagrams readable
+
+* Limit each diagram to one engineering question; split a diagram that becomes crowded rather than adding more elements.
+* Use the diagram filters, such as *Show Functions* in the LAB, to hide information not needed for the question.
+* Hide the ports or collapse the nodes that do not contribute to the purpose of the diagram.
+* Use the same layout conventions in all diagrams of a model, for example the actors on the borders and the system in the center.
+
+See xref:concepts.adoc#synchronization[synchronized and unsynchronized elements] to understand which elements a diagram shows automatically.
+
+== Organize the model
+
+* Keep the default Arcadia organization of the `Capella` template: each perspective groups its elements in its `Structure`, `Functions`, `Capabilities`, `Interfaces`, `Data`, and `Requirements` packages.
+* Create sub-packages when a package becomes too large to browse, for example beyond about twenty elements.
+* Agree on naming conventions with the other contributors of the project, for example a verb phrase for functions and a noun for components and exchanges.
+
+== Document the model
+
+* Fill the *Description* of the elements and of the requirements to explain their intent.
+* Use the review *Status* to track the progress of the model, and follow it in the xref:features/function-table.adoc[Function Table] and the xref:features/model-analysis.adoc[System Architecture Model] dashboard.
+* Attach requirements to the elements they apply to with Describes links.
+
+== Keep the model consistent with the library
+
+Create and modify Arcadia elements with the {product} tools, which preserve the relationships defined by the xref:features/arcadia-library.adoc[Arcadia library].
+When the model is changed by other means, such as the textual import or the APIs, keep these relationships so that the elements remain recognized as Arcadia elements.
+
+== Use the library definitions as a reference
+
+For the meaning and SysML v2 definition of Arcadia concepts, refer to the https://github.com/eclipse-capella/arcadia-sysmlv2-lib/tree/master/doc[Arcadia SysML v2 Library documentation].
+For the method itself, refer to the https://mbse-capella.org/arcadia.html[Arcadia reference documents].

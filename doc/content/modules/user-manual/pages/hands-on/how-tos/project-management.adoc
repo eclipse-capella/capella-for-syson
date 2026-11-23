@@ -1,0 +1,55 @@
+= Project management
+:page-feature-status: experimental
+
+For the projects browser and common project operations, such as renaming, duplicating, downloading, or deleting a project, refer to the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/how-tos/project-management.html[SysON project management how-to].
+This page describes the creation of projects for Arcadia modeling.
+
+[#create-capella-project]
+== Create a Capella project
+
+To create a project for a system model:
+
+. In the projects browser, select the `Capella` template card.
+. Enter the project name, keep the `Capella` template selected, and select *Create project*.
+The project editor opens.
+
+.Creation of a project from the Capella template
+image::new-project-capella.png[Create a new project page with the project name and the Capella template selected]
+
+The project contains a model, stored in a file named after the project, which follows the default Arcadia organization:
+
+[cols="1,2",options="header"]
+|===
+|Element |Content
+
+|Engineering perspectives
+|Operational Analysis, System Analysis, Logical Architecture, Physical Architecture, and EPBS Architecture.
+
+|Packages of each perspective
+|`Functions`, with the root function of the perspective, `Capabilities`, `Interfaces`, `Data`, `Structure`, and `Requirements`.
+
+|System
+|From System Analysis onward, the `Structure` package contains the `system` component.
+|===
+
+The project depends on the xref:user-manual:features/arcadia-library.adoc[Arcadia library], which defines the Arcadia concepts used by the model.
+
+Continue with xref:user-manual:hands-on/how-tos/representation-operations.adoc#create-capella-representation[the creation of a Capella representation], or follow the xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial].
+
+[#create-capella-library-project]
+== Create a Capella library project
+
+To prepare reusable model content:
+
+. In the projects browser, select the `Capella-Library` template card.
+. Enter the project name and select *Create project*.
+
+The project contains an empty model and depends on the xref:user-manual:features/arcadia-library.adoc[Arcadia library].
+For publishing the content and reusing it in other projects, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/library-import.html[SysON library documentation].
+
+== Other project templates
+
+{product} replaces the SysON example templates with the Capella templates.
+The `SysMLv2` template and the *Blank Project* card remain available to create a SysML v2 project that is not organized according to Arcadia.
+The *Upload project* card imports a project previously downloaded from the projects browser, including a Capella project.
+Capella diagrams and the Capella explorer are only available in projects created from the Capella templates.

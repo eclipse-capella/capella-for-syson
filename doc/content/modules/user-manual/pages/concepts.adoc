@@ -1,0 +1,62 @@
+= Key concepts and terminology
+
+For the definitions of projects, models, representations, and libraries, refer to the https://doc.mbse-syson.org/syson/main/user-manual/concepts.html[SysON key concepts].
+This page explains how these concepts apply to Arcadia modeling in {product}.
+
+[#project]
+== Project
+
+Use the `Capella` template for a system model or `Capella-Library` to prepare reusable model content.
+
+For example, the `Toy Catapult` project groups the model and diagrams used throughout the xref:hands-on/tutorials/toy-catapult.adoc[tutorial].
+See xref:key-features.adoc[the key features] for the project templates.
+
+[#model]
+== Model
+
+In {product}, model elements are organized by Arcadia engineering perspective and expressed in SysML v2 using the https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library].
+
+An Operational Activity such as `Launch projectile`, a System Function such as `Release energy`, and a Logical Component such as `Trigger` each have a role in the system description.
+Elements in different engineering perspectives remain distinct, even when they have the same name.
+
+=== Allocations and realizations
+
+Relationships connect the engineering information:
+
+* An *allocation* associates a function with the component that performs it. In the tutorial, the Logical Function `Release energy` is allocated to `Trigger`.
+* A *realization* relates elements across engineering perspectives. The System Function `Release energy` realizes the Operational Activity `Launch projectile`.
+
+See xref:features/sysmlv2-overview.adoc[Arcadia and SysML v2] for the method and the role of the library.
+
+[#representation]
+== Representation
+
+Choose the representation according to the Arcadia engineering activity: for example, an OCB presents operational capabilities, while a LAB presents a logical architecture.
+
+Use the xref:features/features.adoc[diagram catalogue] to find the view appropriate to your engineering question.
+
+[#synchronization]
+=== Synchronized and unsynchronized elements
+
+Each kind of element displayed in a diagram follows one of two policies:
+
+* *Synchronized* elements are displayed automatically: the diagram shows every model element of this kind that is relevant to it, and updates when the model changes.
+To stop showing a synchronized element, hide it or delete it from the model: an element only removed from the diagram is displayed again when the diagram is refreshed.
+* *Unsynchronized* elements are displayed only when you create them with a diagram tool or drop them from the explorer.
+Elements created elsewhere in the model are not added to the diagram, and *Delete from Diagram* removes the graphical element while keeping the model element.
+
+In most {product} diagrams, the main elements, such as components, functions, and capabilities, are unsynchronized, so that each diagram shows a chosen subset of the model.
+Ports are synchronized: they appear when their owning component or function is displayed, even when they are not connected to an exchange.
+Relationships such as exchanges and Describes links are synchronized: they appear when their endpoints are displayed.
+Breakdown diagrams and contextual views are synchronized, because they show a complete hierarchy or neighborhood.
+Each diagram page states its policy.
+
+[#library]
+== Library
+
+The *Arcadia library* defines the engineering concepts used by {product}.
+Its concept definitions and their mapping to SysML v2 are documented in the https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library project].
+
+Use the `Capella-Library` template to prepare reusable model content for your own engineering work.
+
+For publication and library dependencies, see the https://doc.mbse-syson.org/syson/main/user-manual/concepts.html[SysON library concepts].

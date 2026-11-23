@@ -1,0 +1,39 @@
+= Troubleshooting
+
+This page describes the problems specific to the {product} extension.
+For problems related to the SysON installation itself, such as the database connection, refer to the https://doc.mbse-syson.org/syson/main/installation-guide/troubleshooting.html[SysON troubleshooting guide].
+
+If you encounter an issue not covered here, see xref:user-manual:support.adoc[].
+
+== The Capella templates are not proposed
+
+The projects browser does not propose the `Capella` and `Capella-Library` templates.
+
+The extension is not loaded.
+Check that:
+
+* The application is started with the `PropertiesLauncher`, as described in xref:how-tos/install.adoc[the installation instructions], and not with `java -jar`.
+* The `loader.path` property references the extension JAR, with a path valid from the working directory.
+
+== The SysON interface is displayed
+
+The Capella templates are proposed, but the application displays the SysON interface: the Capella project welcome area, the Capella explorer, and the Capella icon are missing.
+
+The frontend of {product} is not selected.
+Set the `spring.web.resources.static-locations` property to `classpath:/static/capella-for-syson/`, on the command line or in the application configuration.
+Reload the page in the browser after restarting the application.
+
+== The application fails to start after adding the extension
+
+The application stops during startup with errors such as `NoSuchMethodError`, `ClassNotFoundException`, or a bean creation failure involving Capella classes.
+
+The extension and SysON versions are not compatible.
+Use the SysON version on which the extension is based, stated in the xref:user-manual:release-notes/release-notes.adoc[release notes] of each version.
+
+== Capella diagrams are not proposed on a project
+
+The *New representation* menu of the explorer does not propose Capella representations.
+
+* Check that the project was created from the `Capella` or `Capella-Library` template.
+Projects created from other templates are not Capella projects.
+* Check that the selected element is applicable to the representation; see xref:user-manual:hands-on/how-tos/representation-operations.adoc#applicable-elements[the elements applicable to each representation].

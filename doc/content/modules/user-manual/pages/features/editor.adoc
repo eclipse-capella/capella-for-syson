@@ -1,0 +1,110 @@
+= Project editor
+:page-feature-status: experimental
+
+For the shared editor layout, toolbar, and sidebars, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/editor.html[SysON project editor guide].
+This page describes the additions used when working in a Capella project.
+
+== Capella project welcome area
+
+When no representation is open, the Capella project welcome area provides two entry points:
+
+* *Create a new Representation*: create a diagram using one of the Capella shortcuts.
+* *Existing representations*: open a representation already present in the project.
+
+.Capella project welcome area for the In-Flight Entertainment System sample model
+image::editor-welcome-ife.png[Capella project welcome area with the diagram shortcuts and the list of existing representations]
+
+=== Create a Capella representation
+
+The welcome area provides shortcuts for the following diagrams:
+
+* xref:features/ocb.adoc[]
+* xref:features/oab.adoc[]
+* xref:features/oabd.adoc[]
+* xref:features/oaib.adoc[]
+* xref:features/mcb.adoc[]
+* xref:features/sab.adoc[]
+* xref:features/sfbd.adoc[]
+* xref:features/lab.adoc[]
+
+Select a shortcut to create a new representation.
+Creation shortcuts are shown when you have editing access to the project.
+For the complete diagram catalogue and availability, see xref:features/features.adoc[].
+
+=== Open an existing representation
+
+Use the welcome area's representation list to return to a diagram already created in the project.
+For common representation management operations, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/editor.html[SysON project editor guide].
+
+[#capella-properties]
+== Capella properties and semantic navigation
+
+When an Arcadia element is selected, the *Capella* page of the Details view exposes the attributes and relationships relevant to its type.
+See xref:features/properties.adoc[] for the complete list by element type.
+
+.Capella properties of the Watch Movie operational activity
+image::capella-properties-ife.png[Details view showing the Name, Description, Status, and Realizing System Functions of Watch Movie]
+
+[cols="1,2",options="header"]
+|===
+|Property |Available for
+
+|Name, Description
+|All Arcadia elements.
+
+|Status
+|All Arcadia elements; see <<review-status>>.
+
+|Realized _elements_, Realizing _elements_
+|Arcadia elements with traceability to another engineering level.
+The label names the elements of the previous or next level, for example *Realizing System Functions* for an Operational Activity.
+*Realizing* _elements_ is read-only.
+
+|Allocated Functions
+|Components and actors.
+
+|Is Actor, Is Human
+|Components.
+
+|Direction, Allocated Function Ports
+|Component ports.
+
+|Direction
+|Function ports.
+
+|Source Function, Target Function, Exchanged Items
+|Functional exchanges.
+
+|Source Port, Target Port, Allocated Exchange Items, Allocated Functional Exchange
+|Component exchanges.
+
+|Involved functions, Involved functional exchanges
+|Functional chains.
+|===
+
+Changing the direction of a port also updates the direction of the opposite port of its exchanges.
+
+[#review-status]
+=== Review status
+
+Use the *Status* property to track the review progress of an element.
+The available values come from the SysML v2 `ModelingMetadata::StatusKind` enumeration: `open`, `tbd` (to be determined), `tbr` (to be resolved), `tbc` (to be confirmed), `done`, and `closed`.
+
+The review status is used by the xref:features/function-table.adoc[Function Table] and the xref:features/model-analysis.adoc[System Architecture Model] dashboard.
+
+=== Semantic Browser
+
+The Semantic Browser is displayed in the *Related Elements* view of the right sidebar.
+It provides contextual navigation around the selected element in three panels:
+
+* *Current Element* shows the parent of the element and *All Related Diagrams* that display it.
+* *Referenced Elements* shows the elements referenced by the selected element, such as realized elements.
+* *Referencing Elements* shows the elements that reference it, such as realizing elements.
+
+.Semantic Browser showing the elements referencing Watch Movie
+image::semantic-browser-ife.png[Related Elements view showing the allocating actor, functional chains, incoming functional exchanges, and in flow ports of Watch Movie]
+
+For a function, the Semantic Browser also groups its *Breakdown*, *Incoming Functional Exchanges*, *Outgoing Functional Exchanges*, *In Flow Ports*, *Out Flow Ports*, *Functional Chains*, and its allocating logical component or actor.
+
+For the meaning of allocations and realizations, see xref:user-manual:concepts.adoc[].
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] illustrates their use in a system model.

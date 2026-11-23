@@ -1,0 +1,21 @@
+= Impact analysis and metrics
+:page-feature-status: experimental
+
+== Metrics
+
+The xref:features/model-analysis.adoc[System Architecture Model] dashboard counts the elements of each perspective, and measures allocation gaps, unconnected ports, and review progress.
+It is the {product} counterpart of the Capella Desktop metrics computation.
+
+Export of the counts to a CSV file is *not yet available*.
+
+== Impact analysis
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+In Capella Desktop, the impact analysis lists the elements that reference a selected element, before it is modified or deleted.
+
+In {product}, use the *Referencing Elements* part of the xref:features/editor.adoc[Semantic Browser] to review the elements related to a selected element.
+Deleting an element from the model removes the relationships that depend on it.

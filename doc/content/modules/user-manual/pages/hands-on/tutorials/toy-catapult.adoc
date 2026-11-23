@@ -1,0 +1,193 @@
+= Model a Toy Catapult
+
+Build a system model for a toy catapult, from Operational Analysis to Logical Architecture.
+Follow the Arcadia approach to describe the operational need, define the system as a black box, and allocate its functions to a logical architecture.
+
+== Before you start
+
+You need access to {product} and permission to create and edit a Capella project.
+See xref:installation-guide:requirements.adoc[the prerequisites] and xref:user-manual:tour.adoc[the interface tour].
+
+Use the following engineering objective throughout the tutorial:
+
+[quote]
+Design a toy catapult to amuse a four-year-old child safely and give the parent and child an opportunity to play together.
+
+The tutorial covers Operational Analysis (OA), System Analysis (SA), and Logical Architecture (LA).
+Create the elements in each engineering level explicitly; transitions between levels are not part of this exercise.
+
+[NOTE]
+====
+Steps marked *Coming soon* describe the workflow for representations that are not yet available.
+They are included to present the complete learning path.
+====
+
+== Step 1: Create the project
+
+. From the projects browser, create a project using the `Capella` template.
+. Name the project `Toy Catapult`.
+. Open the model in the explorer and locate Operational Analysis, System Analysis, and Logical Architecture.
+
+Check that the project is open and that you can navigate all three engineering levels.
+
+== Step 2: Describe the operational context
+
+Operational Analysis describes the situation and its participants before introducing the system to be designed.
+
+. In Operational Analysis, create the Operational Actors `Child` and `Parent`.
+. Create an Operational Capability named `Entertain Child and Parent`.
+. Create an OCB (Operational Capabilities Blank) for the capability package.
+. Display the capability and both actors in the OCB.
+. Create an Involvement from `Entertain Child and Parent` to `Child`, then another to `Parent`.
+. Create an OAB (Operational Architecture Blank) for the operational context and display the actors already created.
+
+Check that both actors are involved in the capability and that the diagrams reuse the same actors from the model.
+
+== Step 3: Describe the operational activities
+
+Capture how the child plays with the toy and how it is taken out and put away.
+
+. Create the Operational Activities `Retrieve toy from storage`, `Play with toy`, and `Return toy to storage`.
+. Under `Play with toy`, create the sub-activity `Launch projectile`.
+. Create an OABD (Operational Activity Breakdown) on the activity containing the activities you want to show.
+. Review the hierarchy in the explorer and the OABD.
+
+The hierarchy should distinguish `Launch projectile` as a child of `Play with toy`.
+
+== Step 4: Describe operational interactions
+
+. Create an OAIB (Operational Activity Interaction Blank) on `Play with toy`.
+. Add existing activities relevant to the play situation from the explorer.
+. Create Interactions to describe the information or material exchanged between activities.
+. Name the interactions according to the exchanges you want to express.
+
+Check that the diagram refers to the activities already created rather than to new activities with the same names.
+
+== Step 5: Define the system and its context
+
+System Analysis describes the system boundary and its external interactions.
+Create the following elements in System Analysis, separately from their Operational Analysis counterparts.
+
+[cols="1,2",options="header"]
+|===
+|Element type |Names
+|System |`Toy System`
+|Actors |`Child`, `Projectile`, `Parents`
+|Mission |`Entertain Child and Parent`
+|Capabilities |`Entertain Child`, `Engage Parent`
+|===
+
+. Create an MCB (Missions Capabilities Blank) to represent the mission, capabilities, and actors.
+. Create an SAB (System Architecture Blank) for the system context.
+. Display `Toy System` and the existing System Analysis actors in the SAB.
+
+Check that the SAB presents the system boundary and its external actors.
+An actor in System Analysis and an Operational Actor are distinct model elements, even when their names are similar.
+
+== Step 6: Describe system functions
+
+. In System Analysis, create the System Functions `Store energy`, `Hold projectile`, `Release energy`, and `Guide projectile`.
+. Organize them under the system's function hierarchy.
+. Create an SFBD (System Function Breakdown) on the function that contains the functions you want to show.
+. Review the functions and rename them as needed.
+
+Check that the diagram shows the same functions as the explorer under the selected function.
+
+== Step 7: Relate the system function to the operational activity
+
+. Select the System Function `Release energy`.
+. Set its realized Operational Activity to the existing `Launch projectile` activity.
+. Open the Semantic Browser and locate *Realized Operational Activities*.
+. Navigate to `Launch projectile`.
+
+The realization expresses how the system function contributes to the operational activity.
+Check that the relationship refers to the existing activity.
+Where reverse navigation is available, inspect *Realizing System Functions* on `Launch projectile` to find `Release energy`.
+
+== Step 8: Describe system functional exchanges
+
+[NOTE]
+====
+*Coming soon — SDFB.* The System Data Flow Blank representation described in this step is not yet available.
+====
+
+. Create an SDFB (System Data Flow Blank) centered on `Release energy`.
+. Add the existing neighboring System Functions involved in the exchange.
+. Create Functional Exchanges between their output and input Function Ports.
+. Name each exchange to describe the information, material, or energy it carries.
+
+Check the source and target of each exchange and verify that the displayed functions are the ones already present in System Analysis.
+
+== Step 9: Define the logical architecture
+
+Logical Architecture describes the internal organization chosen to perform the system functions.
+
+. In Logical Architecture, create the Logical Components `Frame`, `Arm`, `Trigger`, and `Projectile Holder`.
+. Create a LAB (Logical Architecture Blank).
+. Display the components in the LAB and arrange them to make the architecture readable.
+
+Check that each component appears in the Logical Architecture part of the explorer.
+
+== Step 10: Allocate logical functions
+
+Create Logical Functions for the behaviors described in System Analysis.
+Logical Functions and System Functions belong to different engineering levels; allocate Logical Functions to Logical Components.
+
+[cols="1,1",options="header"]
+|===
+|Logical Function |Allocated Logical Component
+|`Store energy` |`Arm`
+|`Hold projectile` |`Projectile Holder`
+|`Release energy` |`Trigger`
+|`Guide projectile` |`Frame`
+|===
+
+. Create the four Logical Functions and assign each to the component shown in the table.
+. Display the functions inside their allocated components in the LAB.
+. Check each allocation in the model.
+
+The function names preserve the engineering vocabulary across the levels; the Logical Functions are distinct model elements from the System Functions.
+
+== Step 11: Describe component exchanges
+
+. Identify the Logical Components that need to exchange information, material, or energy.
+. Create Component Exchanges through ports on the participating components.
+. Give each exchange a name that explains its role in the catapult architecture.
+
+Check that the exchanges appear in the LAB and connect the intended components.
+
+== Step 12: Reuse components in another view
+
+. Create a second LAB for the same logical architecture.
+. Drag existing Logical Components from the explorer into the new LAB.
+. Rename one of these components and inspect both diagrams.
+
+The diagrams should refer to the same components, and both should display the updated name.
+Do not create another component merely to show it in a second diagram.
+
+== Step 13: Create functional exchanges and a functional chain
+
+. In a LAB, show the Logical Functions involved in the behavior you want to describe.
+. Create Functional Exchanges through their Function Ports and name the exchanges.
+. Use *New Functional Chain* from the diagram background.
+. In the selection dialog, choose the Functional Exchanges to include in the chain.
+. Name the chain to describe the behavior represented by those exchanges.
+
+Check that the Functional Chain appears in the explorer and that the selected exchanges belong to it.
+
+== Step 14: Reopen and review the model
+
+. Close the project and open it again.
+. Open the Operational Analysis, System Analysis, and Logical Architecture diagrams.
+. Review the function hierarchy, allocations, Component Exchanges, Functional Exchanges, and Functional Chain.
+. Select `Release energy` in System Analysis and use the Semantic Browser to navigate to `Launch projectile`.
+
+Check that the elements, diagrams, and relationships are preserved and that modeling can continue.
+
+== What you have modeled
+
+* An operational situation with actors, a capability, activities, and interactions.
+* A system context with missions, capabilities, functions, and functional exchanges.
+* A realization between a System Function and an Operational Activity.
+* A logical architecture with components, allocated functions, exchanges, and a functional chain.
+* Multiple diagrams that reuse elements from the same model.

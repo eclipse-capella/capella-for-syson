@@ -1,0 +1,60 @@
+= Functional Context Diagram
+:page-feature-status: experimental
+
+== Purpose
+
+Use the Functional Context Diagram to explore the functions directly connected to a selected function through Functional Exchanges.
+It answers the question: which functions exchange information with this function?
+
+.Functional context of the Watch Video on Private Screen system function
+image::functional-context-ife.png[Dynamic Contextual View panel showing Broadcast Audio Video Streams sending Played Audio Video to Watch Video on Private Screen, selected in the explorer]
+
+== Position in Arcadia
+
+Functional exploration of an existing model element.
+The view complements architecture and data-flow diagrams by focusing on the selected function's immediate exchange context.
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+|Selected function |The function at the center of the exploration.
+|Related function |A function at the other end of an incoming or outgoing Functional Exchange.
+|Functional Exchange |The relationship connecting the selected function to a neighboring function.
+|===
+
+== Open the functional context
+
+. Select a function in the model explorer.
+Operational Activities are also supported.
+. Open *Related Elements Visual View* in the right sidebar.
+. In the *Dynamic Contextual View* panel, the *Representation description* selector proposes *Functional Context Diagram* and selects it automatically.
+
+The view computes its contents from the selected function and its incoming and outgoing exchanges.
+Select another function in the explorer to explore its context.
+If the selection has no applicable functional context representation, the panel has no diagram to display.
+
+The contextual view is read-only: it has no palette.
+The selected function is displayed with a distinct style, and the diagram is laid out automatically until you move an element.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: The view is synchronized: functions and exchanges are computed from the selected function.
+
+== Keep a representation
+
+The contextual view is created for exploration.
+You can also create a Functional Context Diagram directly, from the *New representation* menu of a function in the explorer.
+Use the save button (open-in-new icon) in its toolbar to retain the diagram as a project representation and open it in the editor.
+The saved diagram is named *Functional Context Diagram* and is attached to the selected function.
+It remains synchronized with the model: functions and exchanges added later around the function appear in it.
+
+For creating functions and exchanges in an architecture diagram, see xref:features/sab.adoc[SAB] or xref:features/lab.adoc[LAB].
+
+== Related guidance
+
+* xref:user-manual:features/editor.adoc[]
+* xref:user-manual:concepts.adoc[]
+* xref:features/sdfb.adoc[]
+* xref:features/la-ldfb.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

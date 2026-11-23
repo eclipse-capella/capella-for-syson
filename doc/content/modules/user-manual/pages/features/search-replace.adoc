@@ -1,0 +1,28 @@
+= Search and replace
+:page-feature-status: experimental
+
+== Purpose
+
+Find model elements by name or content, and replace text in several elements at once.
+
+== Search in a project
+
+Use the filter bar of the explorer to find and highlight elements of the model by name.
+For the filter bar, refer to the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/how-tos/explorer.html[SysON explorer how-to].
+
+The xref:features/function-table.adoc[Function Table] also provides a filter to find functions by their properties.
+
+== Search across projects
+
+When the application is configured with Elasticsearch, the projects browser provides a cross-project search.
+Refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/cross-project-search.html[SysON cross-project search documentation].
+
+== Replace
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+Capella Desktop provides a search-and-replace dialog that renames several model elements at once, with options on the element types, the attributes, and the search scope.
+In {product}, rename elements one by one, in the explorer, the diagrams, or the Details view.

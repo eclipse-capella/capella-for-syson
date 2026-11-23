@@ -1,0 +1,28 @@
+= OPD — Operational Process Description
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the activities and interactions involved in a selected operational process.
+It answers the question: Which activities and exchanges contribute to this operational behavior?
+
+== Position in Arcadia
+
+Operational Analysis.
+
+== Main concepts
+
+* *Operational Process*: The behavior selected for examination.
+* *Activity involvement*: Participation of an Operational Activity in the process.
+* *Interaction involvement*: Participation of an Interaction in the process.
+
+== Related diagrams
+
+* xref:features/oaib.adoc[]
+* xref:features/oa-oas.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

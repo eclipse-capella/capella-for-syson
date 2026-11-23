@@ -1,0 +1,10 @@
+**
+!Dockerfile
+!docs-site/
+!docs-site/package.json
+!docs-site/package-lock.json
+!doc-ui/
+!doc-ui/**
+doc-ui/node_modules/
+doc-ui/build/
+doc-ui/public/

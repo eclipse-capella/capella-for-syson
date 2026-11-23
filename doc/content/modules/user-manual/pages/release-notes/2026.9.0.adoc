@@ -1,0 +1,63 @@
+= 2026.9.0
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+== Key highlights
+
+* {product} is published as open source under the Eclipse Public License 2.0.
+* {product} is delivered as an extension of SysON.
+* The `Capella` and `Capella-Library` project templates create projects based on the xref:user-manual:features/arcadia-library.adoc[Arcadia library].
+
+== New features
+
+* In projects:
+
+** The `Capella` template creates a model organized according to the Arcadia engineering perspectives.
+** The `Capella-Library` template prepares reusable model content.
+See xref:user-manual:hands-on/how-tos/project-management.adoc[].
+
+* In diagrams:
+
+** The xref:user-manual:features/ocb.adoc[OCB], xref:user-manual:features/oab.adoc[OAB], xref:user-manual:features/sab.adoc[SAB], and xref:user-manual:features/lab.adoc[LAB] are available from the Capella project welcome area.
+** Function and component ports can be created in the SAB and the LAB.
+** Requirements are displayed with their documentation in the OAB and the SAB.
+** The xref:user-manual:features/functional-context.adoc[Functional Context Diagram] explores the functions exchanging with a selected function.
+
+* In tables and dashboards:
+
+** The xref:user-manual:features/function-table.adoc[Logical Architecture Function Table] lists and edits the functions of a model.
+** The xref:user-manual:features/model-analysis.adoc[System Architecture Model] dashboard summarizes the content of a model.
+
+* In the Semantic Browser:
+
+** The realization relationships of the selected element are displayed.
+
+== Bug fixes
+
+* In diagrams:
+
+** Functions created in a diagram are created under the selected function or the root function of the perspective.
+** Logical components created from the diagram background are created in the Logical System when it is displayed.
+** System Function and SAB icons have been corrected.
+
+* In the explorer:
+
+** Function allocations are no longer displayed as explorer items; they are available in the Capella properties.
+
+== Improvements
+
+* In diagrams:
+
+** Labels that overflow are wrapped on all diagram nodes.
+** Function labels are displayed at the top of their nodes.
+
+* In the model:
+
+** Functional exchanges, component exchanges, and functional chains are created in the appropriate parent element.
+
+== Dependencies
+
+* {product} 2026.9.0 is based on SysON 2026.9.0.
+
+== Technical details
+
+* For technical details on this {product} release, including breaking changes, please refer to the {source-code-url}/blob/main/CHANGELOG.adoc[changelog].

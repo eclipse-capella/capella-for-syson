@@ -1,0 +1,48 @@
+= Support and resources
+
+Find help, share feedback, and access guidance for your systems engineering activities.
+
+[cols="2*^", %noheader, frame=none, grid=none]
+|===
+a|image::forum.svg[xref=user-manual:forum.adoc]
+
+**Community**
+
+Share questions and feedback with the community.
+
+xref:user-manual:forum.adoc[Find the community]
+
+a|image::volunteer_activism.svg[xref=user-manual:contribute.adoc]
+
+**Contribute**
+
+Report problems and suggest improvements.
+
+xref:user-manual:contribute.adoc[Contribute to {product}]
+
+a|image::editor_choice.svg[xref=user-manual:best-practices.adoc]
+
+**Best practices guides**
+
+Make the most of your modeling environment.
+
+xref:user-manual:best-practices.adoc[Explore best practices]
+
+a|image::best.svg[xref=user-manual:support.adoc]
+
+**Contact support**
+
+Find help and professional assistance.
+
+xref:user-manual:support.adoc[Find help]
+
+a|image::resources.svg[xref=user-manual:resources.adoc]
+
+**Resources**
+
+Find project information and Arcadia references.
+
+xref:user-manual:resources.adoc[Explore resources]
+
+|
+|===

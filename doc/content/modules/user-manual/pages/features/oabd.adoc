@@ -1,0 +1,74 @@
+= OABD — Operational Activity Breakdown
+:page-feature-status: experimental
+
+== Purpose
+
+Use an OABD to decompose the activities of the operational situation.
+It answers the question: how are operational activities organized into smaller activities?
+
+.Operational activities of the In-Flight Entertainment System sample model
+image::oabd-ife.png[OABD showing the operational activities of the In-Flight Entertainment System and the breakdown of Use Entertainment Services]
+
+== Position in Arcadia
+
+Operational Analysis, describing the decomposition of activities in the operational situation.
+It shows the activity hierarchy, while an xref:features/oaib.adoc[OAIB] describes interactions between activities.
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+
+|Operational Activity
+|An activity in the operational situation, which may contain sub-activities.
+
+|Contained In
+|A relationship from a child activity to its parent activity.
+
+|Requirement and Describes link
+|A requirement and its relationship to an activity described in the diagram.
+|===
+
+== Create the diagram
+
+An OABD is associated with an Operational Activity and displays the hierarchy within that context.
+The diagram uses automatic layout until an element is moved.
+Use the *OABD* shortcut in the Capella project welcome area to create a diagram on the root Operational Activity, or create an OABD on an Operational Activity from the explorer.
+
+See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: Operational Activities and their `Contained In` links are synchronized: the diagram shows the whole hierarchy below its activity. Requirements are unsynchronized.
+
+== Build the activity hierarchy
+
+* Use *New Operational Activity* on the background to create a child of the diagram's context activity.
+* Use the same tool on an activity to create one of its sub-activities.
+* Rename the activities to describe what happens in the operational situation.
+* Use *New Contained In* from a child activity to its intended parent to change the hierarchy.
+
+Activities in the diagram's context appear automatically, together with the containment links between displayed activities.
+The context activity itself is displayed, except when it is the root Operational Activity.
+The explorer and diagram show the same model hierarchy.
+
+== Arrange the view
+
+Activities are displayed as separate nodes, with *Contained In* links showing the hierarchy.
+Moving a node changes its graphical position.
+Use the containment tools when you want to change an activity's parent in the model.
+
+Reconnect a *Contained In* link to change the hierarchy:
+
+* Moving the target end makes the child activity a sub-activity of the new target.
+* Moving the source end makes the new source a child of the previous parent; the previous child is moved under the diagram's context activity.
+
+A *Contained In* link cannot be renamed or deleted from the model, because it represents the ownership of the child activity.
+
+include::user-manual:partial$diagram-common-operations.adoc[]
+
+== Related guidance
+
+In the xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial], `Launch projectile` is a sub-activity of `Play with toy`.
+Use the OABD to inspect that decomposition before describing the activity exchanges in an xref:features/oaib.adoc[OAIB].
+
+For the diagram catalogue, see xref:features/features.adoc[Features and capabilities].

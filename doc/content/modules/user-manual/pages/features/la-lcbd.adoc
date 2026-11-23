@@ -1,0 +1,27 @@
+= LCBD — Logical Component Breakdown
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the hierarchical decomposition of logical components.
+It answers the question: How is the logical solution organized into components?
+
+== Position in Arcadia
+
+Logical Architecture.
+
+== Main concepts
+
+* *Logical Component*: A building block of the logical solution.
+* *Component containment*: The relationship between a component and its sub-components.
+
+== Related diagrams
+
+* xref:features/lab.adoc[]
+* xref:features/la-lfbd.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

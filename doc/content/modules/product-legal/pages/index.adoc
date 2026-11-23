@@ -1,0 +1,8 @@
+= Legal Information
+
+== License
+
+{product} is distributed under the https://www.eclipse.org/legal/epl-2.0/[Eclipse Public License 2.0].
+The project's {source-code-url}/blob/main/LICENSE[LICENSE file] is the reference license text for this repository.
+
+For the license file accompanying a particular version, select its tag in the source repository.

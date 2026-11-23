@@ -1,0 +1,28 @@
+= CIBD — Configuration Items Breakdown
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Organize configuration items into a hierarchy.
+It answers the question: How is the end product broken down into configuration items?
+
+== Position in Arcadia
+
+End-Product Breakdown Structure (EPBS).
+
+== Main concepts
+
+* *Configuration Item*: An item in the end-product breakdown.
+* *Item kind*: The category assigned to an item.
+* *Item containment*: The relationship between an item and its sub-items.
+
+== Related diagrams
+
+* xref:features/epbs-eab.adoc[]
+* xref:features/pa-pcbd.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

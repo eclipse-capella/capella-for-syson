@@ -1,0 +1,32 @@
+= Projects browser
+:page-feature-status: experimental
+
+For the projects browser layout and common project operations, see the https://doc.mbse-syson.org/syson/main/user-manual/features/homepage.html[SysON projects browser guide].
+{product} adds the following templates for Arcadia modeling.
+
+.Project templates in the projects browser
+image::homepage-templates.png[Projects browser showing the Capella, Capella-Library, SysMLv2, Blank Project, and Upload project cards]
+
+== Capella project templates
+
+[cols="1,2",options="header"]
+|===
+|Template |Use it to
+
+|`Capella`
+|Start a system model with the default Arcadia model organization.
+
+|`Capella-Library`
+|Prepare reusable model content in a library project.
+|===
+
+Both templates include the Arcadia library required by the modeling environment.
+The `Capella` template initializes the model structure, while `Capella-Library` provides the starting project for preparing library content.
+
+== Start an Arcadia model
+
+. Select the `Capella` template when creating a project.
+. Open the project editor and locate the Arcadia engineering perspectives in the model explorer.
+. Continue with the xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] for a modeling example.
+
+After opening a project, continue with xref:features/editor.adoc[the project editor].

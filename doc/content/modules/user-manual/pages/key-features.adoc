@@ -1,0 +1,35 @@
+= Key features in {product}
+
+{product} combines the Arcadia engineering approach with SysML v2 models and graphical views inspired by Capella.
+Use its project templates and modeling environment to organize and explore your system description.
+
+[NOTE]
+====
+In {product}, features are categorized into two distinct levels of maturity:
+
+* **🔥 Experimental**: Features in the early stages of development or testing, subject to potential changes and improvements based on user feedback.
+* **🛈 Stable**: Features that have completed rigorous testing, are deemed reliable, and are ready for production use with a high level of confidence in their stability and capability.
+
+Each feature page states its maturity level in its *Before you Start* section.
+Features inherited from SysON keep the maturity level stated in the https://doc.mbse-syson.org/syson/main/user-manual/key-features.html[SysON documentation].
+====
+
+== Features overview
+
+include::user-manual:partial$feature-support.adoc[]
+
+For the modeling concepts behind these capabilities, see xref:concepts.adoc[].
+The xref:features/features.adoc[Features and capabilities] section provides the entry points to the feature documentation.
+
+[#diagram-support]
+== Diagram support
+
+include::user-manual:partial$diagram-support.adoc[]
+
+== Release information
+
+See the xref:release-notes/release-notes.adoc[release notes] for changes to the application and the xref:cycle.adoc[release cycle] for version numbering and publications.
+
+== Other needs
+
+For a modeling need not covered by this documentation, see xref:support.adoc[contact support] or xref:contribute.adoc[suggest an enhancement].

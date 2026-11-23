@@ -1,0 +1,33 @@
+= FCD — Functional Chain Description
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the functions and exchanges involved in a selected functional chain.
+It answers the question: Which sequence of functional exchanges contributes to the behavior being examined?
+
+== Position in Arcadia
+
+Functional chain viewpoint in System, Logical, or Physical Architecture.
+
+== Main concepts
+
+* *Functional Chain*: The chain selected for examination.
+* *Function involvement*: The participation of a function in the chain.
+* *Exchange involvement*: The participation of a Functional Exchange in the chain.
+* *Involvement sequencing*: The relationships organizing the chain description.
+
+The level-specific names are *SFCD — System Functional Chain Description*, *LFCD — Logical Functional Chain Description*, and *PFCD — Physical Functional Chain Description*.
+
+== Related diagrams
+
+* xref:features/sdfb.adoc[]
+* xref:features/la-ldfb.adoc[]
+* xref:features/pa-pdfb.adoc[]
+* xref:features/common-fs.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

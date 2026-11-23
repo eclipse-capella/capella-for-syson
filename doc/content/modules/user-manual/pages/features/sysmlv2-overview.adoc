@@ -1,0 +1,69 @@
+= Arcadia and SysML v2
+
+Arcadia guides your engineering work; SysML v2 provides the language used to express the resulting system model.
+{product} brings them together using the https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library] and a modeling environment inspired by Capella.
+
+== Arcadia: a systems engineering method
+
+Arcadia guides the engineering activities used to describe and analyze a system.
+It helps organize the system description around operational needs, functions, components, and architectures.
+
+[cols="1,2",options="header"]
+|===
+|Perspective |Engineering focus
+
+|Operational Analysis (OA)
+|Understand the operational situation, stakeholders, activities, and expected capabilities.
+
+|System Analysis (SA)
+|Define the system boundary, required functions, and interactions with external actors.
+
+|Logical Architecture (LA)
+|Organize the solution into logical components and allocate functions to them.
+
+|Physical Architecture (PA)
+|Define the technical architecture and deployment choices that implement the solution.
+
+|End-Product Breakdown Structure (EPBS)
+|Structure configuration items and prepare component development and integration contracts.
+|===
+
+These perspectives support iterative engineering work.
+See the https://mbse-capella.org/arcadia.html[Arcadia presentation] for the method and its reference documents.
+
+== SysML v2: a language for expressing the model
+
+SysML v2 provides the modeling language used to express a system's structure, behavior, and relationships.
+It supplies the means to describe the system, while Arcadia guides what to model, in which order, and for which engineering purpose.
+
+== Bringing the method and language together
+
+The https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library] project, hosted under Eclipse Capella, defines how Arcadia concepts are expressed in SysML v2.
+It provides the definitions for concepts such as components, functions, and exchanges, along with a default model organization.
+
+{product} uses this library to provide Arcadia modeling in SysON.
+Its graphical views present the library's concepts in the context of the engineering activity.
+
+For the concept definitions, mapping principles, and rationale, refer to the https://github.com/eclipse-capella/arcadia-sysmlv2-lib/tree/master/doc[library documentation].
+The library project is the reference for that mapping; this page introduces its role in your modeling work.
+
+The xref:user-manual:key-features.adoc[feature matrix] and xref:user-manual:features/features.adoc[diagram catalogue] identify the capabilities provided by the application for these perspectives.
+
+== Working with the model
+
+When you work in an Arcadia view, you work with the engineering concepts relevant to that view.
+The resulting system description is expressed in SysML v2.
+The xref:user-manual:concepts.adoc[key concepts] page explains how projects, model elements, diagrams, and libraries fit together.
+
+=== Example: the toy catapult
+
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] illustrates the relationship between the method and the model:
+
+* In Operational Analysis, `Launch projectile` describes an activity in the play situation.
+* In System Analysis, `Release energy` describes a function of the system and realizes that Operational Activity.
+* In Logical Architecture, a Logical Function named `Release energy` is allocated to the `Trigger` component.
+
+The functions at the system and logical levels are distinct model elements.
+Their engineering roles follow Arcadia, and their definitions and relationships are expressed in SysML v2.
+
+For the project's approach to Arcadia and SysML v2, see the https://mbse-capella.org/capella-for-syson.html[official project presentation].

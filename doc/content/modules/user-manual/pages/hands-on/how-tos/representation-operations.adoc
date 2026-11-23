@@ -1,0 +1,79 @@
+= Representation operations
+:page-feature-status: experimental
+
+For the common operations on representations, such as renaming, duplicating, or deleting them, refer to the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/how-tos/representation-operations.html[SysON representation operations how-to].
+This page describes the creation of Capella representations.
+
+[#create-capella-representation]
+== Create a Capella representation
+
+A Capella representation can be created in two ways:
+
+* From the Capella project welcome area, displayed when no representation is open.
+Select one of the diagram shortcuts: the diagram is created on the default element of its perspective.
+See xref:user-manual:features/editor.adoc[the project editor].
+* From the explorer.
+Open the context menu of a model element, select *New representation*, and choose the representation.
+Only the representations applicable to the selected element are proposed.
+
+[#applicable-elements]
+== Elements applicable to each representation
+
+[cols="1,2,2",options="header"]
+|===
+|Representation |Created from the explorer on |Created by the welcome area shortcut on
+
+|xref:user-manual:features/oab.adoc[OAB]
+|A component, the `Structure` package, or one of its sub-packages, in Operational Analysis.
+|The Operational Analysis `Structure` package.
+
+|xref:user-manual:features/ocb.adoc[OCB]
+|The `Capabilities` package or one of its sub-packages, in Operational Analysis.
+|The Operational Analysis `Capabilities` package.
+
+|xref:user-manual:features/oabd.adoc[OABD]
+|An Operational Activity.
+|The root Operational Activity.
+
+|xref:user-manual:features/oaib.adoc[OAIB]
+|An Operational Activity.
+|The root Operational Activity.
+
+|xref:user-manual:features/mcb.adoc[MCB]
+|The `Capabilities` package or one of its sub-packages, in System Analysis.
+|The System Analysis `Capabilities` package.
+
+|xref:user-manual:features/sab.adoc[SAB]
+|A component, the `Structure` package, or one of its sub-packages, in System Analysis.
+|The System Analysis `Structure` package.
+
+|xref:user-manual:features/sfbd.adoc[SFBD]
+|A System Function.
+|The root System Function.
+
+|xref:user-manual:features/lab.adoc[LAB]
+|A component, the `Structure` package, or one of its sub-packages, in Logical Architecture.
+|The Logical Architecture `Structure` package.
+
+|xref:user-manual:features/functional-context.adoc[Functional Context Diagram]
+|A function or an Operational Activity.
+|No shortcut.
+
+|xref:user-manual:features/function-table.adoc[Logical Architecture Function Table]
+|A package.
+|No shortcut.
+
+|xref:user-manual:features/model-analysis.adoc[System Architecture Model]
+|A definition element, such as a component definition.
+|No shortcut.
+|===
+
+The *New representation* dialog also proposes the SysON views applicable to the selected element, such as the General View.
+The xref:user-manual:features/functional-context.adoc[Functional Context Diagram] can also be displayed without creating a representation, from the selection in the *Dynamic Contextual View* panel.
+
+.New representation dialog on the System Analysis Structure package
+image::new-representation-ife.png[New representation dialog listing SAB - System Analysis Blank and Logical Architecture Function Table together with the SysON views]
+
+== Open an existing representation
+
+Open a representation from the explorer, below the element it is created on, or from the list of existing representations in the Capella project welcome area.

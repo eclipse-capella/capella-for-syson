@@ -1,0 +1,30 @@
+= CRB — Capability Realization Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe capability realizations and the components involved in them.
+It answers the question: How are capabilities realized by the solution architecture?
+
+== Position in Arcadia
+
+Capability realization viewpoint in the solution architecture.
+
+== Main concepts
+
+* *Capability Realization*: A capability as realized by the solution.
+* *Component or Configuration Item*: A solution element involved in its realization.
+* *Involvement*: The participation of a solution element in a realization.
+
+== Related diagrams
+
+* xref:features/common-cri.adoc[]
+* xref:features/lab.adoc[]
+* xref:features/pa-pab.adoc[]
+* xref:features/epbs-eab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

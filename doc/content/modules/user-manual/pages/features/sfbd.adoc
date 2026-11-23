@@ -1,0 +1,60 @@
+= SFBD — System Function Breakdown
+:page-feature-status: experimental
+
+== Purpose
+
+Use an SFBD to decompose system-level behavior into functions.
+It answers the question: how is the required system behavior broken down into functions?
+
+.Breakdown of the Run Services system function of the In-Flight Entertainment System sample model
+image::sfbd-ife.png[SFBD created on Run Services, showing Run Services and its sub-functions such as Run Video-On-Demand Service, Handle VOD Movie Controls, and Run Gaming Service]
+
+== Position in Arcadia
+
+System Analysis, describing the functions performed by the system and its actors.
+The xref:features/sdfb.adoc[SDFB] describes the exchanges between these functions.
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+|System Function |A function performed by the system or its actors, which may contain sub-functions.
+|===
+
+== Create the diagram
+
+An SFBD is associated with a System Function and displays the functions it contains.
+Use the *SFBD* shortcut in the Capella project welcome area to create a diagram on the root System Function, or create an SFBD on a System Function from the explorer.
+See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: System Functions are synchronized: the diagram shows every function contained in its function.
+
+== Describe the function breakdown
+
+The SFBD is synchronized with the model: it displays the functions contained in the diagram's System Function, at all depths.
+When the diagram is created on a System Function other than the root one, that function is displayed as well.
+The diagram uses automatic layout until an element is moved.
+
+. Use *New System Function* on the background or on a function to create a sub-function.
+
+The functions are displayed side by side; the containment links between parent and child functions are not yet represented.
+Use the explorer to check the function hierarchy.
+
+== Diagram operations
+
+* *Rename*: edit the label of a function directly in the diagram.
+* *Delete from Model*: delete the function and its graphical representations.
+* *Collapse*: reduce a function node to its header.
+
+Requirements are not yet represented in the SFBD.
+
+== Related guidance
+
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] uses an SFBD to review the System Functions of the toy catapult.
+
+* xref:features/sdfb.adoc[]
+* xref:features/sab.adoc[]
+* xref:features/oabd.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

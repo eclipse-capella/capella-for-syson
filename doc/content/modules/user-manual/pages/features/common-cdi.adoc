@@ -1,0 +1,31 @@
+= CDI — Contextual Component Detailed Interfaces
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Focus on the detailed interface information of a component.
+It answers the question: Which interfaces and ports define this component boundary?
+
+== Position in Arcadia
+
+Interface viewpoint, applied in the relevant architecture perspective.
+
+== Main concepts
+
+* *Component*: The component selected for examination.
+* *Component Port*: An endpoint on the component boundary.
+* *Interface*: A contract used or provided through the boundary.
+* *Implementation and use relationships*: The component relationship to its interface contracts.
+
+== Related diagrams
+
+* xref:features/common-id.adoc[]
+* xref:features/common-idb.adoc[]
+* xref:features/common-cei.adoc[]
+* xref:features/common-cii.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

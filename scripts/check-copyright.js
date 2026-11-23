@@ -16,7 +16,12 @@ const path = require("path");
 
 const SUPPORTED_EXTENSIONS = new Set([".java", ".js", ".sh", ".ts", ".tsx", ".xml", ".yaml", ".yml"]);
 
-const isCopyrightCheckedFile = (filePath) => SUPPORTED_EXTENSIONS.has(path.extname(filePath));
+// The documentation UI derives from Antora Default UI and stays under MPL-2.0 (see doc/doc-ui/LICENSE).
+const EXCLUDED_DIRECTORIES = ["doc/doc-ui/"];
+
+const isCopyrightCheckedFile = (filePath) =>
+  SUPPORTED_EXTENSIONS.has(path.extname(filePath)) &&
+  !EXCLUDED_DIRECTORIES.some((directory) => filePath.startsWith(directory));
 
 const hasCurrentEplHeader = (content, year) => {
   const headerLines = content.split(/\r?\n/).slice(0, 20);

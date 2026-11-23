@@ -1,0 +1,5 @@
+* How-Tos
+** xref:user-manual:hands-on/how-tos/project-management.adoc[]
+** xref:user-manual:hands-on/how-tos/representation-operations.adoc[]
+** xref:user-manual:hands-on/how-tos/import-capella-project.adoc[]
+** xref:user-manual:hands-on/how-tos/user-interface-navigation.adoc[]

@@ -1,0 +1,4 @@
+* xref:developer-guide:architecture.adoc[]
+* xref:developer-guide:testing.adoc[]
+* xref:developer-guide:api/api.adoc[]
+* xref:developer-guide:documentation.adoc[]

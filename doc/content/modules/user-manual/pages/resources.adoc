@@ -1,0 +1,28 @@
+= Resources
+
+== Project and methodology
+
+* https://mbse-capella.org/capella-for-syson.html[Capella for SysON]: project presentation, roadmap, and contact information.
+* https://mbse-capella.org/arcadia.html[Arcadia]: method and reference documents.
+* https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library]: concept definitions, mapping documentation, and examples.
+
+== Learn and model
+
+* xref:what-is.adoc[Product overview].
+* xref:features/sysmlv2-overview.adoc[Arcadia and SysML v2].
+* xref:key-features.adoc[Feature and diagram availability].
+* xref:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial].
+* xref:features/features.adoc[Diagram catalogue].
+* xref:integration/capella.adoc[Capella Desktop and the SysML v2 Bridge].
+
+== Shared SysON operations
+
+* https://doc.mbse-syson.org/syson/main/user-manual/index.html[SysON user manual].
+* https://doc.mbse-syson.org/syson/main/user-manual/hands-on/hands-on.html[SysON practical guides].
+
+== Follow and contribute
+
+* {source-code-url}[Source repository].
+* {source-code-url}/issues[Issue tracker].
+* xref:updates.adoc[Release notes and updates].
+* xref:contribute.adoc[Contribution guidance].

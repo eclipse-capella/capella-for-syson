@@ -1,0 +1,26 @@
+= Capella for SysON documentation UI
+
+This UI is based on the local SysON `doc/doc-ui` theme, also used by Sirius Web, which derives from https://gitlab.com/antora/antora-ui-default[Antora Default UI].
+It preserves the SysON layout, with colors from `frontend/capella-for-syson/src/theme/capellaTheme.ts` and project links for Capella for SysON.
+The header logo is exported from `frontend/capella-for-syson/src/core/CapellaIcon.tsx` with its CSS styles; the favicon comes from the application's public assets.
+
+== Build
+
+The documentation Docker image builds the bundle automatically.
+To build it directly with Node.js 22:
+
+[source,bash]
+----
+cd doc/doc-ui
+npm ci
+npm run build
+----
+
+The generated bundle is `build/ui-bundle.zip`.
+Then run `npm run build:local` from `doc/docs-site` to generate the documentation.
+
+== License
+
+Antora Default UI is distributed under the Mozilla Public License 2.0.
+This UI, derived from it, remains under the same license; see link:LICENSE[].
+It is used only to generate the documentation site and is not distributed with Capella for SysON binaries.

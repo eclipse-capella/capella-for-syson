@@ -1,0 +1,25 @@
+= Capella Desktop and {product}
+
+Capella Desktop and {product} share the Arcadia engineering approach.
+{product} uses SysML v2 models enriched by the https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library].
+
+== Capella SysML v2 Bridge
+
+The Capella SysML v2 Bridge is a separate project for transforming Capella models into SysML v2 using the Arcadia library.
+The https://mbse-capella.org/capella-for-syson.html[official project presentation] describes the bridge alongside the library and the modeling environment.
+
+The bridge defines the transformation rules and the scope of the Capella elements it handles.
+Use its documentation for the selected distribution to check the input format, supported elements, and generated output before planning an exchange.
+
+== Prepare the model transformation
+
+. Identify the Capella model and the engineering information you need to retain.
+. Check that the bridge handles the relevant element and relationship types.
+. Prepare the input required by the bridge and run the transformation according to its instructions.
+. Make the generated model's library dependencies available in the destination environment.
+. Review the transformed elements, allocations, exchanges, and realization relationships against the source model.
+
+Check the handling of graphical representations separately from the transformation of model information.
+Use the xref:user-manual:key-features.adoc#diagram-support[diagram matrix] to identify the views provided by {product}.
+
+For the shared exchange operations, see xref:integration/interoperability.adoc[].

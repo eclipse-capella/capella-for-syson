@@ -1,0 +1,23 @@
+= Release notes and updates
+
+Follow changes to the application and check compatibility when updating.
+
+[cols="2*^", %noheader, frame=none, grid=none]
+|===
+a|image::new_releases.svg[xref=user-manual:release-notes/release-notes.adoc]
+
+**Release notes**
+
+Review new features, fixes, and breaking changes.
+
+xref:user-manual:release-notes/release-notes.adoc[Read the release notes]
+
+a|image::cycle.svg[xref=user-manual:cycle.adoc]
+
+**Release cycle**
+
+Understand version numbering and publications.
+
+xref:user-manual:cycle.adoc[Learn about releases]
+
+|===

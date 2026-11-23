@@ -1,0 +1,101 @@
+= Build and edit the documentation
+:page-audience: 💻 Developers and 📝 documentation contributors
+
+Documentation is written in AsciiDoc and assembled with Antora.
+Run the following command from the repository root with Docker installed:
+
+[source,bash]
+----
+./doc/generate-local.bash
+----
+
+To preview the generated site in a browser, run:
+
+[source,bash]
+----
+python3 -m http.server 8000 --bind 127.0.0.1 --directory doc/docs-site/build/site
+----
+
+Open `http://localhost:8000`.
+Regenerate the site and refresh the browser after editing a page.
+The local playbook reads the current working tree, including uncommitted documentation changes.
+
+To generate the documentation from the upstream `main` branch instead:
+
+[source,bash]
+----
+./doc/generate.bash
+----
+
+The first build requires network access to download the container image and npm dependencies.
+Docker builds the UI bundle from `doc/doc-ui/`, which reuses the SysON and Sirius Web theme.
+
+== Add a page
+
+Follow the section hierarchy, module paths, and navigation structure of the SysON documentation.
+Adapt the content to Capella for SysON and write user-facing pages for systems engineers.
+Keep software implementation details in the developer guide.
+Document Capella for SysON concepts, workflows, and differences that are useful to the reader.
+For shared SysON concepts and operations, link to the corresponding SysON documentation instead of repeating it.
+Write general pages as lasting product documentation: describe concepts and workflows without referring to a "current development version".
+Document changes between versions in the release notes.
+Each version has a page in `user-manual/pages/release-notes/`, included in `release-notes.adoc`, the most recent version first.
+Describe the user-visible changes of the version, grouped by area, and keep technical changes in `CHANGELOG.adoc`.
+
+Create an AsciiDoc file in `doc/content/modules/<module>/pages/`.
+Add the page to the relevant module navigation partial; use `doc/content/modules/ROOT/nav.adoc` for top-level sections.
+Use Antora cross references to link pages.
+Store images in the module's `images/` directory and reusable fragments in `partials/`.
+
+Feature availability is maintained in `user-manual/partials/feature-support.adoc` and diagram availability in `user-manual/partials/diagram-support.adoc`, under `doc/content/modules/`.
+Keep these entries consistent with the diagram pages and navigation labels.
+Use *Not yet available* for absent capabilities and keep the status separate from the diagram's engineering purpose.
+
+== State the feature maturity
+
+The site displays one *Before you Start* block below each page title.
+It identifies the readers of the page and, for pages describing a provided feature, its maturity level and availability to users.
+Set `page-feature-status` in the AsciiDoc header to add the feature information:
+
+[source,asciidoc]
+----
+= LAB — Logical Architecture Blank
+:page-feature-status: experimental
+----
+
+Use `experimental` for features that may still change based on user feedback, and `stable` once the feature is considered ready for production use.
+Both values also state that the feature is available to all users.
+When a feature becomes stable, update this attribute; the availability tables do not state maturity levels.
+Omit the attribute on general documentation pages and pages of capabilities that are not yet available: their block identifies the readers only.
+
+== Identify the intended audience
+
+The *Who is this page for?* line inside *Before you Start* identifies the readers of the page.
+Reader groups are identified by 🧭 for systems engineers, ⚙️ for DevOps and administrators, 💻 for developers, and 📝 for documentation contributors.
+The default audience follows the documentation module:
+
+[cols="1,2",options="header"]
+|===
+|Module |Intended audience
+|`user-manual` |Systems engineers
+|`installation-guide` |DevOps and administrators
+|`developer-guide` |Developers
+|`ROOT`, `product-legal` |Systems engineers, DevOps, and developers
+|===
+
+For a page serving a different or broader audience, set `page-audience` in the AsciiDoc header, immediately after the title:
+
+[source,asciidoc]
+----
+= Interoperability
+:page-audience: 🧭 Systems engineers and 💻 developers
+----
+
+Reader information and feature maturity are displayed together in the same block.
+
+== Documentation sources
+
+The component descriptor is `doc/content/antora.yml`.
+Playbooks and npm dependencies are in `doc/docs-site/`, and UI customizations are in `doc/doc-ui/`.
+
+Project design records and iteration documents remain outside the published content in `doc/adrs/` and `doc/iterations/`.

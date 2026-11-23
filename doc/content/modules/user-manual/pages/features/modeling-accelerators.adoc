@@ -1,0 +1,27 @@
+= Modeling accelerators and wizards
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Automate repetitive modeling tasks, such as generating component exchanges from functional exchanges, propagating exchange items to ports, managing allocations in a dedicated dialog, or creating elements through wizards.
+
+== Capella Desktop capabilities
+
+* *Modeling accelerators*: generation of component exchanges from the functional exchanges between allocated functions, generation of physical links, propagation and synchronization of exchange items on exchanges and ports, and realization of ports according to the realizations between exchanges.
+* *Contextual allocations*: a dialog allocating several functions, activities, or exchanges at once to components, actors, or entities.
+* *Wizards*: requirement and traceability management, component breakdown, sequence message creation, and allocation of function ports and exchange items.
+
+== What {product} provides
+
+The following operations cover part of these needs:
+
+* Drop a function on a component in the xref:features/lab.adoc[LAB] or the xref:features/sab.adoc[SAB] to allocate it.
+* Set the *Allocated Functions* of a component, or the *Allocated Functional Exchange* of a component exchange, in the xref:features/properties.adoc[Capella properties].
+* Change the direction of a port: the opposite port of its exchanges is updated.
+* Set the realized elements of an element in the Capella properties.
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc[the key features].

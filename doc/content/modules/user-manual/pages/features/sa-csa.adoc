@@ -1,0 +1,27 @@
+= CSA — Contextual System Actors
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Focus on the actors associated with a selected actor in the system context.
+It answers the question: How are the external actors related?
+
+== Position in Arcadia
+
+System Analysis.
+
+== Main concepts
+
+* *System Actor*: A participant outside the system boundary.
+* *Actor generalization*: A relationship between a specialized actor and a more general actor.
+
+== Related diagrams
+
+* xref:features/sab.adoc[]
+* xref:features/mcb.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

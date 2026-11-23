@@ -1,0 +1,28 @@
+= OEBD — Operational Entity Breakdown
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the decomposition of the operational environment into entities and actors.
+It answers the question: How are operational participants organized?
+
+== Position in Arcadia
+
+Operational Analysis.
+
+== Main concepts
+
+* *Operational Entity*: A participant that can contain other operational participants.
+* *Operational Actor*: A human participant in the operational situation.
+* *Containment*: The relationship organizing participants within a parent entity.
+
+== Related diagrams
+
+* xref:features/oab.adoc[]
+* xref:features/oa-orb.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

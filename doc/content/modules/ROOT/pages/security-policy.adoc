@@ -1,0 +1,13 @@
+= Security policy
+:page-audience: ⚙️ DevOps and 💻 developers
+
+{product} is an open source project maintained by a community of contributors.
+Security fixes are applied to the latest release.
+Keep your installation up to date to benefit from them, together with the security fixes of the underlying SysON version.
+
+== Reporting a vulnerability
+
+If you believe you have found a security vulnerability in {product}, do not disclose it publicly until it has been reviewed.
+Report it to the project maintainers with enough information to reproduce and assess the vulnerability, as described in the {source-code-url}/blob/main/SECURITY.md[security policy of the repository].
+
+For vulnerabilities in SysON or Sirius Web, follow the https://doc.mbse-syson.org/syson/main/security-policy.html[SysON security policy].

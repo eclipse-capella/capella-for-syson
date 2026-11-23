@@ -1,0 +1,19 @@
+== Common diagram operations
+
+The following operations are available on the elements of this diagram unless stated otherwise:
+
+* *Rename*: edit the label of a node or an exchange directly in the diagram.
+* *Delete from Diagram*: remove the graphical element only; the model element is kept and can be shown again.
+* *Delete from Model*: delete the model element and its graphical representations.
+* *Hide* and *Reveal*: control the visibility of elements in the diagram using the standard SysON tools.
+* *Collapse*: reduce container nodes, such as components, participants, activities, and requirements, to their header.
+* *Reconnect*: move the source or target end of an exchange or link to another element.
+{product} keeps the model consistent and refuses a reconnection that breaks the rules described for the diagram.
+
+=== Requirements
+
+* Use *New Requirement* on the diagram background to create a requirement.
+* Use *New Describes* from a requirement to link it to the element it describes.
+Both ends of a Describes link can be reconnected.
+* Requirement nodes display their documentation in a compartment.
+* Drag a requirement from the explorer to show it in the diagram.

@@ -1,0 +1,28 @@
+= PPD — Physical Path Description
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Focus on the physical components and links involved in a physical path.
+It answers the question: Which route through the physical architecture supports this connection?
+
+== Position in Arcadia
+
+Physical Architecture.
+
+== Main concepts
+
+* *Physical Path*: The route selected for examination.
+* *Physical Component*: A component involved in the route.
+* *Physical Link*: A connection used by the path.
+* *Path involvement*: The participation of a component, link, or nested path.
+
+== Related diagrams
+
+* xref:features/pa-pab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

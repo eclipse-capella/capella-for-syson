@@ -1,0 +1,8 @@
+= User interface overview
+
+Get familiar with the main areas of {product} and learn how to navigate your system models.
+
+Start with the interface tour to identify the projects browser, project editor, model explorer, and diagram area.
+Use the how-tos for step-by-step instructions on common tasks.
+
+include::user-manual:partial$nav-ui.adoc[]

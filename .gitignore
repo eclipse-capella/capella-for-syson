@@ -124,3 +124,11 @@ AGENTS.md
 /scenarios
 /diagram-specs
 /implementation-gaps
+
+# Antora documentation
+/doc/docs-site/build/
+!/doc/docs-site/package-lock.json
+!/doc/doc-ui/package-lock.json
+
+# Local example models used to produce the documentation screenshots
+/example/

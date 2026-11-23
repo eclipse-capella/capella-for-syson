@@ -1,0 +1,22 @@
+= Diagram export and title blocks
+:page-feature-status: experimental
+
+== Export a diagram as an image
+
+Use the *export to image* action of the diagram toolbar and choose the format of the image: *SVG*, *PNG*, or *SVG (Experimental)*.
+
+.Image export formats of the diagram toolbar
+image::diagram-export-ife.png[Diagram toolbar with the export to image menu open on the SVG, PNG, and SVG (Experimental) entries]
+
+The export applies to one diagram at a time.
+Batch export of all the diagrams of a model and printing from the application are *not yet available*; use the exported file with an external tool to print it.
+
+== Title blocks
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+In Capella Desktop, a title block is a table added to a diagram to display information about the diagram or its elements, such as its name, author, or version.
+In {product}, use the representation name and the element descriptions to carry this information.

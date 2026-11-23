@@ -1,0 +1,31 @@
+= MSM — Mode State Machine
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the modes and states of a system or component and the transitions between them.
+It answers the question: How does behavior depend on the current mode or state?
+
+== Position in Arcadia
+
+Behavioral viewpoint, used alongside the relevant architecture perspective.
+
+== Main concepts
+
+* *Mode or State*: An operating mode or situation in the modeled behavior.
+* *Transition*: A change between states or modes.
+* *Region*: A container organizing part of the state machine.
+* *Initial and final elements*: The entry and completion of a modeled behavior.
+
+== Related diagrams
+
+* xref:features/common-fs.adoc[]
+* xref:features/common-es.adoc[]
+* xref:features/sab.adoc[]
+* xref:features/lab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

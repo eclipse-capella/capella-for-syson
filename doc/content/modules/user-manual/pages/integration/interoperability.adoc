@@ -1,0 +1,30 @@
+= Interoperability
+:page-audience: 🧭 Systems engineers and 💻 developers
+
+{product} models express Arcadia concepts in SysML v2 using the https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library].
+An exchange needs to preserve the engineering meaning of those concepts and their relationships.
+
+== Shared import and export operations
+
+For project and model upload/download, refer to the https://doc.mbse-syson.org/syson/main/user-manual/integration/interoperability.html[SysON interoperability guide].
+For textual model exchange, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/import-export-textual.html[SysON textual import/export guide].
+Use the documentation for the SysON version and exchange facilities deployed in your environment.
+
+== Arcadia library dependencies
+
+When transferring an Arcadia model, identify the library definitions it uses and make the required dependencies available in the destination environment.
+The library project's https://github.com/eclipse-capella/arcadia-sysmlv2-lib/tree/master/doc[documentation] defines the Arcadia concepts and their mapping to SysML v2.
+
+== Review an exchange
+
+Check the engineering information you need to preserve:
+
+* The model elements and their engineering perspectives.
+* Function hierarchy and allocation to components.
+* Exchanges and their source and target elements.
+* Realization relationships between engineering perspectives.
+* The representations needed for your engineering activity.
+
+Review these elements in the destination tool against the source model.
+For a Capella Desktop model, see xref:integration/capella.adoc[].
+For software-based connections, see xref:developer-guide:api/api.adoc[].

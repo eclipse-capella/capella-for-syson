@@ -1,0 +1,54 @@
+= System Architecture Model dashboard
+:page-feature-status: experimental
+
+== Purpose
+
+Use the *System Architecture Model* dashboard to get an overview of the content, quality, and review progress of your model.
+It answers the question: how is the model distributed across the Arcadia levels, and what remains to be allocated, connected, or reviewed?
+
+== Create the dashboard
+
+In the explorer, select a definition element such as a component definition, open its context menu, and create a *System Architecture Model* representation.
+The dashboard is computed from the model containing the selected element and is updated when the model changes.
+
+== Dashboard content
+
+The *Model Analysis* page provides an overview of the model's quality and progression.
+
+.System Architecture Model dashboard of the In-Flight Entertainment System sample model
+image::model-analysis-ife.png[Model Analysis page with the qualitative analysis indicators and the concepts repartition charts]
+
+=== Model Qualitative Analysis
+
+Each indicator shows a count compared with the total number of elements of the same kind:
+
+[cols="1,2",options="header"]
+|===
+|Indicator |Counts
+
+|Unallocated Functions
+|Functions not allocated to a component.
+
+|Ports Without Exchange
+|Function ports and component ports not connected by an exchange.
+
+|Unallocated Functional Exchanges
+|Functional exchanges not allocated to a component exchange.
+
+|Validated Components
+|Components whose xref:features/editor.adoc#review-status[review status] is `done`.
+|===
+
+=== Concepts repartition
+
+* *Concepts Repartition in Model* shows the number of functions, components, actors, requirements, interfaces, exchanges, and ports.
+* *Concepts Repartition Per Layer* shows the number of Arcadia elements in the Operational, System, Logical, and Physical levels.
+
+=== Review status per Architecture
+
+For each architecture level, bar charts show the number of elements per review status: *Open*, *To Be Determined*, *To Be Resolved*, *To Be Confirmed*, *Done*, and *Closed*.
+
+== Related guidance
+
+* Set the review status of an element in the xref:features/editor.adoc#review-status[Capella properties].
+* Use the xref:features/function-table.adoc[Function Table] to review the status of functions.

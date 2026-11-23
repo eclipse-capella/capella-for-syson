@@ -1,0 +1,27 @@
+= LFBD — Logical Function Breakdown
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Decompose the behavior of the logical solution into functions.
+It answers the question: How are logical functions refined into sub-functions?
+
+== Position in Arcadia
+
+Logical Architecture.
+
+== Main concepts
+
+* *Logical Function*: A function belonging to the logical solution.
+* *Function containment*: The relationship between a function and its sub-functions.
+
+== Related diagrams
+
+* xref:features/la-ldfb.adoc[]
+* xref:features/lab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

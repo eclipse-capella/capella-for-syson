@@ -1,0 +1,14 @@
+= Community
+
+The https://mbse-capella.org/capella-for-syson.html[official project website] presents the initiative and provides a contact for getting involved.
+
+== Share an Arcadia use case
+
+Explain the engineering activity, the modeling result you need, and the difficulty you encounter.
+Use examples from the relevant Arcadia perspective so that the project team can understand the engineering context.
+
+== Follow product feedback
+
+Use the {source-code-url}/issues[issue tracker] to find reported problems and enhancement requests.
+See xref:contribute.adoc[] to prepare a report or proposal.
+For assistance with your installation, see xref:support.adoc[].

@@ -1,0 +1,207 @@
+* *Provided*: the capability described in the scope column is present.
+* *Partial*: part of the capability is provided, with the limits stated in the scope column.
+* *Not yet available*: the capability is not provided by {product}.
+
+Maturity levels (🔥 Experimental or 🛈 Stable) are stated on each feature page.
+
+Statuses refer to the stated scope rather than full parity with Capella Desktop.
+Shared application functions are inherited from SysON; Capella add-on capabilities are identified separately.
+
+[cols="2,1,4",options="header"]
+|===
+|Feature |{product} |Scope
+
+3+h|Project management
+
+|Capella project template
+|✅ Provided
+|Start a system model using the `Capella` template.
+
+|Capella library project template
+|✅ Provided
+|Create a project using the `Capella-Library` template.
+
+|xref:user-manual:hands-on/how-tos/import-capella-project.adoc[Import of a Capella Desktop project]
+|❌ Not yet available
+|Capella Desktop files are not opened directly; models can be transformed with the Capella SysML v2 Bridge.
+
+|xref:user-manual:features/homepage.adoc[Projects browser and project editor]
+|✅ Provided
+|Access projects, their models, and representations in a web browser.
+
+3+h|Model editing and navigation
+
+|Create, rename, and delete Arcadia elements
+|🟡 Partial
+|Operations cover the concepts exposed by the implemented modeling tools.
+
+|xref:user-manual:features/properties.adoc[Edit element properties]
+|🟡 Partial
+|Capella properties and reference editors are provided for supported model concepts.
+
+|xref:user-manual:features/explorer.adoc[Model explorer]
+|✅ Provided
+|Browse the model by Arcadia perspective, hide ports, and move elements with drag and drop.
+
+|xref:user-manual:features/editor.adoc#review-status[Review status]
+|✅ Provided
+|Set the review status of Arcadia elements and filter or measure elements by status.
+
+|xref:user-manual:features/editor.adoc[Semantic Browser]
+|🟡 Partial
+|Explore contextual relationships, including function breakdown and realization links.
+
+|xref:user-manual:features/search-replace.adoc[Search and replace]
+|🟡 Partial
+|Elements can be found with the explorer filter and, with Elasticsearch, the cross-project search; replacing text in several elements is not provided.
+
+|Exchange items and data modeling
+|🟡 Partial
+|Exchange items and allocation properties are exposed; the Capella Desktop data-modeling toolset is not fully provided.
+
+3+h|Tables and dashboards
+
+|xref:user-manual:features/function-table.adoc[Function Table]
+|✅ Provided
+|Review functions with their description, status, allocated component, and ports; add, create sub-functions, and delete functions.
+
+|xref:user-manual:features/model-analysis.adoc[Model analysis dashboard]
+|✅ Provided
+|Follow concept distribution, allocation and connection gaps, and review status per architecture level.
+
+|xref:user-manual:features/impact-analysis.adoc[Impact analysis]
+|❌ Not yet available
+|No preview of the elements impacted by a modification is provided; the Semantic Browser lists the referencing elements.
+
+3+h|Methodological guidance
+
+|xref:user-manual:features/arcadia-library.adoc[Arcadia library]
+|✅ Provided
+|Use the Arcadia library included by the Capella project templates.
+
+|Capella Desktop Activity Browser
+|❌ Not yet available
+|No equivalent of the activity-based methodological browser is provided.
+
+3+h|Diagram management
+
+|Contextual palettes and editing tools
+|🟡 Partial
+|Element and relationship tools depend on the diagram and supported concepts; creation and reconnection rules keep the model consistent.
+
+|Reuse elements with drag and drop
+|🟡 Partial
+|Existing model elements can be displayed in diagrams; accepted elements and behavior depend on the diagram.
+
+|Diagram filters
+|🟡 Partial
+|*Show Functions* filters are provided in SAB and LAB, and the *Show Activities* filter in OAB, from the *Diagrams Options* menu.
+
+|Automatic and assisted layout
+|🟡 Partial
+|The OABD, the SFBD, and the Functional Context Diagram use automatic layout until an element is moved; the complete Capella Desktop assisted-layout toolset is not provided.
+
+|xref:user-manual:features/diagram-export.adoc[Diagram export]
+|🟡 Partial
+|Each diagram can be exported as an SVG or PNG image; batch export, printing, and title blocks are not provided.
+
+|xref:user-manual:features/copy-paste.adoc[Business copy-paste]
+|❌ Not yet available
+|Elements can be duplicated in the explorer and dropped in diagrams; copying and pasting diagram elements with their relationships is not provided.
+
+|xref:user-manual:features/modeling-accelerators.adoc[Modeling accelerators and wizards]
+|❌ Not yet available
+|Allocations and realizations are edited one by one, in diagrams or in the Capella properties.
+
+|Computed links and exchange categories
+|❌ Not yet available
+|Capella Desktop graphical aggregation of exchanges and exchange-category mechanisms are not provided.
+
+3+h|Allocations and traceability
+
+|Function-to-component allocation
+|🟡 Partial
+|Allocation is provided for functions and components handled by the implemented architecture views.
+
+|Realization between engineering levels
+|🟡 Partial
+|Explicit realization references and navigation are provided for supported function relationships.
+
+|Requirements and model-element links
+|🟡 Partial
+|Requirement elements and Describes links are provided in implemented diagrams; this does not cover the complete Capella requirements-tool ecosystem.
+
+3+h|Model consistency
+
+|Arcadia validation profiles
+|❌ Not yet available
+|No equivalent of the Capella Desktop integrity, design, completeness, and traceability validation profiles is provided.
+
+|Arcadia validation quick fixes
+|❌ Not yet available
+|Automatic corrections associated with those Arcadia validation profiles are not provided.
+
+|Semantic deletion impact preview
+|❌ Not yet available
+|The Capella Desktop dependency-impact preview for semantic deletion is not provided.
+
+3+h|Transitions
+
+|Automatic transitions between Arcadia levels
+|❌ Not yet available
+|Model elements are created explicitly in each engineering level.
+
+|System-to-subsystem transition
+|❌ Not yet available
+|Automatic extraction of subsystem models and contracts is not provided.
+
+3+h|Reuse and libraries
+
+|Libraries and project dependencies
+|🟡 Partial
+|Arcadia library loading and library project templates are provided; common publication and dependency workflows are inherited from SysON.
+
+|REC / RPL — reusable collections and replicas
+|❌ Not yet available
+|Capella Replicable Elements Collections and Replica mechanisms are not provided.
+
+3+h|Model lifecycle
+
+|Model comparison and merge
+|❌ Not yet available
+|No Capella-model comparison and merge workflow is provided in the application.
+
+|Built-in version control
+|❌ Not yet available
+|No built-in branching or version-control workflow is provided.
+
+|Capella-style model fragmentation
+|❌ Not yet available
+|No equivalent of Capella semantic model fragments is provided.
+
+3+h|Publication
+
+|HTML model publication
+|❌ Not yet available
+|Publishing a browsable HTML version of the system model is not provided.
+
+3+h|Customization
+
+|Configurable property-value management (PVMT)
+|❌ Not yet available
+|No equivalent of the Capella PVMT add-on is provided.
+
+|Engineering viewpoints for mass, cost, or latency
+|❌ Not yet available
+|No dedicated mass, cost, or latency viewpoint is provided.
+
+3+h|Integration and automation
+
+|xref:user-manual:integration/capella.adoc[Capella SysML v2 Bridge]
+|🟡 Partial
+|A separate transformation tool has its own supported input elements and transformation scope.
+
+|xref:developer-guide:api/api.adoc[Application APIs]
+|🟡 Partial
+|GraphQL application operations are exposed; consult the SysON API documentation for the underlying API scope.
+|===

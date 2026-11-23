@@ -1,0 +1,28 @@
+= PCBD — Physical Component Breakdown
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the hierarchy of physical components.
+It answers the question: How is the physical solution decomposed into components?
+
+== Position in Arcadia
+
+Physical Architecture.
+
+== Main concepts
+
+* *Behavior Physical Component*: A component carrying behavior in the physical architecture.
+* *Node Physical Component*: A component providing a deployment resource.
+* *Component containment*: The hierarchy of physical components.
+
+== Related diagrams
+
+* xref:features/pa-pab.adoc[]
+* xref:features/pa-pfbd.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

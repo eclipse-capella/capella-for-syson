@@ -1,0 +1,81 @@
+= 2026.11.0
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+== Key highlights
+
+* Two Operational Analysis diagrams are now available: the xref:user-manual:features/oabd.adoc[OABD] and the xref:user-manual:features/oaib.adoc[OAIB].
+* Diagram filters are available in the OAB and the LAB.
+* Realization relationships between engineering levels can be edited in the Details view and navigated in the Semantic Browser.
+
+== New features
+
+* In Operational Analysis:
+
+** The xref:user-manual:features/oabd.adoc[OABD — Operational Activity Breakdown] displays the decomposition of Operational Activities, with requirements and their Describes links.
++
+image::oabd-ife.png[OABD showing the breakdown of the operational activities of the In-Flight Entertainment System sample model,width=75%]
+** The xref:user-manual:features/oaib.adoc[OAIB — Operational Activity Interaction Blank] describes the interactions between Operational Activities.
+Activities and requirements can be created in the diagram or dropped from the explorer.
++
+image::oaib-ife.png[OAIB showing the interactions between operational activities of the In-Flight Entertainment System sample model,width=75%]
+** Operational Activities can be created and dropped in the xref:user-manual:features/oab.adoc[OAB].
+
+* In diagrams:
+
+** The *Show Activities* filter of the OAB and the *Show Functions* filter of the LAB control the display of the allocated activities and functions.
++
+image::lab-ife.png[LAB with the Diagrams Options menu open on the Show Functions filter,width=75%]
+
+* In the Details view and the Semantic Browser:
+
+** The *Capella* page of the Details view displays the elements realized by the selected element and, read-only, the elements realizing it.
++
+image::capella-properties-ife.png[Details view showing the Realizing System Functions of the Watch Movie operational activity,width=75%]
+** The Semantic Browser displays the same realization relationships.
+See xref:user-manual:features/editor.adoc[the project editor].
+
+* In the application:
+
+** The {product} version is displayed in the application footer.
+** Dialogs that select a model element display the hierarchy of the Capella explorer.
+
+== Bug fixes
+
+* In diagrams:
+
+** In the OCB, a Generalization connects two distinct capabilities, and an Involvement connects a capability to an Operational Entity or an Operational Actor.
+** Operational Interactions targeting an ancestor activity are rejected, at creation and at reconnection.
+** Requirement Describes links have a uniform appearance in all diagrams.
+** The *New Describes* and *Link to Element* actions are available again in diagrams.
+** Colors, icons, and border sizes are more consistent in the Operational Analysis diagrams, the SAB, and the LAB.
+** The Functional Context Diagram can be displayed again in the *Dynamic Contextual View* panel.
+
+* In the explorer:
+
+** Operational Activity ports are always hidden, including when the *Hide Ports* filter is disabled.
+** Operational Entities, Operational Capabilities, and requirements display their icons.
+
+* In SysON projects:
+
+** The SysON onboarding is available again for projects that are not Capella projects.
+
+== Improvements
+
+* In diagrams:
+
+** Changing the direction of a port updates the direction of the opposite port.
+** Actors and human actors have a consistent appearance in all perspectives.
+** The SAB has an improved style.
+** Element creation is faster, especially when many elements are created.
+
+* In the application:
+
+** Capella type checks and queries are faster on large models.
+
+== Dependencies
+
+* {product} 2026.11.0 is based on SysON 2026.11.0.
+
+== Technical details
+
+* For technical details on this {product} release, including breaking changes, please refer to the {source-code-url}/blob/main/CHANGELOG.adoc[changelog].

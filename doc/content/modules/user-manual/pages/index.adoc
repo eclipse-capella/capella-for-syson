@@ -1,0 +1,8 @@
+= Introduction
+
+Welcome to the user manual for {product}.
+
+This manual helps systems engineers use {product} to describe and explore system architectures with the Arcadia approach.
+Whether you already use Capella or are new to the environment, start with the product overview and its key features.
+
+include::user-manual:partial$nav-intro.adoc[]

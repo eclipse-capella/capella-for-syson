@@ -1,0 +1,29 @@
+= MB — Missions Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the missions of the system and their relationships with capabilities and actors.
+It answers the question: Which missions must the system address, and who is involved?
+
+== Position in Arcadia
+
+System Analysis.
+
+== Main concepts
+
+* *Mission*: A purpose assigned to the system.
+* *Capability*: A capability associated with a mission.
+* *Actor involvement*: The participation of an external actor in a mission or capability.
+
+== Related diagrams
+
+* xref:features/mcb.adoc[]
+* xref:features/sa-cm.adoc[]
+* xref:features/sab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

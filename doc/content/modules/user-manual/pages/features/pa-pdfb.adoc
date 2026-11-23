@@ -1,0 +1,30 @@
+= PDFB — Physical Data Flow Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe exchanges between functions of the physical architecture.
+It answers the question: What do the physical functions exchange?
+
+== Position in Arcadia
+
+Physical Architecture.
+
+== Main concepts
+
+* *Physical Function*: A function participating in the physical solution.
+* *Function Port*: An input or output exchange endpoint.
+* *Functional Exchange*: An exchange between physical functions.
+* *Functional Chain*: A grouping of exchanges contributing to a behavior.
+
+== Related diagrams
+
+* xref:features/pa-pfbd.adoc[]
+* xref:features/pa-pab.adoc[]
+* xref:features/common-fcd.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

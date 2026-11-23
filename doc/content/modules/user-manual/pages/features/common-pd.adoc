@@ -1,0 +1,28 @@
+= PD — Package Dependencies
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe dependencies between data and interface packages.
+It answers the question: Which packages depend on the contents of other packages?
+
+== Position in Arcadia
+
+Data and interface organization across the model.
+
+== Main concepts
+
+* *Data Package*: A container for data definitions.
+* *Interface Package*: A container for interface definitions.
+* *Dependency*: A relationship indicating use of another package.
+
+== Related diagrams
+
+* xref:features/common-cdb.adoc[]
+* xref:features/common-idb.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

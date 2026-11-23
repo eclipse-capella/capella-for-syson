@@ -1,0 +1,70 @@
+= OCB — Operational Capabilities Blank
+:page-feature-status: experimental
+
+In the application, this diagram is labeled `OCB - Operational Capability Blank`.
+
+== Purpose
+
+Use an OCB to describe the operational capabilities expected by stakeholders and the participants involved in them.
+It answers the question: which operational goals matter, and who is involved in achieving them?
+
+.Operational capabilities of the In-Flight Entertainment System sample model
+image::ocb-ife.png[OCB showing the involvement of Passenger and Aircraft in Entertain During Flight, and of Airline Company in Implement a Commercial Strategy]
+
+== Position in Arcadia
+
+Operational Analysis, before defining the system boundary.
+The xref:features/oab.adoc[OAB] provides the complementary operational context.
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+|Operational Capability |A goal or ability expected in the operational situation.
+|Operational Entity or Actor |A participant involved in the capability.
+|Involvement |The relationship from a capability to an involved participant.
+|Capability generalization |A relationship between a specialized capability and a more general capability.
+|Requirement and Describes link |A requirement and its relationship to a represented element.
+|===
+
+== Create the diagram
+
+Use the *OCB* shortcut in the Capella project welcome area, or create an OCB from the explorer on the `Capabilities` package or one of its sub-packages, in Operational Analysis.
+See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: Capabilities, entities, actors, and requirements are unsynchronized; Involvements, Generalizations, Communication Means, and Describes links between displayed elements are synchronized.
+
+== Describe capabilities and involvement
+
+. Use *New Operational Capability* on the background and name the capability for the operational goal.
+. Create participants with *New Operational Entity* or *New Operational Actor*, or show existing participants from the explorer.
+. From a capability, use *New Involvement* to connect it to a participant.
+. Repeat the involvement operation for each participant concerned.
+
+Use *New Generalization* between capabilities when a specialization relationship is needed.
+Capability and participant names identify model elements that can be reused in other views.
+
+{product} enforces the following rules, at creation and at reconnection:
+
+* An Involvement connects a capability to an Operational Entity or an Operational Actor.
+* A Generalization connects two distinct capabilities.
+* A reconnection that would duplicate an existing Involvement or Generalization is refused.
+
+== Describe participants and their communication
+
+* Use *New Operational Entity* or *New Operational Actor* on a participant to create a nested participant.
+* Use *New Communication Mean* to connect two participants; both ends of a Communication Mean can be reconnected.
+* Drop a participant on another participant to nest it in the model, or on the diagram background to move it back to the Structure package.
+
+include::user-manual:partial$diagram-common-operations.adoc[]
+
+== Related guidance
+
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] relates `Entertain Child and Parent` to the actors `Child` and `Parent`.
+
+* xref:features/oa-coc.adoc[]
+* xref:features/oab.adoc[]
+* xref:features/oaib.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

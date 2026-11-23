@@ -1,0 +1,31 @@
+= Integration and APIs
+
+Explore how {product} fits into your systems engineering toolchain and how to connect it with other tools.
+
+[cols="3*^", %noheader, frame=none, grid=none]
+|===
+a|image::hub.svg[xref=user-manual:integration/interoperability.adoc]
+
+**Interoperability**
+
+Exchange system models with other tools.
+
+xref:user-manual:integration/interoperability.adoc[Explore interoperability]
+
+a|image::tap_app.svg[xref=developer-guide:api/api.adoc]
+
+**APIs and automation**
+
+Connect applications and automate modeling tasks.
+
+xref:developer-guide:api/api.adoc[Explore the APIs]
+
+a|image::globe.svg[xref=user-manual:integration/capella.adoc]
+
+**Capella Desktop and {product}**
+
+Learn about transforming Capella models into SysML v2.
+
+xref:user-manual:integration/capella.adoc[Explore the link with Capella Desktop]
+
+|===

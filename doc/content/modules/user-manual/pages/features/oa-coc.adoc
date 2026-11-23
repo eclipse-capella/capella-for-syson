@@ -1,0 +1,29 @@
+= COC — Contextual Operational Capability
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Focus on one Operational Capability and the participants involved in it.
+It answers the question: Who is involved in achieving this operational capability?
+
+== Position in Arcadia
+
+Operational Analysis.
+
+== Main concepts
+
+* *Operational Capability*: The operational goal selected for examination.
+* *Operational Entity or Actor*: A participant involved in the capability.
+* *Involvement*: The relationship between the capability and a participant.
+* *Capability relationship*: A relationship linking the capability to another capability.
+
+== Related diagrams
+
+* xref:features/ocb.adoc[]
+* xref:features/oab.adoc[]
+
+For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

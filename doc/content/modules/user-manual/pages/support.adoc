@@ -1,0 +1,20 @@
+= Contact support
+:page-audience: 🧭 Systems engineers and ⚙️ DevOps
+
+Choose the contact appropriate to your request about {product}.
+
+== Access or deployment problems
+
+Contact the person responsible for your organization's installation if you cannot reach the application or access the modeling environment.
+The xref:installation-guide:requirements.adoc[prerequisites] and xref:installation-guide:how-tos/install.adoc[extension installation guide] identify the Capella-specific setup.
+The underlying environment is described in the https://doc.mbse-syson.org/syson/main/installation-guide/how-tos/install.html[SysON deployment documentation].
+
+== Modeling problems
+
+For a reproducible Capella modeling problem, use the {source-code-url}/issues[project issue tracker].
+Follow xref:contribute.adoc[the reporting guidance] and identify the Arcadia perspective, diagram, and modeling operation concerned.
+
+== Professional assistance and participation
+
+Use the contact linked from the https://mbse-capella.org/capella-for-syson.html[official project presentation] to discuss your context and assistance needs.
+Describe the engineering activity, your modeling objectives, and the help you are looking for.
