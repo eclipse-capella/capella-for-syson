@@ -12,9 +12,11 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.sfbd.view.nodes.requirement;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
+import org.eclipse.capella.diagram.sfbd.view.edges.describes.DescribesToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -22,6 +24,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
 import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
+import org.eclipse.syson.diagram.common.view.nodes.LegacyEdgeToolConverter;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -62,6 +65,9 @@ public class RequirementPaletteProvider {
                 .body(this.viewBuilderHelper.newChangeContext()
                         .expression(ServiceMethod.of1(DiagramMutationLabelService::directEditNode).aqlSelf("newLabel"))
                         .build());
+
+        nodeDescription.getEdgeTools().addAll(new LegacyEdgeToolConverter().convertToEdgeToolsWithPalette(
+                List.of(new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewDescribesTool(cache))));
 
         return this.diagramBuilderHelper.newNodePalette()
                 .deleteTool(deleteTool.build())
