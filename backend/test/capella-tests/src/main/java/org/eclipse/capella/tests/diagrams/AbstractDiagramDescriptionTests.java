@@ -52,6 +52,7 @@ import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescr
 import org.eclipse.sirius.components.view.diagram.ArrowStyle;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.DiagramElementDescription;
+import org.eclipse.sirius.components.view.diagram.EdgeDescription;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
@@ -66,8 +67,8 @@ import org.junit.jupiter.api.Test;
 /**
  * Checks the structure of the Capella for SysON diagrams.
  * <p>
- * This class cannot be extended directly: subclasses should extend {@link AbstractEditableDiagramDescriptionTests} or {@link AbstractReadOnlyDiagramDescriptionTests} so the tests are tailored to the
- * read-only nature of the diagram.
+ * This class cannot be extended directly: subclasses should extend {@link AbstractEditableDiagramDescriptionTests} or
+ * {@link AbstractReadOnlyDiagramDescriptionTests} so the tests are tailored to the read-only nature of the diagram.
  *
  * @author gdaniel
  */
@@ -155,12 +156,16 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     public void allReusedNodeDescriptionsHaveAContainer() {
         EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class).forEach(nodeDescription -> {
             nodeDescription.getReusedChildNodeDescriptions().forEach(reusedChildNodeDescription -> {
-                Assertions.assertThat(reusedChildNodeDescription.eContainer()).as("Reused child Node Description '%s' of '%s' has no container. At the very least, FakeNodeDescriptionProvider could contain it."
-                        .formatted(reusedChildNodeDescription.getName(), nodeDescription.getName())).isNotNull();
+                Assertions.assertThat(reusedChildNodeDescription.eContainer())
+                        .as("Reused child Node Description '%s' of '%s' has no container. At the very least, FakeNodeDescriptionProvider could contain it."
+                                .formatted(reusedChildNodeDescription.getName(), nodeDescription.getName()))
+                        .isNotNull();
             });
             nodeDescription.getReusedBorderNodeDescriptions().forEach(reusedBorderNodeDescription -> {
-                Assertions.assertThat(reusedBorderNodeDescription.eContainer()).as("Reused border Node Description '%s' of '%s' has no container. At the very least, FakeNodeDescriptionProvider could contain it."
-                        .formatted(reusedBorderNodeDescription.getName(), nodeDescription.getName())).isNotNull();
+                Assertions.assertThat(reusedBorderNodeDescription.eContainer())
+                        .as("Reused border Node Description '%s' of '%s' has no container. At the very least, FakeNodeDescriptionProvider could contain it."
+                                .formatted(reusedBorderNodeDescription.getName(), nodeDescription.getName()))
+                        .isNotNull();
             });
         });
     }
@@ -225,10 +230,9 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
 
     @Test
     public void eachRequirementDescribesEdgeHasTheCommonPresentation() {
-        if (this.diagramDescription.getNodeDescriptions().stream()
-                .anyMatch(nodeDescription -> REQUIREMENT_NODE_DESCRIPTION_NAME.equals(nodeDescription.getName()))) {
-            this.assertRequirementDescribesEdgePresentation();
-        }
+        this.diagramDescription.getEdgeDescriptions().stream()
+            .filter(edgeDescription -> DESCRIBES_EDGE_DESCRIPTION_NAME.equals(edgeDescription.getName()))
+                .forEach(this::assertRequirementDescribesEdgePresentation);
     }
 
     private void assertRequirementCompartmentPresentation(NodeDescription requirementNodeDescription) {
@@ -242,12 +246,7 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
                 .isEqualTo(HeaderSeparatorDisplayMode.IF_CHILDREN);
     }
 
-    private void assertRequirementDescribesEdgePresentation() {
-        var describesEdgeDescription = this.diagramDescription.getEdgeDescriptions().stream()
-                .filter(edgeDescription -> DESCRIBES_EDGE_DESCRIPTION_NAME.equals(edgeDescription.getName()))
-                .findFirst()
-                .orElseThrow();
-
+    private void assertRequirementDescribesEdgePresentation(EdgeDescription describesEdgeDescription) {
         Assertions.assertThat(describesEdgeDescription.getCenterLabelExpression())
                 .isEmpty();
         Assertions.assertThat(describesEdgeDescription.getStyle().getColor())
@@ -285,8 +284,10 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
      * This method only checks for public methods available in registered service classes.
      * </p>
      *
-     * @param serviceName the service to check
-     * @return {@code true} if the service matches a publicly available method in a registered service, {@code false} otherwise
+     * @param serviceName
+     *            the service to check
+     * @return {@code true} if the service matches a publicly available method in a registered service, {@code false}
+     *         otherwise
      */
     private boolean isRegisteredServiceMethod(String serviceName) {
         for (Class<?> diagramServiceClass : this.diagramServicesClasses) {
@@ -304,7 +305,8 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
     private String getDescriptionName(EObject eObject) {
         return this.getContainingDiagramElementDescription(eObject)
                 .map(DiagramElementDescription::getName)
-                // Use the DiagramDescription name if we can't find any parent DiagramElementDescription, this is the best guess we have.
+                // Use the DiagramDescription name if we can't find any parent DiagramElementDescription, this is the
+                // best guess we have.
                 .orElse(this.diagramDescription.getName());
     }
 
@@ -341,7 +343,7 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
                 // The icon is provided as a plain string
                 URL iconURL = AbstractDiagramDescriptionTests.class.getResource(iconURLExpression);
                 softly.assertThat(iconURL).as("Icon URL Expression %s in %s %s '%s' should reference an existing icon", iconURLExpression, this.getDescriptionName(parent), parent.eClass().getName(),
-                                this.getName(parent))
+                        this.getName(parent))
                         .isNotNull();
             }
         }

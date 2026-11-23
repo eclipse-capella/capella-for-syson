@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.sfbd.view;
 
 import org.eclipse.capella.diagram.sfbd.view.nodes.function.SystemFunctionToolProvider;
+import org.eclipse.capella.diagram.sfbd.view.nodes.requirement.RequirementToolProvider;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DropToolBuilder;
@@ -38,7 +39,8 @@ public class SFBDDiagramPaletteProvider {
     public DiagramPalette createDiagramPalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newDiagramPalette()
                 .dropTool(new DropToolBuilder().build())
-                .nodeTools(new SystemFunctionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewSystemFunctionNodeTool(cache))
+                .nodeTools(new SystemFunctionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewSystemFunctionNodeTool(cache),
+                        new RequirementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewRequirementNodeTool(cache))
                 .build();
     }
 }

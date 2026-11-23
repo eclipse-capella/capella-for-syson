@@ -51,6 +51,9 @@ public class SFBDViewDescriptionProvider implements IViewDescriptionProvider {
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.FUNCTION_BACKGROUND_COLOR, "#CBE5AC"));
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.FUNCTION_BORDER_COLOR, "#046866"));
         colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.FUNCTION_LABEL_COLOR, "#046866"));
+        colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.REQUIREMENT_BACKGROUND_COLOR, "#D8C3D6"));
+        colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.REQUIREMENT_BORDER_COLOR, "#72496E"));
+        colorPalette.getColors().add(this.createFixedColor(SFBDViewConstants.REQUIREMENT_LABEL_COLOR, "#72496E"));
         return colorPalette;
     }
 

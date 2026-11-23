@@ -15,6 +15,9 @@ package org.eclipse.capella.diagram.sfbd.view;
 import java.util.List;
 
 import org.eclipse.capella.diagram.sfbd.view.nodes.function.SystemFunctionNodeDescriptionProvider;
+import org.eclipse.capella.diagram.sfbd.view.nodes.requirement.RequirementNodeDescriptionProvider;
+import org.eclipse.capella.diagram.sfbd.view.nodes.requirement.compartment.SFBDCompartmentItemNodeDescriptionProvider;
+import org.eclipse.capella.diagram.sfbd.view.nodes.requirement.compartment.SFBDCompartmentNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sfbd.view.services.SFBDDiagramService;
 import org.eclipse.sirius.components.view.RepresentationDescription;
 import org.eclipse.sirius.components.view.builder.DefaultViewDiagramElementFinder;
@@ -58,7 +61,12 @@ public class SFBDViewDiagramDescriptionProvider implements IRepresentationDescri
 
         var cache = new DefaultViewDiagramElementFinder();
         var diagramElementDescriptionProviders = List.of(
-                new SystemFunctionNodeDescriptionProvider(colorProvider)
+                new SystemFunctionNodeDescriptionProvider(colorProvider),
+                new SFBDCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new SFBDCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(),
+                        SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+                new RequirementNodeDescriptionProvider(colorProvider)
         );
 
         diagramElementDescriptionProviders.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
