@@ -20,6 +20,7 @@ import org.eclipse.sirius.components.view.builder.providers.IRepresentationDescr
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.syson.sysml.metamodel.helper.EMFUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -123,16 +124,17 @@ public abstract class AbstractDiagramNodeDescriptionTests {
     protected abstract String getFunctionNodeDescriptionName();
 
     protected abstract String getComponentNodeDescriptionName();
+
     @Test
     public void eachFunctionNodeHasAdaptedPresentation() {
-        this.diagramDescription.getNodeDescriptions().stream()
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
                 .filter(nodeDescription -> this.hasFunctionNode() && this.getFunctionNodeDescriptionName().equals(nodeDescription.getName()))
                 .forEach(nodeDescription -> this.assertFunctionPresentation(nodeDescription));
     }
 
     @Test
     public void eachComponentNodeHasAdaptedPresentation() {
-        this.diagramDescription.getNodeDescriptions().stream()
+        EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
                 .filter(nodeDescription -> this.hasComponentNode() && this.getComponentNodeDescriptionName().equals(nodeDescription.getName()))
                 .forEach(nodeDescription -> this.assertComponentPresentation(nodeDescription));
     }
