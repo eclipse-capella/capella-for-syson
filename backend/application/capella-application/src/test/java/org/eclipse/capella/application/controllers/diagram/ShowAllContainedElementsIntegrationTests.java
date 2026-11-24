@@ -80,46 +80,7 @@ public class ShowAllContainedElementsIntegrationTests extends AbstractIntegratio
     @Test
     @DisplayName("Given an empty LAB diagram, when the show all contained elements is invoked, then the appropriate elements are displayed on the diagram")
     public void showAllContainedElementsOnLABDiagram() {
-
-        // This initialization should be removed once #378 is fixed: we should have all the elements in our test model.
-        ExecuteEditingContextFunctionInput semanticInitializationInput = new ExecuteEditingContextFunctionInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, (editingContext, input) -> {
-            IPayload result = new SuccessPayload(input.id());
-            CommonQueryService commonQueryService = new CommonQueryService();
-            CommonCreationService commonCreationService = new CommonCreationService();
-            if (editingContext instanceof EditingContext siriusWebEditingContext) {
-                Optional<Resource> optionalCapellaResource = siriusWebEditingContext.getDomain().getResourceSet().getResources().stream()
-                        .filter(resource -> resource.eAdapters().stream()
-                                .filter(ResourceMetadataAdapter.class::isInstance)
-                                .map(ResourceMetadataAdapter.class::cast)
-                                .anyMatch(resourceMetadata -> Objects.equals(resourceMetadata.getName(), "CapellaTest.sysml")))
-                        .findFirst();
-                if (optionalCapellaResource.isPresent()) {
-                    Resource capellaResource = optionalCapellaResource.get();
-                    Optional<PartUsage> optionalSystemComponent = commonQueryService.getArcadiaPerspectivePackage((Element) capellaResource.getContents().getFirst(),
-                                    ArcadiaEngineeringPerspective.LogicalArchitecture)
-                            .flatMap(commonQueryService::getStructurePackage)
-                            .flatMap(structurePackage -> structurePackage.getOwnedMember().stream()
-                                    .filter(commonQueryService::isComponent)
-                                    .map(PartUsage.class::cast)
-                                    .filter(member -> Objects.equals(member.getDeclaredName(), "system"))
-                                    .findFirst());
-                    if (optionalSystemComponent.isPresent()) {
-                        PartUsage systemComponent = optionalSystemComponent.get();
-                        // Create 2 components in the system component
-                        commonCreationService.createComponent(systemComponent);
-                        commonCreationService.createComponent(systemComponent);
-                    } else {
-                        result = new ErrorPayload(input.id(), "Cannot find LAB system component");
-                    }
-                } else {
-                    result = new ErrorPayload(input.id(), "Cannot find Capella resource");
-                }
-            }
-            return result;
-        });
-
-        assertThat(this.executeEditingContextFunctionRunner.execute(semanticInitializationInput).block(Duration.ofSeconds(10))).isInstanceOf(SuccessPayload.class);
-
+        this.initializeSemanticData();
 
         var input = new DiagramEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, CapellaProjectData.GraphicalIds.LAB_LOGICAL_ARCHITECTURE_BLANK_DIAGRAM_ID);
         var subscriptionResult = this.diagramEventSubscriptionRunner.run(input);
@@ -162,5 +123,92 @@ public class ShowAllContainedElementsIntegrationTests extends AbstractIntegratio
                 .consumeNextWith(checkDiagramContentAfterNodeTool)
                 .thenCancel()
                 .verify(Duration.ofSeconds(10));
+    }
+
+    @Test
+    @DisplayName("Given an empty LAB diagram, when the recursive show all contained elements is invoked, then the appropriate elements are displayed on the diagram")
+    public void showAllContainedElementsRecursiveOnLABDiagram() {
+        this.initializeSemanticData();
+
+        var input = new DiagramEventInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, CapellaProjectData.GraphicalIds.LAB_LOGICAL_ARCHITECTURE_BLANK_DIAGRAM_ID);
+        var subscriptionResult = this.diagramEventSubscriptionRunner.run(input);
+        assertThat(subscriptionResult.errors()).isEmpty();
+        var diagramFlux = subscriptionResult.flux();
+
+        Runnable executeShowAllContainedElementsRecursiveOnDiagram = () -> {
+            this.toolTester.invokeDiagramTool(CapellaProjectData.EDITING_CONTEXT_ID, CapellaProjectData.GraphicalIds.LAB_LOGICAL_ARCHITECTURE_BLANK_DIAGRAM_ID,
+                    "Show all contained elements (recursive)");
+        };
+
+        var checkDiagramContentAfterDiagramTool = assertRefreshedDiagramThat(diagram -> {
+            // This test should be completed to once #378 is fixed.
+            assertThat(diagram.getNodes()).hasSize(1);
+            Node system = diagram.getNodes().getFirst();
+            assertThat(system.getInsideLabel().getText()).isEqualTo("system");
+            assertThat(system.getChildNodes()).hasSize(2);
+            Node systemSubComponent1 = system.getChildNodes().get(0);
+            Node systemSubComponent2 = system.getChildNodes().get(1);
+            assertThat(systemSubComponent1.getInsideLabel().getText()).isEqualTo("C 1");
+            assertThat(systemSubComponent2.getInsideLabel().getText()).isEqualTo("C 2");
+            assertThat(systemSubComponent1.getChildNodes()).hasSize(1);
+            Node systemSubSubComponent = systemSubComponent1.getChildNodes().getFirst();
+            assertThat(systemSubSubComponent.getInsideLabel().getText()).isEqualTo("C 1");
+            assertThat(systemSubComponent2.getChildNodes()).hasSize(1);
+            Node allocatedFunction = systemSubComponent2.getChildNodes().getFirst();
+            assertThat(allocatedFunction.getInsideLabel().getText()).isEqualTo("Function 3");
+        });
+
+        StepVerifier.create(diagramFlux)
+                .consumeNextWith(assertRefreshedDiagramThat(diagram -> assertThat(diagram.getNodes().isEmpty())))
+                .then(executeShowAllContainedElementsRecursiveOnDiagram)
+                .consumeNextWith(checkDiagramContentAfterDiagramTool)
+                .thenCancel()
+                .verify(Duration.ofSeconds(10));
+
+    }
+
+    private void initializeSemanticData() {
+        // This initialization method should be removed once #378 is fixed: we should have all the elements in our test model.
+        ExecuteEditingContextFunctionInput semanticInitializationInput = new ExecuteEditingContextFunctionInput(UUID.randomUUID(), CapellaProjectData.EDITING_CONTEXT_ID, (editingContext, input) -> {
+            IPayload result = new SuccessPayload(input.id());
+            CommonQueryService commonQueryService = new CommonQueryService();
+            CommonCreationService commonCreationService = new CommonCreationService();
+            if (editingContext instanceof EditingContext siriusWebEditingContext) {
+                Optional<Resource> optionalCapellaResource = siriusWebEditingContext.getDomain().getResourceSet().getResources().stream()
+                        .filter(resource -> resource.eAdapters().stream()
+                                .filter(ResourceMetadataAdapter.class::isInstance)
+                                .map(ResourceMetadataAdapter.class::cast)
+                                .anyMatch(resourceMetadata -> Objects.equals(resourceMetadata.getName(), "CapellaTest.sysml")))
+                        .findFirst();
+                if (optionalCapellaResource.isPresent()) {
+                    Resource capellaResource = optionalCapellaResource.get();
+                    Optional<PartUsage> optionalSystemComponent = commonQueryService.getArcadiaPerspectivePackage((Element) capellaResource.getContents().getFirst(),
+                                    ArcadiaEngineeringPerspective.LogicalArchitecture)
+                            .flatMap(commonQueryService::getStructurePackage)
+                            .flatMap(structurePackage -> structurePackage.getOwnedMember().stream()
+                                    .filter(commonQueryService::isComponent)
+                                    .map(PartUsage.class::cast)
+                                    .filter(member -> Objects.equals(member.getDeclaredName(), "system"))
+                                    .findFirst());
+                    if (optionalSystemComponent.isPresent()) {
+                        PartUsage systemComponent = optionalSystemComponent.get();
+                        // Create 2 components in the system component
+                        var systemSubComponent1 = commonCreationService.createComponent(systemComponent);
+                        var systemSubComponent2 = commonCreationService.createComponent(systemComponent);
+                        // Create a requirement, this requirement shouldn't be displayed with the Show all contained elements tool
+                        commonCreationService.createRequirement(systemComponent);
+                        commonCreationService.createComponent(systemSubComponent1);
+                        // Allocate a function to subcomponent 2.
+                        commonCreationService.createFunction(systemSubComponent2);
+                    } else {
+                        result = new ErrorPayload(input.id(), "Cannot find LAB system component");
+                    }
+                } else {
+                    result = new ErrorPayload(input.id(), "Cannot find Capella resource");
+                }
+            }
+            return result;
+        });
+        assertThat(this.executeEditingContextFunctionRunner.execute(semanticInitializationInput).block(Duration.ofSeconds(10))).isInstanceOf(SuccessPayload.class);
     }
 }

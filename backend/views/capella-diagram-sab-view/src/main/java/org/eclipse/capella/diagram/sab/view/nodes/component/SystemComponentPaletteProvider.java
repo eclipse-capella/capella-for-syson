@@ -89,7 +89,9 @@ public class SystemComponentPaletteProvider {
 
     private NodeToolSection createRelatedElementsToolSection() {
         NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
-        nodeToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        AllContainedElementsToolProvider allContainedElementsToolProvider = new AllContainedElementsToolProvider();
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createContainedElementsTool());
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createRecursiveContainedElementsTool());
         return nodeToolSection;
     }
 

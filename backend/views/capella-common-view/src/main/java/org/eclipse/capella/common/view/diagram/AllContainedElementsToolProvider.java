@@ -43,4 +43,15 @@ public class AllContainedElementsToolProvider {
                         .build())
                 .build();
     }
+
+    public NodeTool createRecursiveContainedElementsTool() {
+        return this.diagramBuilders.newNodeTool()
+                .name("Show all contained elements (recursive)")
+                .iconURLsExpression("/icons/AddExistingElements.svg")
+                .body(this.viewBuilders.newChangeContext()
+                        .expression(ServiceMethod.of4(ShowRelatedElementsService::showAllContainedElementsRecursive).aqlSelf(CoreVariables.EDITING_CONTEXT.name(),
+                                DiagramVariables.DIAGRAM_CONTEXT.name(), DiagramVariables.SELECTED_NODE.name(), ViewDiagramDescriptionConverter.CONVERTED_NODES_VARIABLE))
+                        .build())
+                .build();
+    }
 }

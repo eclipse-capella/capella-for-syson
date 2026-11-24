@@ -62,8 +62,8 @@ import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
-import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.NodeToolSection;
+import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.sysml.SysmlPackage;
@@ -302,6 +302,9 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
                 softly.assertThat(relatedElementsTool.getNodeTools())
                         .as("NodeDescription %s should have a 'Show all contained elements'", this.getDescriptionName(nodeDescription))
                         .anyMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements"));
+                softly.assertThat(relatedElementsTool.getNodeTools())
+                        .as("NodeDescription %s should have a 'Show all contained elements (recursive)'", this.getDescriptionName(nodeDescription))
+                        .anyMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements (recursive)"));
             }
 
         }
@@ -328,6 +331,9 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
                 softly.assertThat(relatedElementsTool.getNodeTools())
                         .as("NodeDescription %s should not have a 'Show all contained elements'", this.getDescriptionName(nodeDescription))
                         .noneMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements"));
+                softly.assertThat(relatedElementsTool.getNodeTools())
+                        .as("NodeDescription %s should not have a 'Show all contained elements (recursive)'", this.getDescriptionName(nodeDescription))
+                        .noneMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements (recursive)"));
             }
         }
         softly.assertAll();
