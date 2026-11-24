@@ -13,6 +13,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.lab.view.nodes.function;
 
+import java.util.Objects;
+
 import org.eclipse.capella.diagram.lab.view.LABViewConstants;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -22,8 +24,6 @@ import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.InsideLabelStyle;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.LabelTextAlign;
-
-import java.util.Objects;
 
 /**
  * Provide Label for Function nodes.
@@ -45,7 +45,7 @@ public class FunctionLabelProvider {
         return this.diagramBuilderHelper.newInsideLabelDescription()
                 .overflowStrategy(LabelOverflowStrategy.WRAP)
                 .labelExpression("aql:self.name")
-                .position(InsideLabelPosition.MIDDLE_CENTER)
+                .position(InsideLabelPosition.TOP_CENTER)
                 .style(this.createInsideLabelStyle())
                 .textAlign(LabelTextAlign.CENTER)
                 .build();
