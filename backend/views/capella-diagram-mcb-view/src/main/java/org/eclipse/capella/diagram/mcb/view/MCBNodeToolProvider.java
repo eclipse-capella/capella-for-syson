@@ -16,6 +16,7 @@ import org.eclipse.capella.diagram.mcb.view.nodes.capability.CapabilityNodeDescr
 import org.eclipse.capella.diagram.mcb.view.nodes.mission.MissionNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.requirement.RequirementNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
+import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.diagrams.Node;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
@@ -23,7 +24,6 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeContainmentKind;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
 import org.eclipse.syson.util.AQLConstants;
-import org.eclipse.syson.util.AQLUtils;
 import org.eclipse.syson.util.ServiceMethod;
 
 /**
@@ -38,7 +38,9 @@ public class MCBNodeToolProvider {
     private final ViewBuilders viewBuilders = new ViewBuilders();
 
     public NodeTool createActorTool(IViewDiagramElementFinder cache) {
-        return this.createTool(cache, "SystemActorNodeDescription", "New System Actor", "SystemActor", ServiceMethod.of0(CommonCreationService::createActor).aqlSelf());
+        var tool = this.createTool(cache, "SystemActorNodeDescription", "New System Actor", "SystemActor", ServiceMethod.of0(CommonCreationService::createActor).aqlSelf());
+        tool.setPreconditionExpression(ServiceMethod.of0(CommonQueryService::isNotComponentHumanActor).aqlSelf());
+        return tool;
     }
 
     public NodeTool createRequirementTool(IViewDiagramElementFinder cache) {
@@ -61,7 +63,7 @@ public class MCBNodeToolProvider {
                         .children(this.diagramBuilders.newCreateView()
                                 .containmentKind(NodeContainmentKind.CHILD_NODE)
                                 .elementDescription(cache.getNodeDescription(descriptionName).orElseThrow())
-                                .parentViewExpression(AQLUtils.aqlString(Node.SELECTED_NODE))
+                                .parentViewExpression(AQLConstants.AQL + Node.SELECTED_NODE)
                                 .semanticElementExpression(AQLConstants.AQL_SELF).variableName("newInstanceView").build())
                         .build())
                 .build();

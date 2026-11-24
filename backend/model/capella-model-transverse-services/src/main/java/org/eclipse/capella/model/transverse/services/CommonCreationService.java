@@ -34,6 +34,7 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.A
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.syson.sysml.ActionUsage;
@@ -179,7 +180,9 @@ public class CommonCreationService {
             optionalTargetContainer = this.commonQueryService.getStructurePackage(parent)
                     .map(Element.class::cast);
         }
-        if (optionalTargetContainer.isPresent()) {
+        if (optionalTargetContainer
+                .filter(Predicate.not(this.commonQueryService::isComponentHumanActor))
+                .isPresent()) {
             Element targetContainer = optionalTargetContainer.get();
             partUsage = SysmlFactory.eINSTANCE.createPartUsage();
             this.metamodelMutationElementService.addChildInParent(targetContainer, partUsage);

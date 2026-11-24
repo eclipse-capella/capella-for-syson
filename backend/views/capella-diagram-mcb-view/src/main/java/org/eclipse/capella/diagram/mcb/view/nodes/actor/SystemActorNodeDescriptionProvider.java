@@ -14,7 +14,8 @@ package org.eclipse.capella.diagram.mcb.view.nodes.actor;
 
 import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.MCBViewConstants;
-import org.eclipse.capella.model.services.system.analysis.SAQueryService;
+import org.eclipse.capella.diagram.mcb.view.MCBNodeToolProvider;
+import org.eclipse.capella.diagram.mcb.view.services.MCBSemanticCandidateService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
@@ -28,6 +29,10 @@ import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.util.ServiceMethod;
+import org.eclipse.capella.diagram.mcb.view.services.MCBRepresentationDropService;
+import org.eclipse.sirius.components.collaborative.diagrams.DiagramContext;
+import org.eclipse.sirius.components.core.api.variables.CoreVariables;
+import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 import org.eclipse.syson.util.SysMLMetamodelHelper;
 
 /**
@@ -49,7 +54,7 @@ public class SystemActorNodeDescriptionProvider extends AbstractNodeDescriptionP
                 .domainType(SysMLMetamodelHelper.buildQualifiedName(SysmlPackage.eINSTANCE.getPartUsage()))
                 .defaultWidthExpression("180").defaultHeightExpression("70").userResizable(UserResizableDirection.BOTH)
                 .synchronizationPolicy(SynchronizationPolicy.UNSYNCHRONIZED)
-                .semanticCandidatesExpression(ServiceMethod.of0(SAQueryService::getActors).aqlSelf())
+                .semanticCandidatesExpression(ServiceMethod.of0(MCBSemanticCandidateService::getActorCandidates).aqlSelf())
                 .insideLabel(new SystemActorLabelProvider(this.diagramBuilderHelper, this.colorProvider).createInsideLabelDescription())
                 .style(this.diagramBuilderHelper.newRectangularNodeStyleDescription().background(this.colorProvider.getColor(MCBViewConstants.ACTOR_BACKGROUND_COLOR))
                         .borderColor(this.colorProvider.getColor(MCBViewConstants.ACTOR_BORDER_COLOR)).borderRadius(0).borderSize(2).build())
@@ -59,11 +64,20 @@ public class SystemActorNodeDescriptionProvider extends AbstractNodeDescriptionP
     @Override
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         var description = cache.getNodeDescription(NODE_DESCRIPTION_NAME).orElseThrow();
-        description.setPalette(this.createNodePalette());
+        description.setPalette(this.createNodePalette(cache));
+        description.getReusedChildNodeDescriptions().add(description);
         diagramDescription.getNodeDescriptions().add(description);
     }
-    private NodePalette createNodePalette() {
+
+    private NodePalette createNodePalette(IViewDiagramElementFinder cache) {
         return this.diagramBuilderHelper.newNodePalette()
+                .nodeTools(new MCBNodeToolProvider().createActorTool(cache))
+                .dropNodeTool(this.diagramBuilderHelper.newDropNodeTool().name("Drop Actor")
+                        .acceptedNodeTypes(cache.getNodeDescription(NODE_DESCRIPTION_NAME).orElseThrow())
+                        .body(this.viewBuilderHelper.newChangeContext()
+                                .expression(ServiceMethod.of6(MCBRepresentationDropService::dropIntoActorFromDiagram)
+                                        .aql("droppedElement", "droppedNode", "targetElement", "targetNode", CoreVariables.EDITING_CONTEXT.name(),
+                                                DiagramContext.DIAGRAM_CONTEXT, ViewDiagramDescriptionConverter.CONVERTED_NODES_VARIABLE)).build()).build())
                 .deleteTool(this.diagramBuilderHelper.newDeleteTool().name("Delete from Model")
                         .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of0(CommonDeletionService::delete).aqlSelf()).build()).build())
                 .labelEditTool(this.diagramBuilderHelper.newLabelEditTool().name("Edit")
