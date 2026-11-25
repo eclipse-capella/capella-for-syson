@@ -72,6 +72,27 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
 
     protected abstract JavaClasses getTestClasses();
 
+    /**
+     * Arcadia switches deliberately share dispatch through overridable cases, as EMF switches do.
+     * Keep the inherited rule unchanged for every other abstract class.
+     */
+    @Test
+    @Override
+    public void abstractClassesShouldNotContainBusinessCode() {
+        new AbstractCodingRulesTests() {
+            @Override
+            protected String getProjectRootPackage() {
+                return AbstractCapellaCodingRulesTests.this.getProjectRootPackage();
+            }
+
+            @Override
+            protected JavaClasses getClasses() {
+                return AbstractCapellaCodingRulesTests.this.getClasses().that(DescribedPredicate.describe("are not the Arcadia dispatch base class",
+                        javaClass -> !javaClass.getName().equals("org.eclipse.capella.model.transverse.services.AbstractArcadiaSwitch")));
+            }
+        }.abstractClassesShouldNotContainBusinessCode();
+    }
+
     @Override
     public void noMethodsShouldBeStatic() {
         ArchRule rule = ArchRuleDefinition.noMethods()
@@ -306,7 +327,8 @@ public abstract class AbstractCapellaCodingRulesTests extends AbstractCodingRule
                 Stream.concat(
                         perspectiveSpecificServiceJavaClasses,
                         this.getClasses().stream()
-                                .filter(javaClass -> javaClass.getName().equals("org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService"))))
+                                .filter(javaClass -> javaClass.getName().equals("org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService")
+                                        || javaClass.getName().equals("org.eclipse.capella.common.view.services.CapellaImagePathsService"))))
                 .flatMap(serviceClass -> serviceClass.getMethods().stream())
                 .filter(method -> method.getModifiers().contains(JavaModifier.PUBLIC))
                 .map(JavaMethod::getName)

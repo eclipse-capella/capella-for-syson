@@ -20,8 +20,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.eclipse.capella.common.view.services.CapellaImagePathsService;
-import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -52,17 +50,14 @@ public class CapellaEditService implements IEditServiceDelegate {
 
     private final SysMLv2EditService sysMLv2EditService;
 
-    private final ICapellaImagePathsService capellaImagePathsService;
-
     private final CommonCreationService commonCreationService;
 
     private final CommonDeletionService commonDeletionService;
 
     private final IObjectSearchService objectSearchService;
 
-    public CapellaEditService(SysMLv2EditService sysMLv2EditService, CapellaImagePathsService capellaImagePathsService, IObjectSearchService objectSearchService) {
+    public CapellaEditService(SysMLv2EditService sysMLv2EditService, IObjectSearchService objectSearchService) {
         this.sysMLv2EditService = Objects.requireNonNull(sysMLv2EditService);
-        this.capellaImagePathsService = Objects.requireNonNull(capellaImagePathsService);
         this.commonCreationService = new CommonCreationService();
         this.commonDeletionService = new CommonDeletionService();
         this.objectSearchService = Objects.requireNonNull(objectSearchService);
@@ -93,8 +88,7 @@ public class CapellaEditService implements IEditServiceDelegate {
                 String packageName = pkg.getDeclaredName();
                 if (DATA.equals(packageName)) {
                     // We add the entry for Exchange Items
-                    List<String> iconURL = new ArrayList<>();
-                    this.capellaImagePathsService.getImageFromArcadiaType(null, null, ARCADIA_EXCHANGE_ITEM).ifPresent(iconURL::add);
+                    List<String> iconURL = List.of("/icons/full/obj16/ExchangeItem.svg");
                     ChildCreationDescription childCreationDescription = new ChildCreationDescription(ID_PREFIX +
                             ARCADIA_EXCHANGE_ITEM, ARCADIA_EXCHANGE_ITEM, iconURL);
                     childCreationDescriptions.add(childCreationDescription);

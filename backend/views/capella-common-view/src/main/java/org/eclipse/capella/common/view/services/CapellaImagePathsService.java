@@ -15,20 +15,18 @@ package org.eclipse.capella.common.view.services;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_EXCHANGE;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT_PORT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTION;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_EXCHANGE;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_MISSION;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REQUIREMENT;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.capella.common.view.services.api.ICapellaImagePathsService;
+import org.eclipse.capella.model.transverse.services.AbstractArcadiaSwitch;
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.core.api.ILabelService;
@@ -68,163 +66,166 @@ public class CapellaImagePathsService implements ICapellaImagePathsService {
 
     private static final String ICONS_FULL_PATH = "/icons/full/obj16/%s.svg";
 
-    private final CommonQueryService commonQueryService;
-
     private final ILabelService labelService;
 
     public CapellaImagePathsService(ILabelService labelService) {
-        this.commonQueryService = new CommonQueryService();
         this.labelService = Objects.requireNonNull(labelService);
     }
 
     @Override
     public List<String> getImagePaths(Object object) {
         String imageName = null;
-        if (object instanceof org.eclipse.syson.sysml.Package pkg) {
-            imageName = this.computePackageImage(pkg);
-        } else if (this.commonQueryService.isDescribes(object)) {
-            imageName = String.format(ICONS_FULL_PATH, "Describes");
-        } else if (object instanceof RequirementUsage) {
-            imageName = String.format(ICONS_FULL_PATH, "Requirement");
-        } else if (object instanceof Element element) {
-            String arcadiaType = this.commonQueryService.getArcadiaType(element).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(null);
-            if (arcadiaType != null) {
-                imageName = this.computeArcadiaElementImage(element, arcadiaType).orElse(null);
-            }
+        if (object instanceof Element element) {
+            imageName = new ArcadiaImageSwitch().doSwitch(element);
         }
         if (imageName != null) {
-            return List.of(imageName);
+            return List.of(String.format(ICONS_FULL_PATH, imageName));
         }
         return this.labelService.getImagePaths(object);
     }
 
-    @Override
-    public Optional<String> getImageFromArcadiaType(ArcadiaEngineeringPerspective perspective, Element element, String arcadiaType) {
-        String imageName = switch (arcadiaType) {
-            case ARCADIA_COMPONENT -> this.computeComponentIcon(perspective, arcadiaType, element).orElse(null);
-            case ARCADIA_FUNCTION -> this.computeFunctionIcon(perspective, arcadiaType, element).orElse(null);
-            case ARCADIA_CAPABILITY -> this.computeCapabilityIcon(perspective, arcadiaType);
-            case ARCADIA_MISSION -> arcadiaType;
-            case ARCADIA_COMPONENT_PORT -> "FlowPort";
-            case ARCADIA_COMPONENT_EXCHANGE -> arcadiaType;
-            case ARCADIA_FUNCTIONAL_EXCHANGE -> this.computeFunctionalExchangeIcon(perspective, arcadiaType);
-            case ARCADIA_FUNCTIONAL_CHAIN -> this.computeFunctionalChainIcon(perspective, arcadiaType);
-            case ARCADIA_EXCHANGE_ITEM -> this.computeExchangeItemIcon(element, arcadiaType);
-            case ARCADIA_REQUIREMENT -> "Requirement";
-            default -> null;
-        };
-        if (imageName != null) {
-            return Optional.of(String.format(ICONS_FULL_PATH, imageName));
+    /**
+     * Resolves icon names for Arcadia library types using each element's perspective.
+     *
+     * @author tbezierslafosse
+     */
+    private static final class ArcadiaImageSwitch extends AbstractArcadiaSwitch<String> {
+
+        private final CommonQueryService commonQueryService;
+
+        private ArcadiaImageSwitch() {
+            this.commonQueryService = new CommonQueryService();
         }
-        return Optional.empty();
-    }
 
-    private String computeExchangeItemIcon(Element element, String arcadiaType) {
-        boolean hasParentFunction = Optional.ofNullable(element)
-                .map(Element::getOwner)
-                .filter(this.commonQueryService::isFunction)
-                .isPresent();
-        if (hasParentFunction && element instanceof Feature feature) {
-            FeatureDirectionKind direction = feature.getDirection();
-            return switch (direction) {
-                case IN -> "FunctionInputPort";
-                case OUT -> "FunctionOutputPort";
-                default -> arcadiaType;
-            };
-        }
-        return arcadiaType;
-    }
-
-    private String computeFunctionalExchangeIcon(ArcadiaEngineeringPerspective perspective, String arcadiaType) {
-        if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-            return "OperationalInteraction";
-        }
-        return arcadiaType;
-    }
-
-    private String computeFunctionalChainIcon(ArcadiaEngineeringPerspective perspective, String arcadiaType) {
-        if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-            return "OperationalProcess";
-        }
-        return arcadiaType;
-    }
-
-    private String computeCapabilityIcon(ArcadiaEngineeringPerspective perspective, String arcadiaType) {
-        if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-            return "OperationalCapability";
-        }
-        return arcadiaType;
-    }
-
-    private Optional<String> computeArcadiaElementImage(Element element, String arcadiaType) {
-        ArcadiaEngineeringPerspective perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
-        return this.getImageFromArcadiaType(perspective, element, arcadiaType);
-
-    }
-
-    private String computePackageImage(Package pkg) {
-        String value = null;
-        String declaredName = pkg.getDeclaredName();
-        // Guard against null declaredName to avoid NullPointerException in switch
-        if (declaredName == null) {
-            return null;
-        }
-        String packageImageName = switch (declaredName) {
-            case FUNCTIONS -> "LogicalFunctionPkg";
-            case STRUCTURE -> "LogicalComponentPkg";
-            case CAPABILITIES -> "CapabilitiesPkg";
-            case INTERFACES -> "InterfacesPkg";
-            case DATA -> "DataPkg";
-            case REQUIREMENTS -> "RequirementsPkg";
-            default -> null;
-        };
-
-        if (packageImageName == null && ArcadiaEngineeringPerspective.fromLabel(declaredName).isPresent()) {
-            packageImageName = declaredName.replaceAll("\\s", "");
-        }
-        if (packageImageName != null) {
-            value = String.format(ICONS_FULL_PATH, packageImageName);
-        }
-        return value;
-    }
-
-    private Optional<String> computeComponentIcon(ArcadiaEngineeringPerspective perspective, String name, Element element) {
-        Optional<String> result = Optional.empty();
-        if (this.commonQueryService.isComponentHumanActor(element)) {
-            result = Optional.of("ActorHuman");
-        } else {
-            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-                result = Optional.of("OperationalEntity");
+        @Override
+        protected String caseComponent(Element element) {
+            var queryService = this.commonQueryService;
+            var perspective = queryService.getArcadiaPerspective(element).orElse(null);
+            String imageName = null;
+            if (queryService.isComponentHumanActor(element)) {
+                imageName = "ActorHuman";
+            } else if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+                imageName = "OperationalEntity";
             } else {
                 String prefix = switch (perspective) {
-                    case ArcadiaEngineeringPerspective.SystemAnalysis -> SYSTEM;
-                    case ArcadiaEngineeringPerspective.LogicalArchitecture -> LOGICAL;
-                    case ArcadiaEngineeringPerspective.PhysicalArchitecture -> PHYSICAL;
+                    case SystemAnalysis -> SYSTEM;
+                    case LogicalArchitecture -> LOGICAL;
+                    case PhysicalArchitecture -> PHYSICAL;
                     case null, default -> null;
                 };
-                result = Optional.ofNullable(prefix).map(p -> {
-                    if (this.commonQueryService.isComponentActor(element)) {
-                        return p + "Actor";
-                    } else {
-                        return p + name;
+                if (prefix != null) {
+                    String suffix = ARCADIA_COMPONENT;
+                    if (queryService.isComponentActor(element)) {
+                        suffix = "Actor";
                     }
-                });
+                    imageName = prefix + suffix;
+                }
             }
+            return imageName;
         }
-        return result;
+
+        @Override
+        protected String caseFunction(Element element) {
+            var perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
+            return switch (perspective) {
+                case OperationalAnalysis -> "OperationalActivity";
+                case SystemAnalysis -> SYSTEM + ARCADIA_FUNCTION;
+                case LogicalArchitecture -> LOGICAL + ARCADIA_FUNCTION;
+                case PhysicalArchitecture -> PHYSICAL + ARCADIA_FUNCTION;
+                case null, default -> null;
+            };
+        }
+
+        @Override
+        protected String caseCapability(Element element) {
+            var perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
+            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+                return "OperationalCapability";
+            }
+            return ARCADIA_CAPABILITY;
+        }
+
+        @Override
+        protected String caseMission(Element element) {
+            return ARCADIA_MISSION;
+        }
+
+        @Override
+        protected String caseComponentPort(Element element) {
+            return "FlowPort";
+        }
+
+        @Override
+        protected String caseComponentExchange(Element element) {
+            return ARCADIA_COMPONENT_EXCHANGE;
+        }
+
+        @Override
+        protected String caseFunctionalExchange(Element element) {
+            var perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
+            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+                return "OperationalInteraction";
+            }
+            return ARCADIA_FUNCTIONAL_EXCHANGE;
+        }
+
+        @Override
+        protected String caseFunctionalChain(Element element) {
+            var perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
+            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
+                return "OperationalProcess";
+            }
+            return ARCADIA_FUNCTIONAL_CHAIN;
+        }
+
+        @Override
+        protected String caseExchangeItem(Element element) {
+            boolean hasParentFunction = Optional.ofNullable(element)
+                    .map(Element::getOwner)
+                    .filter(this.commonQueryService::isFunction)
+                    .isPresent();
+            if (hasParentFunction && element instanceof Feature feature) {
+                FeatureDirectionKind direction = feature.getDirection();
+                return switch (direction) {
+                    case IN -> "FunctionInputPort";
+                    case OUT -> "FunctionOutputPort";
+                    default -> ARCADIA_EXCHANGE_ITEM;
+                };
+            }
+            return ARCADIA_EXCHANGE_ITEM;
+        }
+
+        @Override
+        protected String caseRequirement(Element element) {
+            return "Requirement";
+        }
+
+        @Override
+        protected String defaultCase(Element element) {
+            String imageName = null;
+            if (element instanceof Package pkg) {
+                String declaredName = pkg.getDeclaredName();
+                if (declaredName != null) {
+                    imageName = switch (declaredName) {
+                        case FUNCTIONS -> "LogicalFunctionPkg";
+                        case STRUCTURE -> "LogicalComponentPkg";
+                        case CAPABILITIES -> "CapabilitiesPkg";
+                        case INTERFACES -> "InterfacesPkg";
+                        case DATA -> "DataPkg";
+                        case REQUIREMENTS -> "RequirementsPkg";
+                        default -> null;
+                    };
+                    if (imageName == null && ArcadiaEngineeringPerspective.fromLabel(declaredName).isPresent()) {
+                        imageName = declaredName.replaceAll("\\s", "");
+                    }
+                }
+            } else if (this.commonQueryService.isDescribes(element)) {
+                imageName = "Describes";
+            } else if (element instanceof RequirementUsage) {
+                imageName = "Requirement";
+            }
+            return imageName;
+        }
     }
 
-    private Optional<String> computeFunctionIcon(ArcadiaEngineeringPerspective perspective, String name, Element element) {
-        Optional<String> result = Optional.empty();
-        if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-            result = Optional.of("OperationalActivity");
-        } else if (ArcadiaEngineeringPerspective.SystemAnalysis.equals(perspective)) {
-            result = Optional.of(SYSTEM + name);
-        } else if (ArcadiaEngineeringPerspective.LogicalArchitecture.equals(perspective)) {
-            result = Optional.of(LOGICAL + name);
-        } else if (ArcadiaEngineeringPerspective.PhysicalArchitecture.equals(perspective)) {
-            result = Optional.of(PHYSICAL + name);
-        }
-        return result;
-    }
 }
