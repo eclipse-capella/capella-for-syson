@@ -339,6 +339,37 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
         softly.assertAll();
     }
 
+    @Test
+    public void eachNonItemNonCompartmentNodeHasAShowAllConnectedElementsTool() {
+        // Exclude synchronized diagrams: there is no reason to have related elements tools on them
+        if (!this.isSynchronizedDiagram()) {
+            // Every node can be connected to a requirement at least.
+            SoftAssertions softly = new SoftAssertions();
+            var nodeDescriptions = EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                    // Exclude compartment and compartment children
+                    .filter(nodeDescription -> !this.isCompartment().test(nodeDescription))
+                    .filter(nodeDescription -> EMFUtils.getFirstAncestor(NodeDescription.class, nodeDescription,
+                            parent -> parent instanceof NodeDescription parentNodeDescription
+                                    && this.isCompartment().test(parentNodeDescription)).isEmpty())
+                    .toList();
+            for (NodeDescription nodeDescription : nodeDescriptions) {
+                Optional<NodeToolSection> optionalRelatedElementsTool = Optional.ofNullable(nodeDescription.getPalette())
+                        .stream()
+                        .flatMap(nodePalette -> nodePalette.getToolSections().stream())
+                        .filter(toolSection -> Objects.equals(toolSection.getName(), "Related Elements"))
+                        .findFirst();
+                softly.assertThat(optionalRelatedElementsTool).as("NodeDescription %s should have a 'Related Elements' tool section", this.getDescriptionName(nodeDescription)).isPresent();
+                if (optionalRelatedElementsTool.isPresent()) {
+                    var relatedElementsTool = optionalRelatedElementsTool.get();
+                    softly.assertThat(relatedElementsTool.getNodeTools())
+                            .as("NodeDescription %s should have a 'Show all connected elements'", this.getDescriptionName(nodeDescription))
+                            .anyMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all connected elements"));
+                }
+            }
+            softly.assertAll();
+        }
+    }
+
     private void assertRequirementCompartmentPresentation(NodeDescription requirementNodeDescription) {
         Assertions.assertThat(requirementNodeDescription.getChildrenDescriptions())
                 .as("Requirement node should have a compartment")
@@ -462,5 +493,10 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
 
     protected Predicate<NodeDescription> isCompartment() {
         return nodeDescription -> nodeDescription.getName() != null && nodeDescription.getName().contains("Compartment");
+    }
+
+    protected boolean isSynchronizedDiagram() {
+        return EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .allMatch(nodeDescription -> nodeDescription.getSynchronizationPolicy() == SynchronizationPolicy.SYNCHRONIZED);
     }
 }

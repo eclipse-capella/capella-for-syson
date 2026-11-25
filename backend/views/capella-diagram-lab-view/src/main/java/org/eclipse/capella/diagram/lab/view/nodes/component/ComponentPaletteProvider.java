@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
 import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
 import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
@@ -101,6 +102,7 @@ public class ComponentPaletteProvider {
         AllContainedElementsToolProvider allContainedElementsToolProvider = new AllContainedElementsToolProvider();
         nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createContainedElementsTool());
         nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createRecursiveContainedElementsTool());
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
         return nodeToolSection;
     }
 

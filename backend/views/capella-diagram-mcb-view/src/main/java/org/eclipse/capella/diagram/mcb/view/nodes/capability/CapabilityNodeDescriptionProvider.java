@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.mcb.view.nodes.capability;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -20,6 +22,7 @@ import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
@@ -68,6 +71,7 @@ public class CapabilityNodeDescriptionProvider extends AbstractNodeDescriptionPr
 
     private NodePalette createNodePalette() {
         return this.diagramBuilderHelper.newNodePalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .deleteTool(this.diagramBuilderHelper.newDeleteTool().name("Delete from Model")
                         .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of0(CommonDeletionService::delete).aqlSelf()).build()).build())
                 .labelEditTool(this.diagramBuilderHelper.newLabelEditTool().name("Edit")
@@ -75,5 +79,11 @@ public class CapabilityNodeDescriptionProvider extends AbstractNodeDescriptionPr
                         .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of1(DiagramMutationLabelService::directEditNode).aqlSelf("newLabel")).build()).build())
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .build();
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
+        return nodeToolSection;
     }
 }
