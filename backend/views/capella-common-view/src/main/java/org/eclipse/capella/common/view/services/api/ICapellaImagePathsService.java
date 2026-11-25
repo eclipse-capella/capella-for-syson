@@ -14,10 +14,6 @@
 package org.eclipse.capella.common.view.services.api;
 
 import java.util.List;
-import java.util.Optional;
-
-import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
-import org.eclipse.syson.sysml.Element;
 
 /**
  * Computes the image paths of the Capella icons associated to the provided elements.
@@ -37,18 +33,5 @@ public interface ICapellaImagePathsService {
      * @return the image paths.
      */
     List<String> getImagePaths(Object object);
-
-    /**
-     * Provides the image path for the given arcadia element.
-     *
-     * @param perspective
-     *         the {@link ArcadiaEngineeringPerspective} (can be null)
-     * @param element
-     *         the typed {@link Element} (can be null)
-     * @param arcadiaType
-     *         the Arcadia type.
-     * @return the optional image path.
-     */
-    Optional<String> getImageFromArcadiaType(ArcadiaEngineeringPerspective perspective, Element element, String arcadiaType);
 
 }
