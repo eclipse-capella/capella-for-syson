@@ -12,7 +12,7 @@ Arcadia-based systems engineering with SysML v2.
 
 xref:user-manual:what-is.adoc[Meet {product}]
 
-a|image::key-features.svg[]
+a|image::key-features.svg[Features,width=64,height=64,xref=user-manual:key-features.adoc]
 
 **Key features in {product}**
 
