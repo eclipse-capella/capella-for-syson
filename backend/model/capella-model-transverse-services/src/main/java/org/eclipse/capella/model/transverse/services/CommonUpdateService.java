@@ -14,11 +14,9 @@ package org.eclipse.capella.model.transverse.services;
 
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_DESCRIPTION;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_ELEMENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_REALIZED_BY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZES;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZATION;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.MODELING_METADATA_STATUS_INFO;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.PATH_SEPARATOR;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.STATUS;
@@ -544,65 +542,34 @@ public class CommonUpdateService {
         featureTyping.setType(exchangeItem);
     }
 
-    public Usage setRealizes(Usage usage, Object newValue) {
-        List<Feature> newValues = this.computeUpdatedValues(newValue, this.commonQueryService.getRealizes(usage));
+    public Usage setRealized(Usage usage, Object newValue) {
+        List<Feature> newValues = this.computeUpdatedValues(newValue, this.commonQueryService.getRealized(usage));
         if (newValues.stream().allMatch(this.commonQueryService.getRealizableElements(usage)::contains)) {
-            this.updateRealizes(usage, newValues);
+            this.updateRealized(usage, newValues);
         }
         return usage;
     }
 
-    public void removeRealizes(Usage usage, Feature realizedElement) {
-        List<Feature> values = new ArrayList<>(this.commonQueryService.getRealizes(usage));
+    public void removeRealized(Usage usage, Feature realizedElement) {
+        List<Feature> values = new ArrayList<>(this.commonQueryService.getRealized(usage));
         values.remove(realizedElement);
-        this.updateRealizes(usage, values);
+        this.updateRealized(usage, values);
     }
 
-    public void clearRealizes(Usage usage) {
-        this.updateRealizes(usage, List.of());
+    public void clearRealized(Usage usage) {
+        this.updateRealized(usage, List.of());
     }
 
-    private void updateRealizes(Usage usage, List<Feature> newValues) {
-        List<Feature> oldValues = this.commonQueryService.getRealizes(usage);
-        if (!oldValues.equals(newValues)) {
-            this.setRealizesReference(usage, newValues);
-        }
-        oldValues.stream().filter(value -> !newValues.contains(value)).forEach(value -> this.removeRealizedBy(value, usage));
-        newValues.forEach(value -> this.addRealizedBy(value, usage));
-    }
-
-    private void setRealizesReference(Usage usage, List<Feature> values) {
-        if (values.isEmpty()) {
-            this.deleteReference(usage, ARCADIA_REALIZES);
-        } else {
-            this.setFeatureReferenceValues(usage, ARCADIA_PREFIX + ARCADIA_ELEMENT, ARCADIA_REALIZES, values, SysmlPackage.eINSTANCE.getOccurrenceUsage());
-        }
-    }
-
-    private void addRealizedBy(Feature realizedElement, Usage realizer) {
-        if (realizedElement instanceof Usage realizedUsage) {
-            List<Feature> realizers = new ArrayList<>(this.commonQueryService.getIsRealizedBy(realizedUsage));
-            if (!realizers.contains(realizer)) {
-                realizers.add(realizer);
-                this.setRealizedByReference(realizedUsage, realizers);
+    private void updateRealized(Usage usage, List<Feature> newValues) {
+        if (!this.commonQueryService.getRealized(usage).equals(newValues)) {
+            this.commonQueryService.getRealizations(usage).forEach(this.commonDeletionService::deleteReferenceUsage);
+            for (Feature realized : newValues) {
+                var allocation = this.metamodelMutationElementService.createAllocateEdge(realized, usage);
+                // Arcadia requires the realizing element to own the allocation.
+                usage.getOwnedRelationship().add(allocation.getOwningRelationship());
+                this.metamodelMutationElementService.initialize(allocation);
+                this.arcadiaLibraryServices.typeWithLibrary(allocation, ARCADIA_PREFIX + ARCADIA_REALIZATION, SysmlPackage.eINSTANCE.getAllocationDefinition());
             }
-        }
-    }
-
-    private void removeRealizedBy(Feature realizedElement, Usage realizer) {
-        if (realizedElement instanceof Usage realizedUsage) {
-            List<Feature> realizers = new ArrayList<>(this.commonQueryService.getIsRealizedBy(realizedUsage));
-            if (realizers.remove(realizer)) {
-                this.setRealizedByReference(realizedUsage, realizers);
-            }
-        }
-    }
-
-    private void setRealizedByReference(Usage realizedUsage, List<Feature> realizers) {
-        if (realizers.isEmpty()) {
-            this.deleteReference(realizedUsage, ARCADIA_IS_REALIZED_BY);
-        } else {
-            this.setFeatureReferenceValues(realizedUsage, ARCADIA_PREFIX + ARCADIA_ELEMENT, ARCADIA_IS_REALIZED_BY, realizers, SysmlPackage.eINSTANCE.getOccurrenceUsage());
         }
     }
 

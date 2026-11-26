@@ -16,9 +16,9 @@ import static org.eclipse.capella.model.transverse.services.CommonQueryService.A
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_ACTOR;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_HUMAN;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_IS_REALIZED_BY;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZING;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZES;
+import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZED;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,8 +34,8 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.ICapellaReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionalExchangesReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.InvolvedFunctionsWidgetProvider;
-import org.eclipse.capella.application.configuration.details.view.referencewidget.IsRealizedByReferenceWidgetProvider;
-import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizesReferenceWidgetProvider;
+import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizingReferenceWidgetProvider;
+import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizedReferenceWidgetProvider;
 import org.eclipse.capella.application.configuration.details.view.services.ArcadiaTraceabilityLabelService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
@@ -203,38 +203,38 @@ public class CapellaDetailsViewDescriptionProvider implements IEditingContextPro
         var setNewStatusOperation = ViewFactory.eINSTANCE.createChangeContext();
         setNewStatusOperation.setExpression(ServiceMethod.of1(CommonUpdateService::setStatusKind).aqlSelf(ViewFormDescriptionConverter.NEW_VALUE));
         statusSelectDescription.getBody().add(setNewStatusOperation);
-        return List.of(textfieldName, richTextDescription, statusSelectDescription, this.createRealizesWidget(), this.createIsRealizedByWidget());
+        return List.of(textfieldName, richTextDescription, statusSelectDescription, this.createRealizedWidget(), this.createRealizingWidget());
     }
 
-    private FormElementIf createRealizesWidget() {
-        FormElementIf realizesWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
-        realizesWidgetIf.setName("RealizesWidgetIf");
-        realizesWidgetIf.setPredicateExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::hasRealizesWidget).aqlSelf());
+    private FormElementIf createRealizedWidget() {
+        FormElementIf realizedWidgetIf = FormFactory.eINSTANCE.createFormElementIf();
+        realizedWidgetIf.setName("RealizedWidgetIf");
+        realizedWidgetIf.setPredicateExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::hasRealizedWidget).aqlSelf());
 
-        var realizesWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
-        realizesWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + RealizesReferenceWidgetProvider.WIDGET_NAME);
-        realizesWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
-        realizesWidget.setReferenceNameExpression(ARCADIA_REALIZES);
-        realizesWidget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getRealizesWidgetLabelValue).aqlSelf());
+        var realizedWidget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
+        realizedWidget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + RealizedReferenceWidgetProvider.WIDGET_NAME);
+        realizedWidget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
+        realizedWidget.setReferenceNameExpression(ARCADIA_REALIZED);
+        realizedWidget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getRealizedWidgetLabelValue).aqlSelf());
 
-        realizesWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
-        realizesWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
-        realizesWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
-        realizesWidgetIf.getChildren().add(realizesWidget);
+        realizedWidget.setAdd(ReferenceFactory.eINSTANCE.createReferenceWidgetAdd());
+        realizedWidget.setRemove(ReferenceFactory.eINSTANCE.createReferenceWidgetRemove());
+        realizedWidget.setClearButton(ReferenceFactory.eINSTANCE.createReferenceWidgetClearButtonDescription());
+        realizedWidgetIf.getChildren().add(realizedWidget);
 
-        return realizesWidgetIf;
+        return realizedWidgetIf;
     }
 
-    private FormElementIf createIsRealizedByWidget() {
+    private FormElementIf createRealizingWidget() {
         FormElementIf widgetIf = FormFactory.eINSTANCE.createFormElementIf();
-        widgetIf.setName("IsRealizedByWidgetIf");
-        widgetIf.setPredicateExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::hasIsRealizedByWidget).aqlSelf());
+        widgetIf.setName("RealizingWidgetIf");
+        widgetIf.setPredicateExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::hasRealizingWidget).aqlSelf());
 
         var widget = ReferenceFactory.eINSTANCE.createReferenceWidgetDescription();
-        widget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + IsRealizedByReferenceWidgetProvider.WIDGET_NAME);
+        widget.setName(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + RealizingReferenceWidgetProvider.WIDGET_NAME);
         widget.setReferenceOwnerExpression(AQLConstants.AQL_SELF);
-        widget.setReferenceNameExpression(ARCADIA_IS_REALIZED_BY);
-        widget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getIsRealizedByWidgetLabelValue).aqlSelf());
+        widget.setReferenceNameExpression(ARCADIA_REALIZING);
+        widget.setLabelExpression(ServiceMethod.of0(ArcadiaTraceabilityLabelService::getRealizingWidgetLabelValue).aqlSelf());
         widget.setIsEnabledExpression(AQLConstants.AQL_FALSE);
         widgetIf.getChildren().add(widget);
         return widgetIf;

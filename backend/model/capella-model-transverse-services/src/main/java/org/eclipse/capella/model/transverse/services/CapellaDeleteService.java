@@ -86,11 +86,11 @@ public class CapellaDeleteService {
         }
         var updateService = new CommonUpdateService();
         for (Usage usage : usagesToDelete) {
-            this.commonQueryService.getIsRealizedBy(usage).stream()
+            this.commonQueryService.getRealizing(usage).stream()
                     .filter(Usage.class::isInstance)
                     .map(Usage.class::cast)
-                    .forEach(realizer -> updateService.removeRealizes(realizer, usage));
-            updateService.clearRealizes(usage);
+                    .forEach(realizer -> updateService.removeRealized(realizer, usage));
+            updateService.clearRealized(usage);
         }
     }
 

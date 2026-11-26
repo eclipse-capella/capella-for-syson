@@ -41,6 +41,7 @@ import org.eclipse.syson.sysml.PartUsage;
 import org.eclipse.syson.sysml.PerformActionUsage;
 import org.eclipse.syson.sysml.PortDefinition;
 import org.eclipse.syson.sysml.RequirementDefinition;
+import org.eclipse.syson.sysml.ReferenceUsage;
 import org.eclipse.syson.sysml.SysmlFactory;
 import org.eclipse.syson.util.SysONEContentAdapter;
 import org.junit.jupiter.api.Test;
@@ -410,10 +411,10 @@ public class SARepresentationMutationServiceTests {
         return functionalChainType;
     }
 
-    private FlowUsage createFunctionalExchangeReference(String declaredName) {
-        var flowUsage = SysmlFactory.eINSTANCE.createFlowUsage();
-        flowUsage.setDeclaredName(declaredName);
-        return flowUsage;
+    private ReferenceUsage createFunctionalExchangeReference(String declaredName) {
+        var referenceUsage = SysmlFactory.eINSTANCE.createReferenceUsage();
+        referenceUsage.setDeclaredName(declaredName);
+        return referenceUsage;
     }
 
     private AttributeUsage createAttribute(String declaredName) {

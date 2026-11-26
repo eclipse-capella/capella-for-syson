@@ -17,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.capella.model.transverse.services.ArcadiaLibraryServices;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
@@ -30,7 +29,6 @@ import org.eclipse.sirius.components.emf.services.DefaultLabelFeatureProvider;
 import org.eclipse.sirius.web.application.object.services.DefaultLabelService;
 import org.eclipse.syson.sysml.FeatureDirectionKind;
 import org.eclipse.syson.sysml.SysmlFactory;
-import org.eclipse.syson.sysml.SysmlPackage;
 import org.eclipse.syson.sysml.metamodel.services.MetamodelMutationElementService;
 import org.eclipse.syson.sysml.provider.SysmlItemProviderAdapterFactory;
 import org.junit.jupiter.api.Test;
@@ -65,8 +63,6 @@ public class CapellaImagePathsServiceTests extends AbstractSemanticTests {
         var input = creationService.createFunctionPort(targetFunction, FeatureDirectionKind.IN);
         var functionalExchange = creationService.createFunctionalExchange(output, input);
         var requirement = creationService.createRequirement(model.getRequirementsPackage().getElement());
-        new ArcadiaLibraryServices().typeWithLibrary(requirement, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_REQUIREMENT,
-                SysmlPackage.eINSTANCE.getRequirementDefinition());
 
         var expectedIcons = Map.ofEntries(
                 Map.entry(component, "SystemComponent"),

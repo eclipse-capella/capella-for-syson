@@ -356,7 +356,7 @@ public class CommonCreationService {
 
             this.commonNamingService.setElementDefaultDeclaredName(actionUsage, FUNCTIONAL_CHAIN_DEFAULT_DECLAREDNAME_PREFIX);
             this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES, selectedObjects,
-                    SysmlPackage.eINSTANCE.getFlowUsage().getName());
+                    SysmlPackage.eINSTANCE.getReferenceUsage().getName());
         }
         return actionUsage;
     }

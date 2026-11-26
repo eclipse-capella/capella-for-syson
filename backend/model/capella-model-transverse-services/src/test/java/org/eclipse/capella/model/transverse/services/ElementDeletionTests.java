@@ -14,7 +14,6 @@
 package org.eclipse.capella.model.transverse.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_REALIZES;
 
 import java.util.List;
 
@@ -49,25 +48,25 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         var firstRealized = this.commonCreationService.createFunction(systemFunction);
         var secondRealized = this.commonCreationService.createFunction(systemFunction);
-        this.commonUpdateService.setRealizes(realizer, List.of(firstRealized, secondRealized));
+        this.commonUpdateService.setRealized(realizer, List.of(firstRealized, secondRealized));
 
         this.commonDeletionService.delete(firstRealized);
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(secondRealized);
-        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(secondRealized);
+        assertThat(this.commonQueryService.getRealizing(secondRealized)).containsExactly(realizer);
     }
 
     @Test
-    public void deleteLastRealizedFunctionShouldRemoveRealizesReference() {
+    public void deleteLastRealizedFunctionShouldRemoveRealization() {
         var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         var realized = this.commonCreationService.createFunction(systemFunction);
-        this.commonUpdateService.setRealizes(realizer, realized);
+        this.commonUpdateService.setRealized(realizer, realized);
 
         this.commonDeletionService.delete(realized);
 
-        assertThat(this.commonQueryService.getFeatureReferenceExpression(realizer, ARCADIA_REALIZES)).isEmpty();
-        assertThat(this.commonQueryService.getRealizes(realizer)).isEmpty();
+        assertThat(this.commonQueryService.getRealizations(realizer)).isEmpty();
+        assertThat(this.commonQueryService.getRealized(realizer)).isEmpty();
     }
 
     @Test
@@ -76,13 +75,13 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         var firstRealizer = this.commonCreationService.createFunction(logicalFunction);
         var secondRealizer = this.commonCreationService.createFunction(logicalFunction);
         var realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.commonUpdateService.setRealizes(firstRealizer, realized);
-        this.commonUpdateService.setRealizes(secondRealizer, realized);
+        this.commonUpdateService.setRealized(firstRealizer, realized);
+        this.commonUpdateService.setRealized(secondRealizer, realized);
 
         this.commonDeletionService.delete(firstRealizer);
 
-        assertThat(this.commonQueryService.getIsRealizedBy(realized)).containsExactly(secondRealizer);
-        assertThat(this.commonQueryService.getRealizes(secondRealizer)).containsExactly(realized);
+        assertThat(this.commonQueryService.getRealizing(realized)).containsExactly(secondRealizer);
+        assertThat(this.commonQueryService.getRealized(secondRealizer)).containsExactly(realized);
     }
 
     @Test
@@ -92,12 +91,12 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
         var parent = this.commonCreationService.createFunction(systemFunction);
         var realized = this.commonCreationService.createFunction(parent);
         var remaining = this.commonCreationService.createFunction(systemFunction);
-        this.commonUpdateService.setRealizes(realizer, List.of(realized, remaining));
+        this.commonUpdateService.setRealized(realizer, List.of(realized, remaining));
 
         this.commonDeletionService.delete(parent);
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(remaining);
-        assertThat(this.commonQueryService.getIsRealizedBy(remaining)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(remaining);
+        assertThat(this.commonQueryService.getRealizing(remaining)).containsExactly(realizer);
     }
 
     @Test
