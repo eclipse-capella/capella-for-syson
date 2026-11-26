@@ -62,6 +62,7 @@ public class MCBViewDescriptionProvider implements IDiagramViewDescriptionProvid
         colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.MISSION_BORDER_COLOR, "#5B4040"));
         colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.MISSION_LABEL_COLOR, "#000000"));
         colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.RELATION_COLOR, "#a9a9a9"));
+        colorPalette.getColors().add(this.createFixedColor(MCBViewConstants.DESCRIBES_BACKGROUND_COLOR, "#72496E"));
         return colorPalette;
     }
 
