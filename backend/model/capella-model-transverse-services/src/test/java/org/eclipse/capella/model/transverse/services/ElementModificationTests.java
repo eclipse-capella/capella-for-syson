@@ -63,6 +63,31 @@ public class ElementModificationTests extends AbstractSemanticTests {
     private final UtilService utilService = new UtilService();
 
     @Test
+    public void setCapabilityInvolvementSourceShouldMoveBetweenMissionAndCapabilityAndRejectDuplicates() {
+        var context = this.capellaModel.getSystemAnalysisPerspective().getElement();
+        var mission = this.commonCreationService.createMission(context);
+        var newMission = this.commonCreationService.createMission(context);
+        var capability = this.commonCreationService.createCapability(context);
+        var first = this.commonCreationService.createActor(context);
+        var second = this.commonCreationService.createActor(context);
+        this.commonCreationService.createCapabilityInvolvement(mission, first);
+        this.commonCreationService.createCapabilityInvolvement(mission, second);
+
+        this.commonUpdateService.setCapabilityInvolvementTarget(mission, first, second);
+        assertThat(this.commonQueryService.getInvolvedComponents(mission)).containsExactly(first, second);
+        this.commonUpdateService.setCapabilityInvolvementSource(mission, capability, first);
+        assertThat(this.commonQueryService.getInvolvedComponents(mission)).containsExactly(second);
+        assertThat(this.commonQueryService.getInvolvedComponents(capability)).containsExactly(first);
+        this.commonUpdateService.setCapabilityInvolvementTarget(capability, first, second);
+        assertThat(this.commonQueryService.getInvolvedComponents(capability)).containsExactly(second);
+        this.commonUpdateService.setCapabilityInvolvementSource(capability, mission, second);
+        assertThat(this.commonQueryService.getInvolvedComponents(capability)).containsExactly(second);
+        this.commonUpdateService.setCapabilityInvolvementSource(capability, newMission, second);
+        assertThat(this.commonQueryService.getInvolvedComponents(capability)).isEmpty();
+        assertThat(this.commonQueryService.getInvolvedComponents(newMission)).containsExactly(second);
+    }
+
+    @Test
     public void setFeatureReferenceValuesShouldHandleSingleMultipleAndEmptyLibraryValues() {
         ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage firstRealized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();

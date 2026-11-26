@@ -44,6 +44,22 @@ public class ElementDeletionTests extends org.eclipse.capella.tests.semantic.Abs
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
+    public void deleteCapabilityInvolvementShouldPreserveOtherActorsAndRemoveEmptyReference() {
+        var context = this.capellaModel.getSystemAnalysisPerspective().getElement();
+        var mission = this.commonCreationService.createMission(context);
+        var first = this.commonCreationService.createActor(context);
+        var second = this.commonCreationService.createActor(context);
+        this.commonCreationService.createCapabilityInvolvement(mission, first);
+        this.commonCreationService.createCapabilityInvolvement(mission, second);
+
+        this.commonDeletionService.deleteCapabilityInvolvement(mission, first);
+        assertThat(this.commonQueryService.getInvolvedComponents(mission)).containsExactly(second);
+        this.commonDeletionService.deleteCapabilityInvolvement(mission, second);
+        assertThat(this.commonQueryService.getInvolvedComponents(mission)).isEmpty();
+        assertThat(mission.getNestedReference()).isEmpty();
+    }
+
+    @Test
     public void deleteRealizedFunctionShouldPreserveOtherRealizations() {
         var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var systemFunction = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
