@@ -14,6 +14,7 @@ package org.eclipse.capella.diagram.mcb.view;
 
 import java.util.List;
 
+import org.eclipse.capella.diagram.mcb.view.edges.describes.DescribesEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.edges.exploitation.ExploitationEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.edges.involvement.InvolvementEdgeDescriptionProvider;
 import org.eclipse.capella.diagram.mcb.view.nodes.actor.SystemActorNodeDescriptionProvider;
@@ -63,10 +64,10 @@ public class MCBViewDiagramDescriptionProvider implements IRepresentationDescrip
                 .build();
 
         var cache = new ViewDiagramElementFinder();
-        List<IDiagramElementDescriptionProvider> providers = List.of(new SystemActorNodeDescriptionProvider(colorProvider), new MCBCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(), SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
+        var providers = List.of(new SystemActorNodeDescriptionProvider(colorProvider), new MCBCompartmentItemNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(), SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new MCBCompartmentNodeDescriptionProvider(SysmlPackage.eINSTANCE.getRequirementUsage(), SysmlPackage.eINSTANCE.getElement_Documentation(), colorProvider),
                 new RequirementNodeDescriptionProvider(colorProvider), new CapabilityNodeDescriptionProvider(colorProvider), new MissionNodeDescriptionProvider(colorProvider),
-                new ExploitationEdgeDescriptionProvider(colorProvider), new InvolvementEdgeDescriptionProvider(colorProvider));
+                new ExploitationEdgeDescriptionProvider(colorProvider), new InvolvementEdgeDescriptionProvider(colorProvider), new DescribesEdgeDescriptionProvider(colorProvider));
         providers.stream().map(IDiagramElementDescriptionProvider::create).forEach(cache::put);
         providers.forEach(provider -> provider.link(diagramDescription, cache));
         diagramDescription.setPalette(new MCBDiagramPaletteProvider().createDiagramPalette(cache));

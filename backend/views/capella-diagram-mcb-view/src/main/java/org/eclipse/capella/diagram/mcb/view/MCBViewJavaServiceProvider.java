@@ -25,6 +25,7 @@ import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonNamingService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.capella.model.transverse.services.CommonUpdateService;
+import org.eclipse.capella.model.transverse.services.TransverseRepresentationReconnectToolServices;
 import org.eclipse.sirius.components.view.View;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
 import org.eclipse.syson.diagram.common.view.services.ViewLabelService;
@@ -59,6 +60,7 @@ public class MCBViewJavaServiceProvider implements IJavaServiceProvider {
                     CommonCreationService.class,
                     CommonDeletionService.class,
                     CommonUpdateService.class,
+                    TransverseRepresentationReconnectToolServices.class,
                     CommonNamingService.class,
                     ViewLabelService.class,
                     DiagramMutationLabelService.class,

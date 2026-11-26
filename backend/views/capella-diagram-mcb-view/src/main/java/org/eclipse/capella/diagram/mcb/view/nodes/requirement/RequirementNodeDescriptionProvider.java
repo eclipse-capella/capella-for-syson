@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.mcb.view.nodes.requirement;
 
 import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.edges.describes.DescribesToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
@@ -38,8 +39,7 @@ import org.eclipse.syson.util.SysMLMetamodelHelper;
  */
 public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionProvider {
 
-    // Remove name suffix when the describe edges are added.
-    public static final String NODE_DESCRIPTION_NAME = "RequirementNodeDescription_tmp";
+    public static final String NODE_DESCRIPTION_NAME = "RequirementNodeDescription";
 
     private final IDescriptionNameGenerator nameGenerator = new DescriptionNameGenerator("MCB");
 
@@ -68,6 +68,7 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
         cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
             nodeDescription.setPalette(this.createNodePalette());
+            nodeDescription.getEdgeTools().add(new DescribesToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewDescribesTool(cache));
             String documentationCompartmentName = this.nameGenerator.getCompartmentName(SysmlPackage.eINSTANCE.getRequirementUsage(),
                     SysmlPackage.eINSTANCE.getElement_Documentation());
             cache.getNodeDescription(documentationCompartmentName)
