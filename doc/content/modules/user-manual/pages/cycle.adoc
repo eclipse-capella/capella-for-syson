@@ -1,8 +1,6 @@
 = Release cycle
 :page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
 
-Use the Capella for SysON publication information to identify versions and coordinate updates to your modeling environment.
-
 == Version numbering
 
 Versions use a `YEAR.MONTH.PATCH` format.

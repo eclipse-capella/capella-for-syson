@@ -1,13 +1,10 @@
 = Best practices guides
 
-Use these practices when describing an Arcadia system model in {product}.
-They adapt the methodological recommendations of Capella Desktop to the web modeling environment.
+These practices adapt the methodological recommendations of Capella Desktop to {product}.
 
 == Choose the engineering perspective
 
-Identify the operational or system question before choosing a diagram.
-Use the xref:features/features.adoc[diagram catalogue] to find the view that serves that question.
-The xref:key-features.adoc[feature matrix] identifies the capabilities provided by the application.
+Identify the operational or system question before choosing a diagram in the xref:features/features.adoc[diagram catalogue].
 
 Work from the need to the solution:
 
@@ -19,14 +16,7 @@ Work from the need to the solution:
 Create the elements explicitly in each perspective, and relate them with realizations.
 See the xref:glossary.adoc[Arcadia glossary] for the concepts of each perspective.
 
-== Distinguish decomposition, allocation, and realization
-
-* Decomposition organizes activities, functions, or components into a hierarchy.
-* Allocation associates a function with the component that performs it.
-* Realization relates elements across engineering perspectives.
-
-Use these relationships to express their engineering meaning.
-The xref:concepts.adoc[key concepts] and xref:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] provide examples.
+Use decomposition for hierarchies within a perspective, allocation from functions to components, and realization across perspectives; see xref:concepts.adoc#model[the key concepts].
 
 == Describe the functional analysis before the interfaces
 
@@ -53,7 +43,7 @@ Give each diagram a name that identifies its engineering purpose.
 * Hide the ports or collapse the nodes that do not contribute to the purpose of the diagram.
 * Use the same layout conventions in all diagrams of a model, for example the actors on the borders and the system in the center.
 
-See xref:concepts.adoc#synchronization[synchronized and unsynchronized elements] to understand which elements a diagram shows automatically.
+See xref:concepts.adoc#synchronization[] for the elements a diagram shows automatically.
 
 == Organize the model
 
@@ -69,10 +59,4 @@ See xref:concepts.adoc#synchronization[synchronized and unsynchronized elements]
 
 == Keep the model consistent with the library
 
-Create and modify Arcadia elements with the {product} tools, which preserve the relationships defined by the xref:features/arcadia-library.adoc[Arcadia library].
-When the model is changed by other means, such as the textual import or the APIs, keep these relationships so that the elements remain recognized as Arcadia elements.
-
-== Use the library definitions as a reference
-
-For the meaning and SysML v2 definition of Arcadia concepts, refer to the https://github.com/eclipse-capella/arcadia-sysmlv2-lib/tree/master/doc[Arcadia SysML v2 Library documentation].
-For the method itself, refer to the https://mbse-capella.org/arcadia.html[Arcadia reference documents].
+Prefer the {product} tools to the textual import or the APIs for creating Arcadia elements; see xref:features/arcadia-library.adoc#keep-consistent[why].

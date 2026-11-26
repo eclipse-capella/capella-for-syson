@@ -5,6 +5,4 @@ Select the documentation corresponding to the SysON version you deploy.
 
 == Capella for SysON extension
 
-Use a Capella for SysON extension compatible with your SysON version.
-The extension must be loaded and its frontend configured to provide the Capella modeling environment.
-See xref:how-tos/install.adoc[the installation instructions].
+Use a {product} extension compatible with your SysON version; the compatible SysON version is stated in the xref:user-manual:release-notes/release-notes.adoc[release notes].

@@ -34,9 +34,8 @@ It shows the activity hierarchy, while an xref:features/oaib.adoc[OAIB] describe
 
 An OABD is associated with an Operational Activity and displays the hierarchy within that context.
 The diagram uses automatic layout until an element is moved.
-Use the *OABD* shortcut in the Capella project welcome area to create a diagram on the root Operational Activity, or create an OABD on an Operational Activity from the explorer.
+Use the *OABD* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area] to create a diagram on the root Operational Activity, or create an OABD on an Operational Activity from the explorer.
 
-See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
 
 xref:user-manual:concepts.adoc#synchronization[Synchronization]: Operational Activities and their `Contained In` links are synchronized: the diagram shows the whole hierarchy below its activity. Requirements are unsynchronized.
 
@@ -71,4 +70,3 @@ include::user-manual:partial$diagram-common-operations.adoc[]
 In the xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial], `Launch projectile` is a sub-activity of `Play with toy`.
 Use the OABD to inspect that decomposition before describing the activity exchanges in an xref:features/oaib.adoc[OAIB].
 
-For the diagram catalogue, see xref:features/features.adoc[Features and capabilities].

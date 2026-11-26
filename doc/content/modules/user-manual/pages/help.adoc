@@ -1,5 +1,3 @@
 = Support and resources
 
-Find the right channel for a question, a modeling problem, or feedback about {product}.
-
 include::user-manual:partial$nav-help.adoc[]

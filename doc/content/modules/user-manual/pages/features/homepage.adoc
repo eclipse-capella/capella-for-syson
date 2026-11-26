@@ -20,13 +20,5 @@ image::homepage-templates.png[Projects browser showing the Capella, Capella-Libr
 |Prepare reusable model content in a library project.
 |===
 
-Both templates include the Arcadia library required by the modeling environment.
-The `Capella` template initializes the model structure, while `Capella-Library` provides the starting project for preparing library content.
-
-== Start an Arcadia model
-
-. Select the `Capella` template when creating a project.
-. Open the project editor and locate the Arcadia engineering perspectives in the model explorer.
-. Continue with the xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] for a modeling example.
-
-After opening a project, continue with xref:features/editor.adoc[the project editor].
+Both templates depend on the xref:features/arcadia-library.adoc[Arcadia library].
+See xref:hands-on/how-tos/project-management.adoc[] to create a project, then xref:features/editor.adoc[].

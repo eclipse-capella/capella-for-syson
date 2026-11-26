@@ -29,5 +29,3 @@ The level-specific names are *SFCD — System Functional Chain Description*, *LF
 * xref:features/la-ldfb.adoc[]
 * xref:features/pa-pdfb.adoc[]
 * xref:features/common-fs.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

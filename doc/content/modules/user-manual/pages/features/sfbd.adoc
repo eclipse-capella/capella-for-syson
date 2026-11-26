@@ -25,8 +25,7 @@ The xref:features/sdfb.adoc[SDFB] describes the exchanges between these function
 == Create the diagram
 
 An SFBD is associated with a System Function and displays the functions it contains.
-Use the *SFBD* shortcut in the Capella project welcome area to create a diagram on the root System Function, or create an SFBD on a System Function from the explorer.
-See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
+Use the *SFBD* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area] to create a diagram on the root System Function, or create an SFBD on a System Function from the explorer.
 
 xref:user-manual:concepts.adoc#synchronization[Synchronization]: System Functions are synchronized: the diagram shows every function contained in its function.
 
@@ -56,5 +55,3 @@ The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial]
 * xref:features/sdfb.adoc[]
 * xref:features/sab.adoc[]
 * xref:features/oabd.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

@@ -28,8 +28,7 @@ Sub-functions are displayed under their parent function: expand a row to show it
 |Yes
 
 |Status
-|The review status of the function: `open`, `tbd`, `tbr`, `tbc`, `done`, or `closed`.
-See xref:features/editor.adoc#review-status[the review status].
+|The xref:features/editor.adoc#review-status[review status] of the function.
 |Yes
 
 |Allocated to Component

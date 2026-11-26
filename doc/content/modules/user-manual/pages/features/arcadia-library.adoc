@@ -13,9 +13,9 @@ Each {product} version uses one version of the Arcadia library; see the xref:use
 
 == Default model organization
 
-The `Capella` template initializes the model with the default Arcadia organization, also defined by the Arcadia SysML v2 Library project.
-See xref:user-manual:hands-on/how-tos/project-management.adoc#create-capella-project[] for its content.
+The `Capella` template initializes the model with the default Arcadia organization defined by the library; see xref:user-manual:hands-on/how-tos/project-management.adoc#create-capella-project[] for its content.
 
+[#keep-consistent]
 == Keep the model consistent with the library
 
 Model elements are recognized as Arcadia elements through their relationships with the library definitions.

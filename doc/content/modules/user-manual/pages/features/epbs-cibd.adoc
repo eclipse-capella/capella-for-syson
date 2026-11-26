@@ -24,5 +24,3 @@ End-Product Breakdown Structure (EPBS).
 
 * xref:features/epbs-eab.adoc[]
 * xref:features/pa-pcbd.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

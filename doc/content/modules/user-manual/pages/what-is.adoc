@@ -2,26 +2,10 @@
 
 include::user-manual:partial$intro.adoc[]
 
-Use Arcadia to organize the system description around operational needs, functions, components, and architectures.
-SysML v2 provides the modeling language used to express these concepts and their relationships.
-
 {product} runs in a web browser and is provided as an extension of SysON, a web-based SysML v2 modeling environment.
-See xref:key-features.adoc[the key features] for the modeling environment and project templates, or the xref:installation-guide:index.adoc[installation guide] to set up the application.
+It is open source under the xref:product-legal:index.adoc[Eclipse Public License 2.0].
 
-If you already use Capella Desktop, the Arcadia engineering approach remains your methodological reference.
-See xref:integration/capella.adoc[Capella Desktop and {product}] for the relationship between the tools and the role of the Capella SysML v2 Bridge.
-
-== Source code
-
-* License: xref:product-legal:index.adoc[Eclipse Public License 2.0].
-* {source-code-url}[Source repository]: access the source code and contribution guidelines.
-
-== Tracker
-
-* {source-code-url}/issues[Issue tracker]: report a problem or request an enhancement.
-* xref:contribute.adoc[Contribution guidance]: prepare a useful report or share an engineering use case.
-
-== Communication
-
-* https://mbse-capella.org/capella-for-syson.html[Official project website]: project presentation, roadmap, and contact information.
-* xref:forum.adoc[Community]: find the project channels for questions and feedback.
+* xref:features/sysmlv2-overview.adoc[]: how the method and the language fit together.
+* xref:key-features.adoc[]: what the application provides.
+* xref:integration/capella.adoc[]: if you already use Capella Desktop.
+* xref:resources.adoc[]: source code, issue tracker, and project website.

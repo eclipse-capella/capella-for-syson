@@ -32,7 +32,7 @@ The system functions describe the expected behavior; the logical solution is add
 
 == Create the diagram
 
-Use the *SAB* shortcut in the Capella project welcome area, or create an SAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in System Analysis.
+Use the *SAB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create an SAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in System Analysis.
 The system of interest is displayed automatically.
 Its palette provides neither *Delete from Diagram* nor *Delete from Model*: the system of interest is protected from deletion in the SAB.
 
@@ -87,5 +87,3 @@ include::user-manual:partial$diagram-common-operations.adoc[]
 * xref:features/sfbd.adoc[]
 * xref:features/sdfb.adoc[]
 * xref:features/lab.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

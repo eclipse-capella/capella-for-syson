@@ -36,9 +36,8 @@ An xref:features/oabd.adoc[OABD] focuses on activity decomposition; the OAIB foc
 == Create the diagram
 
 An OAIB is associated with an Operational Activity.
-Use the *OAIB* shortcut in the Capella project welcome area to create a diagram on the root Operational Activity, or create an OAIB on an Operational Activity from the explorer.
+Use the *OAIB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area] to create a diagram on the root Operational Activity, or create an OAIB on an Operational Activity from the explorer.
 
-See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
 
 xref:user-manual:concepts.adoc#synchronization[Synchronization]: Operational Activities and requirements are unsynchronized; Interactions and Describes links between displayed elements are synchronized.
 

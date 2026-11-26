@@ -27,5 +27,3 @@ Interface viewpoint, applied in the relevant architecture perspective.
 * xref:features/common-idb.adoc[]
 * xref:features/common-cei.adoc[]
 * xref:features/common-cii.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

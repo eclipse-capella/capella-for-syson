@@ -1,11 +1,6 @@
 = Features and capabilities
 
-== Diagrams
-
-The catalogue includes the non-deprecated diagram types defined in Capella Desktop and the Functional Context Diagram provided by {product}.
-
-include::user-manual:partial$diagram-support.adoc[]
-
-== Feature documentation
+The catalogue includes the non-deprecated diagram types of Capella Desktop and the Functional Context Diagram.
+For a summary of availability, see xref:key-features.adoc[].
 
 include::user-manual:partial$nav-features.adoc[]

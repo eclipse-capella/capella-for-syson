@@ -1,7 +1,6 @@
 = APIs
 
-This page is for developers implementing automation or connections to other applications.
-Systems engineers can use xref:user-manual:integration/interoperability.adoc[the interoperability guide] to identify the information to exchange.
+To identify the information an exchange must preserve, see xref:user-manual:integration/interoperability.adoc[].
 
 == Shared SysON APIs
 

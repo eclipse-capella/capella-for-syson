@@ -26,5 +26,3 @@ Scenario viewpoint alongside an architecture description.
 * xref:features/common-is.adoc[]
 * xref:features/sab.adoc[]
 * xref:features/lab.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

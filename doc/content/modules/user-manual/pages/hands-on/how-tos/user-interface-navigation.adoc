@@ -19,5 +19,4 @@ For switching views and showing or hiding the right sidebar, follow the https://
 . When no representation is open, locate the welcome area's list of existing representations.
 . Open a representation from the list to display it in the editor.
 
-The welcome area also provides a *Create a new Representation* section for creating Capella representations when you have editing access.
-See xref:user-manual:features/editor.adoc[the Capella project editor] for its role in the modeling environment.
+To create a representation, see xref:user-manual:hands-on/how-tos/representation-operations.adoc[].

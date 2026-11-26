@@ -27,62 +27,17 @@ The welcome area provides shortcuts for the following diagrams:
 * xref:features/sfbd.adoc[]
 * xref:features/lab.adoc[]
 
-Select a shortcut to create a new representation.
 Creation shortcuts are shown when you have editing access to the project.
-For the complete diagram catalogue and availability, see xref:features/features.adoc[].
-
-=== Open an existing representation
-
-Use the welcome area's representation list to return to a diagram already created in the project.
-For common representation management operations, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/editor.html[SysON project editor guide].
+Other representations are created from the explorer; see xref:hands-on/how-tos/representation-operations.adoc[].
 
 [#capella-properties]
 == Capella properties and semantic navigation
 
-When an Arcadia element is selected, the *Capella* page of the Details view exposes the attributes and relationships relevant to its type.
-See xref:features/properties.adoc[] for the complete list by element type.
+When an Arcadia element is selected, the *Capella* page of the Details view exposes the attributes and relationships relevant to its type, such as its realized elements, its allocated functions, or the direction of a port.
+See xref:features/properties.adoc[] for the list by element type.
 
 .Capella properties of the Watch Movie operational activity
 image::capella-properties-ife.png[Details view showing the Name, Description, Status, and Realizing System Functions of Watch Movie]
-
-[cols="1,2",options="header"]
-|===
-|Property |Available for
-
-|Name, Description
-|All Arcadia elements.
-
-|Status
-|All Arcadia elements; see <<review-status>>.
-
-|Realized _elements_, Realizing _elements_
-|Arcadia elements with traceability to another engineering level.
-The label names the elements of the previous or next level, for example *Realizing System Functions* for an Operational Activity.
-*Realizing* _elements_ is read-only.
-
-|Allocated Functions
-|Components and actors.
-
-|Is Actor, Is Human
-|Components.
-
-|Direction, Allocated Function Ports
-|Component ports.
-
-|Direction
-|Function ports.
-
-|Source Function, Target Function, Exchanged Items
-|Functional exchanges.
-
-|Source Port, Target Port, Allocated Exchange Items, Allocated Functional Exchange
-|Component exchanges.
-
-|Involved functions, Involved functional exchanges
-|Functional chains.
-|===
-
-Changing the direction of a port also updates the direction of the opposite port of its exchanges.
 
 [#review-status]
 === Review status
@@ -106,5 +61,4 @@ image::semantic-browser-ife.png[Related Elements view showing the allocating act
 
 For a function, the Semantic Browser also groups its *Breakdown*, *Incoming Functional Exchanges*, *Outgoing Functional Exchanges*, *In Flow Ports*, *Out Flow Ports*, *Functional Chains*, and its allocating logical component or actor.
 
-For the meaning of allocations and realizations, see xref:user-manual:concepts.adoc[].
-The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] illustrates their use in a system model.
+For the meaning of allocations and realizations, see xref:user-manual:concepts.adoc#model[].

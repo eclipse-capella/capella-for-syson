@@ -23,5 +23,3 @@ The following operations cover part of these needs:
 * Set the *Allocated Functions* of a component, or the *Allocated Functional Exchange* of a component exchange, in the xref:features/properties.adoc[Capella properties].
 * Change the direction of a port: the opposite port of its exchanges is updated.
 * Set the realized elements of an element in the Capella properties.
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc[the key features].

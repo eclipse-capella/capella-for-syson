@@ -1,7 +1,6 @@
 = Frequently Asked Questions
 :page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
 
-Find answers about Capella-specific modeling, integration, and resources.
 For shared application concepts and operations, refer to the https://doc.mbse-syson.org/syson/main/user-manual/index.html[SysON user manual].
 
 == General questions
@@ -9,16 +8,13 @@ For shared application concepts and operations, refer to the https://doc.mbse-sy
 .*What is {product}?*
 [%collapsible%open]
 ====
-{product} combines the Arcadia engineering approach with SysML v2 models and Capella-inspired views.
 See xref:user-manual:what-is.adoc[the product overview].
 ====
 
 .*How is {product} related to SysON?*
 [%collapsible%open]
 ====
-{product} is an extension of SysON.
-Your modeling environment must include the extension and its frontend configuration.
-See xref:installation-guide:how-tos/install.adoc[the installation guide].
+{product} is an extension of SysON; see xref:installation-guide:how-tos/install.adoc[the installation guide].
 ====
 
 .*What license applies to {product}?*
@@ -70,8 +66,7 @@ See xref:user-manual:integration/capella.adoc[Capella Desktop and {product}] to 
 .*Where are import/export and automation documented?*
 [%collapsible%open]
 ====
-Use xref:user-manual:integration/interoperability.adoc[the interoperability guide] for Arcadia library dependencies and links to shared SysON exchange operations.
-Developers can use xref:developer-guide:api/api.adoc[the API guide].
+See xref:user-manual:integration/interoperability.adoc[the interoperability guide] and xref:developer-guide:api/api.adoc[the API guide].
 ====
 
 == Troubleshooting
@@ -79,14 +74,13 @@ Developers can use xref:developer-guide:api/api.adoc[the API guide].
 .*Why are the Capella project templates or frontend missing?*
 [%collapsible%open]
 ====
-Ask the person responsible for your environment to check the extension and frontend configuration described in xref:installation-guide:how-tos/install.adoc[the installation guide].
+Ask the person responsible for your environment to check the xref:installation-guide:troubleshooting.adoc[troubleshooting guide].
 ====
 
 .*Where do I report a modeling problem?*
 [%collapsible%open]
 ====
-See xref:user-manual:contribute.adoc[the reporting guidance] for the project issue tracker and the Capella-specific information to include.
-For access or deployment problems, see xref:user-manual:support.adoc[].
+See xref:user-manual:contribute.adoc[]; for access or deployment problems, see xref:user-manual:support.adoc[].
 ====
 
 == Extend {product}
@@ -94,8 +88,7 @@ For access or deployment problems, see xref:user-manual:support.adoc[].
 .*How can I request another modeling capability?*
 [%collapsible%open]
 ====
-Describe the Arcadia engineering activity and the modeling result you need.
-Consult the xref:user-manual:key-features.adoc[feature matrix] and follow xref:user-manual:contribute.adoc[the enhancement-request guidance].
+Follow xref:user-manual:contribute.adoc#suggest-a-capability[the enhancement-request guidance].
 ====
 
 == Additional resources

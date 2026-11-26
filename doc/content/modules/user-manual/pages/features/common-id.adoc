@@ -26,5 +26,3 @@ Detailed interface definition.
 * xref:features/common-cdb.adoc[]
 * xref:features/common-idb.adoc[]
 * xref:features/common-is.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

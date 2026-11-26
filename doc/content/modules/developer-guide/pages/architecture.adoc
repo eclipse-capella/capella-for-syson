@@ -1,8 +1,7 @@
 = Source code overview
 
 {product} combines a Java backend with a React frontend, using SysON and Sirius Web.
-The {source-code-url}[source repository] contains both an executable application and an extension packaged for use with SysON.
-This page gives entry points into the existing code.
+The {source-code-url}[source repository] builds both an executable application and an extension packaged for use with SysON.
 
 == Backend modules
 

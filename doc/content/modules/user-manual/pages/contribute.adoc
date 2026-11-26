@@ -1,8 +1,6 @@
 = Contribute
 :page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
 
-Contribute feedback from your Arcadia modeling work, report a problem, or propose an improvement to {product}.
-
 == Report a modeling problem
 
 Search the {source-code-url}/issues[issue tracker] for an existing report, then include the following information in a new issue:
@@ -15,6 +13,7 @@ Search the {source-code-url}/issues[issue tracker] for an existing report, then 
 
 Check that example models and screenshots can be shared publicly before attaching them.
 
+[#suggest-a-capability]
 == Suggest a capability
 
 Describe the engineering question you need to answer and how the proposed capability would support your work.

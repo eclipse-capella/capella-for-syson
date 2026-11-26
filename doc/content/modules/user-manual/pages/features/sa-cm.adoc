@@ -26,5 +26,3 @@ System Analysis.
 * xref:features/sa-mb.adoc[]
 * xref:features/mcb.adoc[]
 * xref:features/sa-cc.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

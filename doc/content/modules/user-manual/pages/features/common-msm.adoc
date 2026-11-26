@@ -27,5 +27,3 @@ Behavioral viewpoint, used alongside the relevant architecture perspective.
 * xref:features/common-es.adoc[]
 * xref:features/sab.adoc[]
 * xref:features/lab.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

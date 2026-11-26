@@ -26,5 +26,3 @@ Capability realization viewpoint in the solution architecture.
 * xref:features/lab.adoc[]
 * xref:features/pa-pab.adoc[]
 * xref:features/epbs-eab.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

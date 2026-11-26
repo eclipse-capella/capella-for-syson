@@ -25,5 +25,3 @@ Operational Analysis.
 
 * xref:features/ocb.adoc[]
 * xref:features/oab.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

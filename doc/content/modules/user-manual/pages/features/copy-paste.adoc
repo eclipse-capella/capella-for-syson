@@ -18,5 +18,3 @@ The Capella Desktop business copy-paste duplicates the selected elements and the
 * To duplicate a model element, use the duplication action of the explorer, described in the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/how-tos/explorer.html[SysON explorer how-to].
 Then display the copy in the diagram by dropping it from the explorer.
 * To reuse an existing element in another diagram, drop it from the explorer; no copy is created.
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc[the key features].

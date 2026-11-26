@@ -1,7 +1,4 @@
 = Integration with other tools
 :page-audience: 🧭 Systems engineers and 💻 developers
 
-Connect your Arcadia modeling work to the rest of your engineering toolchain.
-The following pages cover model exchanges, the link with Capella Desktop, and APIs for developers implementing automation.
-
 include::user-manual:partial$nav-integration.adoc[]

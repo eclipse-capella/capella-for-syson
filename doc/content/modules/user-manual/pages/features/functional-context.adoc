@@ -56,5 +56,3 @@ For creating functions and exchanges in an architecture diagram, see xref:featur
 * xref:user-manual:concepts.adoc[]
 * xref:features/sdfb.adoc[]
 * xref:features/la-ldfb.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

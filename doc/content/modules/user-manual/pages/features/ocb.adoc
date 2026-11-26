@@ -30,8 +30,7 @@ The xref:features/oab.adoc[OAB] provides the complementary operational context.
 
 == Create the diagram
 
-Use the *OCB* shortcut in the Capella project welcome area, or create an OCB from the explorer on the `Capabilities` package or one of its sub-packages, in Operational Analysis.
-See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
+Use the *OCB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create an OCB from the explorer on the `Capabilities` package or one of its sub-packages, in Operational Analysis.
 
 xref:user-manual:concepts.adoc#synchronization[Synchronization]: Capabilities, entities, actors, and requirements are unsynchronized; Involvements, Generalizations, Communication Means, and Describes links between displayed elements are synchronized.
 
@@ -66,5 +65,3 @@ The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial]
 * xref:features/oa-coc.adoc[]
 * xref:features/oab.adoc[]
 * xref:features/oaib.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

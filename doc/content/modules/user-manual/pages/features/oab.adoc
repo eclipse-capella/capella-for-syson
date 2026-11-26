@@ -41,8 +41,7 @@ It provides a context for the activity interactions described in an xref:feature
 
 == Create the diagram
 
-Use the *OAB* shortcut in the Capella project welcome area, or create an OAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in Operational Analysis.
-See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
+Use the *OAB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create an OAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in Operational Analysis.
 
 xref:user-manual:concepts.adoc#synchronization[Synchronization]: Operational entities, actors, and activities are unsynchronized; Communication Means, Interactions, and Describes links between displayed elements are synchronized.
 
@@ -87,4 +86,3 @@ include::user-manual:partial$diagram-common-operations.adoc[]
 
 The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] uses an OAB to describe the operational context involving `Child` and `Parent`.
 Use an xref:features/ocb.adoc[OCB] to describe the capabilities in which these participants are involved.
-For the diagram catalogue, see xref:features/features.adoc[Features and capabilities].

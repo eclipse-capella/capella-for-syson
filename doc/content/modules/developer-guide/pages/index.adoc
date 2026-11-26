@@ -33,11 +33,8 @@ docker --version
 ----
 
 For the shared Java, Maven, and package-access setup, refer to the https://doc.mbse-syson.org/syson/main/developer-guide/index.html[SysON developer guide].
-The Capella backend also uses the Maven repository with server ID `github-arcadia` for the Arcadia library artifacts.
-Configure package access for that ID using the repository declarations in the backend parent POM.
-Use the repository's npm configuration when installing the frontend dependencies.
-The Maven repository IDs are `github-sirius-emfjson`, `github-sirius-web`, `github-syson`, and `github-arcadia`.
-The public {source-code-url}/blob/main/CONTRIBUTING.md[contribution guidelines] provide the Maven `settings.xml` and npm authentication setup.
+In addition to the SysON repositories, the Capella backend uses the Maven repository `github-arcadia` for the Arcadia library artifacts.
+The {source-code-url}/blob/main/CONTRIBUTING.md[contribution guidelines] provide the Maven `settings.xml`, with the IDs `github-sirius-emfjson`, `github-sirius-web`, `github-syson`, and `github-arcadia`, and the npm authentication setup.
 
 === IDE setup
 

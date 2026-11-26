@@ -29,8 +29,7 @@ The diagram combines logical components, allocated functions, and their exchange
 
 == Create the diagram
 
-Use the *LAB* shortcut in the Capella project welcome area, or create a LAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in Logical Architecture.
-See xref:user-manual:features/editor.adoc[the project editor] for the welcome area.
+Use the *LAB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create a LAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in Logical Architecture.
 
 xref:user-manual:concepts.adoc#synchronization[Synchronization]: Components, actors, functions, and requirements are unsynchronized; ports, exchanges, and Describes links between displayed elements are synchronized.
 
@@ -99,5 +98,3 @@ The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial]
 * xref:features/la-lfbd.adoc[]
 * xref:features/la-ldfb.adoc[]
 * xref:features/pa-pab.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

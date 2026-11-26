@@ -24,5 +24,3 @@ Physical Architecture.
 
 * xref:features/pa-pab.adoc[]
 * xref:features/pa-pfbd.adoc[]
-
-For availability across the catalogue, see xref:user-manual:key-features.adoc#diagram-support[diagram support].

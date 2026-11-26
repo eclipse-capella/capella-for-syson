@@ -9,9 +9,7 @@ This page describes the creation of Capella representations.
 
 A Capella representation can be created in two ways:
 
-* From the Capella project welcome area, displayed when no representation is open.
-Select one of the diagram shortcuts: the diagram is created on the default element of its perspective.
-See xref:user-manual:features/editor.adoc[the project editor].
+* From the xref:user-manual:features/editor.adoc[Capella project welcome area], displayed when no representation is open: the diagram is created on the default element of its perspective.
 * From the explorer.
 Open the context menu of a model element, select *New representation*, and choose the representation.
 Only the representations applicable to the selected element are proposed.
