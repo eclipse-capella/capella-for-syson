@@ -2,8 +2,6 @@
 
 include::user-manual:partial$intro.adoc[]
 
-Start your learning journey with {product}.
-
 include::ROOT:partial$home-introduction.adoc[leveloffset=+1]
 
 include::ROOT:partial$home-get-started.adoc[leveloffset=+1]

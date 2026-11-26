@@ -1,22 +1,16 @@
 = Tour the interface
 
-Explore the two main entry points to your modeling work: the projects browser and the project editor.
-
 [cols="2*^", %noheader, frame=none, grid=none]
 |===
-a|image::ROOT:overview.svg[xref=user-manual:features/homepage.adoc]
+a|image::ROOT:overview.svg[Projects browser,width=64,height=64,xref=user-manual:features/homepage.adoc]
 
-**Projects browser**
+*xref:user-manual:features/homepage.adoc[Projects browser]*
 
 Open a project or start a Capella model.
 
-xref:user-manual:features/homepage.adoc[Explore the projects browser]
+a|image::ROOT:travel_explore.svg[Project editor,width=64,height=64,xref=user-manual:features/editor.adoc]
 
-a|image::ROOT:travel_explore.svg[xref=user-manual:features/editor.adoc]
-
-**Project editor**
+*xref:user-manual:features/editor.adoc[Project editor]*
 
 Navigate your model and its representations.
-
-xref:user-manual:features/editor.adoc[Explore the project editor]
 |===

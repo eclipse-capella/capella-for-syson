@@ -1,23 +1,16 @@
-= User interface overview
-
-Get familiar with the modeling environment and learn how to navigate your system models.
+= User interface
 
 [cols="2*^", %noheader, frame=none, grid=none]
 |===
-a|image::travel_explore.svg[xref=user-manual:tour.adoc]
+a|image::travel_explore.svg[Interface tour,width=64,height=64,xref=user-manual:tour.adoc]
 
-**Tour the interface**
+*xref:user-manual:tour.adoc[Interface tour]*
 
-Explore projects, model elements, and diagrams.
+Projects, model elements, and diagrams.
 
-xref:user-manual:tour.adoc[Explore the interface]
+a|image::footprint.svg[How-tos and tutorials,width=64,height=64,xref=user-manual:hands-on/hands-on.adoc]
 
-a|image::footprint.svg[xref=user-manual:hands-on/hands-on.adoc]
+*xref:user-manual:hands-on/hands-on.adoc[How-tos and tutorials]*
 
-**How-Tos and Tutorials**
-
-Follow step-by-step guides for common tasks.
-
-xref:user-manual:hands-on/hands-on.adoc[Open the practical guides]
-
+Step-by-step guides for common tasks.
 |===

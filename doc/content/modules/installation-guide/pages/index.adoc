@@ -1,11 +1,7 @@
 = Getting started with {product}
 
-This guide explains how to prepare and install {product} as an extension of SysON.
-It is intended for the person responsible for setting up your modeling environment.
-
-Start with the prerequisites, then follow the installation instructions.
+This guide is for the person who installs {product} as an extension of SysON.
 
 include::installation-guide:partial$nav.adoc[]
 
-If your organization already provides a modeling environment, obtain its address from the person responsible for the installation and open it in your browser.
-Continue with the xref:user-manual:index.adoc[user manual] to explore the application.
+If your organization already hosts {product}, open its address in your browser and continue with the xref:user-manual:index.adoc[user manual].

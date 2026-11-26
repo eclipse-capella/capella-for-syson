@@ -1,31 +1,22 @@
-= Getting started with {product}
-
-Find out what you need to access {product}, set up the application, and explore the modeling environment.
+= Getting started
 
 [cols="3*^", %noheader, frame=none, grid=none]
 |===
-a|image::person_play.svg[xref=installation-guide:requirements.adoc]
+a|image::person_play.svg[Prerequisites,width=64,height=64,xref=installation-guide:requirements.adoc]
 
-**Check the prerequisites**
+*xref:installation-guide:requirements.adoc[Prerequisites]*
 
-Requirements for accessing or installing {product}.
+What you need to access or install {product}.
 
-xref:installation-guide:requirements.adoc[Read the prerequisites]
+a|image::explore.svg[Installation,width=64,height=64,xref=installation-guide:index.adoc]
 
-a|image::explore.svg[xref=installation-guide:index.adoc]
+*xref:installation-guide:index.adoc[Installation]*
 
-**Install {product}**
+Install {product} as a SysON extension.
 
-Set up {product} with SysON.
+a|image::travel_explore.svg[User manual,width=64,height=64,xref=user-manual:index.adoc]
 
-xref:installation-guide:index.adoc[Install {product}]
+*xref:user-manual:index.adoc[User manual]*
 
-a|image::travel_explore.svg[xref=user-manual:index.adoc]
-
-**Explore the modeling environment**
-
-Get familiar with the modeling environment.
-
-xref:user-manual:index.adoc[Open the user manual]
-
+Learn the modeling environment.
 |===

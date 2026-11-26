@@ -1,8 +1,5 @@
 = Key features in {product}
 
-{product} combines the Arcadia engineering approach with SysML v2 models and graphical views inspired by Capella.
-Use its project templates and modeling environment to organize and explore your system description.
-
 [NOTE]
 ====
 In {product}, features are categorized into two distinct levels of maturity:
@@ -18,18 +15,11 @@ Features inherited from SysON keep the maturity level stated in the https://doc.
 
 include::user-manual:partial$feature-support.adoc[]
 
-For the modeling concepts behind these capabilities, see xref:concepts.adoc[].
-The xref:features/features.adoc[Features and capabilities] section provides the entry points to the feature documentation.
+See also xref:concepts.adoc[] and xref:features/features.adoc[Features and capabilities].
 
 [#diagram-support]
 == Diagram support
 
 include::user-manual:partial$diagram-support.adoc[]
 
-== Release information
-
-See the xref:release-notes/release-notes.adoc[release notes] for changes to the application and the xref:cycle.adoc[release cycle] for version numbering and publications.
-
-== Other needs
-
-For a modeling need not covered by this documentation, see xref:support.adoc[contact support] or xref:contribute.adoc[suggest an enhancement].
+For a need not covered here, xref:support.adoc[contact support] or xref:contribute.adoc[suggest an enhancement].

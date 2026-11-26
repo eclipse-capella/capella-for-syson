@@ -1,14 +1,10 @@
-= Frequently Asked Questions
-
-Find answers to common questions about {product}, its modeling approach, and its use in your engineering activities.
+= FAQ
 
 [cols="1*^", %noheader, frame=none, grid=none]
 |===
-a|image::travel_explore.svg[xref=user-manual:faq/faq.adoc]
+a|image::travel_explore.svg[FAQ,width=64,height=64,xref=user-manual:faq/faq.adoc]
 
-**FAQ**
+*xref:user-manual:faq/faq.adoc[Frequently asked questions]*
 
-Find answers to common questions.
-
-xref:user-manual:faq/faq.adoc[Explore the FAQ]
+Common questions about {product} and its modeling approach.
 |===

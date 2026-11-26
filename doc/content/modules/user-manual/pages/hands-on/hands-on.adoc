@@ -1,7 +1,6 @@
 = How-Tos and Tutorials
 
-Use these guides for step-by-step instructions on working in the modeling environment.
-Each how-to focuses on a task and identifies the starting conditions.
+Each how-to covers one task and states its starting conditions.
 
 include::user-manual:partial$nav-howtos.adoc[]
 

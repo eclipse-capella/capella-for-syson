@@ -1,31 +1,22 @@
 = Integration and APIs
 
-Explore how {product} fits into your systems engineering toolchain and how to connect it with other tools.
-
 [cols="3*^", %noheader, frame=none, grid=none]
 |===
-a|image::hub.svg[xref=user-manual:integration/interoperability.adoc]
+a|image::hub.svg[Interoperability,width=64,height=64,xref=user-manual:integration/interoperability.adoc]
 
-**Interoperability**
+*xref:user-manual:integration/interoperability.adoc[Interoperability]*
 
-Exchange system models with other tools.
+Exchange models with other tools.
 
-xref:user-manual:integration/interoperability.adoc[Explore interoperability]
+a|image::tap_app.svg[APIs,width=64,height=64,xref=developer-guide:api/api.adoc]
 
-a|image::tap_app.svg[xref=developer-guide:api/api.adoc]
-
-**APIs and automation**
+*xref:developer-guide:api/api.adoc[APIs and automation]*
 
 Connect applications and automate modeling tasks.
 
-xref:developer-guide:api/api.adoc[Explore the APIs]
+a|image::globe.svg[Capella Desktop,width=64,height=64,xref=user-manual:integration/capella.adoc]
 
-a|image::globe.svg[xref=user-manual:integration/capella.adoc]
+*xref:user-manual:integration/capella.adoc[Capella Desktop]*
 
-**Capella Desktop and {product}**
-
-Learn about transforming Capella models into SysML v2.
-
-xref:user-manual:integration/capella.adoc[Explore the link with Capella Desktop]
-
+Transform Capella models into SysML v2.
 |===

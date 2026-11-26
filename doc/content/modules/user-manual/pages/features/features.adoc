@@ -1,7 +1,5 @@
 = Features and capabilities
 
-Explore the capabilities and concepts used to describe your system with {product}.
-
 == Diagrams
 
 The catalogue includes the non-deprecated diagram types defined in Capella Desktop and the Functional Context Diagram provided by {product}.

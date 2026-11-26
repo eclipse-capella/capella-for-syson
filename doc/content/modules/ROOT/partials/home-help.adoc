@@ -1,48 +1,36 @@
 = Support and resources
 
-Find help, share feedback, and access guidance for your systems engineering activities.
-
 [cols="2*^", %noheader, frame=none, grid=none]
 |===
-a|image::forum.svg[xref=user-manual:forum.adoc]
+a|image::forum.svg[Community,width=64,height=64,xref=user-manual:forum.adoc]
 
-**Community**
+*xref:user-manual:forum.adoc[Community]*
 
-Share questions and feedback with the community.
+Ask questions and share feedback.
 
-xref:user-manual:forum.adoc[Find the community]
+a|image::volunteer_activism.svg[Contribute,width=64,height=64,xref=user-manual:contribute.adoc]
 
-a|image::volunteer_activism.svg[xref=user-manual:contribute.adoc]
-
-**Contribute**
+*xref:user-manual:contribute.adoc[Contribute]*
 
 Report problems and suggest improvements.
 
-xref:user-manual:contribute.adoc[Contribute to {product}]
+a|image::editor_choice.svg[Best practices,width=64,height=64,xref=user-manual:best-practices.adoc]
 
-a|image::editor_choice.svg[xref=user-manual:best-practices.adoc]
+*xref:user-manual:best-practices.adoc[Best practices]*
 
-**Best practices guides**
+Modeling guidelines and recommendations.
 
-Make the most of your modeling environment.
+a|image::best.svg[Support,width=64,height=64,xref=user-manual:support.adoc]
 
-xref:user-manual:best-practices.adoc[Explore best practices]
+*xref:user-manual:support.adoc[Professional support]*
 
-a|image::best.svg[xref=user-manual:support.adoc]
+Expert help and assistance.
 
-**Contact support**
+a|image::resources.svg[Resources,width=64,height=64,xref=user-manual:resources.adoc]
 
-Find help and professional assistance.
+*xref:user-manual:resources.adoc[Resources]*
 
-xref:user-manual:support.adoc[Find help]
-
-a|image::resources.svg[xref=user-manual:resources.adoc]
-
-**Resources**
-
-Find project information and Arcadia references.
-
-xref:user-manual:resources.adoc[Explore resources]
+Project information and Arcadia references.
 
 |
 |===

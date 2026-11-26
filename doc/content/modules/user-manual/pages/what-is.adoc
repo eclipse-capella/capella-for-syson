@@ -1,20 +1,11 @@
 = {product} Overview
 
-== Overview
-
 include::user-manual:partial$intro.adoc[]
 
 Use Arcadia to organize the system description around operational needs, functions, components, and architectures.
 SysML v2 provides the modeling language used to express these concepts and their relationships.
 
-== At a glance
-
-* *Engineering approach*: apply Arcadia to describe and reason about system architectures.
-* *Modeling language*: work with SysML v2 models enriched with Arcadia concepts.
-* *Graphical environment*: explore the system description through views inspired by Capella.
-* *Access*: use the modeling environment in a web browser.
-
-{product} is provided as an extension of SysON, a web-based SysML v2 modeling environment.
+{product} runs in a web browser and is provided as an extension of SysON, a web-based SysML v2 modeling environment.
 See xref:key-features.adoc[the key features] for the modeling environment and project templates, or the xref:installation-guide:index.adoc[installation guide] to set up the application.
 
 If you already use Capella Desktop, the Arcadia engineering approach remains your methodological reference.
