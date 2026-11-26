@@ -13,6 +13,7 @@
 package org.eclipse.capella.diagram.mcb.view.nodes.mission;
 
 import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
+import org.eclipse.capella.diagram.mcb.view.edges.exploitation.ExploitationToolProvider;
 import org.eclipse.capella.diagram.mcb.view.edges.involvement.InvolvementToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -64,6 +65,7 @@ public class MissionNodeDescriptionProvider extends AbstractNodeDescriptionProvi
     public void link(DiagramDescription diagramDescription, IViewDiagramElementFinder cache) {
         var description = cache.getNodeDescription(NODE_DESCRIPTION_NAME).orElseThrow();
         description.setPalette(this.createNodePalette());
+        description.getEdgeTools().add(new ExploitationToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewExploitationTool(cache));
         description.getEdgeTools().add(new InvolvementToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInvolvementTool(cache));
         diagramDescription.getNodeDescriptions().add(description);
     }
