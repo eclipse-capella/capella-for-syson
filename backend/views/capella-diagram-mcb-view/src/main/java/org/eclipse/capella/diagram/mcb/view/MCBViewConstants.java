@@ -19,6 +19,8 @@ package org.eclipse.capella.diagram.mcb.view;
  */
 public class MCBViewConstants {
 
+    public static final String RELATION_COLOR = "MCB_RELATION_COLOR";
+
     public static final String ACTOR_BACKGROUND_COLOR = "ACTOR_BACKGROUND";
 
     public static final String ACTOR_BORDER_COLOR = "ACTOR_BORDER";

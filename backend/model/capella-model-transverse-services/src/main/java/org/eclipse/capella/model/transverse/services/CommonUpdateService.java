@@ -12,7 +12,6 @@
  *******************************************************************************/
 package org.eclipse.capella.model.transverse.services;
 
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_DESCRIPTION;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_ELEMENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
@@ -158,9 +157,9 @@ public class CommonUpdateService {
                     .log();
             return capability;
         }
-        this.deleteFeaturesFromReference(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+        this.deleteFeaturesFromReference(capability, this.commonQueryService.getArcadiaType(capability).orElseThrow(),
                 ARCADIA_INVOLVED_COMPONENTS, SysmlPackage.eINSTANCE.getPartUsage(), List.of(oldComponent));
-        this.addFeatureReferenceValue(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+        this.addFeatureReferenceValue(capability, this.commonQueryService.getArcadiaType(capability).orElseThrow(),
                 ARCADIA_INVOLVED_COMPONENTS, newComponent, SysmlPackage.eINSTANCE.getPartUsage());
         return capability;
     }
@@ -175,12 +174,12 @@ public class CommonUpdateService {
                     .log();
             return oldCapability;
         }
-        this.deleteFeaturesFromReference(oldCapability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+        this.deleteFeaturesFromReference(oldCapability, this.commonQueryService.getArcadiaType(oldCapability).orElseThrow(),
                 ARCADIA_INVOLVED_COMPONENTS, SysmlPackage.eINSTANCE.getPartUsage(), List.of(component));
         if (this.commonQueryService.getInvolvedComponents(oldCapability).isEmpty()) {
             this.deleteReference(oldCapability, ARCADIA_INVOLVED_COMPONENTS);
         }
-        this.addFeatureReferenceValue(newCapability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+        this.addFeatureReferenceValue(newCapability, this.commonQueryService.getArcadiaType(newCapability).orElseThrow(),
                 ARCADIA_INVOLVED_COMPONENTS, component, SysmlPackage.eINSTANCE.getPartUsage());
         return newCapability;
     }

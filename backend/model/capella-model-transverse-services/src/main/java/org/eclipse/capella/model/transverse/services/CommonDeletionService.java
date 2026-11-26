@@ -12,9 +12,7 @@
  *******************************************************************************/
 package org.eclipse.capella.model.transverse.services;
 
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_INVOLVED_COMPONENTS;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_PREFIX;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +61,7 @@ public class CommonDeletionService {
         if (remainingComponents.isEmpty()) {
             commonUpdateService.deleteReference(capability, ARCADIA_INVOLVED_COMPONENTS);
         } else {
-            commonUpdateService.setFeatureReferenceValues(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+            commonUpdateService.setFeatureReferenceValues(capability, this.commonQueryService.getArcadiaType(capability).orElseThrow(),
                     ARCADIA_INVOLVED_COMPONENTS, remainingComponents, SysmlPackage.eINSTANCE.getPartUsage());
         }
         return capability;

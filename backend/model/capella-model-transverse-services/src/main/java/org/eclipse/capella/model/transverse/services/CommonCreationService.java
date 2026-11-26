@@ -22,7 +22,6 @@ import static org.eclipse.capella.model.transverse.services.CommonNamingService.
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.FUNCTION_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.MISSION_DEFAULT_DECLAREDNAME_PREFIX;
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.REQUIREMENT_DEFAULT_DECLAREDNAME_PREFIX;
-import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_CAPABILITY;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_COMPONENT;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_EXCHANGE_ITEM;
 import static org.eclipse.capella.model.transverse.services.CommonQueryService.ARCADIA_FUNCTIONAL_CHAIN;
@@ -102,7 +101,7 @@ public class CommonCreationService {
         if (this.commonQueryService.getFeatureReferenceValue(capability, ARCADIA_INVOLVED_COMPONENTS).contains(component)) {
             return capability;
         }
-        return this.commonUpdateService.setArcadiaReferenceFeature(capability, ARCADIA_PREFIX + ARCADIA_CAPABILITY,
+        return this.commonUpdateService.setArcadiaReferenceFeature(capability, this.commonQueryService.getArcadiaType(capability).orElseThrow(),
                 ARCADIA_INVOLVED_COMPONENTS, component, SysmlPackage.eINSTANCE.getPartUsage().getName());
     }
 

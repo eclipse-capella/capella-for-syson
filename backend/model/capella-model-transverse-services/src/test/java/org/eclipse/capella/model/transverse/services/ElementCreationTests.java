@@ -46,6 +46,21 @@ public class ElementCreationTests extends AbstractSemanticTests {
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
     @Test
+    public void createCapabilityInvolvementShouldSupportMissionsAndCapabilitiesWithoutDuplicates() {
+        var context = this.capellaModel.getSystemAnalysisPerspective().getElement();
+        var mission = this.commonCreationService.createMission(context);
+        var capability = this.commonCreationService.createCapability(context);
+        var actor = this.commonCreationService.createActor(context);
+
+        this.commonCreationService.createCapabilityInvolvement(mission, actor);
+        this.commonCreationService.createCapabilityInvolvement(capability, actor);
+        this.commonCreationService.createCapabilityInvolvement(mission, actor);
+
+        assertThat(this.commonQueryService.getInvolvedComponents(mission)).containsExactly(actor);
+        assertThat(this.commonQueryService.getInvolvedComponents(capability)).containsExactly(actor);
+    }
+
+    @Test
     public void createMissionShouldCreateNamedMissionsInTheCapabilitiesPackage() {
         var perspective = this.capellaModel.getSystemAnalysisPerspective();
         var capabilitiesPackage = perspective.getCapabilitiesPackage().getElement();
