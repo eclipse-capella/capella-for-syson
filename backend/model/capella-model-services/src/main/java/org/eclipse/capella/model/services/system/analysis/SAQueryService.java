@@ -21,8 +21,10 @@ import org.eclipse.capella.model.transverse.services.CommonQueryService;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
+import org.eclipse.syson.sysml.OccurrenceUsage;
 import org.eclipse.syson.sysml.Package;
 import org.eclipse.syson.sysml.PartUsage;
+import org.eclipse.syson.sysml.Usage;
 
 /**
  * System Analysis (SA) related mutation service.
@@ -36,6 +38,18 @@ public class SAQueryService {
 
     public SAQueryService() {
         this.commonQueryService = new CommonQueryService();
+    }
+
+    public boolean canCreateCapabilityExploitation(Usage mission, Usage capability) {
+        return this.commonQueryService.isMission(mission) && this.commonQueryService.isCapability(capability)
+                && !this.getExploitedCapabilities(mission).contains(capability);
+    }
+
+    public List<OccurrenceUsage> getExploitedCapabilities(Usage mission) {
+        return this.commonQueryService.getFeatureReferenceValue(mission, CommonQueryService.ARCADIA_EXPLOITED_CAPABILITIES).stream()
+                .filter(this.commonQueryService::isCapability)
+                .map(OccurrenceUsage.class::cast)
+                .toList();
     }
 
     public List<PartUsage> getComponents(Element self) {

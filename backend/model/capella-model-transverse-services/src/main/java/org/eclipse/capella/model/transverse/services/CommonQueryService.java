@@ -93,6 +93,8 @@ public class CommonQueryService {
 
     public static final String ARCADIA_CAPABILITY = "Capability";
 
+    public static final String ARCADIA_EXPLOITED_CAPABILITIES = "exploitedCapabilties";
+
     public static final String ARCADIA_MISSION = "Mission";
 
     public static final String ARCADIA_ACTOR = "Actor";

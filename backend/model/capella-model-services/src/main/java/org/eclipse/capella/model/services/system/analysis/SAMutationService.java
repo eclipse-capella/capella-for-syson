@@ -14,6 +14,7 @@ package org.eclipse.capella.model.services.system.analysis;
 
 import static org.eclipse.capella.model.transverse.services.CommonNamingService.SYSTEM_FUNCTION_DEFAULT_DECLAREDNAME_PREFIX;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.capella.model.transverse.services.ArcadiaEngineeringPerspective;
@@ -26,6 +27,8 @@ import org.eclipse.capella.model.transverse.services.CommonUpdateService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.Element;
 import org.eclipse.syson.sysml.PartUsage;
+import org.eclipse.syson.sysml.SysmlPackage;
+import org.eclipse.syson.sysml.Usage;
 
 /**
  * System Analysis semantic mutation service.
@@ -56,6 +59,40 @@ public class SAMutationService {
         this.commonDeletionService = new CommonDeletionService();
         this.commonMoveService = new CommonMoveService();
         this.commonNamingService = new CommonNamingService();
+    }
+
+    public Usage createCapabilityExploitation(Usage mission, Usage capability) {
+        if (this.saQueryService.canCreateCapabilityExploitation(mission, capability)) {
+            this.commonUpdateService.addFeatureReferenceValue(mission, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_MISSION,
+                    CommonQueryService.ARCADIA_EXPLOITED_CAPABILITIES, capability, SysmlPackage.eINSTANCE.getOccurrenceUsage());
+        }
+        return mission;
+    }
+
+    public Usage deleteCapabilityExploitation(Usage mission, Usage capability) {
+        this.commonUpdateService.deleteFeaturesFromReference(mission, CommonQueryService.ARCADIA_PREFIX + CommonQueryService.ARCADIA_MISSION,
+                CommonQueryService.ARCADIA_EXPLOITED_CAPABILITIES, SysmlPackage.eINSTANCE.getOccurrenceUsage(), List.of(capability));
+        if (this.saQueryService.getExploitedCapabilities(mission).isEmpty()) {
+            this.commonUpdateService.deleteReference(mission, CommonQueryService.ARCADIA_EXPLOITED_CAPABILITIES);
+        }
+        return mission;
+    }
+
+    public Usage setCapabilityExploitationTarget(Usage mission, Usage oldCapability, Usage newCapability) {
+        if (this.saQueryService.canCreateCapabilityExploitation(mission, newCapability)) {
+            this.createCapabilityExploitation(mission, newCapability);
+            this.deleteCapabilityExploitation(mission, oldCapability);
+        }
+        return mission;
+    }
+
+    public Usage setCapabilityExploitationSource(Usage oldMission, Usage newMission, Usage capability) {
+        if (this.saQueryService.canCreateCapabilityExploitation(newMission, capability)) {
+            this.createCapabilityExploitation(newMission, capability);
+            this.deleteCapabilityExploitation(oldMission, capability);
+            return newMission;
+        }
+        return oldMission;
     }
 
     public PartUsage createActorSA(Element parent) {
