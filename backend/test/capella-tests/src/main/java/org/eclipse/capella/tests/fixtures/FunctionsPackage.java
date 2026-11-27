@@ -28,6 +28,13 @@ public final class FunctionsPackage extends AbstractArcadiaElement<Package> {
     }
 
     public RootFunction getRootFunction() {
-        return new RootFunction(this.getOwnedElement("Root Function", ActionUsage.class));
+        String rootFunctionName = "Root Function";
+        boolean hasRootFunction = this.getElement().getOwnedElement().stream()
+                .anyMatch(element -> element instanceof ActionUsage && rootFunctionName.equals(element.getDeclaredName()));
+        String rootName = rootFunctionName;
+        if (!hasRootFunction) {
+            rootName = "Root Activity";
+        }
+        return new RootFunction(this.getOwnedElement(rootName, ActionUsage.class));
     }
 }

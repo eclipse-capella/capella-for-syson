@@ -103,6 +103,7 @@ public class ElementCreationTests extends AbstractSemanticTests {
         var describes = this.commonCreationService.createDescribes(requirement, port);
 
         assertThat(describes).isNotNull();
+        assertThat(this.commonQueryService.isDescribes(describes)).isTrue();
         assertThat(this.commonQueryService.getDescribesSource(describes)).isSameAs(requirement);
         assertThat(this.commonQueryService.getDescribesTarget(describes)).isSameAs(port);
     }

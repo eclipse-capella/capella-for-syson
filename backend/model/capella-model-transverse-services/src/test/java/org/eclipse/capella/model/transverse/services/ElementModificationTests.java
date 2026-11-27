@@ -18,7 +18,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 
 import org.eclipse.capella.tests.fixtures.FunctionsPackage;
+import org.eclipse.capella.tests.fixtures.SemanticDataTestFixture;
 import org.eclipse.capella.tests.semantic.AbstractSemanticTests;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 import org.eclipse.syson.services.UtilService;
 import org.eclipse.syson.sysml.ActionUsage;
 import org.eclipse.syson.sysml.ConnectionUsage;
@@ -64,25 +67,26 @@ public class ElementModificationTests extends AbstractSemanticTests {
 
     @Test
     public void setFeatureReferenceValuesShouldHandleSingleMultipleAndEmptyLibraryValues() {
-        ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
-        ActionUsage firstRealized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
-        ActionUsage secondRealized = this.commonCreationService.createFunction(firstRealized);
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        var capability = this.commonCreationService.createCapability(perspective.getCapabilitiesPackage().getElement());
+        var firstComponent = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
+        var secondComponent = this.commonCreationService.createComponent(perspective.getStructurePackage().getElement());
 
-        this.commonUpdateService.setFeatureReferenceValues(realizer, "Arcadia::ArcadiaElement", "realizes", List.of(firstRealized), SysmlPackage.eINSTANCE.getOccurrenceUsage());
-        assertThat(this.commonQueryService.getFeatureReferenceExpression(realizer, "realizes")).containsInstanceOf(FeatureReferenceExpression.class);
+        this.commonUpdateService.setFeatureReferenceValues(capability, "Arcadia::Capability", "involvedComponents", List.of(firstComponent), SysmlPackage.eINSTANCE.getPartUsage());
+        assertThat(this.commonQueryService.getFeatureReferenceExpression(capability, "involvedComponents")).containsInstanceOf(FeatureReferenceExpression.class);
 
-        this.commonUpdateService.setFeatureReferenceValues(realizer, "Arcadia::ArcadiaElement", "realizes", List.of(firstRealized, secondRealized),
-                SysmlPackage.eINSTANCE.getOccurrenceUsage());
+        this.commonUpdateService.setFeatureReferenceValues(capability, "Arcadia::Capability", "involvedComponents", List.of(firstComponent, secondComponent),
+                SysmlPackage.eINSTANCE.getPartUsage());
 
-        var expression = this.commonQueryService.getFeatureReferenceExpression(realizer, "realizes").orElseThrow();
+        var expression = this.commonQueryService.getFeatureReferenceExpression(capability, "involvedComponents").orElseThrow();
         assertThat(expression).isInstanceOf(OperatorExpression.class);
         assertThat(((OperatorExpression) expression).getOperator()).isEqualTo(",");
-        assertThat(this.commonQueryService.extractAllFeatures(expression)).containsExactly(firstRealized, secondRealized);
+        assertThat(this.commonQueryService.extractAllFeatures(expression)).containsExactly(firstComponent, secondComponent);
 
-        this.commonUpdateService.setFeatureReferenceValues(realizer, "Arcadia::ArcadiaElement", "realizes", List.of(), SysmlPackage.eINSTANCE.getOccurrenceUsage());
+        this.commonUpdateService.setFeatureReferenceValues(capability, "Arcadia::Capability", "involvedComponents", List.of(), SysmlPackage.eINSTANCE.getPartUsage());
 
-        assertThat(this.commonQueryService.getFeatureReferenceExpression(realizer, "realizes")).isEmpty();
-        assertThat(realizer.getNestedReference()).filteredOn(reference -> "realizes".equals(reference.getName()))
+        assertThat(this.commonQueryService.getFeatureReferenceExpression(capability, "involvedComponents")).isEmpty();
+        assertThat(capability.getNestedReference()).filteredOn(reference -> "involvedComponents".equals(reference.getName()))
                 .singleElement().satisfies(reference -> assertThat(reference.getOwnedRedefinition()).hasSize(1));
     }
 
@@ -422,89 +426,120 @@ public class ElementModificationTests extends AbstractSemanticTests {
     }
 
     @Test
-    public void setRealizesShouldUpdateRealizesAndIsRealizedBy() {
+    public void setRealizedShouldUpdateRealizedAndRealizing() {
         ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
 
-        this.commonUpdateService.setRealizes(realizer, realized);
+        this.commonUpdateService.setRealized(realizer, realized);
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(realized);
-        assertThat(this.commonQueryService.getIsRealizedBy(realized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(realized);
+        assertThat(this.commonQueryService.getRealizing(realized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealizations(realizer)).singleElement().satisfies(allocation -> {
+            assertThat(allocation.getOwner()).isSameAs(realizer);
+            assertThat(this.commonQueryService.checkType(allocation, "Arcadia::Realization")).isTrue();
+            assertThat(this.commonQueryService.getDescribesSource(allocation)).isSameAs(realized);
+            assertThat(this.commonQueryService.getDescribesTarget(allocation)).isSameAs(realizer);
+        });
+        assertThat(realizer.getNestedReference()).isEmpty();
+        assertThat(realized.getNestedReference()).isEmpty();
     }
 
     @Test
-    public void setRealizesWhenSelectionsChangeShouldMergeSingleValuesAndReplaceMultipleSelections() {
+    public void getRealizationsShouldIncludeReachableResourcesAndIgnoreUnrelatedAllocations() {
+        var model = new SemanticDataTestFixture().createCapellaModel();
+        var realizer = model.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
+        var realized = model.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
+        this.commonUpdateService.setRealized(realizer, realized);
+        var unrelatedAllocation = this.metamodelMutationElementService.createAllocateEdge(realized, realizer);
+        realizer.getOwnedRelationship().add(unrelatedAllocation.getOwningRelationship());
+        var externalResource = new ResourceImpl(URI.createURI("memory:/realizer"));
+        realized.eResource().getResourceSet().getResources().add(externalResource);
+        externalResource.getContents().add(realizer);
+
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(realized);
+        assertThat(this.commonQueryService.getRealizing(realized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealizations(realizer)).doesNotContain(unrelatedAllocation);
+
+        this.commonUpdateService.clearRealized(realizer);
+
+        assertThat(this.commonQueryService.getRealized(realizer)).isEmpty();
+        assertThat(this.commonQueryService.getRealizing(realized)).isEmpty();
+        assertThat(unrelatedAllocation.getOwner()).isSameAs(realizer);
+    }
+
+    @Test
+    public void setRealizedWhenSelectionsChangeShouldMergeSingleValuesAndReplaceMultipleSelections() {
         ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage firstRealized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage secondRealized = this.commonCreationService.createFunction(firstRealized);
         ActionUsage thirdRealized = this.commonCreationService.createFunction(firstRealized);
-        this.commonUpdateService.setRealizes(realizer, firstRealized);
+        this.commonUpdateService.setRealized(realizer, firstRealized);
 
-        this.commonUpdateService.setRealizes(realizer, secondRealized);
-        this.commonUpdateService.setRealizes(realizer, List.of(secondRealized));
+        this.commonUpdateService.setRealized(realizer, secondRealized);
+        this.commonUpdateService.setRealized(realizer, List.of(secondRealized));
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(secondRealized, firstRealized);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(secondRealized, firstRealized);
 
-        this.commonUpdateService.setRealizes(realizer, List.of(firstRealized, thirdRealized));
+        this.commonUpdateService.setRealized(realizer, List.of(firstRealized, thirdRealized));
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(firstRealized, thirdRealized);
-        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).isEmpty();
-        assertThat(this.commonQueryService.getIsRealizedBy(thirdRealized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(firstRealized, thirdRealized);
+        assertThat(this.commonQueryService.getRealizing(secondRealized)).isEmpty();
+        assertThat(this.commonQueryService.getRealizing(thirdRealized)).containsExactly(realizer);
 
-        this.commonUpdateService.setRealizes(realizer, null);
+        this.commonUpdateService.setRealized(realizer, null);
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(firstRealized, thirdRealized);
-        assertThat(this.commonQueryService.getIsRealizedBy(firstRealized)).containsExactly(realizer);
-        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).isEmpty();
-        assertThat(this.commonQueryService.getIsRealizedBy(thirdRealized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(firstRealized, thirdRealized);
+        assertThat(this.commonQueryService.getRealizing(firstRealized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealizing(secondRealized)).isEmpty();
+        assertThat(this.commonQueryService.getRealizing(thirdRealized)).containsExactly(realizer);
 
-        this.commonUpdateService.setRealizes(realizer, firstRealized);
-        this.commonUpdateService.setRealizes(realizer, List.of());
+        this.commonUpdateService.setRealized(realizer, firstRealized);
+        this.commonUpdateService.setRealized(realizer, List.of());
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(firstRealized, thirdRealized);
-        assertThat(this.commonQueryService.getIsRealizedBy(firstRealized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(firstRealized, thirdRealized);
+        assertThat(this.commonQueryService.getRealizing(firstRealized)).containsExactly(realizer);
     }
 
     @Test
-    public void removeRealizesShouldPreserveOtherReferences() {
+    public void removeRealizedShouldPreserveOtherReferences() {
         ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage firstRealized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage secondRealized = this.commonCreationService.createFunction(firstRealized);
-        this.commonUpdateService.setRealizes(realizer, List.of(firstRealized, secondRealized));
+        this.commonUpdateService.setRealized(realizer, List.of(firstRealized, secondRealized));
 
-        this.commonUpdateService.removeRealizes(realizer, firstRealized);
+        this.commonUpdateService.removeRealized(realizer, firstRealized);
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).containsExactly(secondRealized);
-        assertThat(this.commonQueryService.getIsRealizedBy(firstRealized)).isEmpty();
-        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).containsExactly(realizer);
+        assertThat(this.commonQueryService.getRealized(realizer)).containsExactly(secondRealized);
+        assertThat(this.commonQueryService.getRealizing(firstRealized)).isEmpty();
+        assertThat(this.commonQueryService.getRealizing(secondRealized)).containsExactly(realizer);
     }
 
     @Test
-    public void removeRealizesShouldPreserveOtherIsRealizedBy() {
+    public void removeRealizedShouldPreserveOtherRealizing() {
         ActionUsage firstRealizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage secondRealizer = this.commonCreationService.createFunction(firstRealizer);
         ActionUsage realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
-        this.commonUpdateService.setRealizes(firstRealizer, realized);
-        this.commonUpdateService.setRealizes(secondRealizer, realized);
+        this.commonUpdateService.setRealized(firstRealizer, realized);
+        this.commonUpdateService.setRealized(secondRealizer, realized);
 
-        this.commonUpdateService.removeRealizes(firstRealizer, realized);
+        this.commonUpdateService.removeRealized(firstRealizer, realized);
 
-        assertThat(this.commonQueryService.getRealizes(firstRealizer)).isEmpty();
-        assertThat(this.commonQueryService.getRealizes(secondRealizer)).containsExactly(realized);
-        assertThat(this.commonQueryService.getIsRealizedBy(realized)).containsExactly(secondRealizer);
+        assertThat(this.commonQueryService.getRealized(firstRealizer)).isEmpty();
+        assertThat(this.commonQueryService.getRealized(secondRealizer)).containsExactly(realized);
+        assertThat(this.commonQueryService.getRealizing(realized)).containsExactly(secondRealizer);
     }
 
     @Test
-    public void clearRealizesShouldRemoveRealizesAndIsRealizedBy() {
+    public void clearRealizedShouldRemoveRealizedAndRealizing() {
         ActionUsage realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage firstRealized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         ActionUsage secondRealized = this.commonCreationService.createFunction(firstRealized);
-        this.commonUpdateService.setRealizes(realizer, List.of(firstRealized, secondRealized));
+        this.commonUpdateService.setRealized(realizer, List.of(firstRealized, secondRealized));
 
-        this.commonUpdateService.clearRealizes(realizer);
+        this.commonUpdateService.clearRealized(realizer);
 
-        assertThat(this.commonQueryService.getRealizes(realizer)).isEmpty();
-        assertThat(this.commonQueryService.getIsRealizedBy(firstRealized)).isEmpty();
-        assertThat(this.commonQueryService.getIsRealizedBy(secondRealized)).isEmpty();
+        assertThat(this.commonQueryService.getRealized(realizer)).isEmpty();
+        assertThat(this.commonQueryService.getRealizing(firstRealized)).isEmpty();
+        assertThat(this.commonQueryService.getRealizing(secondRealized)).isEmpty();
     }
 }

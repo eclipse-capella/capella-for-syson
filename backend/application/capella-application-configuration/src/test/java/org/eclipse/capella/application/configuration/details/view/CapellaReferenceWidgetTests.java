@@ -28,8 +28,8 @@ import org.eclipse.capella.application.configuration.details.view.referencewidge
 import org.eclipse.capella.application.configuration.details.view.referencewidget.CapellaReferenceWidgetHandler;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.CapellaReferenceWidgetPropertiesConverter;
 import org.eclipse.capella.application.configuration.details.view.referencewidget.ICapellaReferenceWidgetProvider;
-import org.eclipse.capella.application.configuration.details.view.referencewidget.IsRealizedByReferenceWidgetProvider;
-import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizesReferenceWidgetProvider;
+import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizingReferenceWidgetProvider;
+import org.eclipse.capella.application.configuration.details.view.referencewidget.RealizedReferenceWidgetProvider;
 import org.eclipse.capella.common.view.services.CapellaImagePathsService;
 import org.eclipse.capella.model.transverse.services.CommonCreationService;
 import org.eclipse.capella.model.transverse.services.CommonQueryService;
@@ -129,7 +129,7 @@ public class CapellaReferenceWidgetTests {
         when(kinds.getKind(any(EClass.class))).thenReturn("sysml::Element");
         IReadOnlyObjectPredicate readOnly = object -> false;
         var operations = new OperationExecutor(List.of(new ChangeContextOperationHandler()));
-        List<ICapellaReferenceWidgetProvider> providers = List.of(new RealizesReferenceWidgetProvider(), new IsRealizedByReferenceWidgetProvider(),
+        List<ICapellaReferenceWidgetProvider> providers = List.of(new RealizedReferenceWidgetProvider(), new RealizingReferenceWidgetProvider(),
                 new AllocatedFunctionPortsReferenceWidgetProvider());
         var properties = new CapellaReferenceWidgetPropertiesConverter(this.identityService, readOnly, labels, kinds, providers, new CapellaImagePathsService(labels));
         var behavior = new CapellaReferenceWidgetBehaviorConverter(feedback);
@@ -167,28 +167,28 @@ public class CapellaReferenceWidgetTests {
     }
 
     @Test
-    public void addRemoveAndClearShouldMaintainRealizesAndInverseReferences() {
+    public void addRemoveAndClearShouldMaintainRealizedAndInverseReferences() {
         var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         var second = new CommonCreationService().createFunction(realized);
         when(this.objectSearchService.getObject(this.editingContext, "first")).thenReturn(Optional.of(realized));
         when(this.objectSearchService.getObject(this.editingContext, "second")).thenReturn(Optional.of(second));
-        var description = this.convert(RealizesReferenceWidgetProvider.WIDGET_NAME, "realizes", "aql:true");
+        var description = this.convert(RealizedReferenceWidgetProvider.WIDGET_NAME, "realized", "aql:true");
         var widget = this.render(description, realizer);
 
         assertThat(this.handler.add(this.editingContext, this.formDescription, widget, List.of("first"))).isInstanceOf(Success.class);
         assertThat(this.handler.add(this.editingContext, this.formDescription, widget, List.of("second"))).isInstanceOf(Success.class);
-        assertThat(this.queryService.getRealizes(realizer)).containsExactly(second, realized);
-        assertThat(this.queryService.getIsRealizedBy(realized)).contains(realizer);
-        assertThat(this.queryService.getIsRealizedBy(second)).contains(realizer);
+        assertThat(this.queryService.getRealized(realizer)).containsExactly(second, realized);
+        assertThat(this.queryService.getRealizing(realized)).contains(realizer);
+        assertThat(this.queryService.getRealizing(second)).contains(realizer);
 
         assertThat(this.handler.remove(this.editingContext, this.formDescription, widget, "first")).isInstanceOf(Success.class);
-        assertThat(this.queryService.getRealizes(realizer)).containsExactly(second);
-        assertThat(this.queryService.getIsRealizedBy(realized)).doesNotContain(realizer);
+        assertThat(this.queryService.getRealized(realizer)).containsExactly(second);
+        assertThat(this.queryService.getRealizing(realized)).doesNotContain(realizer);
 
         assertThat(this.handler.clear(this.editingContext, this.formDescription, widget)).isInstanceOf(Success.class);
-        assertThat(this.queryService.getRealizes(realizer)).isEmpty();
-        assertThat(this.queryService.getIsRealizedBy(second)).doesNotContain(realizer);
+        assertThat(this.queryService.getRealized(realizer)).isEmpty();
+        assertThat(this.queryService.getRealizing(second)).doesNotContain(realizer);
     }
 
     @Test
@@ -198,17 +198,17 @@ public class CapellaReferenceWidgetTests {
         var creation = new CommonCreationService();
         var second = creation.createFunction(realized);
         var third = creation.createFunction(realized);
-        new CommonUpdateService().setRealizes(realizer, realized);
+        new CommonUpdateService().setRealized(realizer, realized);
         when(this.objectSearchService.getObject(this.editingContext, this.identityService.getId(realized))).thenReturn(Optional.of(realized));
         when(this.objectSearchService.getObject(this.editingContext, "second")).thenReturn(Optional.of(second));
         when(this.objectSearchService.getObject(this.editingContext, "third")).thenReturn(Optional.of(third));
-        var widget = this.render(this.convert(RealizesReferenceWidgetProvider.WIDGET_NAME, "realizes", "aql:true"), realizer);
+        var widget = this.render(this.convert(RealizedReferenceWidgetProvider.WIDGET_NAME, "realized", "aql:true"), realizer);
 
         assertThat(this.handler.add(this.editingContext, this.formDescription, widget, List.of("second", "third", "second"))).isInstanceOf(Success.class);
-        assertThat(this.queryService.getRealizes(realizer)).containsExactly(realized, second, third);
-        assertThat(this.queryService.getIsRealizedBy(realized)).contains(realizer);
-        assertThat(this.queryService.getIsRealizedBy(second)).contains(realizer);
-        assertThat(this.queryService.getIsRealizedBy(third)).contains(realizer);
+        assertThat(this.queryService.getRealized(realizer)).containsExactly(realized, second, third);
+        assertThat(this.queryService.getRealizing(realized)).contains(realizer);
+        assertThat(this.queryService.getRealizing(second)).contains(realizer);
+        assertThat(this.queryService.getRealizing(third)).contains(realizer);
     }
 
     @Test
@@ -234,35 +234,35 @@ public class CapellaReferenceWidgetTests {
         var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
         when(this.objectSearchService.getObject(this.editingContext, "valid")).thenReturn(Optional.of(realized));
-        var widget = this.render(this.convert(RealizesReferenceWidgetProvider.WIDGET_NAME, "realizes", "aql:true"), realizer);
+        var widget = this.render(this.convert(RealizedReferenceWidgetProvider.WIDGET_NAME, "realized", "aql:true"), realizer);
 
         assertThat(this.handler.add(this.editingContext, this.formDescription, widget, List.of("valid", "missing"))).isInstanceOf(Failure.class);
-        assertThat(this.queryService.getRealizes(realizer)).isEmpty();
-        assertThat(this.queryService.getIsRealizedBy(realized)).doesNotContain(realizer);
+        assertThat(this.queryService.getRealized(realizer)).isEmpty();
+        assertThat(this.queryService.getRealizing(realized)).doesNotContain(realizer);
     }
 
     @Test
     public void addWhenSelectionIsEmptyShouldPreserveExistingValues() {
         var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
-        new CommonUpdateService().setRealizes(realizer, realized);
-        var widget = this.render(this.convert(RealizesReferenceWidgetProvider.WIDGET_NAME, "realizes", "aql:true"), realizer);
+        new CommonUpdateService().setRealized(realizer, realized);
+        var widget = this.render(this.convert(RealizedReferenceWidgetProvider.WIDGET_NAME, "realized", "aql:true"), realizer);
 
         assertThat(this.handler.add(this.editingContext, this.formDescription, widget, List.of())).isInstanceOf(Success.class);
-        assertThat(this.queryService.getRealizes(realizer)).containsExactly(realized);
+        assertThat(this.queryService.getRealized(realizer)).containsExactly(realized);
     }
 
     @Test
     public void addAndClearWhenReadOnlyShouldRejectChanges() {
         var realizer = this.capellaModel.getLogicalArchitecturePerspective().getFunctionsPackage().getRootFunction().getElement();
         var realized = this.capellaModel.getSystemAnalysisPerspective().getFunctionsPackage().getRootFunction().getElement();
-        new CommonUpdateService().setRealizes(realizer, realized);
-        var widget = this.render(this.convert(IsRealizedByReferenceWidgetProvider.WIDGET_NAME, "isRealizedBy", "aql:false"), realized);
+        new CommonUpdateService().setRealized(realizer, realized);
+        var widget = this.render(this.convert(RealizingReferenceWidgetProvider.WIDGET_NAME, "realizing", "aql:false"), realized);
 
         assertThat(widget.isReadOnly()).isTrue();
         assertThat(this.handler.add(this.editingContext, this.formDescription, widget, List.of("other"))).isInstanceOf(Failure.class);
         assertThat(this.handler.clear(this.editingContext, this.formDescription, widget)).isInstanceOf(Failure.class);
-        assertThat(this.queryService.getIsRealizedBy(realized)).containsExactly(realizer);
+        assertThat(this.queryService.getRealizing(realized)).containsExactly(realizer);
     }
 
     @Test
@@ -270,7 +270,7 @@ public class CapellaReferenceWidgetTests {
         var widget = mock(ReferenceWidget.class);
         when(widget.getReferenceName()).thenReturn("ownedRelationship");
         assertThat(this.handler.canHandle(this.editingContext, this.formDescription, widget)).isFalse();
-        when(widget.getReferenceName()).thenReturn(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + "realizes");
+        when(widget.getReferenceName()).thenReturn(ICapellaReferenceWidgetProvider.CAPELLA_REF_WIDGET_PREFIX + "realized");
         assertThat(this.handler.canHandle(this.editingContext, this.formDescription, widget)).isTrue();
     }
 

@@ -33,16 +33,16 @@ import org.eclipse.syson.sysml.Usage;
 import org.springframework.stereotype.Service;
 
 /**
- * Provide the realizes reference widget content.
+ * Provide the realized reference widget content.
  *
  * @author Jerome Gout
  */
 @Service
-public class RealizesReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
+public class RealizedReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
 
-    public static final String WIDGET_NAME = "RealizesWidget";
+    public static final String WIDGET_NAME = "RealizedWidget";
 
-    public static final String FEATURE_NAME = "realizes";
+    public static final String FEATURE_NAME = "realized";
 
     private static final String ERROR_MSG = "Something went wrong while deleting the realized elements";
 
@@ -70,21 +70,21 @@ public class RealizesReferenceWidgetProvider implements ICapellaReferenceWidgetP
     @Override
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         return variableManager.get(VariableManager.SELF, Usage.class)
-                .map(this.commonQueryService::getRealizes)
+                .map(this.commonQueryService::getRealized)
                 .orElse(List.of());
     }
 
     @Override
     public IStatus handleAdd(ReferenceWidgetDescription referenceDescription, EObject owner, List<Object> newValues) {
         if (owner instanceof Usage usage && newValues.stream().allMatch(Feature.class::isInstance)) {
-            var currentValues = this.commonQueryService.getRealizes(usage);
+            var currentValues = this.commonQueryService.getRealized(usage);
             // Keep the setter's single-value ordering; multiple selections require the complete reference value.
             var values = newValues;
             if (newValues.size() > 1) {
                 values = Stream.concat(currentValues.stream(), newValues.stream()).distinct().toList();
             }
             if (newValues.stream().anyMatch(value -> !currentValues.contains(value))) {
-                this.commonUpdateService.setRealizes(usage, values);
+                this.commonUpdateService.setRealized(usage, values);
             }
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
@@ -99,7 +99,7 @@ public class RealizesReferenceWidgetProvider implements ICapellaReferenceWidgetP
     @Override
     public IStatus handleRemove(ReferenceWidgetDescription referenceDescription, EObject owner, Object value) {
         if (owner instanceof Usage usage && value instanceof Feature feature) {
-            this.commonUpdateService.removeRealizes(usage, feature);
+            this.commonUpdateService.removeRealized(usage, feature);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);
@@ -113,7 +113,7 @@ public class RealizesReferenceWidgetProvider implements ICapellaReferenceWidgetP
     @Override
     public IStatus handleClear(ReferenceWidgetDescription referenceDescription, EObject owner) {
         if (owner instanceof Usage usage) {
-            this.commonUpdateService.clearRealizes(usage);
+            this.commonUpdateService.clearRealized(usage);
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }
         return new Failure(ERROR_MSG);

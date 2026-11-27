@@ -113,9 +113,11 @@ public class CommonQueryService {
 
     public static final String ARCADIA_INVOLVED_FUNCTIONAL_EXCHANGES = "involvedFunctionalExchanges";
 
-    public static final String ARCADIA_REALIZES = "realizes";
+    public static final String ARCADIA_REALIZATION = "Realization";
 
-    public static final String ARCADIA_IS_REALIZED_BY = "isRealizedBy";
+    public static final String ARCADIA_REALIZED = "realized";
+
+    public static final String ARCADIA_REALIZING = "realizing";
 
     public static final String ARCADIA_REQUIREMENT = "ArcadiaRequirement";
 
@@ -1075,11 +1077,7 @@ public class CommonQueryService {
     }
 
     public boolean isDescribes(Object eObject) {
-        if (eObject instanceof AllocationUsage allocationUsage) {
-            return allocationUsage.getSource().stream()
-                    .anyMatch(source -> Objects.equals(this.getArcadiaType(source).map(type -> type.replaceFirst(ARCADIA_PREFIX, "")).orElse(""), ARCADIA_REQUIREMENT));
-        }
-        return false;
+        return eObject instanceof AllocationUsage allocationUsage && this.isRequirement(this.getDescribesSource(allocationUsage));
     }
 
     public boolean canCreateFunctionalExchange(Feature source, Feature target) {
@@ -1267,7 +1265,7 @@ public class CommonQueryService {
                         .filter(Package.class::isInstance)
                         .map(Package.class::cast)
                         .filter(pack -> Objects.equals(pack.getDeclaredName(), packageName.get()))
-                        .flatMap(pack -> this.getDescendants(pack, this.getRealizesCandidatePredicate(usage)).stream())
+                        .flatMap(pack -> this.getDescendants(pack, this.getRealizedCandidatePredicate(usage)).stream())
                         .map(Feature.class::cast)
                         .toList();
             }
@@ -1297,7 +1295,7 @@ public class CommonQueryService {
         });
     }
 
-    private Predicate<EObject> getRealizesCandidatePredicate(Usage source) {
+    private Predicate<EObject> getRealizedCandidatePredicate(Usage source) {
         boolean sourceIsActor = this.isComponentActor(source);
         boolean sourceIsFunctionPort = this.isFunctionPort(source);
         boolean sourceIsPort = sourceIsFunctionPort || this.isComponentPort(source);
@@ -1318,12 +1316,35 @@ public class CommonQueryService {
         return unspecifiedDirection || bidirectional || sourceDirection == candidateDirection;
     }
 
-    public List<Feature> getRealizes(Usage usage) {
-        return this.getFeatureReferenceValue(usage, ARCADIA_REALIZES);
+    public List<AllocationUsage> getRealizations(Usage usage) {
+        return usage.getOwnedElement().stream()
+                .filter(AllocationUsage.class::isInstance)
+                .map(AllocationUsage.class::cast)
+                .filter(allocation -> this.checkType(allocation, ARCADIA_PREFIX + ARCADIA_REALIZATION))
+                .filter(allocation -> Objects.equals(modelQueryAQLService.getTargetAllocateEdge(allocation), usage))
+                .toList();
     }
 
-    public List<Feature> getIsRealizedBy(Usage usage) {
-        return this.getFeatureReferenceValue(usage, ARCADIA_IS_REALIZED_BY);
+    public List<Feature> getRealized(Usage usage) {
+        return this.getRealizations(usage).stream()
+                .map(this::getDescribesSource)
+                .filter(Feature.class::isInstance)
+                .map(Feature.class::cast)
+                .distinct()
+                .toList();
+    }
+
+    public List<Feature> getRealizing(Usage usage) {
+        return this.utilService.getAllReachable(usage, SysmlPackage.eINSTANCE.getAllocationUsage()).stream()
+                .filter(AllocationUsage.class::isInstance)
+                .map(AllocationUsage.class::cast)
+                .filter(allocation -> this.checkType(allocation, ARCADIA_PREFIX + ARCADIA_REALIZATION))
+                .filter(allocation -> Objects.equals(this.getDescribesSource(allocation), usage))
+                .map(this::getDescribesTarget)
+                .filter(Feature.class::isInstance)
+                .map(Feature.class::cast)
+                .distinct()
+                .toList();
     }
 
     /**

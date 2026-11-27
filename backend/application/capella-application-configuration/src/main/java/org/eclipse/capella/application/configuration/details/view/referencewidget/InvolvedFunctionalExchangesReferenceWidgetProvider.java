@@ -98,7 +98,7 @@ public class InvolvedFunctionalExchangesReferenceWidgetProvider implements ICape
                 values = Stream.concat(currentValues.stream(), newValues.stream()).distinct().toList();
             }
             if (newValues.stream().anyMatch(value -> !currentValues.contains(value))) {
-                this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, FEATURE_NAME, values, SysmlPackage.eINSTANCE.getFlowUsage().getName());
+                this.commonUpdateService.setArcadiaReferenceFeature(actionUsage, ARCADIA_PREFIX + ARCADIA_FUNCTIONAL_CHAIN, FEATURE_NAME, values, SysmlPackage.eINSTANCE.getReferenceUsage().getName());
             }
             return new Success(ChangeKind.SEMANTIC_CHANGE, Map.of());
         }

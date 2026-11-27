@@ -32,18 +32,18 @@ public class ArcadiaTraceabilityLabelService {
 
     private final ArcadiaElementNameService arcadiaElementNameService = new ArcadiaElementNameService();
 
-    public boolean hasRealizesWidget(Element element) {
-        return this.getRealizesWidgetLabel(element).isPresent();
+    public boolean hasRealizedWidget(Element element) {
+        return this.getRealizedWidgetLabel(element).isPresent();
     }
 
     /**
      * Returns the string value expected by the widget label expression.
      */
-    public String getRealizesWidgetLabelValue(Element element) {
-        return this.getRealizesWidgetLabel(element).orElse("");
+    public String getRealizedWidgetLabelValue(Element element) {
+        return this.getRealizedWidgetLabel(element).orElse("");
     }
 
-    private Optional<String> getRealizesWidgetLabel(Element element) {
+    private Optional<String> getRealizedWidgetLabel(Element element) {
         Optional<String> result = Optional.empty();
         if (element instanceof Usage usage) {
             result = this.commonQueryService.getArcadiaPerspective(usage)
@@ -54,15 +54,15 @@ public class ArcadiaTraceabilityLabelService {
         return result;
     }
 
-    public boolean hasIsRealizedByWidget(Element element) {
-        return this.getIsRealizedByWidgetLabel(element).isPresent();
+    public boolean hasRealizingWidget(Element element) {
+        return this.getRealizingWidgetLabel(element).isPresent();
     }
 
-    public String getIsRealizedByWidgetLabelValue(Element element) {
-        return this.getIsRealizedByWidgetLabel(element).orElse("");
+    public String getRealizingWidgetLabelValue(Element element) {
+        return this.getRealizingWidgetLabel(element).orElse("");
     }
 
-    private Optional<String> getIsRealizedByWidgetLabel(Element element) {
+    private Optional<String> getRealizingWidgetLabel(Element element) {
         Optional<String> result = Optional.empty();
         if (element instanceof Usage usage) {
             result = this.commonQueryService.getArcadiaPerspective(usage)

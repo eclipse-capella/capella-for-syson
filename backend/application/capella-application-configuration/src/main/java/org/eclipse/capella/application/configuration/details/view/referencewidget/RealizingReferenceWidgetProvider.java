@@ -27,16 +27,16 @@ import org.eclipse.syson.sysml.Usage;
 import org.springframework.stereotype.Service;
 
 /**
- * Provide the isRealizedBy reference widget content.
+ * Provide the realizing reference widget content.
  *
  * @author Jerome Gout
  */
 @Service
-public class IsRealizedByReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
+public class RealizingReferenceWidgetProvider implements ICapellaReferenceWidgetProvider {
 
-    public static final String WIDGET_NAME = "IsRealizedByWidget";
+    public static final String WIDGET_NAME = "RealizingWidget";
 
-    private static final String ERROR_MSG = "The isRealizedBy reference is read-only";
+    private static final String ERROR_MSG = "The realizing reference is read-only";
 
     private final CommonQueryService commonQueryService = new CommonQueryService();
 
@@ -60,7 +60,7 @@ public class IsRealizedByReferenceWidgetProvider implements ICapellaReferenceWid
     public List<?> getReferenceValue(ReferenceWidgetDescription referenceDescription, AQLInterpreter interpreter, VariableManager variableManager) {
         Object object = variableManager.getVariables().get(VariableManager.SELF);
         if (object instanceof Usage usage) {
-            return this.commonQueryService.getIsRealizedBy(usage);
+            return this.commonQueryService.getRealizing(usage);
         }
         return List.of();
     }
