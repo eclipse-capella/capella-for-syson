@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
@@ -61,6 +62,7 @@ import org.eclipse.sirius.components.view.diagram.HeaderSeparatorDisplayMode;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodeStyleDescription;
 import org.eclipse.sirius.components.view.diagram.NodeTool;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.emf.CanonicalServices;
 import org.eclipse.sirius.components.view.emf.IJavaServiceProvider;
@@ -280,6 +282,94 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
         }
     }
 
+    @Test
+    public void eachNodeWithUnsynchronizedChildNodeDescriptionsHasAShowAllContainedElementsTool() {
+        SoftAssertions softly = new SoftAssertions();
+        var nodeDescriptions = EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(nodeDescription -> Stream.concat(nodeDescription.getChildrenDescriptions().stream(), nodeDescription.getReusedChildNodeDescriptions().stream())
+                        .anyMatch(childNodeDescription -> childNodeDescription.getSynchronizationPolicy() == SynchronizationPolicy.UNSYNCHRONIZED)
+                )
+                .toList();
+        for (NodeDescription nodeDescription : nodeDescriptions) {
+            Optional<NodeToolSection> optionalRelatedElementsTool = Optional.ofNullable(nodeDescription.getPalette())
+                    .stream()
+                    .flatMap(nodePalette -> nodePalette.getToolSections().stream())
+                    .filter(toolSection -> Objects.equals(toolSection.getName(), "Related Elements"))
+                    .findFirst();
+            softly.assertThat(optionalRelatedElementsTool).as("NodeDescription %s should have a 'Related Elements' tool section", this.getDescriptionName(nodeDescription)).isPresent();
+            if (optionalRelatedElementsTool.isPresent()) {
+                var relatedElementsTool = optionalRelatedElementsTool.get();
+                softly.assertThat(relatedElementsTool.getNodeTools())
+                        .as("NodeDescription %s should have a 'Show all contained elements'", this.getDescriptionName(nodeDescription))
+                        .anyMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements"));
+                softly.assertThat(relatedElementsTool.getNodeTools())
+                        .as("NodeDescription %s should have a 'Show all contained elements (recursive)'", this.getDescriptionName(nodeDescription))
+                        .anyMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements (recursive)"));
+            }
+
+        }
+        softly.assertAll();
+    }
+
+    @Test
+    public void eachNodeWithoutUnsynchronizedChildNodeDescriptionHasNoShowAllContainedElementsTool() {
+        SoftAssertions softly = new SoftAssertions();
+        var nodeDescriptions = EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .filter(nodeDescription -> Stream.concat(nodeDescription.getChildrenDescriptions().stream(), nodeDescription.getReusedChildNodeDescriptions().stream())
+                        .noneMatch(childNodeDescription -> childNodeDescription.getSynchronizationPolicy() == SynchronizationPolicy.UNSYNCHRONIZED)
+                )
+                .toList();
+        for (NodeDescription nodeDescription : nodeDescriptions) {
+            Optional<NodeToolSection> optionalRelatedElementsTool = Optional.ofNullable(nodeDescription.getPalette())
+                    .stream()
+                    .flatMap(nodePalette -> nodePalette.getToolSections().stream())
+                    .filter(toolSection -> Objects.equals(toolSection.getName(), "Related Elements"))
+                    .findFirst();
+            if (optionalRelatedElementsTool.isPresent()) {
+                // The tool section may be present or not, depending on the other "show ..." tools.
+                var relatedElementsTool = optionalRelatedElementsTool.get();
+                softly.assertThat(relatedElementsTool.getNodeTools())
+                        .as("NodeDescription %s should not have a 'Show all contained elements'", this.getDescriptionName(nodeDescription))
+                        .noneMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements"));
+                softly.assertThat(relatedElementsTool.getNodeTools())
+                        .as("NodeDescription %s should not have a 'Show all contained elements (recursive)'", this.getDescriptionName(nodeDescription))
+                        .noneMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all contained elements (recursive)"));
+            }
+        }
+        softly.assertAll();
+    }
+
+    @Test
+    public void eachNonItemNonCompartmentNodeHasAShowAllConnectedElementsTool() {
+        // Exclude synchronized diagrams: there is no reason to have related elements tools on them
+        if (!this.isSynchronizedDiagram()) {
+            // Every node can be connected to a requirement at least.
+            SoftAssertions softly = new SoftAssertions();
+            var nodeDescriptions = EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                    // Exclude compartment and compartment children
+                    .filter(nodeDescription -> !this.isCompartment().test(nodeDescription))
+                    .filter(nodeDescription -> EMFUtils.getFirstAncestor(NodeDescription.class, nodeDescription,
+                            parent -> parent instanceof NodeDescription parentNodeDescription
+                                    && this.isCompartment().test(parentNodeDescription)).isEmpty())
+                    .toList();
+            for (NodeDescription nodeDescription : nodeDescriptions) {
+                Optional<NodeToolSection> optionalRelatedElementsTool = Optional.ofNullable(nodeDescription.getPalette())
+                        .stream()
+                        .flatMap(nodePalette -> nodePalette.getToolSections().stream())
+                        .filter(toolSection -> Objects.equals(toolSection.getName(), "Related Elements"))
+                        .findFirst();
+                softly.assertThat(optionalRelatedElementsTool).as("NodeDescription %s should have a 'Related Elements' tool section", this.getDescriptionName(nodeDescription)).isPresent();
+                if (optionalRelatedElementsTool.isPresent()) {
+                    var relatedElementsTool = optionalRelatedElementsTool.get();
+                    softly.assertThat(relatedElementsTool.getNodeTools())
+                            .as("NodeDescription %s should have a 'Show all connected elements'", this.getDescriptionName(nodeDescription))
+                            .anyMatch(nodeTool -> Objects.equals(nodeTool.getName(), "Show all connected elements"));
+                }
+            }
+            softly.assertAll();
+        }
+    }
+
     private void assertRequirementCompartmentPresentation(NodeDescription requirementNodeDescription) {
         Assertions.assertThat(requirementNodeDescription.getChildrenDescriptions())
                 .as("Requirement node should have a compartment")
@@ -403,5 +493,10 @@ public abstract sealed class AbstractDiagramDescriptionTests permits AbstractEdi
 
     protected Predicate<NodeDescription> isCompartment() {
         return nodeDescription -> nodeDescription.getName() != null && nodeDescription.getName().contains("Compartment");
+    }
+
+    protected boolean isSynchronizedDiagram() {
+        return EMFUtils.allContainedObjectOfType(this.diagramDescription, NodeDescription.class)
+                .allMatch(nodeDescription -> nodeDescription.getSynchronizationPolicy() == SynchronizationPolicy.SYNCHRONIZED);
     }
 }

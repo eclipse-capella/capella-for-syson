@@ -15,6 +15,9 @@ package org.eclipse.capella.diagram.sab.view.nodes.system;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.diagram.sab.view.edges.componentexchange.ComponentExchangeToolProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.actor.SystemActorNodeDescriptionProvider;
 import org.eclipse.capella.diagram.sab.view.nodes.component.SystemComponentNodeDescriptionProvider;
@@ -28,10 +31,11 @@ import org.eclipse.sirius.components.core.api.IEditingContext;
 import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
-import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.DropNodeTool;
+import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
@@ -68,6 +72,7 @@ public class SystemOfInterestPaletteProvider {
         return this.diagramBuilderHelper.newNodePalette()
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
+                .toolSections(this.createRelatedElementsToolSection())
                 .dropNodeTool(this.createDropFromDiagramTool(cache))
                 .nodeTools(
                         new SystemComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewSystemComponentNodeTool(cache),
@@ -76,6 +81,15 @@ public class SystemOfInterestPaletteProvider {
                         new ComponentPortToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOutputComponentPortNodeTool(cache),
                         new ComponentPortToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInOutComponentPortNodeTool(cache))
                 .build();
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        AllContainedElementsToolProvider allContainedElementsToolProvider = new AllContainedElementsToolProvider();
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createContainedElementsTool());
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createRecursiveContainedElementsTool());
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
+        return nodeToolSection;
     }
 
     private DropNodeTool createDropFromDiagramTool(IViewDiagramElementFinder cache) {

@@ -46,8 +46,10 @@ Create, delete, and reconnect Mission and Capability involvement links to Actors
 - https://github.com/eclipse-capella/capella-for-syson/issues/183[#183] [enh] Initialize MCB diagram.
 - https://github.com/eclipse-capella/capella-for-syson/issues/379[#379] [enh] Activate auto layout on OABD diagram.
 - https://github.com/eclipse-capella/capella-for-syson/issues/185[#185] [enh] Initialize SFBD diagram.
-- https://github.com/eclipse-capella/capella-for-syson/issues/239[#209] [diagrams] Add show all contained elements tool in diagrams.
-The tool is only defined on diagrams (not on individual nodes), and shows direct children, not recursive ones.
+- https://github.com/eclipse-capella/capella-for-syson/issues/239[#239] [diagrams] Add show all contained elements tool in diagrams.
+The tool is available on diagrams and nodes with child node descriptions.
+There is a non-recursive version that only shows direct children, and a recursive one that shows all the children of the selected element.
+- https://github.com/eclipse-capella/capella-for-syson/issues/239[#239] [diagrams] Add show all connected elements tool in diagrams.
 
 === Improvements
 

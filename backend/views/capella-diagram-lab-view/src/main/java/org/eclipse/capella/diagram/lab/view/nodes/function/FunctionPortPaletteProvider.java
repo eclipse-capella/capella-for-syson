@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.lab.view.nodes.function;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.lab.view.edges.functionalexchange.FunctionalExchangeToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
@@ -24,6 +26,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.util.ServiceMethod;
 
@@ -59,8 +62,14 @@ public class FunctionPortPaletteProvider {
         return this.diagramBuilderHelper.newNodePalette()
                 .deleteTool(deleteTool.build())
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
-                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.createRelatedElementsToolSection(), this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
+        return nodeToolSection;
     }
 
     public List<EdgeTool> createEdgeTools(IViewDiagramElementFinder cache) {

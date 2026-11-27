@@ -15,6 +15,7 @@ package org.eclipse.capella.common.view.diagram;
 
 import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuilders;
 import org.eclipse.sirius.components.view.diagram.DiagramToolSection;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 
 /**
  * Provides the related elements tool section shared by Capella for SysON diagrams.
@@ -29,6 +30,12 @@ public class RelatedElementsToolSectionProvider {
 
     public DiagramToolSection createDiagramToolSection() {
         return this.diagramBuilders.newDiagramToolSection()
+                .name(RELATED_ELEMENTS_TOOL_SECTION_LABEL)
+                .build();
+    }
+
+    public NodeToolSection createNodeToolSection() {
+        return this.diagramBuilders.newNodeToolSection()
                 .name(RELATED_ELEMENTS_TOOL_SECTION_LABEL)
                 .build();
     }

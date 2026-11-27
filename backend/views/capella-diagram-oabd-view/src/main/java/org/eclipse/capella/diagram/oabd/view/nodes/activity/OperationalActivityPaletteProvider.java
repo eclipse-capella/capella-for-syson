@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.oabd.view.nodes.activity;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.oabd.view.edges.containedin.ContainedInToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
@@ -24,6 +26,7 @@ import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.sysml.Element;
@@ -61,11 +64,18 @@ public class OperationalActivityPaletteProvider {
                         .expression(ServiceMethod.of1(DiagramMutationLabelService::directEditNode).aqlSelf("newLabel"))
                         .build());
         return this.diagramBuilderHelper.newNodePalette()
+                .toolSections(this.createRelatedElementsToolSection())
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
                 .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                 .build();
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
+        return nodeToolSection;
     }
 
     public List<EdgeTool> createEdgeTools(IViewDiagramElementFinder cache) {

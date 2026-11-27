@@ -15,6 +15,8 @@ package org.eclipse.capella.diagram.lab.view.nodes.comment;
 
 import java.util.Objects;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.lab.view.edges.annotating.AnnotatingToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
@@ -23,6 +25,7 @@ import org.eclipse.sirius.components.view.builder.generated.diagram.DiagramBuild
 import org.eclipse.sirius.components.view.builder.generated.view.ViewBuilders;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramQueryLabelService;
 import org.eclipse.syson.diagram.services.aql.DiagramMutationAQLService;
@@ -70,7 +73,13 @@ public class CommentPaletteProvider {
                 .deleteTool(deleteTool.build())
                 .labelEditTool(labelEditTool.build())
                 .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
-                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.createRelatedElementsToolSection(), this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
+        return nodeToolSection;
     }
 }

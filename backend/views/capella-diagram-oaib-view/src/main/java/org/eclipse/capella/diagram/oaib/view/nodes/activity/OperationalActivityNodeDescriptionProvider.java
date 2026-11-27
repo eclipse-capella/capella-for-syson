@@ -14,6 +14,9 @@ package org.eclipse.capella.diagram.oaib.view.nodes.activity;
 
 import java.util.List;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.OAIBViewConstants;
 import org.eclipse.capella.diagram.oaib.view.edges.interaction.InteractionToolProvider;
@@ -29,6 +32,7 @@ import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.InsideLabelPosition;
 import org.eclipse.sirius.components.view.diagram.LabelOverflowStrategy;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
@@ -102,6 +106,7 @@ public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDesc
                                     .expression(ServiceMethod.of1(DiagramMutationLabelService::directEditNode).aqlSelf("newLabel"))
                                     .build())
                             .build())
+                    .toolSections(this.createRelatedElementsToolSection())
                     .quickAccessTools(this.nodeDeleteFromDiagramToolProvider.getDeleteFromDiagramTool())
                     .dropNodeTool(this.createDropFromDiagramTool(cache))
                     .nodeTools(new OperationalActivityToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewOperationalActivityNodeTool(cache))
@@ -109,6 +114,15 @@ public class OperationalActivityNodeDescriptionProvider extends AbstractNodeDesc
             nodeDescription.getEdgeTools().addAll(this.edgeToolConverter.convertToEdgeToolsWithPalette(
                     List.of(new InteractionToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewInteractionTool(cache))));
         });
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        AllContainedElementsToolProvider allContainedElementsToolProvider = new AllContainedElementsToolProvider();
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createContainedElementsTool());
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createRecursiveContainedElementsTool());
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
+        return nodeToolSection;
     }
 
     private DropNodeTool createDropFromDiagramTool(IViewDiagramElementFinder cache) {

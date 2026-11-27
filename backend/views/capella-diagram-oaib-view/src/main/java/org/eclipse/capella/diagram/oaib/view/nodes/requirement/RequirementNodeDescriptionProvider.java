@@ -12,6 +12,8 @@
  *******************************************************************************/
 package org.eclipse.capella.diagram.oaib.view.nodes.requirement;
 
+import org.eclipse.capella.common.view.diagram.AllConnectedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.AbstractNodeDescriptionProvider;
 import org.eclipse.capella.diagram.oaib.view.edges.describes.DescribesToolProvider;
 import org.eclipse.capella.model.transverse.services.CommonDeletionService;
@@ -20,6 +22,7 @@ import org.eclipse.sirius.components.view.builder.IViewDiagramElementFinder;
 import org.eclipse.sirius.components.view.builder.providers.IColorProvider;
 import org.eclipse.sirius.components.view.diagram.DiagramDescription;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.diagram.SynchronizationPolicy;
 import org.eclipse.sirius.components.view.diagram.UserResizableDirection;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
@@ -64,6 +67,7 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
         cache.getNodeDescription(NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
             diagramDescription.getNodeDescriptions().add(nodeDescription);
             nodeDescription.setPalette(this.diagramBuilderHelper.newNodePalette()
+                    .toolSections(this.createRelatedElementsToolSection())
                     .deleteTool(this.diagramBuilderHelper.newDeleteTool().name("Delete from Model")
                             .body(this.viewBuilderHelper.newChangeContext().expression(ServiceMethod.of0(CommonDeletionService::delete).aqlSelf()).build()).build())
                     .labelEditTool(this.diagramBuilderHelper.newLabelEditTool().name("Edit")
@@ -76,5 +80,11 @@ public class RequirementNodeDescriptionProvider extends AbstractNodeDescriptionP
             cache.getNodeDescription(documentationCompartmentName)
                     .ifPresent(compartmentNode -> nodeDescription.getChildrenDescriptions().add(compartmentNode));
         });
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        nodeToolSection.getNodeTools().add(new AllConnectedElementsToolProvider().createConnectedElementsTool());
+        return nodeToolSection;
     }
 }
