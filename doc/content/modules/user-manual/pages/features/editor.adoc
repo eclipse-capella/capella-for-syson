@@ -9,7 +9,7 @@ This page describes the additions used when working in a Capella project.
 When no representation is open, the Capella project welcome area provides two entry points:
 
 * *Create a new Representation*: create a diagram using one of the Capella shortcuts.
-* *Existing representations*: open a representation already present in the project.
+* *Existing representations*: see xref:hands-on/how-tos/representation-operations.adoc#open-existing-representation[how to open a representation].
 
 .Capella project welcome area for the In-Flight Entertainment System sample model
 image::editor-welcome-ife.png[Capella project welcome area with the diagram shortcuts and the list of existing representations]

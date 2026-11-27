@@ -15,8 +15,4 @@ For switching views and showing or hiding the right sidebar, follow the https://
 
 == Use the Capella project welcome area
 
-. Open your Capella project from the projects browser.
-. When no representation is open, locate the welcome area's list of existing representations.
-. Open a representation from the list to display it in the editor.
-
-To create a representation, see xref:user-manual:hands-on/how-tos/representation-operations.adoc[].
+See xref:user-manual:hands-on/how-tos/representation-operations.adoc[] to create or open a representation.

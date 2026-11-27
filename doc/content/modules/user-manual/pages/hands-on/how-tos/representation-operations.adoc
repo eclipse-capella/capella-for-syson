@@ -72,6 +72,8 @@ The xref:user-manual:features/functional-context.adoc[Functional Context Diagram
 .New representation dialog on the System Analysis Structure package
 image::new-representation-ife.png[New representation dialog listing SAB - System Analysis Blank and Logical Architecture Function Table together with the SysON views]
 
+[#open-existing-representation]
 == Open an existing representation
 
-Open a representation from the explorer, below the element it is created on, or from the list of existing representations in the Capella project welcome area.
+* In the explorer, expand the model element that owns the representation and select the representation.
+* When no representation is open, select one from *Existing representations* in the Capella project welcome area.
