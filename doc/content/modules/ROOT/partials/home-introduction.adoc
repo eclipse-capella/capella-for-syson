@@ -1,0 +1,16 @@
+= Introduction
+
+[cols="2*^", %noheader, frame=none, grid=none]
+|===
+a|image::capella-logo.svg[Capella,width=64,height=64,xref=user-manual:what-is.adoc]
+
+*xref:user-manual:what-is.adoc[What is {product}?]*
+
+Arcadia-based systems engineering with SysML v2.
+
+a|image::key-features.svg[Key features,width=64,height=64,xref=user-manual:key-features.adoc]
+
+*xref:user-manual:key-features.adoc[Key features]*
+
+The main modeling capabilities at a glance.
+|===

@@ -1,0 +1,54 @@
+= Install {product}
+
+== Prepare the SysON installation
+
+Follow the https://doc.mbse-syson.org/syson/main/installation-guide/how-tos/install.html[SysON installation guide] for the application, database, and deployment configuration.
+Check the xref:installation-guide:requirements.adoc[prerequisites] before adding the extension.
+
+== Obtain the extension
+
+Obtain the `capella-extension-<version>.jar` archive compatible with your SysON version.
+Place it alongside the SysON application JAR, or adapt the paths in the startup command to their locations.
+
+If you build the extension from source, the Maven build produces it in `backend/application/capella-extension/target/`.
+See the xref:developer-guide:index.adoc[developer guide] for build instructions.
+
+== Start SysON with the extension
+
+Use the following startup command for a deployment based on application JARs.
+Replace `YYYY.M.P` in each filename with compatible versions, and keep the database and deployment settings of your SysON installation.
+
+[source,bash]
+----
+SYSON_JAR=syson-application-YYYY.M.P.jar
+EXTENSION_JAR=capella-extension-YYYY.M.P.jar
+
+java -Dloader.path="./${EXTENSION_JAR}" \
+     -Dloader.main=org.eclipse.syson.SysONApplication \
+     -Dspring.web.resources.static-locations=classpath:/static/capella-for-syson/ \
+     -cp "${SYSON_JAR}" \
+     org.springframework.boot.loader.launch.PropertiesLauncher
+----
+
+The `loader.path` property loads the extension.
+The `spring.web.resources.static-locations` property selects the frontend that includes the Capella modeling environment.
+
+As an alternative to supplying the frontend property on the command line, add it to your application's configuration:
+
+[source,properties]
+----
+spring.web.resources.static-locations=classpath:/static/capella-for-syson/
+----
+
+== Check the installation
+
+. Open the application address configured for your deployment.
+. Check that the application displays the Capella icon in the navigation bar.
+. Check that the `Capella` and `Capella-Library` project templates are available when creating a project.
+
+For a local instance using the default port, the application address is `http://localhost:8080`.
+
+== Container deployment
+
+The repository provides a {source-code-url}/blob/main/backend/application/capella-extension/Dockerfile[Dockerfile] that loads the extension into a SysON image and configures the Capella frontend.
+The {source-code-url}#run-locally[repository instructions] describe how to build that image and run it with Docker Compose.

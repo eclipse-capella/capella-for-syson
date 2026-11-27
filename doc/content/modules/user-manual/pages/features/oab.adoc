@@ -1,0 +1,88 @@
+= OAB — Operational Architecture Blank
+:page-feature-status: experimental
+
+In the application, this diagram is labeled `OAB - Operational Analysis Blank`.
+
+== Purpose
+
+Use an OAB to describe the operational environment before defining the system to be designed.
+It answers the question: who participates in the operational situation, what activities do they perform, and how do they communicate?
+
+.Operational participants of the In-Flight Entertainment System sample model
+image::oab-ife.png[OAB showing Passenger, Airline Company, Ground Operator, Crew, and Aircraft, with the communication means connecting Crew and Ground Operator to Aircraft]
+
+== Position in Arcadia
+
+Operational Analysis, describing the operational environment before defining the system boundary.
+The diagram combines participants and their communication means with the activities allocated to them.
+It provides a context for the activity interactions described in an xref:features/oaib.adoc[OAIB].
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+
+|Operational Entity
+|A non-human participant in the operational environment.
+
+|Operational Actor
+|A human participant in the operational situation.
+
+|Communication Mean
+|A connection through which operational participants communicate.
+
+|Operational Activity
+|An activity performed by an operational participant.
+
+|Requirement and Describes link
+|A requirement and its relationship to an element described in the diagram.
+|===
+
+== Create the diagram
+
+Use the *OAB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create an OAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in Operational Analysis.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: Operational entities, actors, and activities are unsynchronized; Communication Means, Interactions, and Describes links between displayed elements are synchronized.
+
+== Describe the operational participants
+
+* Use *New Operational Entity* or *New Operational Actor* on the diagram background to create a participant.
+* Use the same tools on an Operational Entity or a non-human Operational Actor to create a nested participant.
+* Rename each participant to identify its role in the operational situation.
+* Use *New Communication Mean* to connect two participants.
+* Drag existing operational participants from the explorer to show them in the diagram.
+A participant dropped from the explorer is displayed inside its parent participant when that parent is shown, and its displayed children are moved inside it.
+
+An existing participant keeps its identity when shown in another diagram.
+
+== Show the activities performed by participants
+
+Select an operational participant and use *New Operational Activity* to create an activity allocated to it.
+The activity is displayed within the participant.
+Use *New Operational Activity* on an activity to create a sub-activity.
+
+Drag an existing activity from the explorer onto a participant to allocate it to that participant.
+
+Use *New Functional Exchange* from an activity to another activity to create an Interaction between them.
+An Interaction cannot connect an activity to itself, to one of its ancestors, or to one of its descendants.
+Deleting an Interaction from the model also deletes the ports it used.
+
+== Reorganize the model from the diagram
+
+Moving nodes in the OAB changes the model:
+
+* Drop a participant on another participant to nest it; drop it on the diagram background to move it back to the Structure package.
+* Drop an activity on a participant to allocate it, together with its sub-activities, to that participant.
+* Drop an activity on another activity to make it a sub-activity; it is then allocated to the participant of its new parent.
+
+Use the *Show Activities* filter to control activity visibility in the OAB.
+The filter changes what the diagram displays while preserving the model's activities and allocations.
+For a view focused on activity exchanges, use an xref:features/oaib.adoc[OAIB].
+
+include::user-manual:partial$diagram-common-operations.adoc[]
+
+== Related guidance
+
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] uses an OAB to describe the operational context involving `Child` and `Parent`.
+Use an xref:features/ocb.adoc[OCB] to describe the capabilities in which these participants are involved.

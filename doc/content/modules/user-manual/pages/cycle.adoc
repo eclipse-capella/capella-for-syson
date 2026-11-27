@@ -1,0 +1,22 @@
+= Release cycle
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+== Version numbering
+
+Versions use a `YEAR.MONTH.PATCH` format.
+The year and month identify the release series, and the last number distinguishes versions within that series.
+Include the complete version when reporting a problem.
+
+== Follow publications
+
+Use the repository's {source-code-url}/tags[version tags] and {source-code-url}/blob/main/CHANGELOG.adoc[changelog] to follow publications and review changes.
+For the exact contents of a version, select its tag before reading the changelog and source files.
+
+The https://mbse-capella.org/capella-for-syson.html[project roadmap] describes the broader engineering objectives.
+
+== Coordinate an update
+
+{product} is a SysON extension, and its version must be compatible with the selected SysON version.
+The person responsible for deployment should review the xref:release-notes/release-notes.adoc[release notes] and xref:installation-guide:how-tos/install.adoc[extension installation instructions] before updating.
+
+The common runtime and deployment requirements are documented in the https://doc.mbse-syson.org/syson/main/installation-guide/requirements.html[SysON prerequisites].

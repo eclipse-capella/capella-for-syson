@@ -1,0 +1,18 @@
+= User Interface Navigation
+
+These instructions assume you have access to a project created with the `Capella` or `Capella-Library` template.
+For an overview of the application, see xref:user-manual:tour.adoc[].
+
+[#switch-left-sidebar]
+== Access views from the left sidebar
+
+For switching views and showing or hiding the left sidebar, follow the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/how-tos/user-interface-navigation.html#switch-left-sidebar[SysON left sidebar instructions].
+
+[#switch-right-sidebar]
+== Access views from the right sidebar
+
+For switching views and showing or hiding the right sidebar, follow the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/how-tos/user-interface-navigation.html#switch-right-sidebar[SysON right sidebar instructions].
+
+== Use the Capella project welcome area
+
+See xref:user-manual:hands-on/how-tos/representation-operations.adoc[] to create or open a representation.

@@ -1,0 +1,53 @@
+= 2026.12.0
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+== Key highlights
+
+* Two System Analysis diagrams are now available: the xref:user-manual:features/mcb.adoc[MCB] and the xref:user-manual:features/sfbd.adoc[SFBD].
+* The conditions for creating each Capella diagram have been aligned on the Arcadia perspectives.
+* The {product} documentation is now published.
+
+== New features
+
+* In System Analysis:
+
+** The xref:user-manual:features/mcb.adoc[MCB — Missions Capabilities Blank] describes the missions of the system, its capabilities, its actors, and requirements.
+It can be created from the Capella project welcome area or on the System Analysis Capabilities package and its sub-packages.
++
+image::mcb-ife.png[MCB showing the missions of the In-Flight Entertainment System sample model and a requirement,width=75%]
+** The xref:user-manual:features/sfbd.adoc[SFBD — System Function Breakdown] displays the System Functions contained in a function and creates new sub-functions.
+It can be created from the Capella project welcome area or on any System Function.
++
+image::sfbd-ife.png[SFBD showing the breakdown of the Run Services system function,width=75%]
+
+* In Operational Analysis:
+
+** The xref:user-manual:features/oabd.adoc[OABD] now uses automatic layout until an element is moved.
+
+== Bug fixes
+
+* In diagrams:
+
+** Operational Activities created from the OAIB background are now placed inside the context activity when it is displayed.
+** `Contained In` edges can now be deleted in the OABD.
+
+== Improvements
+
+* In diagrams:
+
+** The creation of each Capella diagram is now restricted to the relevant elements of its perspective:
+*** OAB, SAB, and LAB: a component, the Structure package, or one of its sub-packages.
+*** OCB and MCB: the Capabilities package or one of its sub-packages.
+*** OABD and OAIB: an Operational Activity.
+*** SFBD: a System Function.
++
+See xref:user-manual:hands-on/how-tos/representation-operations.adoc[] for details.
+** Exchanges between ports with incompatible directions are rejected, and the connector palette only proposes the tools compatible with the selected ports.
+
+== Dependencies
+
+* {product} 2026.12.0 is based on SysON 2026.11.2.
+
+== Technical details
+
+* For technical details on this {product} release, including breaking changes, please refer to the {source-code-url}/blob/main/CHANGELOG.adoc[changelog].

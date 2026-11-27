@@ -1,0 +1,27 @@
+= OAS — Activity Scenario
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe an operational scenario through the interactions of activities.
+It answers the question: In what order do activities interact during an operational scenario?
+
+== Position in Arcadia
+
+Operational Analysis.
+
+== Main concepts
+
+* *Activity lifeline*: An Operational Activity participating in the scenario.
+* *Interaction message*: An exchange between the represented activities.
+* *Message ordering*: The order of activity interactions within the scenario.
+
+== Related diagrams
+
+* xref:features/oaib.adoc[]
+* xref:features/oa-oes.adoc[]
+* xref:features/oa-opd.adoc[]

@@ -1,0 +1,28 @@
+= IDB — Interfaces Diagram Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe components and the interfaces through which they interact.
+It answers the question: Which interface contracts connect the components?
+
+== Position in Arcadia
+
+Interface viewpoint shared across architecture descriptions.
+
+== Main concepts
+
+* *Component or Actor*: A participant using or providing an interface.
+* *Component Port*: An endpoint on a participant.
+* *Interface*: A contract connecting participants.
+* *Interface use and implementation*: Relationships identifying the roles of the participants.
+
+== Related diagrams
+
+* xref:features/common-id.adoc[]
+* xref:features/common-cdi.adoc[]
+* xref:features/common-is.adoc[]

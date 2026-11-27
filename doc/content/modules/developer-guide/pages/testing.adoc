@@ -1,0 +1,95 @@
+= Tests and local checks
+
+The repository contains Java tests, frontend component tests, and Playwright browser tests.
+The commands below use the development environment described in xref:index.adoc[].
+Run commands from the repository root unless a different directory is shown.
+
+== Backend
+
+Run the complete Maven build and its tests:
+
+[source,bash]
+----
+mvn clean verify
+----
+
+Java tests live in each module's `src/test/java/` directory.
+For example, `capella-model-transverse-services` contains `ElementCreationTests`, `ElementModificationTests`, and `ElementDeletionTests`.
+The view modules contain tests for their representation descriptions and service registrations.
+
+To build and verify one module with its Maven dependencies, use its repository-relative path:
+
+[source,bash]
+----
+mvn clean verify -pl backend/model/capella-model-transverse-services -am
+----
+
+The application integration tests are in `backend/application/capella-application/src/test/java/`.
+They use Testcontainers to start PostgreSQL, so Docker must be available; they do not use the database started by the development database script.
+Shared model fixtures and GraphQL test utilities are in `backend/test/capella-tests/`.
+
+The Maven modules configure Checkstyle and JaCoCo; architecture tests are located in module test packages named `architecture`.
+After a full build, the aggregated backend coverage report is under `backend/releng/capella-test-coverage/target/site/jacoco-aggregate/`.
+The CI coverage check can be run with:
+
+[source,bash]
+----
+jshell scripts/check-coverage.jsh
+----
+
+== Frontend
+
+Install dependencies with `npm ci`, then run the workspace checks:
+
+[source,bash]
+----
+npm run format-lint
+npm run build
+npm run coverage
+----
+
+The root scripts use Turborepo to run the scripts exposed by the frontend workspaces.
+The application workspace provides Vitest component tests; for a test run without coverage:
+
+[source,bash]
+----
+npm run test --workspace=frontend/capella-for-syson
+----
+
+`npm run format-lint` checks formatting; `npm run format` rewrites files using the configured Prettier rules.
+
+== Browser tests
+
+Playwright tests are in `integration-tests-playwright/playwright/e2e/`, with helpers in `playwright/helpers/`.
+The suite includes diagram, explorer, and Details view scenarios.
+
+For a local run, start the backend and the Vite frontend as described in xref:index.adoc[].
+The Playwright configuration uses `http://localhost:5173` locally and `http://localhost:8080` when `CI` is set.
+It does not start the application itself.
+
+[source,bash]
+----
+cd integration-tests-playwright
+npm ci
+npx playwright install
+npm run format-lint
+npm run eslint
+npx playwright test
+----
+
+The configuration runs Chromium and Firefox.
+To focus on a scenario in one browser:
+
+[source,bash]
+----
+npx playwright test playwright/e2e/diagrams/sab.spec.ts --project=chromium
+----
+
+Use `npx playwright test --ui` to inspect and debug scenarios.
+The HTML report is generated in `playwright-report/`; open it with `npx playwright show-report`.
+
+== Continuous integration
+
+The public `.github/workflows/build.yml` workflow defines the frontend checks, Maven build, coverage check, extension image build, and browser test run.
+It is the reference for the commands and environment used in CI.
+Documentation changes can be verified separately with the xref:documentation.adoc[Antora build].

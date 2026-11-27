@@ -1,0 +1,28 @@
+= LDFB — Logical Data Flow Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the functional exchanges of the logical solution.
+It answers the question: What flows between logical functions?
+
+== Position in Arcadia
+
+Logical Architecture.
+
+== Main concepts
+
+* *Logical Function*: A function of the logical architecture.
+* *Function Port*: An exchange endpoint owned by a function.
+* *Functional Exchange*: An exchange between logical functions.
+* *Functional Chain*: A grouping of exchanges contributing to a logical behavior.
+
+== Related diagrams
+
+* xref:features/la-lfbd.adoc[]
+* xref:features/lab.adoc[]
+* xref:features/common-fcd.adoc[]

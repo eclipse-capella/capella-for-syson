@@ -1,0 +1,6 @@
+= Features and capabilities
+
+The catalogue includes the non-deprecated diagram types of Capella Desktop and the Functional Context Diagram.
+For a summary of availability, see xref:key-features.adoc[].
+
+include::user-manual:partial$nav-features.adoc[]

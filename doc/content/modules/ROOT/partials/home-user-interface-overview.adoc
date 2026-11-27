@@ -1,0 +1,16 @@
+= User interface
+
+[cols="2*^", %noheader, frame=none, grid=none]
+|===
+a|image::travel_explore.svg[Interface tour,width=64,height=64,xref=user-manual:tour.adoc]
+
+*xref:user-manual:tour.adoc[Interface tour]*
+
+Projects, model elements, and diagrams.
+
+a|image::footprint.svg[How-tos and tutorials,width=64,height=64,xref=user-manual:hands-on/hands-on.adoc]
+
+*xref:user-manual:hands-on/hands-on.adoc[How-tos and tutorials]*
+
+Step-by-step guides for common tasks.
+|===

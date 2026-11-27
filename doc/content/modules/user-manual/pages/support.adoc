@@ -1,0 +1,15 @@
+= Contact support
+:page-audience: 🧭 Systems engineers and ⚙️ DevOps
+
+== Access or deployment problems
+
+Contact the person responsible for your organization's installation if you cannot reach the application or access the modeling environment.
+That person can use the xref:installation-guide:troubleshooting.adoc[troubleshooting guide].
+
+== Modeling problems
+
+Report a reproducible modeling problem in the issue tracker, as described in xref:contribute.adoc[].
+
+== Professional assistance and participation
+
+Use the contact on the https://mbse-capella.org/capella-for-syson.html[official project website], with a description of your engineering activity and the help you need.

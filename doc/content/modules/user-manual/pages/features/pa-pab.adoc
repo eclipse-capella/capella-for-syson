@@ -1,0 +1,29 @@
+= PAB — Physical Architecture Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the physical solution, including components, deployments, and connections.
+It answers the question: How is the solution implemented and deployed?
+
+== Position in Arcadia
+
+Physical Architecture.
+
+== Main concepts
+
+* *Behavior Physical Component*: A component carrying functions of the physical solution.
+* *Node Physical Component*: A resource on which behavior components are deployed.
+* *Deployment*: The placement of behavior components on node components.
+* *Physical Link and Path*: Connections and routes through the physical architecture.
+
+== Related diagrams
+
+* xref:features/pa-pcbd.adoc[]
+* xref:features/pa-pdfb.adoc[]
+* xref:features/pa-ppd.adoc[]
+* xref:features/epbs-eab.adoc[]

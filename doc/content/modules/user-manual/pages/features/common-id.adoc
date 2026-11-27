@@ -1,0 +1,28 @@
+= ID — Interface Diagram
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the exchange items carried or defined by an interface.
+It answers the question: Which information and operations make up this interface contract?
+
+== Position in Arcadia
+
+Detailed interface definition.
+
+== Main concepts
+
+* *Interface*: The contract selected for examination.
+* *Exchange Item*: An element describing exchanged information or an operation.
+* *Exchange Item Element*: A constituent of an exchange item.
+* *Data Type*: The type used to describe a constituent value.
+
+== Related diagrams
+
+* xref:features/common-cdb.adoc[]
+* xref:features/common-idb.adoc[]
+* xref:features/common-is.adoc[]

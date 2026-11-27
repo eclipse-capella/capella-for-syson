@@ -1,0 +1,4 @@
+= Release notes and updates
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+include::user-manual:partial$nav-updates.adoc[]

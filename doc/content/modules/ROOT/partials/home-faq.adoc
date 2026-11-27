@@ -1,0 +1,10 @@
+= FAQ
+
+[cols="1*^", %noheader, frame=none, grid=none]
+|===
+a|image::travel_explore.svg[FAQ,width=64,height=64,xref=user-manual:faq/faq.adoc]
+
+*xref:user-manual:faq/faq.adoc[Frequently asked questions]*
+
+Common questions about {product} and its modeling approach.
+|===

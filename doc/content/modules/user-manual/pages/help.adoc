@@ -1,0 +1,3 @@
+= Support and resources
+
+include::user-manual:partial$nav-help.adoc[]

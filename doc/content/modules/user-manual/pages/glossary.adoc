@@ -1,0 +1,187 @@
+= Arcadia glossary
+
+This glossary defines the Arcadia concepts used in {product}.
+The concepts are defined in SysML v2 by the xref:features/arcadia-library.adoc[Arcadia library].
+For the general SysML v2 and SysON terms, refer to the https://doc.mbse-syson.org/syson/main/user-manual/concepts.html[SysON key concepts].
+
+Several concepts take a different name depending on the engineering perspective.
+The table below gives these names; the definitions follow in alphabetical order.
+
+[cols="1,1,1,1,1",options="header"]
+|===
+|Concept |Operational Analysis |System Analysis |Logical Architecture |Physical Architecture
+
+|Function
+|Operational Activity
+|System Function
+|Logical Function
+|Physical Function
+
+|Functional exchange
+|Interaction
+|Functional Exchange
+|Functional Exchange
+|Functional Exchange
+
+|Functional chain
+|Operational Process
+|Functional Chain
+|Functional Chain
+|Functional Chain
+
+|Component
+|Operational Entity
+|System Component
+|Logical Component
+|Physical Component
+
+|Component exchange
+|Communication Mean
+|Component Exchange
+|Component Exchange
+|Component Exchange
+
+|Capability
+|Operational Capability
+|Capability
+|Capability Realization
+|Capability Realization
+|===
+
+In the EPBS Architecture, components are Configuration Items.
+
+[glossary]
+== Definitions
+
+[[actor]]Actor::
+An external entity, such as a user, an operator, or another system, that interacts directly with the system under study.
+In {product}, an actor is a component with the *Is Actor* property set; the *Is Human* property identifies human actors.
+
+[[allocation]]Allocation::
+A relationship that assigns an element to the element in charge of it, such as a function to the component or actor that performs it.
+See xref:concepts.adoc#model[Allocations and realizations].
+
+[[capability]]Capability::
+The ability of the system to provide a service that supports high-level operational goals.
+It is described in System Analysis, for example in an xref:features/mcb.adoc[MCB].
+
+[[capability-realization]]Capability Realization::
+The equivalent of a Capability in the Logical and Physical Architectures.
+
+[[communication-mean]]Communication Mean::
+The medium linking Operational Entities and Operational Actors, which carries their Interactions.
+It is the Operational Analysis equivalent of a Component Exchange.
+
+[[component]]Component::
+A constituent part of the system or of an actor, which contributes to its behavior by performing functions and interacting with other components.
+
+[[component-exchange]]Component Exchange::
+A connection between two components, through their Component Ports.
+A Component Exchange carries the Functional Exchanges between the functions allocated to these components.
+
+[[component-port]]Component Port::
+An interaction point of a component, characterizing what the component needs and what it provides.
+Its direction is `in`, `out`, or `inout`.
+
+[[configuration-item]]Configuration Item::
+A part of the system, designed, produced, or purchased, and assembled with others to build the system.
+Configuration Items are described in the EPBS Architecture.
+
+[[describes]]Describes link::
+The relationship between a requirement and the model element it applies to.
+
+[[epbs]]EPBS — End Product Breakdown Structure::
+The engineering perspective that organizes the system into the Configuration Items to produce.
+
+[[exchange-item]]Exchange Item::
+A set of data, material, or energy that is semantically coherent for its use in a given context, and is carried by exchanges.
+
+[[function]]Function::
+An action, an operation, or a service performed by a component or an actor.
+A function receives inputs and delivers outputs through its Function Ports, and can be broken down into sub-functions.
+
+[[function-port]]Function Port::
+An input or output of a function.
+An input port describes an expected input; an output port describes an available output.
+
+[[functional-chain]]Functional Chain::
+A grouping of Functional Exchanges and their endpoint functions that describes an expected behavior of the system in a given context.
+In {product}, a chain references the selected exchanges; the involved functions are derived from their endpoints.
+The sequencing and non-functional property mechanisms of Capella Desktop functional chains are not yet available.
+
+[[functional-exchange]]Functional Exchange::
+A flow between two functions, connecting an output Function Port to an input Function Port and carrying Exchange Items.
+
+[[interaction]]Interaction::
+An exchange between Operational Activities.
+It is the Operational Analysis equivalent of a Functional Exchange.
+
+[[involvement]]Involvement::
+The relationship from a capability to the entities or actors that take part in it.
+
+[[logical-architecture]]Logical Architecture::
+The engineering perspective that defines how the system works as a white box: its logical components, their functions, and their relationships, independently of technological choices.
+
+[[logical-component]]Logical Component::
+A component of the Logical Architecture, which decomposes the system independently of any technological solution.
+
+[[logical-function]]Logical Function::
+A function of the Logical Architecture.
+It usually realizes one or several System Functions.
+
+[[mission]]Mission::
+A purpose the system is tasked with.
+A mission generally exploits several capabilities.
+
+[[operational-activity]]Operational Activity::
+A step of a process, performed by an Operational Entity or an Operational Actor to achieve an objective.
+
+[[operational-actor]]Operational Actor::
+An Operational Entity, usually human, associated with a human resource.
+
+[[operational-analysis]]Operational Analysis::
+The engineering perspective that describes what the users of the system need to accomplish, independently of the system itself.
+
+[[operational-capability]]Operational Capability::
+An ability expected in the operational situation, involving Operational Entities and Operational Actors.
+
+[[operational-entity]]Operational Entity::
+A real-world entity, such as an organization, a group, or another system, that takes part in the operational situation.
+
+[[operational-process]]Operational Process::
+A grouping of Interactions and their endpoint Operational Activities that describes an operational behavior.
+It is the Operational Analysis equivalent of a Functional Chain.
+In {product}, a process references the selected Interactions; the involved activities are derived from their endpoints, without sequencing information.
+
+[[perspective]]Perspective::
+One of the Arcadia engineering levels: Operational Analysis, System Analysis, Logical Architecture, Physical Architecture, and EPBS Architecture.
+Elements of different perspectives are distinct model elements, even when they have the same name.
+
+[[physical-architecture]]Physical Architecture::
+The engineering perspective that defines the final architecture of the system, including its implementation and the resources hosting its behavior.
+
+[[physical-component]]Physical Component::
+A component of the Physical Architecture.
+In Arcadia, a behavior component implements functions, and a node component provides the resources that host behavior components.
+The distinction between behavior and node components, and the deployment of behavior components on node components, are not yet provided by the dedicated Arcadia modeling tools in {product}.
+
+[[physical-function]]Physical Function::
+A function of the Physical Architecture.
+It usually realizes one or several Logical Functions.
+
+[[realization]]Realization::
+A relationship between an element and the element of the previous perspective it refines, such as a System Function realizing an Operational Activity.
+
+[[requirement]]Requirement::
+A statement of need attached to model elements through Describes links.
+
+[[system]]System::
+The object under study, an organized set of elements functioning as a unit.
+In {product}, it is the `system` component of the System Analysis, Logical Architecture, and Physical Architecture `Structure` packages.
+
+[[system-analysis]]System Analysis::
+The engineering perspective that defines what the system must do for its users: its functions, its exchanges with actors, and its capabilities, with the system seen as a black box.
+
+[[system-function]]System Function::
+A function of the System Analysis.
+It usually realizes one or several Operational Activities.

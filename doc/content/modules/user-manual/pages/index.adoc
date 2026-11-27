@@ -1,0 +1,5 @@
+= Introduction
+
+This manual explains how to describe and explore system architectures with {product} and the Arcadia approach.
+
+include::user-manual:partial$nav-intro.adoc[]

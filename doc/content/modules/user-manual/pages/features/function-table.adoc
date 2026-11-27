@@ -1,0 +1,65 @@
+= Function Table
+:page-feature-status: experimental
+
+== Purpose
+
+Use the Function Table to review and edit the functions of your model in a tabular form.
+It answers the question: which functions are described, how far has their review progressed, and which components perform them?
+
+.Logical Architecture Function Table of the In-Flight Entertainment System sample model
+image::function-table-ife.png[Function Table listing the logical functions with their Description, Status, Allocated to Component, and Function Ports columns]
+
+== Create the table
+
+In the explorer, select a package, open its context menu, and create a *Logical Architecture Function Table* representation.
+The table lists the functions of the model containing that package.
+
+== Table content
+
+Each row represents a function.
+Sub-functions are displayed under their parent function: expand a row to show its sub-functions, or expand all rows at once.
+
+[cols="1,2,1",options="header"]
+|===
+|Column |Content |Editable
+
+|Description
+|The function description.
+|Yes
+
+|Status
+|The xref:features/editor.adoc#review-status[review status] of the function.
+|Yes
+
+|Allocated to Component
+|The component or actor that performs the function.
+|No
+
+|Function Ports
+|The input and output ports of the function.
+|No
+|===
+
+Rows are paginated; choose 5, 10, 20, or 50 rows per page.
+
+== Filter the functions
+
+* Use the global search field to find functions by name.
+* Use the column filters to restrict rows by description, status, allocated component, or function port.
+* Use the row filters to show or hide functions according to their review status: *Open*, *To Be Determined*, *To Be Resolved*, *To Be Confirmed*, *Done*, *Closed*, or *None* for functions without status.
+All status filters are enabled by default.
+
+== Edit the function breakdown
+
+Open the context menu of a row to modify the function breakdown:
+
+* *Add function* creates a function at the same level as the selected function.
+* *Add subfunction* creates a function under the selected function.
+* *Delete function* deletes the selected function from the model.
+
+Changes made in the table are applied to the model and are visible in the explorer and the diagrams.
+
+== Related guidance
+
+* Use the xref:features/model-analysis.adoc[System Architecture Model] dashboard to follow the review status across the architecture levels.
+* Use the xref:features/lab.adoc[LAB] to allocate functions to logical components.

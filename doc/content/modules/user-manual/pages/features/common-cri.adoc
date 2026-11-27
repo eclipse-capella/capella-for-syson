@@ -1,0 +1,27 @@
+= CRI — Contextual Capability Realization Involvement
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Focus on the components involved in a capability realization.
+It answers the question: Which components contribute to realizing this capability?
+
+== Position in Arcadia
+
+Capability realization viewpoint in the solution architecture.
+
+== Main concepts
+
+* *Capability Realization*: The capability realization selected for examination.
+* *Component*: A component contributing to the realization.
+* *Involvement*: The association between the realization and the component.
+
+== Related diagrams
+
+* xref:features/common-crb.adoc[]
+* xref:features/lab.adoc[]
+* xref:features/pa-pab.adoc[]

@@ -1,0 +1,28 @@
+= Getting started
+
+[cols="4*^", %noheader, frame=none, grid=none]
+|===
+a|image::travel_explore.svg[Create a Capella project,width=64,height=64,xref=user-manual:hands-on/how-tos/project-management.adoc#create-capella-project]
+
+*xref:user-manual:hands-on/how-tos/project-management.adoc#create-capella-project[Create a Capella project]*
+
+Start a model from the `Capella` template.
+
+a|image::footprint.svg[Toy Catapult tutorial,width=64,height=64,xref=user-manual:hands-on/tutorials/toy-catapult.adoc]
+
+*xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial]*
+
+Build a model from Operational Analysis to Logical Architecture.
+
+a|image::person_play.svg[Prerequisites,width=64,height=64,xref=installation-guide:requirements.adoc]
+
+*xref:installation-guide:requirements.adoc[Prerequisites]*
+
+What you need to access or install {product}.
+
+a|image::explore.svg[Installation,width=64,height=64,xref=installation-guide:index.adoc]
+
+*xref:installation-guide:index.adoc[Installation]*
+
+Install {product} as a SysON extension.
+|===

@@ -1,0 +1,28 @@
+= CC — Contextual Capability
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Focus on one system capability, its mission context, and the actors involved.
+It answers the question: What does this capability contribute, and which actors are involved?
+
+== Position in Arcadia
+
+System Analysis.
+
+== Main concepts
+
+* *Capability*: The capability selected for examination.
+* *Mission*: A purpose that exploits the capability.
+* *Actor*: An external participant involved in the capability.
+* *Capability relationship*: A relationship connecting the selected capability to other capabilities.
+
+== Related diagrams
+
+* xref:features/mcb.adoc[]
+* xref:features/sa-cm.adoc[]
+* xref:features/sab.adoc[]

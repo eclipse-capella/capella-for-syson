@@ -1,0 +1,7 @@
+= Getting started with {product}
+
+This guide is for the person who installs {product} as an extension of SysON.
+
+include::installation-guide:partial$nav.adoc[]
+
+If your organization already hosts {product}, open its address in your browser and continue with the xref:user-manual:index.adoc[user manual].

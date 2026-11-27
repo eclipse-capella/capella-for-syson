@@ -1,0 +1,22 @@
+= Integration and APIs
+
+[cols="3*^", %noheader, frame=none, grid=none]
+|===
+a|image::hub.svg[Interoperability,width=64,height=64,xref=user-manual:integration/interoperability.adoc]
+
+*xref:user-manual:integration/interoperability.adoc[Interoperability]*
+
+Exchange models with other tools.
+
+a|image::tap_app.svg[APIs,width=64,height=64,xref=developer-guide:api/api.adoc]
+
+*xref:developer-guide:api/api.adoc[APIs and automation]*
+
+Connect applications and automate modeling tasks.
+
+a|image::globe.svg[Capella Desktop,width=64,height=64,xref=user-manual:integration/capella.adoc]
+
+*xref:user-manual:integration/capella.adoc[Capella Desktop]*
+
+Transform Capella models into SysML v2.
+|===

@@ -1,0 +1,26 @@
+= Interoperability
+:page-audience: 🧭 Systems engineers and 💻 developers
+
+An exchange of a {product} model must preserve the engineering meaning of its Arcadia concepts and their relationships.
+
+== Shared import and export operations
+
+For project and model upload/download, refer to the https://doc.mbse-syson.org/syson/main/user-manual/integration/interoperability.html[SysON interoperability guide].
+For textual model exchange, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/import-export-textual.html[SysON textual import/export guide].
+Use the documentation for the SysON version and exchange facilities deployed in your environment.
+
+== Arcadia library dependencies
+
+When transferring an Arcadia model, make the xref:features/arcadia-library.adoc[Arcadia library] and the other libraries it uses available in the destination environment.
+
+== Review an exchange
+
+Check in the destination tool that the following information is preserved:
+
+* The model elements and their engineering perspectives.
+* Function hierarchy and allocation to components.
+* Exchanges and their source and target elements.
+* Realization relationships between engineering perspectives.
+* The representations needed for your engineering activity.
+
+For software-based connections, see xref:developer-guide:api/api.adoc[].

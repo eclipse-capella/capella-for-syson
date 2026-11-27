@@ -1,0 +1,27 @@
+= IS — Interface Scenario
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe an interaction scenario through the interfaces of its participants.
+It answers the question: Which interface operations or exchanges occur during the scenario?
+
+== Position in Arcadia
+
+Scenario viewpoint alongside an architecture description.
+
+== Main concepts
+
+* *Component or Actor lifeline*: A participant in the interaction.
+* *Interface message*: An exchange represented through an interface contract.
+* *Message ordering*: The order of exchanges between participants.
+
+== Related diagrams
+
+* xref:features/common-id.adoc[]
+* xref:features/common-idb.adoc[]
+* xref:features/common-es.adoc[]

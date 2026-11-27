@@ -1,0 +1,28 @@
+= FS — Function Scenario
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe a scenario through the interactions of functions.
+It answers the question: In what order do functions exchange information during the scenario?
+
+== Position in Arcadia
+
+Functional scenario viewpoint at the relevant engineering level.
+
+== Main concepts
+
+* *Function lifeline*: A function participating in the scenario.
+* *Functional Exchange message*: An exchange between represented functions.
+* *Message ordering*: The order of the functional interactions.
+
+== Related diagrams
+
+* xref:features/common-es.adoc[]
+* xref:features/common-fcd.adoc[]
+* xref:features/sdfb.adoc[]
+* xref:features/la-ldfb.adoc[]

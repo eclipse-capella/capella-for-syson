@@ -1,0 +1,20 @@
+= Copy and paste in diagrams
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Copy elements displayed in a diagram and paste them, in the same or in another diagram, to duplicate both the model elements and their graphical representations while keeping the model consistent.
+
+== Capella Desktop capabilities
+
+The Capella Desktop business copy-paste duplicates the selected elements and their relationships according to rules that depend on the diagram, and can also paste the layout or the style of elements.
+
+== What {product} provides
+
+* To duplicate a model element, use the duplication action of the explorer, described in the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/how-tos/explorer.html[SysON explorer how-to].
+Then display the copy in the diagram by dropping it from the explorer.
+* To reuse an existing element in another diagram, drop it from the explorer; no copy is created.

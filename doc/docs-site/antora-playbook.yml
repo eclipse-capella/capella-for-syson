@@ -1,0 +1,36 @@
+#
+# Copyright (c) 2026 Obeo.
+# This program and the accompanying materials
+# are made available under the terms of the Eclipse Public License v2.0
+# which accompanies this distribution, and is available at
+# https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#     Obeo - initial API and implementation
+#
+site:
+  title: Capella for SysON Docs
+  start_page: capella-for-syson::index.adoc
+output:
+  clean: true
+content:
+  sources:
+    - url: https://github.com/eclipse-capella/capella-for-syson.git
+      start_path: doc/content
+      branches: [main]
+ui:
+  bundle:
+    url: ../doc-ui/build/ui-bundle.zip
+asciidoc:
+  attributes:
+    icons: font
+    sectanchors: ''
+    sectlinks: ''
+    sectnums: all
+    page-toclevels: 3
+antora:
+  extensions:
+    - require: '@antora/lunr-extension'
+      languages: [en, fr]

@@ -1,0 +1,27 @@
+= OES — Entity Scenario
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe an operational scenario through the interactions of entities, actors, or roles.
+It answers the question: How do operational participants interact during a particular situation?
+
+== Position in Arcadia
+
+Operational Analysis.
+
+== Main concepts
+
+* *Participant lifeline*: An operational entity, actor, or role taking part in the scenario.
+* *Interaction message*: An interaction exchanged between the participants.
+* *Message ordering*: The order of the interactions within the scenario.
+
+== Related diagrams
+
+* xref:features/oab.adoc[]
+* xref:features/oa-oas.adoc[]
+* xref:features/oa-opd.adoc[]

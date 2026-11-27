@@ -1,0 +1,14 @@
+= How-Tos and Tutorials
+
+Each how-to covers one task and states its starting conditions.
+
+include::user-manual:partial$nav-howtos.adoc[]
+
+include::user-manual:partial$nav-tuto.adoc[]
+
+== Shared SysON operations
+
+For common operations such as managing projects, navigating model elements, and working with representations, refer to the https://doc.mbse-syson.org/syson/main/user-manual/hands-on/hands-on.html[SysON How-Tos and Tutorials].
+
+When creating a project for Arcadia modeling, choose the `Capella` or `Capella-Library` template as appropriate.
+See xref:user-manual:key-features.adoc[the Capella project templates].

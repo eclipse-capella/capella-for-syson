@@ -1,0 +1,36 @@
+= Support and resources
+
+[cols="2*^", %noheader, frame=none, grid=none]
+|===
+a|image::forum.svg[Community,width=64,height=64,xref=user-manual:forum.adoc]
+
+*xref:user-manual:forum.adoc[Community]*
+
+Ask questions and share feedback.
+
+a|image::volunteer_activism.svg[Contribute,width=64,height=64,xref=user-manual:contribute.adoc]
+
+*xref:user-manual:contribute.adoc[Contribute]*
+
+Report problems and suggest improvements.
+
+a|image::editor_choice.svg[Best practices,width=64,height=64,xref=user-manual:best-practices.adoc]
+
+*xref:user-manual:best-practices.adoc[Best practices]*
+
+Modeling guidelines and recommendations.
+
+a|image::best.svg[Support,width=64,height=64,xref=user-manual:support.adoc]
+
+*xref:user-manual:support.adoc[Professional support]*
+
+Expert help and assistance.
+
+a|image::resources.svg[Resources,width=64,height=64,xref=user-manual:resources.adoc]
+
+*xref:user-manual:resources.adoc[Resources]*
+
+Project information and Arcadia references.
+
+|
+|===

@@ -1,0 +1,26 @@
+= ORB — Operational Role Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe operational roles and the activities associated with them.
+It answers the question: Which activities belong to each operational role?
+
+== Position in Arcadia
+
+Operational Analysis.
+
+== Main concepts
+
+* *Operational Role*: A role used to organize responsibilities in the operational situation.
+* *Operational Activity*: An activity associated with a role.
+* *Role and activity allocation*: The association between an activity and the role that performs it.
+
+== Related diagrams
+
+* xref:features/oab.adoc[]
+* xref:features/oaib.adoc[]

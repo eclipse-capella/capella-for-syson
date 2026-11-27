@@ -1,0 +1,108 @@
+= Developer guide
+
+This guide is for developers building or extending {product}.
+For modeling tasks, start with the xref:user-manual:index.adoc[user manual].
+
+* xref:architecture.adoc[] locates the backend modules, frontend contributions, and packaged resources.
+* xref:testing.adoc[] explains how to run the existing tests and checks.
+* xref:api/api.adoc[] describes the Capella GraphQL contributions.
+* xref:documentation.adoc[] explains how to edit and preview this documentation.
+
+== Retrieving the source code
+
+The {source-code-url}[source repository] contains the backend modules, frontend workspaces, and documentation.
+
+[source,bash]
+----
+git clone https://github.com/eclipse-capella/capella-for-syson.git
+cd capella-for-syson
+----
+
+== Setting up your development environment
+
+Use the Java version declared in {source-code-url}/blob/main/backend/releng/capella-parent/pom.xml[the backend parent POM] and the Node.js/npm versions declared in {source-code-url}/blob/main/package.json[the root package descriptor].
+Check the tools selected by your shell before installing dependencies:
+
+[source,bash]
+----
+java --version
+mvn --version
+node --version
+npm --version
+docker --version
+----
+
+For the shared Java, Maven, and package-access setup, refer to the https://doc.mbse-syson.org/syson/main/developer-guide/index.html[SysON developer guide].
+In addition to the SysON repositories, the Capella backend uses the Maven repository `github-arcadia` for the Arcadia library artifacts.
+The {source-code-url}/blob/main/CONTRIBUTING.md[contribution guidelines] provide the Maven `settings.xml`, with the IDs `github-sirius-emfjson`, `github-sirius-web`, `github-syson`, and `github-arcadia`, and the npm authentication setup.
+
+=== IDE setup
+
+Import the repository as a Maven project and activate the `ide` Maven profile when running the application from your IDE.
+The profile exposes the extension's module dependencies to the IDE; the default profile is used for the packaged application.
+Use `org.eclipse.capella.CapellaForSysonApplication` as the application entry point.
+
+The `backend/releng/capella-resources/` directory contains the Checkstyle configuration and Eclipse formatter, cleanup, code-template, and import-order files.
+Frontend formatting is configured by the repository's Prettier files.
+
+== Build the application
+
+Run the following commands from the repository root:
+
+[source,bash]
+----
+npm ci
+npm run build
+mkdir -p backend/application/capella-frontend/src/main/resources/static/capella-for-syson/
+cp -r frontend/capella-for-syson/dist/. backend/application/capella-frontend/src/main/resources/static/capella-for-syson/
+mvn clean verify
+----
+
+The frontend assets are packaged with the backend.
+The Maven build produces the application and extension artifacts under their respective modules in `backend/application/`.
+
+== Run locally
+
+Start the database with the repository script, then run the built application.
+The script recreates the `capella-for-syson-postgres` development container:
+
+[source,bash]
+----
+./scripts/start-capella-for-syson-database.sh
+APP_VERSION=$(mvn --quiet help:evaluate -Dexpression=project.version -DforceStdout)
+java -jar "backend/application/capella-application/target/capella-application-${APP_VERSION}.jar"
+----
+
+For frontend development, run `npm run start` from the repository root in another terminal.
+Open `http://localhost:5173` for the Vite development frontend; the backend runs on `http://localhost:8080`.
+The frontend's `.env.development` and `src/core/URL.ts` configure its HTTP and WebSocket connections.
+Changes to packaged frontend assets require rebuilding the frontend, copying the generated files, and rebuilding the backend.
+
+The database script uses PostgreSQL on host port `5442`, matching the application's `application.properties`.
+Running the script again removes and recreates its development container; use it only when you intend to reset that database.
+
+=== Check the local setup
+
+[cols="1,2",options="header"]
+|===
+|Symptom |Check
+
+|Maven or npm cannot download a GitHub package
+|Check registry credentials and that Maven server IDs match the POM repository IDs.
+
+|The backend cannot connect to PostgreSQL
+|Check that the development database is running and that its port matches `spring.datasource.url`.
+
+|The browser shows the SysON frontend without the Capella additions
+|Check the copied frontend assets and `spring.web.resources.static-locations=classpath:/static/capella-for-syson/`.
+
+|The development frontend cannot reach the backend
+|Check that the backend is running on the ports configured for HTTP and WebSocket connections.
+|===
+
+For deployment as a SysON extension, follow xref:installation-guide:how-tos/install.adoc[].
+
+== Contribute a change
+
+Follow the repository's {source-code-url}/blob/main/CONTRIBUTING.md[contribution guidelines].
+See xref:testing.adoc[] for local verification commands.

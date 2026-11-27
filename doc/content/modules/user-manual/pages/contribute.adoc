@@ -1,0 +1,25 @@
+= Contribute
+:page-audience: 🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+
+== Report a modeling problem
+
+Search the {source-code-url}/issues[issue tracker] for an existing report, then include the following information in a new issue:
+
+* The Capella for SysON and SysON versions used by your environment.
+* The engineering perspective, diagram type, and operation involved.
+* The steps to reproduce the problem.
+* The expected modeling result and the result you observed.
+* A small example or screenshot when it helps explain the problem.
+
+Check that example models and screenshots can be shared publicly before attaching them.
+
+[#suggest-a-capability]
+== Suggest a capability
+
+Describe the engineering question you need to answer and how the proposed capability would support your work.
+Consult the xref:key-features.adoc[feature matrix] and existing issues to identify related work.
+
+== Improve the documentation or code
+
+See xref:developer-guide:documentation.adoc[the documentation guide] for documentation changes.
+For code contributions, follow the {source-code-url}/blob/main/CONTRIBUTING.md[repository contribution guidelines].

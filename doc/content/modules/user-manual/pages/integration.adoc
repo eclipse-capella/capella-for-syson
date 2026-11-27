@@ -1,0 +1,4 @@
+= Integration with other tools
+:page-audience: 🧭 Systems engineers and 💻 developers
+
+include::user-manual:partial$nav-integration.adoc[]

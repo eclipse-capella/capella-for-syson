@@ -158,6 +158,24 @@ npx playwright test
 
 Use `npx playwright test --ui` to debug a scenario locally. The HTML report is generated in `playwright-report/`.
 
+## Documentation
+
+The Antora documentation lives in `doc/content/`.
+Generate a local preview with Docker:
+
+```bash
+./doc/generate-local.bash
+```
+
+To preview the generated site, run:
+
+```bash
+python3 -m http.server 8000 --bind 127.0.0.1 --directory doc/docs-site/build/site
+```
+
+Then open `http://localhost:8000`.
+See [the documentation guide](doc/content/modules/developer-guide/pages/documentation.adoc) for details.
+
 ## Contributing
 
 Contributions are welcome. See `CONTRIBUTING.md` for development and contribution guidelines.

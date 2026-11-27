@@ -1,0 +1,22 @@
+= Import a Capella Desktop project
+
+[NOTE]
+====
+Direct import of a Capella Desktop project is *not yet available* in {product}.
+====
+
+{product} does not open the `.aird` and `.capella` files of Capella Desktop.
+To reuse a Capella Desktop model, transform it into SysML v2 with the Capella SysML v2 Bridge, then upload the result in a {product} project.
+
+== Transform the model
+
+Follow xref:user-manual:integration/capella.adoc[Capella Desktop and {product}] to prepare and run the transformation with the Capella SysML v2 Bridge.
+
+== Upload the result
+
+. Upload the generated SysML v2 file in a project, as described in the https://doc.mbse-syson.org/syson/main/user-manual/features/import-export-textual.html[SysON textual import documentation].
+Check the bridge documentation for the project template to use and the library dependencies to provide.
+. Check the transformed elements in the explorer.
+
+Diagrams are not transformed: create the representations you need in {product}.
+See xref:user-manual:hands-on/how-tos/representation-operations.adoc[].

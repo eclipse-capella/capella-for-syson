@@ -1,0 +1,38 @@
+= Arcadia and SysML v2
+
+Arcadia is the method: it tells what to model, in which order, and for which engineering purpose.
+SysML v2 is the language used to express the resulting model.
+
+== Arcadia: a systems engineering method
+
+Arcadia organizes the system description around operational needs, functions, components, and architectures, in five perspectives:
+
+[cols="1,2",options="header"]
+|===
+|Perspective |Engineering focus
+
+|Operational Analysis (OA)
+|Understand the operational situation, stakeholders, activities, and expected capabilities.
+
+|System Analysis (SA)
+|Define the system boundary, required functions, and interactions with external actors.
+
+|Logical Architecture (LA)
+|Organize the solution into logical components and allocate functions to them.
+
+|Physical Architecture (PA)
+|Define the technical architecture and deployment choices that implement the solution.
+
+|End-Product Breakdown Structure (EPBS)
+|Structure configuration items and prepare component development and integration contracts.
+|===
+
+The perspectives support iterative engineering work.
+See the https://mbse-capella.org/arcadia.html[Arcadia presentation] for the method and its reference documents.
+
+== Bringing the method and language together
+
+The https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library], hosted under Eclipse Capella, defines how Arcadia concepts such as components, functions, and exchanges are expressed in SysML v2, along with a default model organization.
+{product} uses this library and presents its concepts in views inspired by Capella; see xref:user-manual:features/arcadia-library.adoc[].
+
+The xref:user-manual:concepts.adoc[key concepts] page shows how these concepts appear in a model, with examples from the Toy Catapult tutorial.

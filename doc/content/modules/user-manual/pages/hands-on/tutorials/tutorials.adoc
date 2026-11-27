@@ -1,0 +1,3 @@
+= Hands-On Starter Guides
+
+* xref:hands-on/tutorials/toy-catapult.adoc[Model a Toy Catapult]: progress from Operational Analysis through System Analysis to Logical Architecture.

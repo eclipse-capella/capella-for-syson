@@ -1,0 +1,25 @@
+= Key features in {product}
+
+[NOTE]
+====
+In {product}, features are categorized into two distinct levels of maturity:
+
+* **🔥 Experimental**: Features in the early stages of development or testing, subject to potential changes and improvements based on user feedback.
+* **🛈 Stable**: Features that have completed rigorous testing, are deemed reliable, and are ready for production use with a high level of confidence in their stability and capability.
+
+Each feature page states its maturity level in its *Before you Start* section.
+Features inherited from SysON keep the maturity level stated in the https://doc.mbse-syson.org/syson/main/user-manual/key-features.html[SysON documentation].
+====
+
+== Features overview
+
+include::user-manual:partial$feature-support.adoc[]
+
+See also xref:concepts.adoc[] and xref:features/features.adoc[Features and capabilities].
+
+[#diagram-support]
+== Diagram support
+
+include::user-manual:partial$diagram-support.adoc[]
+
+For a need not covered here, xref:support.adoc[contact support] or xref:contribute.adoc[suggest an enhancement].

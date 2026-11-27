@@ -1,0 +1,27 @@
+= CEI — Contextual Component External Interfaces
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe a component boundary and the interfaces shared with its environment.
+It answers the question: How does this component connect to external participants?
+
+== Position in Arcadia
+
+Interface viewpoint, applied in the relevant architecture perspective.
+
+== Main concepts
+
+* *Selected Component*: The component whose external context is examined.
+* *External Component or Actor*: A participant outside that component.
+* *Port and Interface*: The endpoints and contracts at the boundary.
+
+== Related diagrams
+
+* xref:features/common-cii.adoc[]
+* xref:features/common-cdi.adoc[]
+* xref:features/common-idb.adoc[]

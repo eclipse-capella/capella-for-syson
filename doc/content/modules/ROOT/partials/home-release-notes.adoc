@@ -1,0 +1,16 @@
+= Releases
+
+[cols="2*^", %noheader, frame=none, grid=none]
+|===
+a|image::new_releases.svg[Release notes,width=64,height=64,xref=user-manual:release-notes/release-notes.adoc]
+
+*xref:user-manual:release-notes/release-notes.adoc[Release notes]*
+
+New features, fixes, and breaking changes.
+
+a|image::cycle.svg[Release cycle,width=64,height=64,xref=user-manual:cycle.adoc]
+
+*xref:user-manual:cycle.adoc[Release cycle]*
+
+Version numbering and release schedule.
+|===

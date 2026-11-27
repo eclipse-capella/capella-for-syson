@@ -1,0 +1,89 @@
+= SAB — System Architecture Blank
+:page-feature-status: experimental
+
+In the application, this diagram is labeled `SAB - System Analysis Blank`.
+
+== Purpose
+
+Use an SAB to describe the system boundary and its interactions with external actors.
+It answers the question: what must the system do, and how does it interact with its environment?
+
+.System context of the In-Flight Entertainment System sample model
+image::sab-ife.png[SAB showing the IFE System and the actors Passenger, Cabin Crew, Aircraft, and Ground Operator, with the functions allocated to Passenger]
+
+== Position in Arcadia
+
+System Analysis, with a black-box view of the system of interest.
+The system functions describe the expected behavior; the logical solution is addressed in xref:features/lab.adoc[Logical Architecture].
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+|System of Interest |The system whose boundary is being defined.
+|Actor |A participant outside that boundary.
+|System Function |Behavior performed by the system or an actor.
+|Component Port and Component Exchange |Endpoints and exchanges between structural participants.
+|Function Port and Functional Exchange |Input/output endpoints and exchanges between functions.
+|Functional Chain |A grouping of Functional Exchanges contributing to a behavior.
+|Requirement and Describes link |A requirement and its relationship to a represented element.
+|===
+
+== Create the diagram
+
+Use the *SAB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create an SAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in System Analysis.
+The system of interest is displayed automatically.
+Its palette provides neither *Delete from Diagram* nor *Delete from Model*: the system of interest is protected from deletion in the SAB.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: The system of interest is synchronized. Components, actors, functions, and requirements are unsynchronized; ports, exchanges, and Describes links between displayed elements are synchronized.
+
+== Describe the system context
+
+* Use *New Actor* on the diagram background to add an external actor, or show existing actors from the explorer.
+Use *New Actor* on an actor to create a nested actor.
+* Use *New Component* on the system of interest or on a System Component to create a nested System Component.
+* Select the system, a System Component, or an actor and use *New Function* to create an allocated function.
+* Use *New Function* on a function to create a sub-function.
+* Use *New Input Port*, *New Output Port*, or *New InOut Port* on the system, a System Component, or an actor to create a Component Port.
+* Use *New Input Function Port* or *New Output Function Port* on a function to create a Function Port.
+* Use *New Component Exchange* to describe a structural exchange between participants.
+* Use *New Functional Exchange* to describe an exchange between functions.
+
+Component Exchanges connect Component Ports.
+Functional Exchanges connect an output Function Port to an input Function Port.
+When the creation tool starts or ends on a component or function, it creates the required ports for that endpoint.
+An exchange is created only between two different components, or two different functions, of the same System Analysis.
+Both ends of Component Exchanges and Functional Exchanges can be reconnected.
+
+== Reorganize the model from the diagram
+
+Moving nodes in the SAB changes the model:
+
+* Drop a System Component into the system of interest or into another System Component to nest it; drop an actor into another actor to nest it.
+An element cannot be moved into one of its own descendants.
+* Drop a function on the system, a System Component, or an actor to allocate it to that element.
+* Drop a function on another function to make it a sub-function.
+
+Drag elements from the explorer to show them in the diagram:
+
+* A function is displayed inside the element it is allocated to; that element is shown as well if needed.
+* Functional Exchanges, Functional Chains, and requirements can also be dropped.
+
+== Explore behavior
+
+Functions are shown inside the participant to which they are allocated.
+Use the *Show Functions* filter, available from the *Diagrams Options* menu (filter icon) of the diagram, to control their visibility.
+The filter is enabled by default.
+
+Use *New Functional Chain* on the background and select the involved exchanges in the *Functional Exchanges* dialog to describe a chain.
+For explicit realization between a System Function and an Operational Activity, use the Capella properties and Semantic Browser as illustrated in the xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial].
+
+include::user-manual:partial$diagram-common-operations.adoc[]
+
+== Related guidance
+
+* xref:features/mcb.adoc[]
+* xref:features/sfbd.adoc[]
+* xref:features/sdfb.adoc[]
+* xref:features/lab.adoc[]

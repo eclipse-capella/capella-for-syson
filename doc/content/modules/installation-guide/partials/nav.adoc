@@ -1,0 +1,3 @@
+* xref:installation-guide:requirements.adoc[]
+* xref:installation-guide:how-tos/install.adoc[]
+* xref:installation-guide:troubleshooting.adoc[]

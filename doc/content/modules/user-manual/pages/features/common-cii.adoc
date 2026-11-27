@@ -1,0 +1,27 @@
+= CII — Contextual Component Internal Interfaces
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe interfaces between the internal components of a selected component.
+It answers the question: How do the internal building blocks connect?
+
+== Position in Arcadia
+
+Interface viewpoint, applied in the relevant architecture perspective.
+
+== Main concepts
+
+* *Selected Component*: The component whose internal structure is examined.
+* *Internal Component*: A building block within the selected component.
+* *Port and Interface*: The endpoints and contracts between the building blocks.
+
+== Related diagrams
+
+* xref:features/common-cei.adoc[]
+* xref:features/common-cdi.adoc[]
+* xref:features/common-idb.adoc[]

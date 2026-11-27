@@ -1,0 +1,58 @@
+= MCB — Missions Capabilities Blank
+:page-feature-status: experimental
+
+== Purpose
+
+Use an MCB to describe the missions of the system, the capabilities that address them, and the actors outside the system boundary.
+It answers the question: which capabilities address the system missions, and for which actors?
+
+.Missions of the In-Flight Entertainment System sample model
+image::mcb-ife.png[MCB showing the five missions of the In-Flight Entertainment System and the requirement Entertainment Availability with its documentation]
+
+== Position in Arcadia
+
+System Analysis, after the operational need has been described.
+The xref:features/sab.adoc[SAB] provides the complementary system context.
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+|Mission |A purpose the system must address.
+|Capability |An ability expected of the system.
+|System Actor |A participant outside the system boundary.
+|Requirement |A requirement represented in the diagram, with its documentation.
+|===
+
+== Create the diagram
+
+Use the *MCB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create an MCB from the explorer on the `Capabilities` package or one of its sub-packages, in System Analysis.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: Missions, capabilities, actors, and requirements are unsynchronized.
+
+== Describe missions, capabilities, and actors
+
+. Use *New Mission* on the background and name the mission.
+. Use *New Capability* for each ability expected of the system.
+. Use *New System Actor* for each participant outside the system boundary.
+. Use *New Requirement* to represent a requirement and its documentation.
+
+Relationships between missions, capabilities, and actors, such as capability exploitation and actor involvement, are not yet represented in the MCB.
+
+== Diagram operations
+
+* *Rename*: edit the label of a mission, capability, actor, or requirement directly in the diagram.
+* *Delete from Model*: delete the model element and its graphical representations.
+* *Collapse*: reduce actor and requirement nodes to their header.
+* Requirement nodes display their documentation in a compartment.
+
+Describes links and dropping elements from the explorer are not yet available in the MCB.
+
+== Related guidance
+
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] uses an MCB to represent the mission `Entertain Child and Parent`, its capabilities, and its actors.
+
+* xref:features/sa-mb.adoc[]
+* xref:features/sa-cc.adoc[]
+* xref:features/sab.adoc[]

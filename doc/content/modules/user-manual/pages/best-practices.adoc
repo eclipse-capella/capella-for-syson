@@ -1,0 +1,62 @@
+= Best practices guides
+
+These practices adapt the methodological recommendations of Capella Desktop to {product}.
+
+== Choose the engineering perspective
+
+Identify the operational or system question before choosing a diagram in the xref:features/features.adoc[diagram catalogue].
+
+Work from the need to the solution:
+
+. In Operational Analysis, describe what the users need to accomplish, without referring to the system.
+. In System Analysis, define what the system must do for them, with the system seen as a black box.
+. In Logical Architecture, define how the system works, independently of technological choices.
+. In Physical Architecture, define how the system is built.
+
+Create the elements explicitly in each perspective, and relate them with realizations.
+See the xref:glossary.adoc[Arcadia glossary] for the concepts of each perspective.
+
+Use decomposition for hierarchies within a perspective, allocation from functions to components, and realization across perspectives; see xref:concepts.adoc#model[the key concepts].
+
+== Describe the functional analysis before the interfaces
+
+* Break functions down until each leaf function can be allocated to a single component or actor.
+* Connect leaf functions with Functional Exchanges, between their output and input Function Ports.
+* Allocate each leaf function, then connect the components with Component Exchanges and allocate the Functional Exchanges to them.
+* Describe what each exchange carries with Exchange Items.
+
+Use the xref:features/model-analysis.adoc[System Architecture Model] dashboard to find unallocated functions, unallocated functional exchanges, and ports without exchanges.
+
+== Reuse model elements across views
+
+Before creating an element, check in the explorer that it does not already exist.
+Two elements created in different packages or perspectives are different, even when they have the same name.
+
+Drop an existing element from the explorer when another diagram needs to show it.
+For example, use the same Logical Components in several LABs to describe complementary aspects of the architecture.
+Give each diagram a name that identifies its engineering purpose.
+
+== Keep diagrams readable
+
+* Limit each diagram to one engineering question; split a diagram that becomes crowded rather than adding more elements.
+* Use the diagram filters, such as *Show Functions* in the LAB, to hide information not needed for the question.
+* Hide the ports or collapse the nodes that do not contribute to the purpose of the diagram.
+* Use the same layout conventions in all diagrams of a model, for example the actors on the borders and the system in the center.
+
+See xref:concepts.adoc#synchronization[] for the elements a diagram shows automatically.
+
+== Organize the model
+
+* Keep the default Arcadia organization of the `Capella` template: each perspective groups its elements in its `Structure`, `Functions`, `Capabilities`, `Interfaces`, `Data`, and `Requirements` packages.
+* Create sub-packages when a package becomes too large to browse, for example beyond about twenty elements.
+* Agree on naming conventions with the other contributors of the project, for example a verb phrase for functions and a noun for components and exchanges.
+
+== Document the model
+
+* Fill the *Description* of the elements and of the requirements to explain their intent.
+* Use the review *Status* to track the progress of the model, and follow it in the xref:features/function-table.adoc[Function Table] and the xref:features/model-analysis.adoc[System Architecture Model] dashboard.
+* Attach requirements to the elements they apply to with Describes links.
+
+== Keep the model consistent with the library
+
+Prefer the {product} tools to the textual import or the APIs for creating Arcadia elements; see xref:features/arcadia-library.adoc#keep-consistent[why].

@@ -1,0 +1,30 @@
+= Arcadia library
+:page-feature-status: experimental
+
+The Arcadia library defines, in SysML v2, the Arcadia concepts used by {product}: engineering perspectives, functions, components, exchanges, capabilities, and their relationships.
+Its definitions and their mapping to SysML v2 are maintained in the https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library project].
+
+== Availability in projects
+
+{product} publishes the Arcadia library, under the name `arcadia`, when the application starts.
+Projects created from the `Capella` and `Capella-Library` templates depend on it: the Capella explorer, diagrams, and properties use its definitions to recognize Arcadia elements.
+
+Each {product} version uses one version of the Arcadia library; see the xref:user-manual:release-notes/release-notes.adoc[release notes] for the changes between versions.
+
+== Default model organization
+
+The `Capella` template initializes the model with the default Arcadia organization defined by the library; see xref:user-manual:hands-on/how-tos/project-management.adoc#create-capella-project[] for its content.
+
+[#keep-consistent]
+== Keep the model consistent with the library
+
+Model elements are recognized as Arcadia elements through their relationships with the library definitions.
+Create and modify Arcadia elements with the {product} tools, in the explorer, the diagrams, and the Details view.
+
+When creating or editing elements by other means, such as the SysML v2 textual import or the APIs, keep the relationships defined by the library.
+Elements that do not follow them are not recognized as Arcadia elements.
+
+== Reusable model content
+
+Use the `Capella-Library` template to prepare model content to reuse in other Capella projects.
+For publishing and importing libraries, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/library-import.html[SysON library documentation].

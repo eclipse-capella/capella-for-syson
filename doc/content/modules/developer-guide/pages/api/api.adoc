@@ -1,0 +1,69 @@
+= APIs
+
+To identify the information an exchange must preserve, see xref:user-manual:integration/interoperability.adoc[].
+
+== Shared SysON APIs
+
+For common project/model operations, REST API scope, and API usage, refer to the https://doc.mbse-syson.org/syson/main/developer-guide/api/api.html[SysON API documentation].
+Use the documentation and schema corresponding to the deployed application version.
+
+== Capella GraphQL contributions
+
+The application GraphQL endpoint is `/api/graphql`.
+{product} contributes the following representation-related operations:
+
+[cols="2,3",options="header"]
+|===
+|Operation or field |Purpose
+
+|`createCapellaRepresentation`
+|Create a representation using a Capella representation description.
+The input identifies the editing context and representation description.
+
+|`RepresentationMetadata.diagramFilters`
+|Read the Capella filters associated with a representation, including their labels and state.
+
+|`setDiagramFilterState`
+|Enable or disable a filter for a specified representation.
+
+|`saveCapellaDDVDiagram`
+|Save a contextual view diagram, such as the Functional Context Diagram, as a project representation.
+|===
+
+== Example: change a diagram filter
+
+The frontend's `useSetDiagramFilterState.ts` hook sends this mutation:
+
+[source,graphql]
+----
+mutation setDiagramFilterStateMutation($input: SetDiagramFilterStateInput!) {
+  setDiagramFilterState(input: $input) {
+    __typename
+    ... on SetDiagramFilterStateSuccessPayload {
+      active
+    }
+    ... on ErrorPayload {
+      messages {
+        body
+        level
+      }
+    }
+  }
+}
+----
+
+Supply `id` to identify the request, `editingContextId`, `representationId`, `filterId`, and the requested `active` state in the input.
+Read the filter IDs from the representation's `diagramFilters` metadata.
+The payload is a union: inspect `__typename` and handle `ErrorPayload` as well as the success payload, using the deployed schema for the error fields.
+The request uses the same authentication and project access rules as the application.
+
+== Schema references
+
+Use the schema files for the deployed version as the reference for input types and response payloads:
+
+* {source-code-url}/blob/main/backend/application/capella-application-configuration/src/main/resources/schema/capella-create-representation.graphqls[Capella representation creation].
+* {source-code-url}/blob/main/backend/views/capella-diagram-customization/src/main/resources/schema/capella-diagram-filters.graphqls[Diagram filters].
+* {source-code-url}/blob/main/backend/views/capella-ddv-view/src/main/resources/schema/capella-ddv.graphqls[Contextual view diagram saving].
+
+The source repository's integration tests and frontend operations provide request examples.
+For automated model changes, preserve the Arcadia relationships defined by the https://github.com/eclipse-capella/arcadia-sysmlv2-lib[Arcadia SysML v2 Library].

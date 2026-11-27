@@ -1,0 +1,70 @@
+= Capella explorer
+:page-feature-status: experimental
+
+For the shared explorer operations, refer to the https://doc.mbse-syson.org/syson/main/user-manual/features/explorer.html[SysON explorer guide].
+This page describes the additions used when working in a Capella project.
+
+== Model organization
+
+In a Capella project, the explorer presents the model according to the Arcadia engineering perspectives: Operational Analysis, System Analysis, Logical Architecture, Physical Architecture, and EPBS Architecture.
+Each perspective groups its elements in dedicated packages, such as structure, functions, capabilities, and requirements packages.
+
+.Arcadia perspectives of the In-Flight Entertainment System sample model
+image::explorer-ife.png[Explorer showing the five Arcadia perspectives, with the Functions, Capabilities, Interfaces, Data, Structure, and Requirements packages of System Analysis]
+
+Some technical model elements are not displayed, because the information they hold is available elsewhere:
+
+* Function allocations are not shown as explorer items.
+Use *Allocated Functions* in the Capella properties of a component to see the functions it performs; select a function and use the xref:features/editor.adoc[Semantic Browser] to find its allocating component.
+* Operational Activity ports are always hidden.
+
+== Explorer context menu
+
+The context menu of a model element provides:
+
+* *New object* to create a child element.
+* *New representation* to create a diagram, table, or dashboard on the element.
+* *New objects from text* to create elements from a SysML v2 textual description.
+* *Expand all* to expand the subtree of the element.
+
+The context menu of a representation provides *Duplicate representation*.
+
+== Hide ports
+
+Use the *Hide Ports* filter of the explorer to hide function ports and component ports.
+The filter is disabled by default.
+
+== Move elements with drag and drop
+
+Drag an element in the explorer and drop it on another element to move it in the model.
+{product} accepts the following moves and rejects the others:
+
+[cols="1,2",options="header"]
+|===
+|Dropped element |Accepted targets
+
+|Function
+|Another function, to make it a sub-function, or a functions package.
+
+|Component
+|Another component, or a structure package.
+
+|Component port
+|A component.
+
+|Function port
+|A function.
+
+|Package
+|Another user package, or a requirements package.
+
+|Requirement
+|A user package, or a requirements package.
+|===
+
+Moving an element keeps its relationships consistent: Capella-specific relationships that are no longer valid after the move are cleaned up.
+
+== Show elements in diagrams
+
+Drag an element from the explorer and drop it on an open diagram to display it.
+The accepted elements depend on the diagram; see each diagram page.

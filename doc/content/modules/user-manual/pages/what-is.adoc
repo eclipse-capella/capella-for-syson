@@ -1,0 +1,11 @@
+= {product} Overview
+
+include::user-manual:partial$intro.adoc[]
+
+{product} runs in a web browser and is provided as an extension of SysON, a web-based SysML v2 modeling environment.
+It is open source under the xref:product-legal:index.adoc[Eclipse Public License 2.0].
+
+* xref:features/sysmlv2-overview.adoc[]: how the method and the language fit together.
+* xref:key-features.adoc[]: what the application provides.
+* xref:integration/capella.adoc[]: if you already use Capella Desktop.
+* xref:resources.adoc[]: source code, issue tracker, and project website.

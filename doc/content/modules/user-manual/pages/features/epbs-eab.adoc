@@ -1,0 +1,26 @@
+= EAB — EPBS Architecture Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the configuration items used to structure the end product.
+It answers the question: Which configuration items make up the product to be developed or acquired?
+
+== Position in Arcadia
+
+End-Product Breakdown Structure (EPBS).
+
+== Main concepts
+
+* *Configuration Item*: An identified item in the end-product breakdown.
+* *Item kind*: The kind of item, such as hardware, software, or a purchased item.
+* *Configuration item relationships*: The connections and organization of the selected items.
+
+== Related diagrams
+
+* xref:features/epbs-cibd.adoc[]
+* xref:features/pa-pab.adoc[]

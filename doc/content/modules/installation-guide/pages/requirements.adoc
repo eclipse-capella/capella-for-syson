@@ -1,0 +1,8 @@
+= Prerequisites
+
+For server, database, browser, workstation, and network requirements, refer to the https://doc.mbse-syson.org/syson/main/installation-guide/requirements.html[SysON prerequisites].
+Select the documentation corresponding to the SysON version you deploy.
+
+== Capella for SysON extension
+
+Use a {product} extension compatible with your SysON version; the compatible SysON version is stated in the xref:user-manual:release-notes/release-notes.adoc[release notes].

@@ -1,0 +1,100 @@
+= LAB — Logical Architecture Blank
+:page-feature-status: experimental
+
+== Purpose
+
+Use a LAB to describe the logical organization chosen to perform the system functions.
+It answers the question: which logical components perform the functions, and how do they interact?
+
+.Logical components of the In-Flight Entertainment System sample model, with the Diagrams Options menu open
+image::lab-ife.png[LAB showing the logical components Aircraft Front Servers, Seat TV, Cabin Terminal, and Cabin Screen, with the Show Functions filter in the Diagrams Options menu]
+
+== Position in Arcadia
+
+Logical Architecture, describing the solution independently of physical deployment choices.
+The diagram combines logical components, allocated functions, and their exchanges.
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+|Logical Component or Actor |A building block of the logical solution or a participant at its boundary.
+|Logical Function |Behavior allocated to a Logical Component or Actor.
+|Component Port and Component Exchange |Endpoints and exchanges between structural participants.
+|Function Port and Functional Exchange |Endpoints and exchanges between Logical Functions.
+|Functional Chain |A grouping of Functional Exchanges contributing to a behavior.
+|Requirement and Describes link |A requirement and its relationship to a represented element.
+|===
+
+== Create the diagram
+
+Use the *LAB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area], or create a LAB from the explorer on a component, the `Structure` package, or one of its sub-packages, in Logical Architecture.
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: Components, actors, functions, and requirements are unsynchronized; ports, exchanges, and Describes links between displayed elements are synchronized.
+
+== Build the logical architecture
+
+. Use *New Component* on the background to create a Logical Component.
+. Name the component for its responsibility in the solution.
+. Select a component and use *New Function* to create a function allocated to it.
+. Use *New Component Exchange* for a structural exchange or *New Functional Exchange* for an exchange between functions.
+
+Nested components and functions express the corresponding model hierarchy:
+
+* Use *New Actor* on the diagram background to create a Logical Actor.
+* Use *New Component* or *New Actor* on a component to create a nested component or actor.
+* Use *New Function* on a function to create a sub-function.
+* Use *New Input Port*, *New Output Port*, or *New InOut Port* on a component to create a Component Port.
+* Use *New Input Function Port* or *New Output Function Port* on a function to create a Function Port.
+
+Component Exchanges connect Component Ports; Functional Exchanges connect output and input Function Ports.
+The exchange creation tools create the required ports when a component or function is used as an endpoint.
+Both ends of Component Exchanges and Functional Exchanges can be reconnected.
+
+== Organize with packages and comments
+
+* Use *New Package* on the diagram background or on a package to organize the model.
+* Use *New Requirement* on a package to create a requirement in it.
+* Use *New Comment* on the diagram background to annotate the diagram, then *Link to Element* from the comment to attach it to a node, a Functional Exchange, or a Component Exchange.
+
+Requirement nodes in a LAB display *assume constraints* and *require constraints* compartments.
+Use *New Assume constraint* and *New Require constraint* to add constraints, and the *Manage Visibility* action (eye icon) of the requirement node to choose the compartments to display.
+
+== Reorganize the model from the diagram
+
+Moving nodes in the LAB changes the model:
+
+* Drop a function on a component to allocate it; the previous allocation is removed.
+* Drop a function on another function to make it a sub-function.
+* Drop a component on another component to nest it, or on the diagram background to move it back to the Structure package.
+* Drop packages, requirements, and comments into a package to move them.
+
+When a component is dropped from the explorer, it is not displayed twice, and its sub-components already displayed are moved inside it.
+
+== Describe a functional chain
+
+. Use *New Functional Chain* on the diagram background.
+. Select the exchanges to include in the *Functional Exchanges* dialog.
+. Name the chain for the behavior it describes.
+
+The chain is represented by its own node.
+Its involved functions and exchanges receive a chain-specific visual style.
+
+== Reuse and visibility
+
+Use the explorer to locate components already present in the model and show them in another LAB.
+Multiple diagrams can refer to the same component.
+Use the *Show Functions* filter, available from the *Diagrams Options* menu (filter icon) of the diagram, to control the visibility of functions without changing their allocation in the model.
+The filter is enabled by default.
+
+include::user-manual:partial$diagram-common-operations.adoc[]
+
+== Related guidance
+
+The xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] allocates logical functions to `Frame`, `Arm`, `Trigger`, and `Projectile Holder`, then describes their exchanges.
+
+* xref:features/la-lcbd.adoc[]
+* xref:features/la-lfbd.adoc[]
+* xref:features/la-ldfb.adoc[]
+* xref:features/pa-pab.adoc[]

@@ -1,0 +1,22 @@
+= Features and concepts
+
+[cols="3*^", %noheader, frame=none, grid=none]
+|===
+a|image::overview.svg[Features,width=64,height=64,xref=user-manual:features/features.adoc]
+
+*xref:user-manual:features/features.adoc[Features]*
+
+Every diagram, table, and editor in detail.
+
+a|image::settings_heart.svg[Key concepts,width=64,height=64,xref=user-manual:concepts.adoc]
+
+*xref:user-manual:concepts.adoc[Key concepts]*
+
+Projects, models, diagrams, and libraries.
+
+a|image::hub.svg[Arcadia and SysML v2,width=64,height=64,xref=user-manual:features/sysmlv2-overview.adoc]
+
+*xref:user-manual:features/sysmlv2-overview.adoc[Arcadia and SysML v2]*
+
+How Arcadia concepts map to SysML v2.
+|===

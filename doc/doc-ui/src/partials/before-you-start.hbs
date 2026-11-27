@@ -1,0 +1,37 @@
+<aside class="exampleblock page-info before-you-start" aria-label="Before you Start">
+  <div class="title">Before you Start</div>
+  <div class="content">
+    <div class="paragraph">
+      <p><strong>Who is this page for?</strong><br>
+        {{#if page.attributes.audience}}
+        {{page.attributes.audience}}
+        {{else if (eq page.module "developer-guide")}}
+        💻 Developers
+        {{else if (eq page.module "installation-guide")}}
+        ⚙️ DevOps and administrators
+        {{else if (eq page.module "user-manual")}}
+        🧭 Systems engineers
+        {{else}}
+        🧭 Systems engineers, ⚙️ DevOps, and 💻 developers
+        {{/if}}
+      </p>
+    </div>
+    {{#if (eq page.attributes.feature-status "experimental")}}
+    <div class="paragraph">
+      <p>🔥 This feature is currently considered experimental.
+        Try it out and give feedback by reporting bugs and suggesting new features.
+        It's not recommended for production use.</p>
+    </div>
+    {{else if (eq page.attributes.feature-status "stable")}}
+    <div class="paragraph">
+      <p>🛈 This feature is considered stable for production use.
+        For any feedback or issues, please use bug reports and feature requests.</p>
+    </div>
+    {{/if}}
+    {{#if page.attributes.feature-status}}
+    <div class="paragraph">
+      <p>👥 This feature is available to all users.</p>
+    </div>
+    {{/if}}
+  </div>
+</aside>

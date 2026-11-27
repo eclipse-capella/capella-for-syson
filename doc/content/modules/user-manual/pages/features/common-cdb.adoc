@@ -1,0 +1,28 @@
+= CDB — Class Diagram Blank
+
+[NOTE]
+====
+*Not yet available* in {product}.
+====
+
+== Purpose
+
+Describe the data structures used by the system model.
+It answers the question: How is exchanged information structured and typed?
+
+== Position in Arcadia
+
+Data viewpoint shared across engineering perspectives.
+
+== Main concepts
+
+* *Class or data type*: A definition of structured data or a value type.
+* *Property*: An item of data in a structure.
+* *Association and generalization*: Relationships between data definitions.
+* *Enumeration and literal*: A type with a defined set of values.
+
+== Related diagrams
+
+* xref:features/common-id.adoc[]
+* xref:features/common-pd.adoc[]
+* xref:features/sdfb.adoc[]

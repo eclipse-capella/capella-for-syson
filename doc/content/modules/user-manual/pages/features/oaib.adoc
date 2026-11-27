@@ -1,0 +1,71 @@
+= OAIB — Operational Activity Interaction Blank
+:page-feature-status: experimental
+
+== Purpose
+
+Use an OAIB to describe what flows between Operational Activities.
+It answers the question: which activities interact, and what do they exchange?
+
+.Operational activity interactions of the In-Flight Entertainment System sample model
+image::oaib-ife.png[OAIB showing interactions such as Commercial Ads and Safety Instructions from Play Imposed Movie to Broadcast Movies]
+
+== Position in Arcadia
+
+Operational Analysis, describing the operational situation before the system to be designed is introduced.
+An xref:features/oabd.adoc[OABD] focuses on activity decomposition; the OAIB focuses on interactions.
+
+== Main concepts
+
+[cols="1,2",options="header"]
+|===
+|Concept |Role
+
+|Operational Activity
+|An activity performed in the operational situation.
+
+|Interaction
+|A directed exchange between Operational Activities.
+
+|Operational Process
+|A set of Interactions grouped to describe an operational behavior.
+
+|Requirement and Describes link
+|A requirement and its relationship to an element described in the diagram.
+|===
+
+== Create the diagram
+
+An OAIB is associated with an Operational Activity.
+Use the *OAIB* shortcut in the xref:user-manual:features/editor.adoc[Capella project welcome area] to create a diagram on the root Operational Activity, or create an OAIB on an Operational Activity from the explorer.
+
+
+xref:user-manual:concepts.adoc#synchronization[Synchronization]: Operational Activities and requirements are unsynchronized; Interactions and Describes links between displayed elements are synchronized.
+
+== Work with activities and interactions
+
+* Use *New Operational Activity* on the background to create an activity within the diagram's context activity.
+* Use the same tool on an activity to create a sub-activity.
+* Drag an existing Operational Activity from the explorer to show it in the diagram.
+* Drop an activity on another activity to make it a sub-activity in the model.
+An activity dropped from the explorer is displayed inside its parent activity when that parent is shown.
+* Use *New Interaction* to connect a source activity to a target activity, then name the interaction according to what is exchanged.
+
+An Interaction cannot connect an activity to itself, to one of its ancestors, or to one of its descendants.
+This rule applies at creation and when reconnecting an Interaction; a refused reconnection is cancelled.
+Deleting an Interaction from the model also deletes the ports it used.
+
+Showing an existing activity in another diagram reuses the model element.
+Its name and relationships remain part of the shared model.
+
+== Describe an operational process
+
+. Use *New Operational Process* on the diagram background.
+. In the *Interactions* selection dialog, choose the interactions to include.
+. Give the process a name that describes the operational behavior.
+
+include::user-manual:partial$diagram-common-operations.adoc[]
+
+== Related guidance
+
+Use the xref:user-manual:hands-on/tutorials/toy-catapult.adoc[Toy Catapult tutorial] to practice describing the interactions around `Play with toy`.
+For the diagram catalogue, see xref:user-manual:features/features.adoc[Features and capabilities].

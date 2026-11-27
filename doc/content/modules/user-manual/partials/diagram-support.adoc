@@ -1,0 +1,153 @@
+The status identifies whether the diagram type is provided by {product}.
+Consult each diagram's page for its scope and maturity level.
+
+[cols="3,1",options="header"]
+|===
+|Diagram |{product}
+
+2+h|Operational Analysis
+
+|xref:user-manual:features/oa-oebd.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/oaib.adoc[]
+|✅ Provided
+
+|xref:user-manual:features/oab.adoc[]
+|✅ Provided
+
+|xref:user-manual:features/oabd.adoc[]
+|✅ Provided
+
+|xref:user-manual:features/oa-orb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/oa-oes.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/oa-oas.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/oa-opd.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/ocb.adoc[]
+|✅ Provided
+
+|xref:user-manual:features/oa-coc.adoc[]
+|❌ Not yet available
+
+2+h|System Analysis
+
+|xref:user-manual:features/sa-cm.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/sa-mb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/sa-cc.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/mcb.adoc[]
+|✅ Provided
+
+|xref:user-manual:features/sfbd.adoc[]
+|✅ Provided
+
+|xref:user-manual:features/sdfb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/sab.adoc[]
+|✅ Provided
+
+|xref:user-manual:features/sa-csa.adoc[]
+|❌ Not yet available
+
+2+h|Logical Architecture
+
+|xref:user-manual:features/la-lcbd.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/la-lfbd.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/la-ldfb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/lab.adoc[]
+|✅ Provided
+
+2+h|Physical Architecture
+
+|xref:user-manual:features/pa-pfbd.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/pa-pdfb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/pa-pcbd.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/pa-pab.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/pa-ppd.adoc[]
+|❌ Not yet available
+
+2+h|EPBS
+
+|xref:user-manual:features/epbs-eab.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/epbs-cibd.adoc[]
+|❌ Not yet available
+
+2+h|Cross-cutting diagrams
+
+|xref:user-manual:features/common-msm.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-cdb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-cdi.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-cei.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-cii.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-idb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-cri.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-crb.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-pd.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-id.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-is.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-es.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-fs.adoc[]
+|❌ Not yet available
+
+|xref:user-manual:features/common-fcd.adoc[]
+|❌ Not yet available
+
+2+h|Functional exploration
+
+|xref:user-manual:features/functional-context.adoc[]
+|✅ Provided
+|===
