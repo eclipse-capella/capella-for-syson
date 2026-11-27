@@ -63,7 +63,7 @@ public class ComponentToolProvider {
         cache.getNodeDescription(ComponentNodeDescriptionProvider.NODE_DESCRIPTION_NAME).ifPresent(nodeDescription -> {
 
             ChangeContextBuilder changeContextBuilder = this.viewBuilderHelper.newChangeContext()
-                    .expression(ServiceMethod.of1(OARepresentationMutationService::createEntityComponent).aqlSelf(String.valueOf(isActor)))
+                    .expression(ServiceMethod.of1(OARepresentationMutationService::createComponentOA).aqlSelf(String.valueOf(isActor)))
                     .children(
                             this.diagramBuilderHelper.newCreateView()
                                     .containmentKind(NodeContainmentKind.CHILD_NODE)

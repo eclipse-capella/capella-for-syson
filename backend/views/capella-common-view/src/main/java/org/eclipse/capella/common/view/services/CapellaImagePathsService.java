@@ -138,11 +138,10 @@ public class CapellaImagePathsService implements ICapellaImagePathsService {
 
         @Override
         protected String caseCapability(Element element) {
-            var perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
-            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-                return "OperationalCapability";
-            }
-            return ARCADIA_CAPABILITY;
+            return this.commonQueryService.getArcadiaPerspective(element)
+                    .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
+                    .map(any -> "OperationalCapability")
+                    .orElse(ARCADIA_CAPABILITY);
         }
 
         @Override
@@ -162,20 +161,18 @@ public class CapellaImagePathsService implements ICapellaImagePathsService {
 
         @Override
         protected String caseFunctionalExchange(Element element) {
-            var perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
-            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-                return "OperationalInteraction";
-            }
-            return ARCADIA_FUNCTIONAL_EXCHANGE;
+            return this.commonQueryService.getArcadiaPerspective(element)
+                .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
+                .map(any -> "OperationalInteraction")
+                .orElse(ARCADIA_FUNCTIONAL_EXCHANGE);
         }
 
         @Override
         protected String caseFunctionalChain(Element element) {
-            var perspective = this.commonQueryService.getArcadiaPerspective(element).orElse(null);
-            if (ArcadiaEngineeringPerspective.OperationalAnalysis.equals(perspective)) {
-                return "OperationalProcess";
-            }
-            return ARCADIA_FUNCTIONAL_CHAIN;
+            return this.commonQueryService.getArcadiaPerspective(element)
+                .filter(ArcadiaEngineeringPerspective.OperationalAnalysis::equals)
+                .map(any -> "OperationalProcess")
+                .orElse(ARCADIA_FUNCTIONAL_CHAIN);
         }
 
         @Override
@@ -203,28 +200,42 @@ public class CapellaImagePathsService implements ICapellaImagePathsService {
         @Override
         protected String defaultCase(Element element) {
             String imageName = null;
-            if (element instanceof Package pkg) {
-                String declaredName = pkg.getDeclaredName();
-                if (declaredName != null) {
-                    imageName = switch (declaredName) {
-                        case FUNCTIONS -> "LogicalFunctionPkg";
-                        case STRUCTURE -> "LogicalComponentPkg";
-                        case CAPABILITIES -> "CapabilitiesPkg";
-                        case INTERFACES -> "InterfacesPkg";
-                        case DATA -> "DataPkg";
-                        case REQUIREMENTS -> "RequirementsPkg";
-                        default -> null;
-                    };
-                    if (imageName == null && ArcadiaEngineeringPerspective.fromLabel(declaredName).isPresent()) {
-                        imageName = declaredName.replaceAll("\\s", "");
-                    }
-                }
+            if (commonQueryService.isStructureSubPackage(element)) {
+                imageName = "ComponentPkg";
+            } else if (commonQueryService.isFunctionSubPackage(element)) {
+                imageName = "FunctionPkg";
+            } else if (element instanceof Package pkg) {
+                imageName = this.getPackageImageName(pkg);
             } else if (this.commonQueryService.isDescribes(element)) {
                 imageName = "Describes";
             } else if (element instanceof RequirementUsage) {
                 imageName = "Requirement";
             }
             return imageName;
+        }
+
+        private String getPackageImageName(Package pkg) {
+            return ArcadiaEngineeringPerspective.fromLabel(pkg.getDeclaredName())
+                    .map(this::getPerspectiveImageName)
+                    .orElseGet(() -> switch (pkg.getDeclaredName()) {
+                        case FUNCTIONS -> "FunctionPkg";
+                        case STRUCTURE -> "ComponentPkg";
+                        case CAPABILITIES -> "CapabilitiesPkg";
+                        case INTERFACES -> "InterfacesPkg";
+                        case DATA -> "DataPkg";
+                        case REQUIREMENTS -> "RequirementsPkg";
+                        case null, default -> null;
+                    });
+        }
+
+        private String getPerspectiveImageName(ArcadiaEngineeringPerspective perspective) {
+            return switch (perspective) {
+                case OperationalAnalysis -> "OperationalAnalysis";
+                case SystemAnalysis -> "SystemAnalysis";
+                case LogicalArchitecture -> "LogicalArchitecture";
+                case PhysicalArchitecture -> "PhysicalArchitecture";
+                case EPBS -> "EPBSArchitecture";
+            };
         }
     }
 

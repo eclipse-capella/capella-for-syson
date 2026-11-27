@@ -52,6 +52,41 @@ public class CommonQueryServiceTests extends AbstractSemanticTests {
     }
 
     @Test
+    public void isDataPackageShouldRecognizeOnlyDataPackages() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        assertThat(this.commonQueryService.isDataPackage(perspective.getDataPackage().getElement())).isTrue();
+        assertThat(this.commonQueryService.isDataPackage(perspective.getInterfacesPackage().getElement())).isFalse();
+        var function = new CommonCreationService().createFunction(perspective.getFunctionsPackage().getRootFunction().getElement());
+        function.setDeclaredName(CommonQueryService.DATA_PACKAGE);
+        assertThat(this.commonQueryService.isDataPackage(function)).isFalse();
+    }
+
+    @Test
+    public void isInterfacesPackageShouldRecognizeOnlyInterfacesPackages() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        assertThat(this.commonQueryService.isInterfacesPackage(perspective.getInterfacesPackage().getElement())).isTrue();
+        assertThat(this.commonQueryService.isInterfacesPackage(perspective.getDataPackage().getElement())).isFalse();
+        var function = new CommonCreationService().createFunction(perspective.getFunctionsPackage().getRootFunction().getElement());
+        function.setDeclaredName(CommonQueryService.INTERFACES_PACKAGE);
+        assertThat(this.commonQueryService.isInterfacesPackage(function)).isFalse();
+    }
+
+    @Test
+    public void isFunctionSubPackageShouldRecognizeRenamedDescendantsOnly() {
+        var perspective = this.capellaModel.getLogicalArchitecturePerspective();
+        var root = perspective.getFunctionsPackage().getElement();
+        var pkg = new CommonCreationService().createPackage(perspective.getFunctionsPackage().getRootFunction().getElement());
+        pkg.setDeclaredName("Renamed");
+        assertThat(this.commonQueryService.isFunctionSubPackage(root)).isFalse();
+        assertThat(this.commonQueryService.isFunctionSubPackage(pkg)).isTrue();
+        assertThat(this.commonQueryService.isFunctionSubPackage(perspective.getStructurePackage().getElement())).isFalse();
+        assertThat(this.commonQueryService.isFunctionSubPackage(perspective.getFunctionsPackage().getRootFunction().getElement())).isFalse();
+        var unrelated = SysmlFactory.eINSTANCE.createPackage();
+        unrelated.setDeclaredName("Functions");
+        assertThat(this.commonQueryService.isFunctionSubPackage(unrelated)).isFalse();
+    }
+
+    @Test
     public void getMissionsShouldReturnMissionsRegardlessOfPerspectiveIncludingNestedPackages() {
         var creationService = new CommonCreationService();
         var capabilitiesPackage = this.capellaModel.getSystemAnalysisPerspective().getCapabilitiesPackage().getElement();
