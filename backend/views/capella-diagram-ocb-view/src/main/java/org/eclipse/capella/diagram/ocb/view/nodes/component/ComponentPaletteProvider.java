@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.eclipse.capella.common.view.diagram.AllContainedElementsToolProvider;
+import org.eclipse.capella.common.view.diagram.RelatedElementsToolSectionProvider;
 import org.eclipse.capella.common.view.diagram.nodes.NodeDeleteFromDiagramToolProvider;
 import org.eclipse.capella.diagram.ocb.view.edges.componentexchange.CommunicationMeanComponentExchangeToolProvider;
 import org.eclipse.capella.model.services.operational.analysis.OARepresentationDropServices;
@@ -29,6 +31,7 @@ import org.eclipse.sirius.components.view.diagram.DropNodeTool;
 import org.eclipse.sirius.components.view.diagram.EdgeTool;
 import org.eclipse.sirius.components.view.diagram.NodeDescription;
 import org.eclipse.sirius.components.view.diagram.NodePalette;
+import org.eclipse.sirius.components.view.diagram.NodeToolSection;
 import org.eclipse.sirius.components.view.emf.diagram.ViewDiagramDescriptionConverter;
 import org.eclipse.syson.diagram.common.view.DiagramDefaultToolsFactory;
 import org.eclipse.syson.diagram.services.DiagramMutationLabelService;
@@ -81,8 +84,16 @@ public class ComponentPaletteProvider {
                 .nodeTools(
                         new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewEntityComponentNodeTool(cache),
                         new ComponentToolProvider(this.viewBuilderHelper, this.diagramBuilderHelper).createNewActorComponentNodeTool(cache))
-                .toolSections(this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
+                .toolSections(this.createRelatedElementsToolSection(), this.diagramDefaultToolsFactory.createDefaultHideRevealNodeToolSection())
                 .build();
+    }
+
+    private NodeToolSection createRelatedElementsToolSection() {
+        NodeToolSection nodeToolSection = new RelatedElementsToolSectionProvider().createNodeToolSection();
+        AllContainedElementsToolProvider allContainedElementsToolProvider = new AllContainedElementsToolProvider();
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createContainedElementsTool());
+        nodeToolSection.getNodeTools().add(allContainedElementsToolProvider.createRecursiveContainedElementsTool());
+        return nodeToolSection;
     }
 
     private DropNodeTool createDropFromDiagramTool(IViewDiagramElementFinder cache) {

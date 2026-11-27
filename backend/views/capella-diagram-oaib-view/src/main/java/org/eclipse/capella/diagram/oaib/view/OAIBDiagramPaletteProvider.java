@@ -58,7 +58,9 @@ public class OAIBDiagramPaletteProvider {
 
     private DiagramToolSection createRelatedElementsToolSection() {
         DiagramToolSection relatedElementToolSection = new RelatedElementsToolSectionProvider().createDiagramToolSection();
-        relatedElementToolSection.getNodeTools().add(new AllContainedElementsToolProvider().createContainedElementsTool());
+        AllContainedElementsToolProvider allContainedElementsToolProvider = new AllContainedElementsToolProvider();
+        relatedElementToolSection.getNodeTools().add(allContainedElementsToolProvider.createContainedElementsTool());
+        relatedElementToolSection.getNodeTools().add(allContainedElementsToolProvider.createRecursiveContainedElementsTool());
         return relatedElementToolSection;
     }
 
